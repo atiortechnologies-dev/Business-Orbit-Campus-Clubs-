@@ -23,7 +23,7 @@ const CompanyProfile = require("../models/CompanyProfile");
  */
 const register = async (req, res, next) => {
   try {
-    const { full_name, email, phone, password, role, ...profileData } =
+    const { full_name, email, password, role, ...profileData } =
       req.body;
 
     // 1. Check if email exists
@@ -34,15 +34,7 @@ const register = async (req, res, next) => {
         .json({ success: false, message: "Email already exists" });
     }
 
-    // 2. Check if phone exists (if provided)
-    if (phone) {
-      const existingPhone = await User.findOne({ phone });
-      if (existingPhone) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Phone number already exists" });
-      }
-    }
+
 
     // 3. Hash password
     const password_hash = await hashPassword(password);
@@ -56,7 +48,6 @@ const register = async (req, res, next) => {
       user = new User({
         full_name,
         email,
-        phone,
         password_hash,
         role,
         account_status: "Pending Verification",
