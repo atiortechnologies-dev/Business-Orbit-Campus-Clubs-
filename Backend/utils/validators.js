@@ -103,4 +103,8 @@ const registerSchema = baseFields
     path: ["confirm_password"],
   });
 
-module.exports = registerSchema;
+const checkEmailSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+});
+
+module.exports = { registerSchema, checkEmailSchema };

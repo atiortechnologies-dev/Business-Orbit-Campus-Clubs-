@@ -2,6 +2,7 @@ const User = require("../model/User");
 const roleConfig = require("../utils/roleConfig");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { hashPassword } = require("../utils/password");
+const { checkEmailSchema } = require("../utils/validators");
 
 const registerUser = asyncHandler(async (req, res) => {
   const data = req.validatedData;
@@ -82,4 +83,27 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { registerUser };
+const checkEmailAvailability = asyncHandler(async (req, res) => {
+  const result = checkEmailSchema.safeParse(req.query);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid email",
+      errors: result.error.issues.map((i) => ({
+        field: i.path.join("."),
+        message: i.message,
+      })),
+    });
+  }
+
+  const { email } = result.data;
+  const exists = await User.exists({ email });
+
+  return res.status(200).json({
+    success: true,
+    message: exists ? "Email is already in use" : "Email is available",
+    data: { available: !exists },
+  });
+});
+
+module.exports = { registerUser, checkEmailAvailability };
