@@ -12,4 +12,7 @@ router.post(
   authController.registerUser,
 );
 
+// GET /api/auth/check-email?email=...
+router.get("/check-email", authController.checkEmailAvailability);
+
 module.exports = router;
