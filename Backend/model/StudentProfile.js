@@ -9,17 +9,17 @@ const studentProfileSchema = new mongoose.Schema(
       unique: true,
     },
     college: {
-      type: string,
+      type: String,
       required: true,
       trim: true,
     },
     degree: {
-      type: string,
+      type: String,
       required: true,
       trim: true,
     },
     graduation_year: {
-      type: number,
+      type: Number,
       required: true,
     },
     // assigned later
