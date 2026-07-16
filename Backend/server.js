@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoute");
+const { notFound, errorHandler } = require("./middlewares/errorHandler");
 
 const app = express();
 
@@ -12,6 +14,15 @@ app.use(configureCors());
 app.use(express.json());
 
 // Routes
+app.get("/", (req, res) => {
+  res.status(200).json({ success: true, message: "Backend API is running" });
+});
+
+app.use("/api/auth", authRoutes);
+
+// error handling
+app.use(notFound);
+app.use(errorHandler);
 
 // connection
 const startServer = async () => {
