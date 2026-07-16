@@ -19,11 +19,7 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    phone: {
-      type: String,
-      unique: true,
-      sparse: true, // sparse allows null/undefined to not conflict with unique
-    },
+
     password_hash: {
       type: String,
       required: true,
