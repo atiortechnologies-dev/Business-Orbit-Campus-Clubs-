@@ -1,4 +1,10 @@
 /**
+ * @file auth.routes.js
+ * @description Maps authentication-related HTTP endpoints to their respective controller functions.
+ * @architecture Provides a declarative mapping of the API surface for auth, delegating all actual logic to the auth controller.
+ */
+
+/**
  * Goal: Defines authentication and user management endpoints.
  * Architecture relevance: Acts as the routing layer for auth requests (register, login, etc.).
  * Maps HTTP requests to the corresponding controller functions and applies validation middlewares.
@@ -8,6 +14,7 @@ const {
   register,
   checkEmail,
   sendOtp,
+  verifyOtp,
   login,
   forgotPassword,
   resetPassword,
@@ -17,6 +24,7 @@ const {
   registerSchema, 
   checkEmailSchema, 
   sendOtpSchema,
+  verifyOtpSchema,
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema
@@ -33,6 +41,10 @@ router.get("/check-email", validateRequest(checkEmailSchema, "query"), checkEmai
 // @route   POST /api/auth/send-otp
 // @desc    Send verification OTP
 router.post("/send-otp", validateRequest(sendOtpSchema, "body"), sendOtp);
+
+// @route   POST /api/auth/verify-otp
+// @desc    Verify OTP
+router.post("/verify-otp", validateRequest(verifyOtpSchema, "body"), verifyOtp);
 
 // @route   POST /api/auth/login
 // @desc    Authenticate user and get token

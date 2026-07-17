@@ -1,4 +1,10 @@
 /**
+ * @file token.js
+ * @description Provides utility functions for generating, signing, and verifying JSON Web Tokens (JWTs).
+ * @architecture Abstracts the JWT library implementation, making the token strategy modular and easy to replace if needed.
+ */
+
+/**
  * Goal: Provides utility functions for generating and verifying JSON Web Tokens (JWT).
  * Architecture relevance: Centralizes the authentication token logic, used by controllers to issue tokens and by middleware to verify requests.
  */

@@ -1,3 +1,9 @@
+/**
+ * @file User.js
+ * @description Defines the schema for the core User collection, handling authentication credentials and base user details.
+ * @architecture Acts as the foundational data model upon which specialized profiles (Student, Mentor, etc.) are built or referenced.
+ */
+
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(

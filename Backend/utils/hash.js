@@ -1,4 +1,10 @@
 /**
+ * @file hash.js
+ * @description Provides utility functions for hashing passwords and comparing raw strings against hashes (usually via bcrypt).
+ * @architecture Centralizes cryptography logic, ensuring uniform security practices across all authentication flows.
+ */
+
+/**
  * Goal: Provides utility functions for hashing and comparing passwords.
  * Architecture relevance: Centralizes cryptography logic so that models and controllers don't need to implement hashing independently.
  * Switched to argon2 from bcryptjs for better security based on main branch implementation.

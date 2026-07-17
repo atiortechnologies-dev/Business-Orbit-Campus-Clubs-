@@ -1,3 +1,9 @@
+/**
+ * @file MentorProfile.js
+ * @description Defines the schema for Mentor-specific profile data (expertise, availability, industry experience).
+ * @architecture Extends the base User system through a separate collection/reference, enabling clean separation of role-specific attributes.
+ */
+
 const mongoose = require("mongoose");
 
 const mentorProfileSchema = new mongoose.Schema(
