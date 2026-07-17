@@ -1,8 +1,3 @@
-/**
- * Goal: Defines the base schema for all users in the system.
- * Architecture relevance: Serves as the core data model for authentication. It stores common
- * credentials and role information, and links to role-specific profile documents.
- */
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
@@ -16,23 +11,35 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
       trim: true,
+      lowercase: true,
     },
-
+    phone: {
+      type: String,
+      trim: true,
+      unique: true,
+      sparse: true,
+    },
     password_hash: {
       type: String,
       required: true,
+      select: false,
     },
     role: {
       type: String,
-      enum: ["student", "mentor", "investor", "incubator", "company", "admin"],
+      enum: ["student", "mentor", "investor", "incubator", "company"],
       required: true,
     },
     account_status: {
       type: String,
-      enum: ["Pending Verification", "Approved", "Rejected"],
-      default: "Pending Verification",
+      enum: [
+        "pending_verification",
+        "pending_approval",
+        "active",
+        "rejected",
+        "suspended",
+      ],
+      default: "pending_verification",
     },
     email_verified: {
       type: Boolean,
@@ -44,6 +51,4 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);

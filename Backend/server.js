@@ -1,46 +1,36 @@
-/**
- * Goal: Main entry point of the Node.js application.
- * Architecture relevance: Configures Express, connects to the database, sets up middleware, 
- * defines API routes, and starts the server. It orchestrates the entire backend system.
- */
+require("dotenv").config();
 const express = require("express");
-const dotenv = require("dotenv");
+const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
-
-// Load env vars
-dotenv.config();
+const authRoutes = require("./routes/auth.routes");
+const { notFound, errorHandler } = require("./middlewares/errorHandler");
 
 // Connect to database
 connectDB();
 
 const app = express();
 
-// Middleware
+const PORT = process.env.PORT || 4000;
+
+// Middlewares
+app.use(configureCors());
 app.use(express.json());
 
-// Basic health check route
+// Routes
+app.get("/", (req, res) => {
+  res.status(200).json({ success: true, message: "Backend API is running" });
+});
+
 app.get("/api/health", (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "BOCC Auth API is running",
-    environment: process.env.NODE_ENV || "development",
-  });
+  res.status(200).json({ success: true, message: "Server is healthy" });
 });
 
-// Mount routers
-app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/auth", authRoutes);
 
-// Global Error Handler (Express v5)
-app.use((err, req, res, next) => {
-  console.error("Unhandled Error:", err.stack);
-  res.status(500).json({
-    success: false,
-    message: "Internal server error",
-  });
-});
-
-const PORT = process.env.PORT || 5000;
+// Error handling
+app.use(notFound);
+app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });

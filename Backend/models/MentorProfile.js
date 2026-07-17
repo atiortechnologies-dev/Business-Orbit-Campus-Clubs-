@@ -1,8 +1,3 @@
-/**
- * Goal: Defines the schema for the Mentor role profile.
- * Architecture relevance: Extends the base user data by storing mentor-specific attributes.
- * It is linked to the main User document to separate generic auth data from domain-specific data.
- */
 const mongoose = require("mongoose");
 
 const mentorProfileSchema = new mongoose.Schema(
@@ -11,13 +6,30 @@ const mentorProfileSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique: true,
     },
-    organization: { type: String, required: true, trim: true },
-    designation: { type: String, required: true, trim: true },
-    expertise: { type: String, required: true, trim: true },
-    years_of_experience: { type: Number, required: true },
+    organization: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    designation: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    expertise: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    years_of_experience: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
   },
-  { timestamps: true },
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
 module.exports = mongoose.model("MentorProfile", mentorProfileSchema);
