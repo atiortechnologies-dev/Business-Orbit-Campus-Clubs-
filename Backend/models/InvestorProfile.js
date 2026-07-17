@@ -1,8 +1,3 @@
-/**
- * Goal: Defines the schema for the Investor role profile.
- * Architecture relevance: Extends the base user data by storing investor-specific attributes.
- * It is linked to the main User document to separate generic auth data from domain-specific data.
- */
 const mongoose = require("mongoose");
 
 const investorProfileSchema = new mongoose.Schema(
@@ -11,13 +6,30 @@ const investorProfileSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique: true,
     },
-    organization: { type: String, required: true, trim: true },
-    investment_focus: { type: String, required: true, trim: true },
-    investment_stage: { type: String, required: true, trim: true },
-    profile_url: { type: String, trim: true },
+    organization: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    investment_focus: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    investment_stage: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    profile_url: {
+      type: String,
+      trim: true,
+      default: "",
+    },
   },
-  { timestamps: true },
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
 module.exports = mongoose.model("InvestorProfile", investorProfileSchema);

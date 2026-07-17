@@ -1,8 +1,3 @@
-/**
- * Goal: Defines the schema for the Incubator role profile.
- * Architecture relevance: Extends the base user data by storing incubator-specific attributes.
- * It is linked to the main User document to separate generic auth data from domain-specific data.
- */
 const mongoose = require("mongoose");
 
 const incubatorProfileSchema = new mongoose.Schema(
@@ -11,13 +6,30 @@ const incubatorProfileSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique: true,
     },
-    incubator_name: { type: String, required: true, trim: true },
-    organization: { type: String, required: true, trim: true },
-    city: { type: String, required: true, trim: true },
-    website: { type: String, trim: true },
+    incubator_name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    organization: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    city: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    website: {
+      type: String,
+      trim: true,
+      default: "",
+    },
   },
-  { timestamps: true },
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
 module.exports = mongoose.model("IncubatorProfile", incubatorProfileSchema);

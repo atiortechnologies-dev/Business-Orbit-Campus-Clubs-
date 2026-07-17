@@ -1,8 +1,3 @@
-/**
- * Goal: Defines the schema for the Student role profile.
- * Architecture relevance: Extends the base user data by storing student-specific attributes.
- * It is linked to the main User document to separate generic auth data from domain-specific data.
- */
 const mongoose = require("mongoose");
 
 const studentProfileSchema = new mongoose.Schema(
@@ -11,13 +6,30 @@ const studentProfileSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      unique: true,
     },
-    college: { type: String, required: true, trim: true },
-    degree: { type: String, required: true, trim: true },
-    graduation_year: { type: Number, required: true },
-    chapter_id: { type: mongoose.Schema.Types.ObjectId, ref: "Chapter" }, // To be linked later
+    college: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    degree: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    graduation_year: {
+      type: Number,
+      required: true,
+    },
+    // assigned later
+    chapter_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chapter",
+      default: null,
+    },
   },
-  { timestamps: true },
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
 module.exports = mongoose.model("StudentProfile", studentProfileSchema);

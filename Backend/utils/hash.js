@@ -1,8 +1,9 @@
 /**
  * Goal: Provides utility functions for hashing and comparing passwords.
  * Architecture relevance: Centralizes cryptography logic so that models and controllers don't need to implement hashing independently.
+ * Switched to argon2 from bcryptjs for better security based on main branch implementation.
  */
-const bcrypt = require("bcryptjs");
+const argon2 = require("argon2");
 
 /**
  * Hash a plaintext password
@@ -10,8 +11,9 @@ const bcrypt = require("bcryptjs");
  * @returns {Promise<string>} - The hashed password
  */
 const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
+  return await argon2.hash(password, {
+    type: argon2.argon2id,
+  });
 };
 
 /**
@@ -21,7 +23,12 @@ const hashPassword = async (password) => {
  * @returns {Promise<boolean>} - True if they match, false otherwise
  */
 const comparePassword = async (password, hashedPassword) => {
-  return await bcrypt.compare(password, hashedPassword);
+  if (!hashedPassword) return false;
+  try {
+    return await argon2.verify(hashedPassword, password);
+  } catch (err) {
+    return false;
+  }
 };
 
 module.exports = {
