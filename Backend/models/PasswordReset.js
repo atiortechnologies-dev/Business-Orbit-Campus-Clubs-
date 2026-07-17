@@ -1,3 +1,9 @@
+/**
+ * @file PasswordReset.js
+ * @description Defines the schema for storing password reset tokens securely along with their expiration limits.
+ * @architecture Follows best practices by keeping transient authentication recovery data separate from persistent user records.
+ */
+
 const mongoose = require("mongoose");
 
 const passwordResetSchema = new mongoose.Schema(

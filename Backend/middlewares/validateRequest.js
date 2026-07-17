@@ -1,3 +1,9 @@
+/**
+ * @file validateRequest.js
+ * @description Middleware to intercept requests and validate their payload (body, query, params) against a predefined schema.
+ * @architecture Keeps controllers clean by ensuring they only ever receive pre-sanitized, structurally sound data.
+ */
+
 const validateRequest = (schema, source = "body") => (req, res, next) => {
   const result = schema.safeParse(req[source]);
 

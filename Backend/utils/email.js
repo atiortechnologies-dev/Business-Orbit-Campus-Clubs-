@@ -1,4 +1,10 @@
 /**
+ * @file email.js
+ * @description Provides utility functions and configurations for dispatching transactional emails (e.g., via Nodemailer).
+ * @architecture Encapsulates the third-party email provider logic, presenting a clean interface to controllers.
+ */
+
+/**
  * Goal: Provides utility functions for sending emails.
  * Architecture relevance: Abstracts the email sending service (e.g., Nodemailer). It is used across the application for tasks like sending verification links or password reset emails.
  */

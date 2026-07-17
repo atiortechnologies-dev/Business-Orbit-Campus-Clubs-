@@ -1,4 +1,10 @@
 /**
+ * @file db.js
+ * @description Manages the connection setup and lifecycle for the MongoDB database using Mongoose.
+ * @architecture Abstracts database connection logic away from the server initialization, ensuring database state is managed consistently.
+ */
+
+/**
  * Goal: Manages the database connection.
  * Architecture relevance: Connects the application to the MongoDB database using Mongoose.
  * This is a central configuration file used at the startup of the application.

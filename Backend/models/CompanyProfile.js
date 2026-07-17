@@ -1,3 +1,9 @@
+/**
+ * @file CompanyProfile.js
+ * @description Defines the schema for Company-specific profile data (industry, size, job postings).
+ * @architecture Extends the base User system through a separate collection/reference, enabling clean separation of role-specific attributes.
+ */
+
 const mongoose = require("mongoose");
 
 const companyProfileSchema = new mongoose.Schema(

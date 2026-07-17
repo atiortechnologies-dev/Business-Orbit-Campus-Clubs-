@@ -1,4 +1,10 @@
 /**
+ * @file auth.controller.js
+ * @description Handles business logic for user authentication, including registration, login, and password recovery.
+ * @architecture Acts as the intermediary between authentication routes and user/token models, keeping the routing layer stateless.
+ */
+
+/**
  * Goal: Handles the business logic for user authentication.
  * Architecture relevance: Receives requests from auth routes, processes data (login, registration,
  * role-based profile creation, email verification), and interacts with the models and utility services.
@@ -312,10 +318,63 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   });
 });
 
+/**
+ * @desc    Verify OTP and transition account status
+ * @route   POST /api/auth/verify-otp
+ * @access  Public
+ */
+const verifyOtp = asyncHandler(async (req, res, next) => {
+  const { email, otp } = req.validatedData;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(400).json({ success: false, message: "Invalid email or OTP" });
+  }
+
+  if (user.email_verified) {
+    return res.status(400).json({ success: false, message: "Email is already verified" });
+  }
+
+  // Find valid OTP
+  const verification = await EmailVerification.findOne({
+    userId: user._id,
+    otp,
+    expiresAt: { $gt: Date.now() },
+  });
+
+  if (!verification) {
+    return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+  }
+
+  // Update user verification and status
+  user.email_verified = true;
+  user.account_status = user.role === "student" ? "active" : "pending_approval";
+  
+  await user.save();
+
+  // Cleanup OTPs
+  await EmailVerification.deleteMany({ userId: user._id });
+
+  // Generate authentication token
+  const token = generateToken({ userId: user._id, role: user.role, email: user.email });
+
+  return res.status(200).json({
+    success: true,
+    message: "Email verified successfully",
+    data: {
+      userId: user._id,
+      role: user.role,
+      token,
+      redirect_to: `/${user.role}-dashboard`,
+    }
+  });
+});
+
 module.exports = {
   register,
   checkEmail,
   sendOtp,
+  verifyOtp,
   login,
   forgotPassword,
   resetPassword,

@@ -1,3 +1,9 @@
+/**
+ * @file roleConfig.js
+ * @description Defines constants, enumerations, or configuration objects representing the various user roles in the system.
+ * @architecture Acts as the single source of truth for role definitions, preventing hardcoded magic strings across the codebase.
+ */
+
 const roleConfig = {
   student: {
     redirectTo: "welcome_to_your_chapter",

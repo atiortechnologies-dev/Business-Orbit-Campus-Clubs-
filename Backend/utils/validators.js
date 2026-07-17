@@ -1,3 +1,9 @@
+/**
+ * @file validators.js
+ * @description Provides common validation schemas and helper functions (e.g., using Joi or Zod) for standard user inputs.
+ * @architecture Extracts request validation rules out of controllers and routes, promoting reusability and cleaner request handlers.
+ */
+
 const { z } = require("zod");
 
 const currentYear = new Date().getFullYear();
@@ -111,11 +117,26 @@ const resetPasswordSchema = z.object({
   path: ["confirm_password"],
 });
 
+const contactEnquirySchema = z.object({
+  companyName: z.string().min(2, "Company Name is required"),
+  contactPerson: z.string().min(2, "Contact Person is required"),
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+  phone: z.string().trim().optional(),
+  message: z.string().min(10, "Message must be at least 10 characters long")
+});
+
+const verifyOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+  otp: z.string().trim().min(6, "OTP must be 6 characters").max(6),
+});
+
 module.exports = { 
   registerSchema, 
   checkEmailSchema, 
   sendOtpSchema,
+  verifyOtpSchema,
   loginSchema,
   forgotPasswordSchema,
-  resetPasswordSchema
+  resetPasswordSchema,
+  contactEnquirySchema
 };

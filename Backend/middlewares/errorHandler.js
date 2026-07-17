@@ -1,3 +1,9 @@
+/**
+ * @file errorHandler.js
+ * @description Acts as the global error handling middleware, formatting and returning consistent JSON error responses.
+ * @architecture Ensures the API surface returns uniform, safe error structures to clients without leaking sensitive stack traces.
+ */
+
 const errorHandler = (err, req, res, next) => {
   console.error(err);
 

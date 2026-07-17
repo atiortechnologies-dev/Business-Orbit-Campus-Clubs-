@@ -124,6 +124,34 @@ describe("Auth Routes Tests", () => {
       expect(res.body.message).toBe("If an account exists, an OTP has been sent.");
     });
   });
+  describe("POST /api/auth/verify-otp", () => {
+    it("should successfully verify OTP and update account status to active for student", async () => {
+      // Create user and OTP
+      const User = mongoose.model("User");
+      const EmailVerification = mongoose.model("EmailVerification");
+      
+      const user = await User.findOne({ email: "john@example.com" });
+      await new EmailVerification({
+        userId: user._id,
+        otp: "123456",
+        expiresAt: Date.now() + 15 * 60 * 1000,
+      }).save();
+
+      const res = await request(app).post("/api/auth/verify-otp").send({
+        email: "john@example.com",
+        otp: "123456"
+      });
+      
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBeDefined(); // Token is returned
+      expect(res.body.data.redirect_to).toBe("/student-dashboard"); // Redirect verified
+      
+      const updatedUser = await User.findById(user._id);
+      expect(updatedUser.email_verified).toBe(true);
+      expect(updatedUser.account_status).toBe("active");
+    });
+  });
 
   describe("POST /api/auth/login", () => {
     it("should not login if email is unverified", async () => {

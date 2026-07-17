@@ -1,4 +1,10 @@
 /**
+ * @file adminSeed.js
+ * @description Script to programmatically seed the initial superadmin user into the database.
+ * @architecture Provides a repeatable bootstrap mechanism for deploying fresh environments with required administrative access.
+ */
+
+/**
  * Goal: Script to seed the database with an initial administrator account.
  * Architecture relevance: Used during initial setup or deployment to ensure there is at least one admin user in the system to manage other entities.
  */

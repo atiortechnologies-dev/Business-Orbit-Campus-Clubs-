@@ -1,3 +1,9 @@
+/**
+ * @file IncubatorProfile.js
+ * @description Defines the schema for Incubator-specific profile data (programs, cohorts, funding capabilities).
+ * @architecture Extends the base User system through a separate collection/reference, enabling clean separation of role-specific attributes.
+ */
+
 const mongoose = require("mongoose");
 
 const incubatorProfileSchema = new mongoose.Schema(
