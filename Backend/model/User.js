@@ -45,6 +45,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    otp_code_hash: {
+      type: String,
+      select: false,
+    },
+    otp_expires_at: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

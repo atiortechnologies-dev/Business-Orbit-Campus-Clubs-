@@ -3,7 +3,16 @@ const roleConfig = require("../utils/roleConfig");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { hashPassword } = require("../utils/password");
 const { checkEmailSchema } = require("../utils/validators");
+const {
+  generateOTP,
+  hashOTP,
+  getOTPExpiry,
+  verifyOTP,
+  OTP_EXPIRY_MINUTES,
+} = require("../utils/otp");
+const { sendOTPEmail } = require("../utils/sendEmails");
 
+//* POST: /api/auth/register
 const registerUser = asyncHandler(async (req, res) => {
   const data = req.validatedData;
   const { full_name, email, phone, password, role } = data;
@@ -33,6 +42,9 @@ const registerUser = asyncHandler(async (req, res) => {
   const password_hash = await hashPassword(password);
 
   // generate otp
+  const otp = generateOTP();
+  const otp_code_hash = hashOTP(otp);
+  const otp_expires_at = getOTPExpiry();
 
   let user;
   try {
@@ -44,6 +56,8 @@ const registerUser = asyncHandler(async (req, res) => {
       role,
       account_status: config.initialStatus,
       email_verified: false,
+      otp_code_hash,
+      otp_expires_at,
     });
   } catch (err) {
     if (err.code === 11000) {
@@ -69,6 +83,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   // send otp mail
+  try {
+    await sendOTPEmail(email, otp);
+  } catch (error) {
+    console.error("Failed to send verification email:", err.message);
+  }
 
   return res.status(201).json({
     success: true,
@@ -78,11 +97,13 @@ const registerUser = asyncHandler(async (req, res) => {
       role: user.role,
       account_status: user.account_status,
       email_verified: user.email_verified,
+      otp: otp,
       redirect_to: config.redirectTo,
     },
   });
 });
 
+//* GET /api/auth/check-email?email=someone@example.com
 const checkEmailAvailability = asyncHandler(async (req, res) => {
   const result = checkEmailSchema.safeParse(req.query);
   if (!result.success) {
@@ -106,4 +127,92 @@ const checkEmailAvailability = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { registerUser, checkEmailAvailability };
+//* POST: /api/auth/send-otp
+const sendVerificationOtp = asyncHandler(async (req, res) => {
+  const { email } = req.validatedData;
+
+  const user = await User.findOne({ email }).select(
+    "+otp_code_hash +otp_expires_at",
+  );
+  if (!user) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No account found for this email" });
+  }
+
+  if (user.email_verified) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email is already verified" });
+  }
+
+  const otp = generateOTP();
+  user.otp_code_hash = hashOTP(otp);
+  user.otp_expires_at = getOTPExpiry();
+  await user.save();
+
+  try {
+    await sendOTPEmail(email, otp);
+  } catch (error) {
+    console.error("Failed to send verification email:", err.message);
+    return res.status(502).json({
+      success: false,
+      message: "Could not send OTP email. Please try again.",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: `OTP sent to ${email}. It expires in ${OTP_EXPIRY_MINUTES} minutes.`,
+  });
+});
+
+const verifyOTPfxn = asyncHandler(async (req, res) => {
+  const { email, otp } = req.validatedData;
+
+  const user = await User.findOne({ email }).select(
+    "+otp_code_hash +otp_expires_at",
+  );
+  if (!user) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No account found for this email" });
+  }
+
+  if (user.email_verified) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email is already verified" });
+  }
+
+  if (!user.otp_expires_at || user.otp_expires_at < new Date()) {
+    return res.status(400).json({
+      success: false,
+      message: "OTP has expired. Please request a new one.",
+    });
+  }
+
+  if (!verifyOTP(otp, user.otp_code_hash)) {
+    return res.status(400).json({ success: false, message: "Invalid OTP" });
+  }
+
+  user.email_verified = true;
+  user.otp_code_hash = undefined;
+  user.otp_expires_at = undefined;
+  user.account_status = user.role === "student" ? "active" : "pending_approval";
+
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Email verified successfully",
+    data: { account_status: user.account_status },
+  });
+});
+
+module.exports = {
+  registerUser,
+  checkEmailAvailability,
+  sendVerificationOtp,
+  verifyOTPfxn,
+};
