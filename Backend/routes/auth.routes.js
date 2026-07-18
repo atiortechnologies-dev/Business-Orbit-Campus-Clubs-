@@ -20,14 +20,14 @@ const {
   resetPassword,
 } = require("../controllers/auth.controller");
 const { validateRequest } = require("../middlewares/validateRequest");
-const { 
-  registerSchema, 
-  checkEmailSchema, 
+const {
+  registerSchema,
+  checkEmailSchema,
   sendOtpSchema,
   verifyOtpSchema,
   loginSchema,
   forgotPasswordSchema,
-  resetPasswordSchema
+  resetPasswordSchema,
 } = require("../utils/validators");
 
 // @route   POST /api/auth/register
@@ -36,7 +36,11 @@ router.post("/register", validateRequest(registerSchema, "body"), register);
 
 // @route   GET /api/auth/check-email
 // @desc    Check if email is available
-router.get("/check-email", validateRequest(checkEmailSchema, "query"), checkEmail);
+router.get(
+  "/check-email",
+  validateRequest(checkEmailSchema, "query"),
+  checkEmail,
+);
 
 // @route   POST /api/auth/send-otp
 // @desc    Send verification OTP
@@ -52,10 +56,18 @@ router.post("/login", validateRequest(loginSchema, "body"), login);
 
 // @route   POST /api/auth/forgot-password
 // @desc    Request password reset
-router.post("/forgot-password", validateRequest(forgotPasswordSchema, "body"), forgotPassword);
+router.post(
+  "/forgot-password",
+  validateRequest(forgotPasswordSchema, "body"),
+  forgotPassword,
+);
 
 // @route   POST /api/auth/reset-password
 // @desc    Reset password
-router.post("/reset-password", validateRequest(resetPasswordSchema, "body"), resetPassword);
+router.post(
+  "/reset-password",
+  validateRequest(resetPasswordSchema, "body"),
+  resetPassword,
+);
 
 module.exports = router;

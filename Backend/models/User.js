@@ -57,4 +57,6 @@ const userSchema = new mongoose.Schema(
   },
 );
 
+userSchema.index({ full_name: "text" });
+
 module.exports = mongoose.model("User", userSchema);

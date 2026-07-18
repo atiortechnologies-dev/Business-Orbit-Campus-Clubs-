@@ -32,20 +32,24 @@ const asyncHandler = require("../middlewares/asyncHandler");
  * @route   POST /api/auth/register
  * @access  Public
  */
-const register = asyncHandler(async (req, res, next) => {
+const register = asyncHandler(async (req, res) => {
   // Use req.validatedData provided by Zod middleware
   const data = req.validatedData;
   const { full_name, email, phone, password, role, ...profileData } = data;
 
   const config = roleConfig[role];
   if (!config && role !== "admin") {
-    return res.status(400).json({ success: false, message: "Invalid role configuration" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid role configuration" });
   }
 
   // 1. Check if email exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
-    return res.status(400).json({ success: false, message: "Email already exists" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Email already exists" });
   }
 
   // 2. Hash password (using Argon2 via hash.js)
@@ -71,15 +75,25 @@ const register = asyncHandler(async (req, res, next) => {
 
     // 4. Create Role-Specific Profile
     if (role === "student") {
-      await new StudentProfile({ user_id: user._id, ...profileData }).save({ session });
+      await new StudentProfile({ user_id: user._id, ...profileData }).save({
+        session,
+      });
     } else if (role === "mentor") {
-      await new MentorProfile({ user_id: user._id, ...profileData }).save({ session });
+      await new MentorProfile({ user_id: user._id, ...profileData }).save({
+        session,
+      });
     } else if (role === "investor") {
-      await new InvestorProfile({ user_id: user._id, ...profileData }).save({ session });
+      await new InvestorProfile({ user_id: user._id, ...profileData }).save({
+        session,
+      });
     } else if (role === "incubator") {
-      await new IncubatorProfile({ user_id: user._id, ...profileData }).save({ session });
+      await new IncubatorProfile({ user_id: user._id, ...profileData }).save({
+        session,
+      });
     } else if (role === "company") {
-      await new CompanyProfile({ user_id: user._id, ...profileData }).save({ session });
+      await new CompanyProfile({ user_id: user._id, ...profileData }).save({
+        session,
+      });
     }
 
     await session.commitTransaction();
@@ -122,7 +136,7 @@ const register = asyncHandler(async (req, res, next) => {
  * @route   GET /api/auth/check-email
  * @access  Public
  */
-const checkEmail = asyncHandler(async (req, res, next) => {
+const checkEmail = asyncHandler(async (req, res) => {
   const { email } = req.validatedData;
   const user = await User.findOne({ email });
   return res.status(200).json({
@@ -137,7 +151,7 @@ const checkEmail = asyncHandler(async (req, res, next) => {
  * @route   POST /api/auth/send-otp
  * @access  Public
  */
-const sendOtp = asyncHandler(async (req, res, next) => {
+const sendOtp = asyncHandler(async (req, res) => {
   const { email } = req.validatedData;
 
   const user = await User.findOne({ email });
@@ -149,7 +163,9 @@ const sendOtp = asyncHandler(async (req, res, next) => {
   }
 
   if (user.email_verified) {
-    return res.status(400).json({ success: false, message: "Email is already verified." });
+    return res
+      .status(400)
+      .json({ success: false, message: "Email is already verified." });
   }
 
   await EmailVerification.deleteMany({ userId: user._id });
@@ -179,36 +195,50 @@ const sendOtp = asyncHandler(async (req, res, next) => {
  * @route   POST /api/auth/login
  * @access  Public
  */
-const login = asyncHandler(async (req, res, next) => {
+const login = asyncHandler(async (req, res) => {
   const { email, password } = req.validatedData;
 
   // 1. Verify email exists and get password_hash
   const user = await User.findOne({ email }).select("+password_hash");
   if (!user) {
-    return res.status(401).json({ success: false, message: "Invalid credentials" });
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid credentials" });
   }
 
   // 2. Verify password
   const isMatch = await comparePassword(password, user.password_hash);
   if (!isMatch) {
-    return res.status(401).json({ success: false, message: "Invalid credentials" });
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid credentials" });
   }
 
   // 3. Check email verification status
   if (!user.email_verified) {
-    return res.status(403).json({ success: false, message: "Please verify your email" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Please verify your email" });
   }
 
   // 4. Check account status
   if (user.account_status === "pending_verification") {
-    return res.status(403).json({ success: false, message: "Account pending verification" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Account pending verification" });
   }
   if (user.account_status === "rejected") {
-    return res.status(403).json({ success: false, message: "Account has been rejected" });
+    return res
+      .status(403)
+      .json({ success: false, message: "Account has been rejected" });
   }
 
   // 5. Generate authentication token
-  const token = generateToken({ userId: user._id, role: user.role, email: user.email });
+  const token = generateToken({
+    userId: user._id,
+    role: user.role,
+    email: user.email,
+  });
 
   // 6. Redirect to appropriate dashboard (using roleConfig if available)
   const config = roleConfig[user.role];
@@ -231,7 +261,7 @@ const login = asyncHandler(async (req, res, next) => {
  * @route   POST /api/auth/forgot-password
  * @access  Public
  */
-const forgotPassword = asyncHandler(async (req, res, next) => {
+const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.validatedData;
 
   const user = await User.findOne({ email });
@@ -239,19 +269,20 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     // Avoid revealing account existence
     return res.status(200).json({
       success: true,
-      message: "If an account exists, password reset instructions have been sent.",
+      message:
+        "If an account exists, password reset instructions have been sent.",
     });
   }
 
   // Invalidate any previous unused reset tokens
   await PasswordReset.updateMany(
     { user_id: user._id, used: false },
-    { $set: { used: true } }
+    { $set: { used: true } },
   );
 
   // Generate secure reset token (OTP)
   const otp = generateOTP();
-  
+
   const resetToken = new PasswordReset({
     user_id: user._id,
     reset_token: otp,
@@ -264,7 +295,8 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
     await sendOTPEmail(user.email, otp, {
       subject: "BOCC - Password Reset",
       headerText: "Reset Your Password",
-      descriptionText: "You requested a password reset. Please use the following OTP to reset your password.",
+      descriptionText:
+        "You requested a password reset. Please use the following OTP to reset your password.",
     });
   } catch (error) {
     console.error("Failed to send password reset email:", error);
@@ -272,7 +304,8 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 
   return res.status(200).json({
     success: true,
-    message: "If an account exists, password reset instructions have been sent.",
+    message:
+      "If an account exists, password reset instructions have been sent.",
   });
 });
 
@@ -281,12 +314,14 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
  * @route   POST /api/auth/reset-password
  * @access  Public
  */
-const resetPassword = asyncHandler(async (req, res, next) => {
+const resetPassword = asyncHandler(async (req, res) => {
   const { email, reset_token, new_password } = req.validatedData;
 
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(400).json({ success: false, message: "Invalid token or email" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid token or email" });
   }
 
   // 1. Verify reset token
@@ -298,7 +333,9 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   });
 
   if (!passwordReset) {
-    return res.status(400).json({ success: false, message: "Token is invalid or has expired" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Token is invalid or has expired" });
   }
 
   // 2. Hash new password
@@ -323,16 +360,20 @@ const resetPassword = asyncHandler(async (req, res, next) => {
  * @route   POST /api/auth/verify-otp
  * @access  Public
  */
-const verifyOtp = asyncHandler(async (req, res, next) => {
+const verifyOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.validatedData;
 
   const user = await User.findOne({ email });
   if (!user) {
-    return res.status(400).json({ success: false, message: "Invalid email or OTP" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid email or OTP" });
   }
 
   if (user.email_verified) {
-    return res.status(400).json({ success: false, message: "Email is already verified" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Email is already verified" });
   }
 
   // Find valid OTP
@@ -343,20 +384,26 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
   });
 
   if (!verification) {
-    return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid or expired OTP" });
   }
 
   // Update user verification and status
   user.email_verified = true;
   user.account_status = user.role === "student" ? "active" : "pending_approval";
-  
+
   await user.save();
 
   // Cleanup OTPs
   await EmailVerification.deleteMany({ userId: user._id });
 
   // Generate authentication token
-  const token = generateToken({ userId: user._id, role: user.role, email: user.email });
+  const token = generateToken({
+    userId: user._id,
+    role: user.role,
+    email: user.email,
+  });
 
   return res.status(200).json({
     success: true,
@@ -366,7 +413,7 @@ const verifyOtp = asyncHandler(async (req, res, next) => {
       role: user.role,
       token,
       redirect_to: `/${user.role}-dashboard`,
-    }
+    },
   });
 });
 

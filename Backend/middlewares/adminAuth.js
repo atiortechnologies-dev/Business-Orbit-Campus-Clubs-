@@ -9,15 +9,15 @@
  * Secures CMS endpoints using an x-api-key header for MVP.
  */
 const adminAuth = (req, res, next) => {
-  const apiKey = req.headers['x-api-key'];
-  
+  const apiKey = req.headers["x-api-key"];
+
   if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
-    return res.status(401).json({ 
-      success: false, 
-      message: "Unauthorized: Invalid or missing Admin API Key" 
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: Invalid or missing Admin API Key",
     });
   }
-  
+
   next();
 };
 

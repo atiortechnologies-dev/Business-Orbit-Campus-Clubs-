@@ -39,7 +39,12 @@ const generateOTP = () => {
  * @param {string} [options.category="Notification"]
  * @returns {Promise<any>}
  */
-const sendEmail = async ({ toEmail, subject, htmlContent, category = "Notification" }) => {
+const sendEmail = async ({
+  toEmail,
+  subject,
+  htmlContent,
+  category = "Notification",
+}) => {
   const sender = {
     address: "hello@demomailtrap.co",
     name: "BOCC Auth System (Test)",
@@ -80,7 +85,7 @@ const sendOTPEmail = async (
     subject = "BOCC - Verify Your Email",
     headerText = "Email Verification",
     descriptionText = "Welcome to Business Orbit Campus Clubs (BOCC)! Please verify your email address to complete your registration.",
-  } = {}
+  } = {},
 ) => {
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
