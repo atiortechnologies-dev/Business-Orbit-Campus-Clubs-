@@ -4,7 +4,7 @@
  * @architecture Ensures the API surface returns uniform, safe error structures to clients without leaking sensitive stack traces.
  */
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   console.error(err);
 
   if (err.code === 11000) {

@@ -32,7 +32,7 @@ const comparePassword = async (password, hashedPassword) => {
   if (!hashedPassword) return false;
   try {
     return await argon2.verify(hashedPassword, password);
-  } catch (err) {
+  } catch (_err) {
     return false;
   }
 };

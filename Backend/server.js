@@ -10,9 +10,11 @@ const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
+const http = require("http");
+const { configureSocket } = require("./utils/socket");
 
 // Connect to database
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   connectDB();
 }
 
@@ -35,19 +37,29 @@ app.get("/api/health", (req, res) => {
 
 const publicRoutes = require("./routes/public.routes");
 const adminRoutes = require("./routes/admin.routes");
+const mentorRoutes = require("./routes/mentor.routes");
+const studentRoutes = require("./routes/student.routes");
+const { requireAuth, authorizeRoles } = require("./middlewares/requireAuth");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/mentor", requireAuth, authorizeRoles("mentor"), mentorRoutes);
+app.use("/api/student", requireAuth, authorizeRoles("student"), studentRoutes);
 
 // Error handling
 app.use(notFound);
 app.use(errorHandler);
 
+const server = http.createServer(app);
+configureSocket(server);
+
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  server.listen(PORT, () => {
+    console.log(
+      `Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`,
+    );
   });
 }
 
-module.exports = app;
+module.exports = { app, server };

@@ -4,10 +4,11 @@
  * @architecture Isolates read-only, unauthenticated data access logic from secure, authenticated operational logic.
  */
 
-const FAQ = require('../models/FAQ');
-const Statistic = require('../models/Statistic');
-const PartnerLogo = require('../models/PartnerLogo');
-const FeaturedStartup = require('../models/FeaturedStartup');
+const FAQ = require("../models/FAQ");
+const Statistic = require("../models/Statistic");
+const PartnerLogo = require("../models/PartnerLogo");
+const FeaturedStartup = require("../models/FeaturedStartup");
+const SuccessStory = require("../models/SuccessStory");
 
 /**
  * @route   GET /api/public/auth-redirects
@@ -17,13 +18,13 @@ const FeaturedStartup = require('../models/FeaturedStartup');
 exports.getAuthRedirects = async (req, res, next) => {
   try {
     const redirects = {
-      login: '/auth/login',
-      register: '/auth/role-selection',
-      apply_student: '/auth/register?role=student',
-      join_investor: '/auth/register?role=investor',
-      become_mentor: '/auth/register?role=mentor',
-      partner_bocc: '/auth/register?role=company',
-      apply_partner: '/auth/register?role=incubator'
+      login: "/auth/login",
+      register: "/auth/role-selection",
+      apply_student: "/auth/register?role=student",
+      join_investor: "/auth/register?role=investor",
+      become_mentor: "/auth/register?role=mentor",
+      partner_bocc: "/auth/register?role=company",
+      apply_partner: "/auth/register?role=incubator",
     };
     res.status(200).json({ success: true, data: redirects });
   } catch (error) {
@@ -85,8 +86,12 @@ exports.getPartnerLogos = async (req, res, next) => {
  */
 exports.getFeaturedStartups = async (req, res, next) => {
   try {
-    const startups = await FeaturedStartup.find({ featured: true }).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, count: startups.length, data: startups });
+    const startups = await FeaturedStartup.find({ featured: true }).sort({
+      createdAt: -1,
+    });
+    res
+      .status(200)
+      .json({ success: true, count: startups.length, data: startups });
   } catch (error) {
     next(error);
   }
@@ -102,17 +107,19 @@ exports.getSuccessStories = async (req, res, next) => {
     const { type, featured } = req.query;
     const query = {};
     if (type) query.storyType = type;
-    if (featured !== undefined) query.featured = featured === 'true';
+    if (featured !== undefined) query.featured = featured === "true";
 
     const stories = await SuccessStory.find(query).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, count: stories.length, data: stories });
+    res
+      .status(200)
+      .json({ success: true, count: stories.length, data: stories });
   } catch (error) {
     next(error);
   }
 };
 
-const { contactEnquirySchema } = require('../utils/validators');
-const ContactEnquiry = require('../models/ContactEnquiry');
+const { contactEnquirySchema } = require("../utils/validators");
+const ContactEnquiry = require("../models/ContactEnquiry");
 
 /**
  * @route   POST /api/public/enquiries
@@ -123,21 +130,25 @@ exports.createEnquiry = async (req, res, next) => {
   try {
     // Validate request body
     const validatedData = contactEnquirySchema.parse(req.body);
-    
+
     // Save to database
     const enquiry = await ContactEnquiry.create(validatedData);
-    
-    res.status(201).json({ success: true, message: "Enquiry submitted successfully", data: enquiry });
+
+    res.status(201).json({
+      success: true,
+      message: "Enquiry submitted successfully",
+      data: enquiry,
+    });
   } catch (error) {
-    if (error.name === 'ZodError') {
+    if (error.name === "ZodError") {
       return res.status(400).json({ success: false, errors: error.issues });
     }
     next(error);
   }
 };
 
-const path = require('path');
-const fs = require('fs');
+const path = require("path");
+const fs = require("fs");
 
 /**
  * @route   GET /api/public/documents/partnership-deck
@@ -147,15 +158,22 @@ const fs = require('fs');
 exports.downloadPartnershipDeck = async (req, res, next) => {
   try {
     // Using a dynamic placeholder approach. In the future, this can redirect to an S3 URL.
-    const filePath = path.join(__dirname, '..', 'assets', 'partnership-deck.pdf');
-    
+    const filePath = path.join(
+      __dirname,
+      "..",
+      "assets",
+      "partnership-deck.pdf",
+    );
+
     if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ success: false, message: "Document not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Document not found" });
     }
-    
+
     // Serve the dummy PDF file
     // Note: If migrating to cloud storage, replace with res.redirect('https://your-s3-bucket/partnership-deck.pdf')
-    res.download(filePath, 'BOCC-Partnership-Deck.pdf');
+    res.download(filePath, "BOCC-Partnership-Deck.pdf");
   } catch (error) {
     next(error);
   }
