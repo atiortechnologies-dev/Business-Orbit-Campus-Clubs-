@@ -107,4 +107,18 @@ const checkEmailSchema = z.object({
   email: z.string().trim().toLowerCase().email("Invalid email format"),
 });
 
-module.exports = { registerSchema, checkEmailSchema };
+const sendOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+});
+
+const verifyOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+  otp: z.string().trim().length(6, "OTP must be 6 digits"),
+});
+
+module.exports = {
+  registerSchema,
+  checkEmailSchema,
+  sendOtpSchema,
+  verifyOtpSchema,
+};
