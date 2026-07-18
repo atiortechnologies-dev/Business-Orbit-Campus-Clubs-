@@ -45,6 +45,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    profile_status: {
+      type: String,
+      enum: ["not_started", "skipped", "completed"],
+      default: "not_started",
+    },
     otp_code_hash: {
       type: String,
       select: false,

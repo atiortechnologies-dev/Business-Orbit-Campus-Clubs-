@@ -8,26 +8,31 @@ const incubatorProfileSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    incubator_name: {
+
+    //^ Fields captured at Registration
+    incubator_name: { type: String, required: true, trim: true },
+    organization: { type: String, required: true, trim: true },
+    city: { type: String, required: true, trim: true },
+    website: { type: String, trim: true, default: "" },
+
+    //^ Fields captured at onboarding
+    profile_photo: { type: String, default: "" },
+    bio: { type: String, trim: true, default: "" },
+    skills: { type: [String], default: [] },
+    linkedin_url: { type: String, trim: true, default: "" },
+    portfolio_url: { type: String, trim: true, default: "" },
+
+    organization_type: { type: String, trim: true, default: "" },
+    supported_startup_domains: { type: [String], default: [] },
+    services_offered: { type: [String], default: [] },
+    contact_person: { type: String, trim: true, default: "" },
+
+    profile_status: {
       type: String,
-      required: true,
-      trim: true,
+      enum: ["incomplete", "completed"],
+      default: "incomplete",
     },
-    organization: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    city: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    website: {
-      type: String,
-      trim: true,
-      default: "",
-    },
+    profile_completed_at: { type: Date, default: null },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
