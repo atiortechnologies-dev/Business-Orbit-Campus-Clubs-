@@ -116,9 +116,93 @@ const verifyOtpSchema = z.object({
   otp: z.string().trim().length(6, "OTP must be 6 digits"),
 });
 
+//* Onboarding schema
+
+const toArray = z.preprocess(
+  (val) => {
+    if (Array.isArray(val)) return val;
+    if (typeof val === "string") {
+      const trimmed = val.trim();
+      if (!trimmed) return [];
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (error) {}
+      return trimmed
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    return val;
+  },
+  z.array(z.string().trim().min(1)),
+);
+
+const commonProfileFields = z.object({
+  bio: z
+    .string()
+    .trim()
+    .min(10, "Bio must be at least 10 characters")
+    .max(1000, "Bio must be under 1000 characters"),
+  skills: toArray.refine(
+    (arr) => arr.length > 0,
+    "At least one skill/interest is required",
+  ),
+  linkedin_url: z
+    .string()
+    .trim()
+    .url("Invalid LinkedIn URL")
+    .refine(
+      (url) => url.includes("linkedin.com"),
+      "Must be a linkedin.com URL",
+    ),
+  portfolio_url: urlOptional,
+});
+
+const studentCompleteFields = z.object({
+  startup_interests: toArray,
+  areas_of_interest: toArray,
+});
+
+const mentorCompleteFields = z.object({
+  mentoring_domains: toArray,
+  preferred_startup_stages: toArray,
+  availability: z.string().trim().optional().or(z.literal("")),
+});
+
+const investorCompleteFields = z.object({
+  investor_type: z.enum(["Angel", "VC", "Corporate"], {
+    error: "Investor type must be Angel, VC, or Corporate",
+  }),
+  investment_sectors: toArray,
+  preferred_startup_stages: toArray,
+  investment_range: z.string().trim().optional().or(z.literal("")),
+});
+
+const incubatorCompleteFields = z.object({
+  organization_type: z.string().trim().min(2, "Organization type is required"),
+  supported_startup_domains: toArray,
+  services_offered: toArray,
+  contact_person: z.string().trim().min(2, "Contact person is required"),
+});
+
+const companyCompleteFields = z.object({
+  hiring_domains: toArray,
+});
+
+const roleSpecificCompleteSchemas = {
+  student: studentCompleteFields,
+  mentor: mentorCompleteFields,
+  investor: investorCompleteFields,
+  incubator: incubatorCompleteFields,
+  company: companyCompleteFields,
+};
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
   sendOtpSchema,
   verifyOtpSchema,
+  commonProfileFields,
+  roleSpecificCompleteSchemas,
 };

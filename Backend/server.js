@@ -4,6 +4,7 @@ const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoute");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
+const { createProfileRouter } = require("./routes/profileRoutes");
 
 const app = express();
 
@@ -19,6 +20,13 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+
+// onboarding routes
+app.use("/api/student/profile", createProfileRouter("student"));
+app.use("/api/mentor/profile", createProfileRouter("mentor"));
+app.use("/api/investor/profile", createProfileRouter("investor"));
+app.use("/api/incubator/profile", createProfileRouter("incubator"));
+app.use("/api/company/profile", createProfileRouter("company"));
 
 // error handling
 app.use(notFound);
