@@ -3,6 +3,7 @@ const express = require("express");
 const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoute");
+const onboardingRoutes = require("./routes/onboardingRoutes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const { createProfileRouter } = require("./routes/profileRoutes");
 
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/onboarding", onboardingRoutes);
 
 // onboarding routes
 app.use("/api/student/profile", createProfileRouter("student"));
