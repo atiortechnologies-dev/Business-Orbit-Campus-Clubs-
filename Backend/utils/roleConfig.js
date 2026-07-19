@@ -10,6 +10,7 @@ const roleConfig = {
     profileFields: ["college", "degree", "graduation_year"],
     redirectTo: "welcome_to_your_chapter",
     initialStatus: "pending_verification",
+    dashboardRedirect: "student_dashboard",
   },
   mentor: {
     ProfileModel: MentorProfile,
@@ -21,6 +22,7 @@ const roleConfig = {
     ],
     redirectTo: "email_verification",
     initialStatus: "pending_verification",
+    dashboardRedirect: "mentor_dashboard",
   },
   investor: {
     ProfileModel: InvestorProfile,
@@ -32,12 +34,14 @@ const roleConfig = {
     ],
     redirectTo: "email_verification",
     initialStatus: "pending_verification",
+    dashboardRedirect: "investor_dashboard",
   },
   incubator: {
     ProfileModel: IncubatorProfile,
     profileFields: ["incubator_name", "organization", "city", "website"],
     redirectTo: "email_verification",
     initialStatus: "pending_verification",
+    dashboardRedirect: "incubator_dashboard",
   },
   company: {
     ProfileModel: CompanyProfile,
@@ -50,6 +54,7 @@ const roleConfig = {
     ],
     redirectTo: "email_verification",
     initialStatus: "pending_verification",
+    dashboardRedirect: "company_dashboard",
   },
 };
 
