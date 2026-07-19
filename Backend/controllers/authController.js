@@ -210,9 +210,31 @@ const verifyOTPfxn = asyncHandler(async (req, res) => {
   });
 });
 
+const getMe = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found" });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      id: user._id,
+      full_name: user.full_name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      account_status: user.account_status,
+      email_verified: user.email_verified,
+      profile_status: user.profile_status,
+    },
+  });
+});
+
 module.exports = {
   registerUser,
   checkEmailAvailability,
   sendVerificationOtp,
   verifyOTPfxn,
+  getMe,
 };

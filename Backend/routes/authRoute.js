@@ -8,6 +8,7 @@ const {
 } = require("../utils/validators");
 const { validateRequest } = require("../middlewares/validateRequest");
 const authController = require("../controllers/authController");
+const { protect } = require("../middlewares/authMiddleware");
 
 // POST /api/auth/register
 router.post(
@@ -32,5 +33,8 @@ router.post(
   validateRequest(verifyOtpSchema),
   authController.verifyOTPfxn,
 );
+
+// GET /api/auth/me  (return authenticated user's own details)
+router.get("/me", protect, authController.getMe);
 
 module.exports = router;
