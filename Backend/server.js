@@ -6,6 +6,10 @@ const authRoutes = require("./routes/authRoute");
 const onboardingRoutes = require("./routes/onboardingRoutes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const { createProfileRouter } = require("./routes/profileRoutes");
+const {
+  studentChapterRouter,
+  chapterStatsRouter,
+} = require("./routes/chapterRoutes");
 
 const app = express();
 
@@ -23,12 +27,14 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
 
-// onboarding routes
 app.use("/api/student/profile", createProfileRouter("student"));
 app.use("/api/mentor/profile", createProfileRouter("mentor"));
 app.use("/api/investor/profile", createProfileRouter("investor"));
 app.use("/api/incubator/profile", createProfileRouter("incubator"));
 app.use("/api/company/profile", createProfileRouter("company"));
+
+app.use("/api/student", studentChapterRouter);
+app.use("/api/chapter", chapterStatsRouter);
 
 // error handling
 app.use(notFound);
