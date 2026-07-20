@@ -40,4 +40,5 @@ const STAGE_DEFINITIONS = [
     estimated_timeline_days: null,
   },
 ];
+
 module.exports = { STAGE_DEFINITIONS };
