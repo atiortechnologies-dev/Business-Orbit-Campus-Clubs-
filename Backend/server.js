@@ -4,6 +4,7 @@ const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoute");
 const onboardingRoutes = require("./routes/onboardingRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const { createProfileRouter } = require("./routes/profileRoutes");
 const {
@@ -34,6 +35,7 @@ app.use("/api/incubator/profile", createProfileRouter("incubator"));
 app.use("/api/company/profile", createProfileRouter("company"));
 
 app.use("/api/student", studentChapterRouter);
+app.use("/api/student", dashboardRoutes);
 app.use("/api/chapter", chapterStatsRouter);
 
 // error handling
