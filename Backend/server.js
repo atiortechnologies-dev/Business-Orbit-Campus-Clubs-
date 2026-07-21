@@ -6,6 +6,7 @@ const authRoutes = require("./routes/authRoute");
 const onboardingRoutes = require("./routes/onboardingRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const startupRoutes = require("./routes/startupRoutes");
+const resourceRoutes = require("./routes/resourceRoutes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const { createProfileRouter } = require("./routes/profileRoutes");
 const {
@@ -38,6 +39,7 @@ app.use("/api/company/profile", createProfileRouter("company"));
 app.use("/api/student", studentChapterRouter);
 app.use("/api/student", dashboardRoutes);
 app.use("/api/startup", startupRoutes);
+app.use("/api/resources", resourceRoutes);
 app.use("/api/chapter", chapterStatsRouter);
 
 // error handling
