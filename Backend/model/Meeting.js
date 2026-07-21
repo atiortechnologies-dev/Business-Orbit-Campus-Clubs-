@@ -29,4 +29,4 @@ const MeetingSchema = mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-module.exports = mongoose.model("Meetings", MeetingSchema);
+module.exports = mongoose.model("Meeting", MeetingSchema);
