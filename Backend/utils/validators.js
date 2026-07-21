@@ -198,6 +198,33 @@ const roleSpecificCompleteSchemas = {
   company: companyCompleteFields,
 };
 
+//* Startup Submission:
+const submitIdeaSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title is required")
+    .max(150, "Title must be under 150 characters"),
+  description: z
+    .string()
+    .trim()
+    .min(1, "Description is required")
+    .max(5000, "Description must be under 5000 characters"),
+});
+
+const saveDraftSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .max(150, "Title must be under 150 characters")
+    .optional(),
+  description: z
+    .string()
+    .trim()
+    .max(5000, "Description must be under 5000 characters")
+    .optional(),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -205,4 +232,6 @@ module.exports = {
   verifyOtpSchema,
   commonProfileFields,
   roleSpecificCompleteSchemas,
+  submitIdeaSchema,
+  saveDraftSchema,
 };
