@@ -9,6 +9,7 @@ const startupRoutes = require("./routes/startupRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
 const submissionRoutes = require("./routes/submissionRoutes");
 const meetingRoutes = require("./routes/meetingRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const { createProfileRouter } = require("./routes/profileRoutes");
 const {
@@ -44,6 +45,7 @@ app.use("/api/startup", startupRoutes);
 app.use("/api/startup", submissionRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/meetings", meetingRoutes);
+app.use("/api/review", reviewRoutes);
 app.use("/api/chapter", chapterStatsRouter);
 
 // error handling
