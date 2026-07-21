@@ -30,7 +30,7 @@ const getOrCreateStartup = async (userId, defaultStartupName) => {
   return startup;
 };
 
-const recalProgress = async (startupId) => {
+const recalcProgress = async (startupId) => {
   const total = STAGE_DEFINITIONS.length;
   const approvedCount = await StartupStage.countDocuments({
     startup_id: startupId,
