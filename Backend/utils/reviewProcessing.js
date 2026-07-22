@@ -1,5 +1,5 @@
-const StageSubmission = require("../model/StageSubmission");
-const StartupStage = require("../model/StartupStage");
+const StageSubmission = require("../models/StageSubmission");
+const StartupStage = require("../models/StartupStage");
 
 const processReview = async ({
   submissionId,

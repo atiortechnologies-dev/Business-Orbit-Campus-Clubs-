@@ -1,7 +1,7 @@
 const asyncHandler = require("../middlewares/asyncHandler");
-const Chapter = require("../model/Chapter");
-const ChapterChangeRequest = require("../model/ChapterChangeRequest");
-const StudentProfile = require("../model/StudentProfile");
+const Chapter = require("../models/Chapter");
+const ChapterChangeRequest = require("../models/ChapterChangeRequest");
+const StudentProfile = require("../models/StudentProfile");
 
 //* GET:- /api/student/chapter
 const getMyChapter = asyncHandler(async (req, res) => {

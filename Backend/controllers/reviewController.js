@@ -1,7 +1,7 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const { getOrCreateStartup } = require("../utils/startupJourney");
-const StageSubmission = require("../model/StageSubmission");
-const Review = require("../model/Review");
+const StageSubmission = require("../models/StageSubmission");
+const Review = require("../models/Review");
 
 //* GET /api/review/result
 const getReviewResult = asyncHandler(async (req, res) => {

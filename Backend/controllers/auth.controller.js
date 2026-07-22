@@ -21,7 +21,7 @@ const InvestorProfile = require("../models/InvestorProfile");
 const IncubatorProfile = require("../models/IncubatorProfile");
 const CompanyProfile = require("../models/CompanyProfile");
 
-const { hashPassword, comparePassword } = require("../utils/hash");
+const { hashPassword, comparePassword } = require("../utils/password");
 const { generateOTP, sendOTPEmail } = require("../utils/email");
 const { generateToken } = require("../utils/token");
 const roleConfig = require("../utils/roleConfig");

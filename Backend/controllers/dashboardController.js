@@ -1,9 +1,9 @@
 //* GET: /api/student/dashboard
 
 const asyncHandler = require("../middlewares/asyncHandler");
-const Meeting = require("../model/Meeting");
-const StartupStage = require("../model/StartupStage");
-const StudentProfile = require("../model/StudentProfile");
+const Meeting = require("../models/Meeting");
+const StartupStage = require("../models/StartupStage");
+const StudentProfile = require("../models/StudentProfile");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 const getDashboard = asyncHandler(async (req, res) => {

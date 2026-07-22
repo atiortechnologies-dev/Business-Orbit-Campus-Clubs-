@@ -1,5 +1,5 @@
 const asyncHandler = require("../middlewares/asyncHandler");
-const Resource = require("../model/Resource");
+const Resource = require("../models/Resource");
 
 //* GET /api/resources
 //  Query params:
