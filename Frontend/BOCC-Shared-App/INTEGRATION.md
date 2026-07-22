@@ -17,7 +17,7 @@ lists the exact file/function to replace.
 
 ## Auth
 
-### `/login` — `app/(auth)/login/page.jsx`
+### `/login` — `src/pages/auth/Login.jsx`
 - **Real:** email/password format validation, password show/hide, remember-me
   checkbox (visual toggle, not persisted).
 - **Stub:** `handleSubmit` — any validly-formatted email/password redirects
@@ -26,19 +26,19 @@ lists the exact file/function to replace.
   redirect on success, surface API errors via the existing `errors` state
   on failure.
 
-### `/forgot-password` — `app/(auth)/forgot-password/page.jsx`
+### `/forgot-password` — `src/pages/auth/ForgotPassword.jsx`
 - **Real:** email validation, submit swaps the card to a confirmation view
   (client state only).
 - **Stub:** no email is ever sent. The confirmation view is cosmetic.
 - **Coming Soon:** Support Center link.
 
-### `/reset-password` — `app/(auth)/reset-password/page.jsx`
+### `/reset-password` — `src/pages/auth/ResetPassword.jsx`
 - **Real:** live password-strength calculation, confirm-password match
   validation, two independent eye toggles.
 - **Stub:** `handleSubmit` — redirects to `/login` without ever changing a
   password anywhere. Replace with `POST /api/auth/reset-password`.
 
-### `/role-selection` — `app/(auth)/role-selection/page.jsx`
+### `/role-selection` — `src/pages/auth/RoleSelection.jsx`
 - **Real:** native radio-group role selection (full keyboard support).
   "Student" → real navigation to `/dashboard`.
 - **Coming Soon:** Mentor/Investor/Incubator/Company — show an inline
@@ -48,7 +48,7 @@ lists the exact file/function to replace.
 
 ## Student Portal
 
-### `/dashboard` — `app/dashboard/page.jsx`
+### `/dashboard` — `src/pages/Dashboard.jsx`
 - **Stub:** everything is a static snapshot — "Welcome back, Alex," all 4
   stat numbers, the 5-stage tracker, all 3 notification previews. None of it
   is tied to a real logged-in user; there's no per-user state anywhere yet.
@@ -58,20 +58,20 @@ lists the exact file/function to replace.
   all 4 Resources cards, sidebar Mentors/Investors/Incubators/Freelancing/
   Profile/Help, header Search/Settings.
 
-### `/notifications` — `app/notifications/page.jsx`
+### `/notifications` — `src/pages/Notifications.jsx`
 - **Stub:** 3 hardcoded notification cards, not fetched from anywhere.
 - **Coming Soon:** Search, filter tabs (all except "All," which is just a
   static current-view indicator), View Details, Dismiss, Add to Calendar,
   Mark all as read, Delete, pagination pages 2/3 and next.
 - **Real:** "Review Progress" → real navigation to `/build-startup/journey`.
 
-### `/build-startup/journey` — `app/build-startup/journey/page.jsx`
+### `/build-startup/journey` — `src/pages/BuildStartupJourney.jsx`
 - **Stub:** entire page is static — roadmap, stats, achievements.
 - **Real:** breadcrumb "Dashboard" and "Back to Dashboard" → real navigation.
 - **Coming Soon:** both "Start Your Journey" CTAs, the active Ideation stage
   circle (no stage-detail page exists yet).
 
-### `/legal/privacy-policy` — `app/legal/privacy-policy/page.jsx`
+### `/legal/privacy-policy` — `src/pages/legal/PrivacyPolicy.jsx`
 - **Real:** in-page anchor navigation (left sub-nav → legal sections),
   `legal@bocc.edu` is a genuine `mailto:` link, "Login"/"Register"/
   "Accept & Continue" → real navigation.
@@ -82,13 +82,13 @@ lists the exact file/function to replace.
 
 ## Incubator Portal
 
-### `/incubator` — `app/incubator/page.jsx`
+### `/incubator` — `src/pages/incubator/Incubator.jsx`
 - **Stub:** all stats, activity, and lists are hardcoded.
 - **Real:** "Review Applications" and every "Review" button → real
   navigation to `/incubator/applications`.
 - **Coming Soon:** "View Startup Tracker," "Schedule Reviews."
 
-### `/incubator/applications` — `app/incubator/applications/page.jsx`
+### `/incubator/applications` — `src/pages/incubator/Applications.jsx`
 - **Real:** Stage/Industry/Status filters — genuinely filter the 5 visible
   rows client-side (fixed during this audit; the dropdown options
   previously didn't match the actual row data at all, so most filter
@@ -100,7 +100,7 @@ lists the exact file/function to replace.
   application (NeuralPath AI) in this repo.
 - **Coming Soon:** Filter, Export, pagination.
 
-### `/incubator/applications/review` — `app/incubator/applications/review/page.jsx`
+### `/incubator/applications/review` — `src/pages/incubator/ApplicationReview.jsx`
 - **Real:** Reviewer Notes textarea (typing works, not persisted),
   Approve/Request Revisions/Reject single-select, Save Draft and Submit
   Decision both show real transient confirmation UI.
@@ -109,7 +109,7 @@ lists the exact file/function to replace.
   decision to go.
 - **Coming Soon:** Print PDF, both document downloads.
 
-### `/incubator/messages` — `app/incubator/messages/page.jsx`
+### `/incubator/messages` — `src/pages/incubator/Messages.jsx`
 - **Real:** switching conversations, typing and sending a message (appends
   to that conversation's local state immediately, Enter-to-send with
   Shift+Enter for newline).
@@ -124,7 +124,7 @@ lists the exact file/function to replace.
 - **Coming Soon:** New Message, video/voice/options icons, attach/emoji/
   image icons in the composer, all 4 right-panel Quick Actions.
 
-### `/incubator/settings` — `app/incubator/settings/page.jsx`
+### `/incubator/settings` — `src/pages/incubator/Settings.jsx`
 - **Real:** every field is a genuine controlled input (typing works),
   Focus Industries chip removal, Working Hours day toggles, Email
   Notifications toggle, Cancel Changes (resets the form to defaults).
@@ -139,7 +139,7 @@ lists the exact file/function to replace.
 
 - **Dark mode** is fully real and complete — no backend dependency, nothing
   to integrate.
-- **`ComingSoon`** (`components/ui/ComingSoon.jsx`) is the single shared
+- **`ComingSoon`** (`src/components/ui/ComingSoon.jsx`) is the single shared
   marker for anything not built. To turn a feature on: replace the
   `<ComingSoon>` wrapper with a real `<Link>`/button and wire the action —
   don't build a second "not ready" pattern elsewhere.

@@ -141,3 +141,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Frontend/Working/ is a scratch space (design guide, planning docs, raw
+# wireframe material) for BOCC-Shared-App — never meant to be committed.
+Frontend/Working/
