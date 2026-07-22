@@ -116,6 +116,15 @@ const verifyOtpSchema = z.object({
   otp: z.string().trim().length(6, "OTP must be 6 digits"),
 });
 
+const loginSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+  password: z.string().min(1, "Password is required"),
+});
+
+const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, "Refresh token is required"),
+});
+
 //* Onboarding schema
 
 const toArray = z.preprocess(
@@ -157,6 +166,7 @@ const commonProfileFields = z.object({
       "Must be a linkedin.com URL",
     ),
   portfolio_url: urlOptional,
+  profile_photo: z.string().trim().optional().or(z.literal("")),
 });
 
 const studentCompleteFields = z.object({
@@ -230,6 +240,8 @@ module.exports = {
   checkEmailSchema,
   sendOtpSchema,
   verifyOtpSchema,
+  loginSchema,
+  refreshTokenSchema,
   commonProfileFields,
   roleSpecificCompleteSchemas,
   submitIdeaSchema,

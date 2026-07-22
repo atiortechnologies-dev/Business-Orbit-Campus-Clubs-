@@ -4,6 +4,7 @@ const router = express.Router();
 const submissionController = require("../controllers/submissionController");
 const { submitIdeaSchema, saveDraftSchema } = require("../utils/validators");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { validateRequest } = require("../middlewares/validateRequest");
 
 router.use(protect, requireRole("student"));
 

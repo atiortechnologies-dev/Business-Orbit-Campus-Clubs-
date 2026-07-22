@@ -40,13 +40,13 @@ app.use("/api/incubator/profile", createProfileRouter("incubator"));
 app.use("/api/company/profile", createProfileRouter("company"));
 
 app.use("/api/student", studentChapterRouter);
+app.use("/api/chapter", chapterStatsRouter);
 app.use("/api/student", dashboardRoutes);
 app.use("/api/startup", startupRoutes);
 app.use("/api/startup", submissionRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/review", reviewRoutes);
-app.use("/api/chapter", chapterStatsRouter);
 
 // error handling
 app.use(notFound);

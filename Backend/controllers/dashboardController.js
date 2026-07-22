@@ -1,7 +1,10 @@
 //* GET: /api/student/dashboard
 
 const asyncHandler = require("../middlewares/asyncHandler");
+const Meeting = require("../model/Meeting");
 const StartupStage = require("../model/StartupStage");
+const StudentProfile = require("../model/StudentProfile");
+const { getOrCreateStartup } = require("../utils/startupJourney");
 
 const getDashboard = asyncHandler(async (req, res) => {
   const { id: userId, account_status, email_verified } = req.user;
@@ -24,6 +27,8 @@ const getDashboard = asyncHandler(async (req, res) => {
       .status(404)
       .json({ success: false, message: "Student profile not found" });
   }
+
+  // console.log("")
 
   // load startup journey
   const startup = await getOrCreateStartup(userId, `${req.user.id}'s Startup`);

@@ -5,6 +5,8 @@ const {
   registerSchema,
   sendOtpSchema,
   verifyOtpSchema,
+  loginSchema,
+  refreshTokenSchema,
 } = require("../utils/validators");
 const { validateRequest } = require("../middlewares/validateRequest");
 const authController = require("../controllers/authController");
@@ -34,7 +36,17 @@ router.post(
   authController.verifyOTPfxn,
 );
 
-// GET /api/auth/me  (return authenticated user's own details)
+// POST /api/auth/login
+router.post("/login", validateRequest(loginSchema), authController.loginUser);
+
+// POST /api/auth/refresh-token
+router.post(
+  "/refresh-token",
+  validateRequest(refreshTokenSchema),
+  authController.refreshAccessToken,
+);
+
+// GET /api/auth/me
 router.get("/me", protect, authController.getMe);
 
 module.exports = router;
