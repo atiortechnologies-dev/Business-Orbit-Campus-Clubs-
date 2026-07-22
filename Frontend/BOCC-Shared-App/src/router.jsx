@@ -13,6 +13,16 @@ import ApplicationReview from '@/pages/incubator/ApplicationReview';
 import Messages from '@/pages/incubator/Messages';
 import Settings from '@/pages/incubator/Settings';
 import PrivacyPolicy from '@/pages/legal/PrivacyPolicy';
+import AdminDashboard from '@/pages/admin/Admin';
+import VerificationQueue from '@/pages/admin/VerificationQueue';
+import VerificationDetail from '@/pages/admin/VerificationDetail';
+import VerificationDecision from '@/pages/admin/VerificationDecision';
+import ReviewQueue from '@/pages/admin/ReviewQueue';
+import ReviewDetail from '@/pages/admin/ReviewDetail';
+import ReviewWorkspace from '@/pages/admin/ReviewWorkspace';
+import ReviewOutcome from '@/pages/admin/ReviewOutcome';
+import ScheduleMeeting from '@/pages/admin/ScheduleMeeting';
+import AuditLog from '@/pages/admin/AuditLog';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -34,4 +44,14 @@ export const router = createBrowserRouter([
   { path: '/incubator/messages', element: <Messages /> },
   { path: '/incubator/settings', element: <Settings /> },
   { path: '/legal/privacy-policy', element: <PrivacyPolicy /> },
+  { path: '/admin', element: <AdminDashboard /> },
+  { path: '/admin/verification', element: <VerificationQueue /> },
+  { path: '/admin/verification/detail', element: <VerificationDetail /> },
+  { path: '/admin/verification/decision', element: <VerificationDecision /> },
+  { path: '/admin/reviews', element: <ReviewQueue /> },
+  { path: '/admin/reviews/detail', element: <ReviewDetail /> },
+  { path: '/admin/reviews/workspace', element: <ReviewWorkspace /> },
+  { path: '/admin/reviews/outcome', element: <ReviewOutcome /> },
+  { path: '/admin/reviews/schedule-meeting', element: <ScheduleMeeting /> },
+  { path: '/admin/audit-log', element: <AuditLog /> },
 ]);
