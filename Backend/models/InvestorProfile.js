@@ -1,3 +1,9 @@
+/**
+ * @file InvestorProfile.js
+ * @description Defines the schema for Investor-specific profile data (investment thesis, portfolio, focus areas).
+ * @architecture Extends the base User system through a separate collection/reference, enabling clean separation of role-specific attributes.
+ */
+
 const mongoose = require("mongoose");
 
 const investorProfileSchema = new mongoose.Schema(
