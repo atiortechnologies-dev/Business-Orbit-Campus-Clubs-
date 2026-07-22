@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const StartupSchema = new mongoose.Schema(
   {
     student_id: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
       unique: true,

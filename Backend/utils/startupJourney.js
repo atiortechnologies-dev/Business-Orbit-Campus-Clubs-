@@ -8,12 +8,12 @@ const getOrCreateStartup = async (userId, defaultStartupName) => {
 
   try {
     startup = await Startup.create({
-      student_id: user_id,
+      student_id: userId,
       startup_name: defaultStartupName,
       current_stage: 1,
       progress_percentage: 0,
     });
-  } catch (error) {
+  } catch (err) {
     if (err.code === 11000) return Startup.findOne({ student_id: userId });
     throw err;
   }

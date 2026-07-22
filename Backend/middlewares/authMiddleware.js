@@ -1,4 +1,4 @@
-const { verifyToken } = require("../utils/token");
+const { verifyToken, verifyRefreshToken } = require("../utils/token");
 const User = require("../model/User");
 const asyncHandler = require("./asyncHandler");
 
@@ -20,6 +20,7 @@ const protect = asyncHandler(async (req, res, next) => {
     return res.status(401).json({
       success: false,
       message: "Not authorized, invalid or expired token",
+      error: err.message,
     });
   }
 
@@ -34,6 +35,7 @@ const protect = asyncHandler(async (req, res, next) => {
   req.user = {
     id: user._id.toString(),
     role: user.role,
+    email: user.email,
     account_status: user.account_status,
     email_verified: user.email_verified,
   };
@@ -50,4 +52,44 @@ const requireRole = (role) => (req, res, next) => {
   next();
 };
 
-module.exports = { protect, requireRole };
+const verifyRefreshTokenMiddleware = asyncHandler(async (req, res, next) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Refresh token is required" });
+  }
+
+  let decoded;
+  try {
+    decoded = verifyRefreshToken(refreshToken);
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired refresh token",
+      error: err.message,
+    });
+  }
+
+  const user = await User.findById(decoded.id);
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  req.user = {
+    id: user._id.toString(),
+    role: user.role,
+    email: user.email,
+  };
+  next();
+});
+
+module.exports = {
+  protect,
+  requireRole,
+  verifyRefreshTokenMiddleware,
+};

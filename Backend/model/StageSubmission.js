@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const StageSubmissionSchema = mongoose.Schema(
   {
     startup_id: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Startup",
       required: true,
     },
     stage_id: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "StartupStage",
       required: true,
     },
@@ -47,6 +47,6 @@ const StageSubmissionSchema = mongoose.Schema(
 );
 
 // sorts the data in ascending order ( Performance Booster )
-stageSubmissionSchema.index({ startup_id: 1, stage_id: 1 });
+StageSubmissionSchema.index({ startup_id: 1, stage_id: 1 });
 
 module.exports = mongoose.model("StageSubmission", StageSubmissionSchema);

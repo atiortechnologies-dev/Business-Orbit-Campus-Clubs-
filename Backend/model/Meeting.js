@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const MeetingSchema = mongoose.Schema(
   {
     startup_id: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Startup",
       required: true,
     },
     reviewer_id: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },

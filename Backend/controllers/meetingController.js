@@ -1,5 +1,6 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const Meeting = require("../model/Meeting");
+const { getOrCreateStartup } = require("../utils/startupJourney");
 
 //* GET: /api/meetings
 const listMeetings = asyncHandler(async (req, res) => {
@@ -7,7 +8,7 @@ const listMeetings = asyncHandler(async (req, res) => {
 
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
 
-  const meeting = await Meeting.find({ startup_id: startup._id })
+  const meetings = await Meeting.find({ startup_id: startup._id })
     .populate("reviewer_id", "full_name email")
     .sort({ meeting_date: 1 });
 

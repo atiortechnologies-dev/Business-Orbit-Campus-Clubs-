@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const StartupStageSchema = mongoose.Schema(
   {
     startup_id: {
-      type: ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Startup",
       required: true,
     },
