@@ -1,5 +1,5 @@
-const Startup = require("../model/Startup");
-const StartupStage = require("../model/StartupStage");
+const Startup = require("../models/Startup");
+const StartupStage = require("../models/StartupStage");
 const { STAGE_DEFINITIONS } = require("./stageDefinitions");
 
 const getOrCreateStartup = async (userId, defaultStartupName) => {

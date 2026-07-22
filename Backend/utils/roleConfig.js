@@ -1,8 +1,8 @@
-const StudentProfile = require("../model/StudentProfile");
-const MentorProfile = require("../model/MentorProfile");
-const InvestorProfile = require("../model/InvestorProfile");
-const IncubatorProfile = require("../model/IncubatorProfile");
-const CompanyProfile = require("../model/CompanyProfile");
+const StudentProfile = require("../models/StudentProfile");
+const MentorProfile = require("../models/MentorProfile");
+const InvestorProfile = require("../models/InvestorProfile");
+const IncubatorProfile = require("../models/IncubatorProfile");
+const CompanyProfile = require("../models/CompanyProfile");
 
 const roleConfig = {
   student: {

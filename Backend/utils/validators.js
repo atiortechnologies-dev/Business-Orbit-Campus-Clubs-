@@ -122,10 +122,6 @@ const contactEnquirySchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters long"),
 });
 
-const sendOtpSchema = z.object({
-  email: z.string().trim().toLowerCase().email("Invalid email format"),
-});
-
 const verifyOtpSchema = z.object({
   email: z.string().trim().toLowerCase().email("Invalid email format"),
   otp: z.string().trim().length(6, "OTP must be 6 digits"),

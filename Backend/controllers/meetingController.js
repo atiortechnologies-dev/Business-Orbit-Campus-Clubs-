@@ -1,5 +1,5 @@
 const asyncHandler = require("../middlewares/asyncHandler");
-const Meeting = require("../model/Meeting");
+const Meeting = require("../models/Meeting");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 //* GET: /api/meetings

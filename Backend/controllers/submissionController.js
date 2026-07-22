@@ -1,6 +1,6 @@
 const asyncHandler = require("../middlewares/asyncHandler");
-const StartupStage = require("../model/StartupStage");
-const StageSubmission = require("../model/StageSubmission");
+const StartupStage = require("../models/StartupStage");
+const StageSubmission = require("../models/StageSubmission");
 const {
   getOrCreateStartup,
   recalcProgress,

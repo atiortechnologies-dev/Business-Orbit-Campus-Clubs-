@@ -1,5 +1,5 @@
 const { verifyToken, verifyRefreshToken } = require("../utils/token");
-const User = require("../model/User");
+const User = require("../models/User");
 const asyncHandler = require("./asyncHandler");
 
 const protect = asyncHandler(async (req, res, next) => {

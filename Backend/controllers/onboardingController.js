@@ -1,5 +1,5 @@
 const asyncHandler = require("../middlewares/asyncHandler");
-const User = require("../model/User");
+const User = require("../models/User");
 const roleConfig = require("../utils/roleConfig");
 
 /**
