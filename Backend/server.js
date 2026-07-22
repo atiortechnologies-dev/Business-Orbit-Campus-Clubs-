@@ -1,8 +1,14 @@
+/**
+ * @file server.js
+ * @description Initializes the Express application, sets up global middlewares, establishes the database connection, and mounts the primary route handlers.
+ * @architecture Serves as the main entry point for the Node.js application. It glues together configuration, routing, and middlewares into a single server instance.
+ */
+
 require("dotenv").config();
 const express = require("express");
 const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
-const authRoutes = require("./routes/authRoute");
+const authRoutes = require("./routes/auth.routes"); // mine one : authRoute
 const onboardingRoutes = require("./routes/onboardingRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
 const startupRoutes = require("./routes/startupRoutes");
@@ -16,6 +22,13 @@ const {
   studentChapterRouter,
   chapterStatsRouter,
 } = require("./routes/chapterRoutes");
+const http = require("http");
+const { configureSocket } = require("./utils/socket");
+
+// Connect to database
+if (process.env.NODE_ENV !== "test") {
+  connectDB();
+}
 
 const app = express();
 
@@ -29,6 +42,16 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.status(200).json({ success: true, message: "Backend API is running" });
 });
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ success: true, message: "Server is healthy" });
+});
+
+const publicRoutes = require("./routes/public.routes");
+const adminRoutes = require("./routes/admin.routes");
+const mentorRoutes = require("./routes/mentor.routes");
+const studentRoutes = require("./routes/student.routes");
+const { requireAuth, authorizeRoles } = require("./middlewares/requireAuth");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
@@ -48,22 +71,24 @@ app.use("/api/resources", resourceRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/review", reviewRoutes);
 
-// error handling
+app.use("/api/public", publicRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/mentor", requireAuth, authorizeRoles("mentor"), mentorRoutes);
+app.use("/api/student", requireAuth, authorizeRoles("student"), studentRoutes);
+
+// Error handling
 app.use(notFound);
 app.use(errorHandler);
 
-// connection
-const startServer = async () => {
-  try {
-    await connectDB();
+const server = http.createServer(app);
+configureSocket(server);
 
-    app.listen(PORT, () => {
-      console.log(`\n🚀 Server running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error("Startup failed:", err);
-    process.exit(1);
-  }
-};
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(
+      `Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`,
+    );
+  });
+}
 
-startServer();
+module.exports = { app, server };

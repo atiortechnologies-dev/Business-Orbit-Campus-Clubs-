@@ -1,6 +1,12 @@
+/**
+ * @file MentorProfile.js
+ * @description Defines the schema for Mentor-specific profile data (expertise, availability, industry experience).
+ * @architecture Extends the base User system through a separate collection/reference, enabling clean separation of role-specific attributes.
+ */
+
 const mongoose = require("mongoose");
 
-const incubatorProfileSchema = new mongoose.Schema(
+const mentorProfileSchema = new mongoose.Schema(
   {
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -10,10 +16,10 @@ const incubatorProfileSchema = new mongoose.Schema(
     },
 
     //^ Fields captured at Registration
-    incubator_name: { type: String, required: true, trim: true },
     organization: { type: String, required: true, trim: true },
-    city: { type: String, required: true, trim: true },
-    website: { type: String, trim: true, default: "" },
+    designation: { type: String, required: true, trim: true },
+    expertise: { type: String, required: true, trim: true },
+    years_of_experience: { type: Number, required: true, min: 0 },
 
     //^ Fields captured at onboarding
     profile_photo: { type: String, default: "" },
@@ -22,10 +28,9 @@ const incubatorProfileSchema = new mongoose.Schema(
     linkedin_url: { type: String, trim: true, default: "" },
     portfolio_url: { type: String, trim: true, default: "" },
 
-    organization_type: { type: String, trim: true, default: "" },
-    supported_startup_domains: { type: [String], default: [] },
-    services_offered: { type: [String], default: [] },
-    contact_person: { type: String, trim: true, default: "" },
+    mentoring_domains: { type: [String], default: [] },
+    preferred_startup_stages: { type: [String], default: [] },
+    availability: { type: String, trim: true, default: "" },
 
     profile_status: {
       type: String,
@@ -37,4 +42,4 @@ const incubatorProfileSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-module.exports = mongoose.model("IncubatorProfile", incubatorProfileSchema);
+module.exports = mongoose.model("MentorProfile", mentorProfileSchema);

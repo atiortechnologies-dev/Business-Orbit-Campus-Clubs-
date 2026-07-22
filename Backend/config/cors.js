@@ -1,3 +1,9 @@
+/**
+ * @file cors.js
+ * @description Defines the Cross-Origin Resource Sharing (CORS) options and allowed origins for the application.
+ * @architecture Provides a centralized configuration layer for security and access control, keeping the main server.js file clean.
+ */
+
 const cors = require("cors");
 
 const configureCors = () => {

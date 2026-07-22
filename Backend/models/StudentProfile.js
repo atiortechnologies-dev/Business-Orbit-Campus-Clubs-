@@ -1,3 +1,9 @@
+/**
+ * @file StudentProfile.js
+ * @description Defines the schema for Student-specific profile data (education, skills, interests).
+ * @architecture Extends the base User system through a separate collection/reference, enabling clean separation of role-specific attributes.
+ */
+
 const mongoose = require("mongoose");
 
 const studentProfileSchema = new mongoose.Schema(

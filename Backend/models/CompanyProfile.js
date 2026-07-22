@@ -1,6 +1,12 @@
+/**
+ * @file CompanyProfile.js
+ * @description Defines the schema for Company-specific profile data (industry, size, job postings).
+ * @architecture Extends the base User system through a separate collection/reference, enabling clean separation of role-specific attributes.
+ */
+
 const mongoose = require("mongoose");
 
-const mentorProfileSchema = new mongoose.Schema(
+const companyProfileSchema = new mongoose.Schema(
   {
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -10,10 +16,11 @@ const mentorProfileSchema = new mongoose.Schema(
     },
 
     //^ Fields captured at Registration
-    organization: { type: String, required: true, trim: true },
-    designation: { type: String, required: true, trim: true },
-    expertise: { type: String, required: true, trim: true },
-    years_of_experience: { type: Number, required: true, min: 0 },
+    company_name: { type: String, required: true, trim: true },
+    industry: { type: String, required: true, trim: true },
+    company_size: { type: String, required: true, trim: true },
+    website: { type: String, required: true, trim: true },
+    contact_person: { type: String, required: true, trim: true },
 
     //^ Fields captured at onboarding
     profile_photo: { type: String, default: "" },
@@ -22,9 +29,7 @@ const mentorProfileSchema = new mongoose.Schema(
     linkedin_url: { type: String, trim: true, default: "" },
     portfolio_url: { type: String, trim: true, default: "" },
 
-    mentoring_domains: { type: [String], default: [] },
-    preferred_startup_stages: { type: [String], default: [] },
-    availability: { type: String, trim: true, default: "" },
+    hiring_domains: { type: [String], default: [] },
 
     profile_status: {
       type: String,
@@ -36,4 +41,4 @@ const mentorProfileSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-module.exports = mongoose.model("MentorProfile", mentorProfileSchema);
+module.exports = mongoose.model("CompanyProfile", companyProfileSchema);
