@@ -13,10 +13,8 @@
  * Focus ring: `focus-within:` on the <label> surfaces the hidden radio's
  * focus state as a visible ring around the card.
  *
- * Continue: disabled until a role is selected. Only "Student" has a real
- * destination (/dashboard) — the other four roles show an inline
- * "coming soon" message instead of navigating, since only the Student
- * experience is built so far.
+ * Continue: disabled until a role is selected, then navigates to that
+ * role's /signup/<role> page — every role now has a real signup form.
  */
 
 import { useState } from 'react';
@@ -68,23 +66,9 @@ const ROLES = [
 export default function RoleSelectionPage() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
-  const [comingSoonMessage, setComingSoonMessage] = useState('');
-
-  const roleTitles = {
-    mentor: 'Mentor',
-    investor: 'Investor',
-    incubator: 'Incubator',
-    company: 'Company',
-  };
 
   function handleContinue() {
-    if (selected === 'student') {
-      setComingSoonMessage('');
-      navigate('/dashboard');
-    } else if (selected) {
-      const title = roleTitles[selected] || selected;
-      setComingSoonMessage(`The ${title} experience is coming soon — Student onboarding is available now.`);
-    }
+    if (selected) navigate(`/signup/${selected}`);
   }
 
   return (
@@ -137,10 +121,7 @@ export default function RoleSelectionPage() {
                   name="role"
                   value={role.id}
                   checked={selected === role.id}
-                  onChange={() => {
-                    setSelected(role.id);
-                    setComingSoonMessage('');
-                  }}
+                  onChange={() => setSelected(role.id)}
                   className="sr-only"
                 />
                 <RoleCard
@@ -166,12 +147,6 @@ export default function RoleSelectionPage() {
             Continue
             <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
           </Button>
-
-          {comingSoonMessage && (
-            <p className="text-[14px] leading-[20px] font-normal text-text-muted font-inter transition-all duration-150 ease-linear animate-fade-in text-center">
-              {comingSoonMessage}
-            </p>
-          )}
         </div>
 
         {/* Bottom nav row */}

@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DashboardShell from '@/components/dashboard/DashboardShell';
-import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const STAGES = [
@@ -74,13 +73,12 @@ export default function JourneyPage() {
             Every successful startup begins with one idea. BOCC will guide you through a
             structured five-stage journey over the next 12 months.
           </p>
-          <ComingSoon label="Start Your Journey" position="top" inline>
-            <span
-              className="mt-4 bg-action-bg text-action-text px-8 py-3 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-body inline-block"
-            >
-              Start Your Journey
-            </span>
-          </ComingSoon>
+          <Link
+            to="/build-startup/journey/ideation"
+            className="mt-4 bg-action-bg text-action-text px-8 py-3 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-body inline-block"
+          >
+            Start Your Journey
+          </Link>
         </div>
         {/* Placeholder box */}
         <div className="md:col-span-5 h-64 md:h-80 placeholder-box rounded-lg" />
@@ -101,11 +99,12 @@ export default function JourneyPage() {
               className="relative z-10 flex md:flex-col items-center gap-4 md:w-1/5 text-center bg-canvas-bg px-4"
             >
               {active ? (
-                <ComingSoon label="Ideation Stage Details" position="top">
-                  <div className="w-20 h-20 rounded-full border-2 border-brand-black flex items-center justify-center bg-canvas-bg relative cursor-not-allowed mx-auto">
-                    <div className="w-4 h-4 rounded-full bg-accent-neon animate-pulse" />
-                  </div>
-                </ComingSoon>
+                <Link
+                  to="/build-startup/journey/ideation"
+                  className="w-20 h-20 rounded-full border-2 border-brand-black flex items-center justify-center bg-canvas-bg relative mx-auto hover:opacity-80 transition-opacity"
+                >
+                  <div className="w-4 h-4 rounded-full bg-accent-neon animate-pulse" />
+                </Link>
               ) : (
                 <div className="w-20 h-20 rounded-full border border-border-subtle text-text-muted flex items-center justify-center bg-canvas-bg mx-auto">
                   <Lock size={20} strokeWidth={2} />
@@ -164,13 +163,12 @@ export default function JourneyPage() {
 
       {/* ── Final CTA ──────────────────────────────────────────────── */}
       <section className="flex flex-col items-center gap-6 py-12 border-t border-divider-line mt-12">
-        <ComingSoon label="Start Your Journey" position="top" inline>
-          <span
-            className="bg-action-bg text-action-text px-12 py-4 rounded-md hover:opacity-90 active:scale-[0.98] transition-all shadow-sm font-poppins font-semibold text-body inline-block"
-          >
-            Start Your Journey
-          </span>
-        </ComingSoon>
+        <Link
+          to="/build-startup/journey/ideation"
+          className="bg-action-bg text-action-text px-12 py-4 rounded-md hover:opacity-90 active:scale-[0.98] transition-all shadow-sm font-poppins font-semibold text-body inline-block"
+        >
+          Start Your Journey
+        </Link>
         <Link
           to="/dashboard"
           className="text-text-body hover:text-text-heading transition-colors flex items-center gap-2 font-inter font-normal text-small"
