@@ -86,7 +86,7 @@ export default function DashboardShell({ pageId = 'pg', children }) {
             >
               <Menu size={24} strokeWidth={2} />
             </button>
-            <p className="font-poppins font-semibold text-section text-text-heading">
+            <p className="hidden md:block font-poppins font-semibold text-section text-text-heading whitespace-nowrap">
               BOCC Campus Clubs
             </p>
           </div>
