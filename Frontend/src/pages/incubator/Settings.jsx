@@ -10,9 +10,12 @@ import {
   X,
   Plus,
   CheckCircle,
+  AlertTriangle,
+  ChevronDown,
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
+import Modal from '@/components/ui/Modal';
 
 const DEFAULT_FORM_STATE = {
   incubatorName: 'BOCC Incubator',
@@ -45,6 +48,16 @@ export default function SettingsPage() {
   const [workingDays, setWorkingDays] = useState(INITIAL_WORKING_DAYS);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [industryDraft, setIndustryDraft] = useState('');
+  const [addingIndustry, setAddingIndustry] = useState(false);
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const [deactivateConfirmText, setDeactivateConfirmText] = useState('');
+  const [deactivateRequested, setDeactivateRequested] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +86,48 @@ export default function SettingsPage() {
     setTimeout(() => setSaveSuccess(false), 2000);
   };
 
+  const addIndustry = () => {
+    const trimmed = industryDraft.trim();
+    if (trimmed && !industries.includes(trimmed)) setIndustries((prev) => [...prev, trimmed]);
+    setIndustryDraft('');
+    setAddingIndustry(false);
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoUrl(URL.createObjectURL(file));
+  };
+
+  const handlePasswordField = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordSubmit = () => {
+    if (passwordForm.next.length < 8) {
+      setPasswordError('New password must be at least 8 characters.');
+      return;
+    }
+    if (passwordForm.next !== passwordForm.confirm) {
+      setPasswordError('New password and confirmation do not match.');
+      return;
+    }
+    setPasswordError('');
+    // TODO(backend): verify `passwordForm.current` and update the account
+    // password with `passwordForm.next`.
+    setPasswordSuccess(true);
+    setPasswordForm({ current: '', next: '', confirm: '' });
+    setTimeout(() => { setPasswordSuccess(false); setPasswordOpen(false); }, 1500);
+  };
+
+  const handleDeactivateConfirm = () => {
+    // TODO(backend): deactivate the incubator account and sign out.
+    setDeactivateOpen(false);
+    setDeactivateConfirmText('');
+    setDeactivateRequested(true);
+  };
+
   return (
     <IncubatorShell>
       <header className="mb-8">
@@ -90,8 +145,11 @@ export default function SettingsPage() {
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex flex-col items-center text-center">
               {/* Org Avatar */}
-              <div className="w-24 h-24 rounded-2xl bg-canvas-bg border border-border-subtle mb-4 flex items-center justify-center font-poppins font-bold text-text-heading text-4xl select-none">
-                BI
+              <div
+                className="w-24 h-24 rounded-2xl bg-canvas-bg border border-border-subtle mb-4 flex items-center justify-center font-poppins font-bold text-text-heading text-4xl select-none bg-cover bg-center"
+                style={logoUrl ? { backgroundImage: `url(${logoUrl})` } : undefined}
+              >
+                {!logoUrl && 'BI'}
               </div>
               <div className="flex items-center gap-1 mb-1">
                 <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
@@ -135,12 +193,11 @@ export default function SettingsPage() {
                   </div>
                 </ComingSoon>
 
-                <ComingSoon label="Update Organization Logo" position="top" inline={false}>
-                  <div className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-body-md text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
-                    <span>Update Organization Logo</span>
-                    <Camera size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                </ComingSoon>
+                <label className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-body-md text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
+                  <span>Update Organization Logo</span>
+                  <Camera size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <input type="file" accept="image/*" onChange={handleLogoChange} className="sr-only" />
+                </label>
               </div>
             </div>
           </section>
@@ -275,15 +332,27 @@ export default function SettingsPage() {
                     </span>
                   ))}
                   
-                  <ComingSoon
-                    label="Add Industry"
-                    position="top"
-                    inline
-                    className="px-3 py-1 border border-dashed border-border-subtle hover:border-brand-black text-text-muted hover:text-text-heading rounded-full font-poppins font-semibold text-xs transition-colors flex items-center gap-1"
-                  >
-                    <Plus size={12} />
-                    Add Industry
-                  </ComingSoon>
+                  {addingIndustry ? (
+                    <input
+                      type="text"
+                      autoFocus
+                      value={industryDraft}
+                      onChange={(e) => setIndustryDraft(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addIndustry())}
+                      onBlur={addIndustry}
+                      placeholder="Industry name..."
+                      className="px-3 py-1 border border-border-subtle rounded-full font-inter text-xs text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black w-32"
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setAddingIndustry(true)}
+                      className="px-3 py-1 border border-dashed border-border-subtle hover:border-brand-black text-text-muted hover:text-text-heading rounded-full font-poppins font-semibold text-xs transition-colors flex items-center gap-1"
+                    >
+                      <Plus size={12} />
+                      Add Industry
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -420,20 +489,69 @@ export default function SettingsPage() {
             </div>
             <div className="divide-y divide-border-subtle">
               {/* Update Password */}
-              <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <p className="font-poppins font-semibold text-small text-text-heading">
-                    Password Security
-                  </p>
-                  <p className="font-inter text-body-md text-text-muted">
-                    Last changed 4 months ago.
-                  </p>
-                </div>
-                <ComingSoon label="Update Password" position="top" inline>
-                  <span className="px-4 py-2 border border-border-subtle rounded-lg font-poppins font-semibold text-small hover:bg-canvas-bg cursor-pointer block text-center">
+              <div className="py-4">
+                <button
+                  type="button"
+                  onClick={() => setPasswordOpen((v) => !v)}
+                  className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left"
+                >
+                  <div>
+                    <p className="font-poppins font-semibold text-small text-text-heading">
+                      Password Security
+                    </p>
+                    <p className="font-inter text-body-md text-text-muted">
+                      Last changed 4 months ago.
+                    </p>
+                  </div>
+                  <span className="px-4 py-2 border border-border-subtle rounded-lg font-poppins font-semibold text-small hover:bg-canvas-bg flex items-center gap-1.5 shrink-0">
                     Update Password
+                    <ChevronDown size={14} strokeWidth={2} className={`transition-transform ${passwordOpen ? 'rotate-180' : ''}`} />
                   </span>
-                </ComingSoon>
+                </button>
+                {passwordOpen && (
+                  <div className="mt-4 space-y-3 max-w-sm">
+                    {passwordSuccess ? (
+                      <p className="flex items-center gap-2 text-success font-inter text-small">
+                        <CheckCircle size={16} strokeWidth={2} /> Password updated.
+                      </p>
+                    ) : (
+                      <>
+                        <input
+                          type="password"
+                          name="current"
+                          value={passwordForm.current}
+                          onChange={handlePasswordField}
+                          placeholder="Current password"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body-md py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                        />
+                        <input
+                          type="password"
+                          name="next"
+                          value={passwordForm.next}
+                          onChange={handlePasswordField}
+                          placeholder="New password"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body-md py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                        />
+                        <input
+                          type="password"
+                          name="confirm"
+                          value={passwordForm.confirm}
+                          onChange={handlePasswordField}
+                          placeholder="Confirm new password"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body-md py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                        />
+                        {passwordError && <p className="text-error font-inter text-small">{passwordError}</p>}
+                        <button
+                          type="button"
+                          onClick={handlePasswordSubmit}
+                          className="bg-action-bg text-action-text px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+                        >
+                          Update Password
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Notification toggle */}
@@ -464,22 +582,30 @@ export default function SettingsPage() {
               </div>
 
               {/* Deactivate account */}
-              <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <p className="font-poppins font-semibold text-small text-error">
-                    Deactivate Account
-                  </p>
-                  <p className="font-inter text-body-md text-text-muted">
-                    Temporarily disable your incubator profile.
-                  </p>
+              {deactivateRequested ? (
+                <div className="py-4 flex items-center gap-2.5 text-warning font-inter text-small">
+                  <AlertTriangle size={16} strokeWidth={2} /> Deactivation requested — our team will follow up by email.
                 </div>
-                
-                <ComingSoon label="Deactivate Account" position="top" inline>
-                  <span className="text-error font-poppins font-bold text-small hover:underline cursor-pointer">
+              ) : (
+                <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <p className="font-poppins font-semibold text-small text-error">
+                      Deactivate Account
+                    </p>
+                    <p className="font-inter text-body-md text-text-muted">
+                      Temporarily disable your incubator profile.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setDeactivateOpen(true)}
+                    className="text-error font-poppins font-bold text-small hover:underline cursor-pointer"
+                  >
                     Deactivate
-                  </span>
-                </ComingSoon>
-              </div>
+                  </button>
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -513,6 +639,36 @@ export default function SettingsPage() {
           </button>
         </div>
       </footer>
+
+      <Modal isOpen={deactivateOpen} onClose={() => { setDeactivateOpen(false); setDeactivateConfirmText(''); }} title="Deactivate account">
+        <p className="font-inter text-small text-text-body mb-4">
+          This temporarily disables your incubator profile and hides it from applicants. Type <strong>DEACTIVATE</strong> to confirm.
+        </p>
+        <input
+          type="text"
+          value={deactivateConfirmText}
+          onChange={(e) => setDeactivateConfirmText(e.target.value)}
+          placeholder="DEACTIVATE"
+          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body-md py-2.5 px-3 mb-4 focus:outline-none focus:ring-1 focus:ring-error"
+        />
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => { setDeactivateOpen(false); setDeactivateConfirmText(''); }}
+            className="border border-border-subtle text-text-heading px-5 py-2 rounded-md hover:bg-canvas-bg transition-colors font-poppins font-semibold text-small"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleDeactivateConfirm}
+            disabled={deactivateConfirmText !== 'DEACTIVATE'}
+            className="bg-error text-white px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Deactivate Account
+          </button>
+        </div>
+      </Modal>
     </IncubatorShell>
   );
 }

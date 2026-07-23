@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Filter,
   Download,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
-import ComingSoon from '@/components/ui/ComingSoon';
+import { downloadCsv } from '@/utils/csv';
 
 const INITIAL_APPLICATIONS = [
   {
@@ -136,19 +135,21 @@ export default function ApplicationsQueue() {
           </p>
         </div>
         <div className="flex gap-2">
-          <ComingSoon label="Filter" position="bottom" inline>
-            <span className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg hover:bg-canvas-bg text-text-heading font-poppins font-semibold text-small cursor-pointer transition-colors">
-              <Filter size={14} strokeWidth={2} />
-              Filter
-            </span>
-          </ComingSoon>
-
-          <ComingSoon label="Export" position="bottom" inline>
-            <span className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg hover:bg-canvas-bg text-text-heading font-poppins font-semibold text-small cursor-pointer transition-colors">
-              <Download size={14} strokeWidth={2} />
-              Export
-            </span>
-          </ComingSoon>
+          <button
+            type="button"
+            onClick={() => downloadCsv('applications', [
+              { key: 'name', label: 'Startup' },
+              { key: 'founder', label: 'Founder' },
+              { key: 'chapter', label: 'Chapter' },
+              { key: 'stage', label: 'Stage' },
+              { key: 'industry', label: 'Industry' },
+              { key: 'status', label: 'Status' },
+            ], visibleApplications)}
+            className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg hover:bg-canvas-bg text-text-heading font-poppins font-semibold text-small cursor-pointer transition-colors"
+          >
+            <Download size={14} strokeWidth={2} />
+            Export
+          </button>
         </div>
       </section>
 
@@ -281,30 +282,20 @@ export default function ApplicationsQueue() {
         {/* Table Footer / Pagination */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle bg-canvas-bg/20">
           <p className="text-small text-text-muted font-inter">
-            Showing {visibleApplications.length} of 142 applications
+            Showing {visibleApplications.length} of {INITIAL_APPLICATIONS.length} applications
           </p>
           <div className="flex items-center gap-2">
-            <ComingSoon
-              label="Previous Page"
-              position="top"
-              inline
-              className="p-1 rounded border border-border-subtle hover:bg-canvas-bg text-text-muted cursor-not-allowed"
-            >
+            <button type="button" disabled className="p-1 rounded border border-border-subtle text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
               <ChevronLeft size={16} strokeWidth={2} />
-            </ComingSoon>
+            </button>
 
             <span className="font-poppins font-semibold text-small px-2 text-text-heading">
               1
             </span>
 
-            <ComingSoon
-              label="Next Page"
-              position="top"
-              inline
-              className="p-1 rounded border border-border-subtle hover:bg-canvas-bg text-text-muted cursor-not-allowed"
-            >
+            <button type="button" disabled className="p-1 rounded border border-border-subtle text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
               <ChevronRight size={16} strokeWidth={2} />
-            </ComingSoon>
+            </button>
           </div>
         </div>
       </div>
