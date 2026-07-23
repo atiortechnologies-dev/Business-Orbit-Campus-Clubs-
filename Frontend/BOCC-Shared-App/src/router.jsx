@@ -26,6 +26,11 @@ import ValidationReportSubmission from '@/pages/journey/validation/ReportSubmiss
 import ValidationSubmissionConfirmation from '@/pages/journey/validation/SubmissionConfirmation';
 import ValidationReviewMeeting from '@/pages/journey/validation/ReviewMeeting';
 import ValidationReviewResult from '@/pages/journey/validation/ReviewResult';
+import MvpOverview from '@/pages/journey/mvp/MvpOverview';
+import ChooseProductType from '@/pages/journey/mvp/ChooseProductType';
+import MvpSubmission from '@/pages/journey/mvp/MvpSubmission';
+import MvpSubmissionSuccess from '@/pages/journey/mvp/SubmissionSuccess';
+import IncubationProofSubmission from '@/pages/journey/mvp/IncubationProofSubmission';
 import AdminDashboard from '@/pages/admin/Admin';
 import VerificationQueue from '@/pages/admin/VerificationQueue';
 import VerificationDetail from '@/pages/admin/VerificationDetail';
@@ -70,6 +75,11 @@ export const router = createBrowserRouter([
   { path: '/build-startup/journey/validation/confirmation', element: <ValidationSubmissionConfirmation /> },
   { path: '/build-startup/journey/validation/review-meeting', element: <ValidationReviewMeeting /> },
   { path: '/build-startup/journey/validation/review-result', element: <ValidationReviewResult /> },
+  { path: '/build-startup/journey/mvp', element: <MvpOverview /> },
+  { path: '/build-startup/journey/mvp/choose-product-type', element: <ChooseProductType /> },
+  { path: '/build-startup/journey/mvp/submit', element: <MvpSubmission /> },
+  { path: '/build-startup/journey/mvp/success', element: <MvpSubmissionSuccess /> },
+  { path: '/build-startup/journey/mvp/incubation-proof', element: <IncubationProofSubmission /> },
   { path: '/admin', element: <AdminDashboard /> },
   { path: '/admin/verification', element: <VerificationQueue /> },
   { path: '/admin/verification/detail', element: <VerificationDetail /> },
