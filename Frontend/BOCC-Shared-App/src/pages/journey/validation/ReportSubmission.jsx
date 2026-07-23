@@ -60,7 +60,7 @@ export default function ReportSubmissionPage() {
               <h3 className="font-poppins font-semibold text-body text-text-heading">Validation Progress</h3>
               <span className="bg-success/10 text-success font-poppins font-semibold text-caption px-3 py-1 rounded-full">100% Complete</span>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {PROGRESS.map(({ label, value }) => (
                 <div key={label} className="bg-canvas-bg border border-border-subtle rounded-lg p-4">
                   <p className="font-inter text-caption text-text-muted">{label}</p>
