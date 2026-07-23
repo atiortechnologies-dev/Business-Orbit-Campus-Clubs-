@@ -10,6 +10,8 @@ const MentorRequest = require("../models/MentorRequest");
 const MentorAssignment = require("../models/MentorAssignment");
 const ChatRoom = require("../models/ChatRoom");
 const StudentProfile = require("../models/StudentProfile");
+const Notification = require("../models/Notification");
+const ActivityLog = require("../models/ActivityLog");
 const {
   REQUEST_STATUS,
   ASSIGNMENT_STATUS,
@@ -61,7 +63,7 @@ exports.getAllPendingRequests = asyncHandler(async (req, res) => {
   ];
 
   // Apply related filters
-  if (stage) pipeline.push({ $match: { "startup.stage": stage } });
+  if (stage) pipeline.push({ $match: { "startup.current_stage": !isNaN(stage) ? Number(stage) : stage } });
   if (category) pipeline.push({ $match: { "startup.category": category } });
   if (college) pipeline.push({ $match: { "studentProfile.college": college } });
 
@@ -77,8 +79,8 @@ exports.getAllPendingRequests = asyncHandler(async (req, res) => {
       startupId: "$startup_id",
       studentName: "$student.full_name",
       college: "$studentProfile.college",
-      startupName: "$startup.name",
-      startupStage: "$startup.stage",
+      startupName: "$startup.startup_name",
+      startupStage: "$startup.current_stage",
       startupCategory: "$startup.category",
       requestSummary: "$request_summary",
       submittedDate: "$created_at",
@@ -126,7 +128,7 @@ exports.viewStudentProfile = asyncHandler(async (req, res) => {
     },
     startupInformation: startup
       ? {
-          name: startup.name,
+          name: startup.startup_name,
           category: startup.category,
           idea: startup.idea,
         }
@@ -206,7 +208,14 @@ exports.acceptRequest = asyncHandler(async (req, res, next) => {
       );
     }
 
-    // TODO: Notify student (could use a notification service here)
+    // Notify student
+    const notification = new Notification({
+      recipient_id: request.student_id,
+      title: "Mentorship Request Accepted",
+      message: "Your mentorship request has been accepted by the mentor.",
+      type: "success",
+    });
+    await notification.save({ session });
 
     await session.commitTransaction();
     res
@@ -249,7 +258,22 @@ exports.declineRequest = asyncHandler(async (req, res) => {
   request.status = REQUEST_STATUS.DECLINED;
   await request.save();
 
-  // TODO: Store decline action for audit purposes and Notify student
+  // Store decline action for audit purposes and Notify student
+  await ActivityLog.create({
+    user_id: mentorId,
+    action: "DECLINE_MENTOR_REQUEST",
+    entity_type: "MentorRequest",
+    entity_id: requestId,
+    description: "Mentor declined the mentorship request.",
+  });
+
+  const notification = new Notification({
+    recipient_id: request.student_id,
+    title: "Mentorship Request Declined",
+    message: "Your mentorship request was declined.",
+    type: "warning",
+  });
+  await notification.save();
 
   res
     .status(200)

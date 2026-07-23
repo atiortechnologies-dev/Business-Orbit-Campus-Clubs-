@@ -24,6 +24,16 @@ const mockResponse = () => {
 };
 
 describe("Mentor Chat Controller", () => {
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+  afterEach(async () => {
+    await User.deleteMany({});
+    await Startup.deleteMany({});
+    await ChatRoom.deleteMany({});
+    await Message.deleteMany({});
+    await MentorAssignment.deleteMany({});
+  });
   let mentorId, studentId, startupId, chatRoomId;
 
   beforeEach(async () => {
@@ -34,14 +44,15 @@ describe("Mentor Chat Controller", () => {
     await User.create({
       _id: studentId,
       full_name: "Test Student",
-      email: "s@s.com",
+      email: `${studentId}@test.com`,
       password_hash: "hash",
       role: "student",
     });
     await Startup.create({
       _id: startupId,
-      name: "Test Startup",
-      stage: "Idea",
+      student_id: studentId,
+      startup_name: "Test Startup",
+      current_stage: 1,
       category: "AI",
       idea: "Test Idea",
     });

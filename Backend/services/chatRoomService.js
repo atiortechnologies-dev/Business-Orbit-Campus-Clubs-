@@ -91,7 +91,7 @@ exports.getHydratedChatRooms = async (mentorId, limit = null) => {
       studentId: "$student_id",
       startupId: "$startup_id",
       studentName: "$student.full_name",
-      startupName: "$startup.name",
+      startupName: "$startup.startup_name",
       lastMessage: "$lastMessage.message",
       lastMessageTime: "$lastMessage.created_at",
       onlineStatus: "offline",

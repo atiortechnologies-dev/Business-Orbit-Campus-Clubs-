@@ -80,7 +80,7 @@ exports.searchChats = asyncHandler(async (req, res) => {
     ],
   })
     .populate("student_id", "full_name")
-    .populate("startup_id", "name")
+    .populate("startup_id", "startup_name")
     .lean();
 
   const formattedRooms = chatRooms.map((room) => ({
@@ -88,7 +88,7 @@ exports.searchChats = asyncHandler(async (req, res) => {
     studentId: room.student_id?._id,
     startupId: room.startup_id?._id,
     studentName: room.student_id?.full_name,
-    startupName: room.startup_id?.name,
+    startupName: room.startup_id?.startup_name,
   }));
 
   res.status(200).json(formattedRooms);

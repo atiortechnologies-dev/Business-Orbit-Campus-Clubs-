@@ -8,11 +8,13 @@ const express = require("express");
 const router = express.Router();
 
 const { validateRequest } = require("../middlewares/validateRequest");
-const upload = require("../utils/uploadService");
+const { upload, uploadImage } = require("../utils/uploadService");
 const {
   scheduleMeetingSchema,
   sendMessageSchema,
+  addMeetingNotesSchema,
   searchChatsQuerySchema,
+  updateMentorProfileSchema,
 } = require("../middlewares/validators/mentorValidators");
 
 const {
@@ -21,6 +23,12 @@ const {
   getUpcomingMeetings,
   getRecentConversations,
 } = require("../controllers/mentorDashboard.controller");
+
+const {
+  getMentorProfile,
+  updateMentorProfile,
+  uploadProfilePhoto,
+} = require("../controllers/mentorProfile.controller");
 
 const {
   getAllPendingRequests,
@@ -41,6 +49,9 @@ const {
 const {
   scheduleMeeting,
   getMeetings,
+  getMeetingById,
+  addMeetingNotes,
+  completeMeeting,
 } = require("../controllers/mentorMeeting.controller");
 
 const { getStartupDetails } = require("../controllers/startup.controller");
@@ -51,13 +62,24 @@ router.get("/requests/recent", getRecentRequests);
 router.get("/meetings/upcoming", getUpcomingMeetings);
 router.get("/chats/recent", getRecentConversations);
 
+// Profile
+router.get("/profile", getMentorProfile);
+router.put(
+  "/profile",
+  validateRequest(updateMentorProfileSchema, "body"),
+  updateMentorProfile,
+);
+router.post("/profile/photo", uploadImage.single("file"), uploadProfilePhoto);
+
 // Requests & Profiles
+// Note (Extra): MentorAssignment and MentorRequest workflows were added to securely track the lifecycle of mentorships before meetings occur.
 router.get("/requests", getAllPendingRequests);
 router.get("/student/:studentId/profile", viewStudentProfile);
 router.patch("/requests/:requestId/accept", acceptRequest);
 router.patch("/requests/:requestId/decline", declineRequest);
 
 // Chat
+// Note (Deviation): Generic /api/messages routes were moved to /api/mentor/chats for tighter role-based access control.
 router.get("/chats", getChatRooms);
 router.get(
   "/chats/search",
@@ -84,6 +106,13 @@ router.post(
   scheduleMeeting,
 );
 router.get("/meetings", getMeetings);
+router.get("/meetings/:id", getMeetingById);
+router.post(
+  "/meetings/:id/notes",
+  validateRequest(addMeetingNotesSchema, "body"),
+  addMeetingNotes,
+);
+router.put("/meetings/:id/complete", completeMeeting);
 
 // Startups
 router.get("/startups/:startupId", getStartupDetails);

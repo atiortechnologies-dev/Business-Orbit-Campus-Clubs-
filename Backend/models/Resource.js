@@ -15,7 +15,7 @@ const ResourceSchema = mongoose.Schema(
     },
     description: {
       type: String,
-      trime: true,
+      trim: true,
       default: "",
     },
     file_url: {

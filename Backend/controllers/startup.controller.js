@@ -39,11 +39,11 @@ exports.getStartupDetails = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     id: startup._id,
-    name: startup.name,
-    stage: startup.stage,
+    name: startup.startup_name,
+    stage: startup.current_stage,
     category: startup.category,
     idea: startup.idea,
-    progress: startup.progress,
+    progress: startup.progress_percentage,
     pitchDeckUrl: startup.pitch_deck, // URL to the uploaded pitch deck asset
     mvpDetails: startup.mvp_details,
     financials: startup.financials,
