@@ -50,9 +50,9 @@ const verifyToken = (token) => {
     });
   } catch (error) {
     if (error.name === "TokenExpiredError") {
-      throw new Error("Token has expired");
+      throw new Error("Token has expired", { cause: error });
     } else if (error.name === "JsonWebTokenError") {
-      throw new Error("Invalid token");
+      throw new Error("Invalid token", { cause: error });
     }
     throw error;
   }
@@ -65,9 +65,9 @@ const verifyRefreshToken = (token) => {
     });
   } catch (error) {
     if (error.name === "TokenExpiredError") {
-      throw new Error("Refresh token has expired");
+      throw new Error("Refresh token has expired", { cause: error });
     } else if (error.name === "JsonWebTokenError") {
-      throw new Error("Invalid refresh token");
+      throw new Error("Invalid refresh token", { cause: error });
     }
     throw error;
   }

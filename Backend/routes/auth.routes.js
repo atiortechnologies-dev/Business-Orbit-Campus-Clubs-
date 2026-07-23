@@ -1,14 +1,3 @@
-/**
- * @file auth.routes.js
- * @description Maps authentication-related HTTP endpoints to their respective controller functions.
- * @architecture Provides a declarative mapping of the API surface for auth, delegating all actual logic to the auth controller.
- */
-
-/**
- * Goal: Defines authentication and user management endpoints.
- * Architecture relevance: Acts as the routing layer for auth requests (register, login, etc.).
- * Maps HTTP requests to the corresponding controller functions and applies validation middlewares.
- */
 const router = require("express").Router();
 const {
   register,
@@ -18,8 +7,11 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  refreshAccessToken,
+  getMe,
 } = require("../controllers/auth.controller");
 const { validateRequest } = require("../middlewares/validateRequest");
+const { protect } = require("../middlewares/authMiddleware");
 const {
   registerSchema,
   checkEmailSchema,
@@ -28,46 +20,50 @@ const {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
+  refreshTokenSchema,
 } = require("../utils/validators");
 
-// @route   POST /api/auth/register
-// @desc    Register a new user
+// POST /api/auth/register
 router.post("/register", validateRequest(registerSchema, "body"), register);
 
-// @route   GET /api/auth/check-email
-// @desc    Check if email is available
+// GET /api/auth/check-email?email=...
 router.get(
   "/check-email",
   validateRequest(checkEmailSchema, "query"),
   checkEmail,
 );
 
-// @route   POST /api/auth/send-otp
-// @desc    Send verification OTP
+// POST /api/auth/send-otp
 router.post("/send-otp", validateRequest(sendOtpSchema, "body"), sendOtp);
 
-// @route   POST /api/auth/verify-otp
-// @desc    Verify OTP
+// POST /api/auth/verify-otp
 router.post("/verify-otp", validateRequest(verifyOtpSchema, "body"), verifyOtp);
 
-// @route   POST /api/auth/login
-// @desc    Authenticate user and get token
+// POST /api/auth/login
 router.post("/login", validateRequest(loginSchema, "body"), login);
 
-// @route   POST /api/auth/forgot-password
-// @desc    Request password reset
+// POST /api/auth/forgot-password
 router.post(
   "/forgot-password",
   validateRequest(forgotPasswordSchema, "body"),
   forgotPassword,
 );
 
-// @route   POST /api/auth/reset-password
-// @desc    Reset password
+// POST /api/auth/reset-password
 router.post(
   "/reset-password",
   validateRequest(resetPasswordSchema, "body"),
   resetPassword,
 );
+
+// POST /api/auth/refresh-token
+router.post(
+  "/refresh-token",
+  validateRequest(refreshTokenSchema, "body"),
+  refreshAccessToken,
+);
+
+// GET /api/auth/me
+router.get("/me", protect, getMe);
 
 module.exports = router;

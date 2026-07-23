@@ -1,20 +1,8 @@
-/**
- * @file auth.controller.js
- * @description Handles business logic for user authentication, including registration, login, and password recovery.
- * @architecture Acts as the intermediary between authentication routes and user/token models, keeping the routing layer stateless.
- */
-
-/**
- * Goal: Handles the business logic for user authentication.
- * Architecture relevance: Receives requests from auth routes, processes data (login, registration,
- * role-based profile creation, email verification), and interacts with the models and utility services.
- */
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const EmailVerification = require("../models/EmailVerification");
 const PasswordReset = require("../models/PasswordReset");
 
-// Import Role Models
 const StudentProfile = require("../models/StudentProfile");
 const MentorProfile = require("../models/MentorProfile");
 const InvestorProfile = require("../models/InvestorProfile");
@@ -23,9 +11,14 @@ const CompanyProfile = require("../models/CompanyProfile");
 
 const { hashPassword, comparePassword } = require("../utils/password");
 const { generateOTP, sendOTPEmail } = require("../utils/email");
-const { generateToken } = require("../utils/token");
+const {
+  generateToken,
+  verifyRefreshToken,
+  generateRefreshToken,
+} = require("../utils/token");
 const roleConfig = require("../utils/roleConfig");
 const asyncHandler = require("../middlewares/asyncHandler");
+const { checkEmailSchema } = require("../utils/validators");
 
 /**
  * @desc    Register a new user
@@ -33,7 +26,6 @@ const asyncHandler = require("../middlewares/asyncHandler");
  * @access  Public
  */
 const register = asyncHandler(async (req, res) => {
-  // Use req.validatedData provided by Zod middleware
   const data = req.validatedData;
   const { full_name, email, phone, password, role, ...profileData } = data;
 
@@ -44,7 +36,6 @@ const register = asyncHandler(async (req, res) => {
       .json({ success: false, message: "Invalid role configuration" });
   }
 
-  // 1. Check if email exists
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     return res
@@ -52,10 +43,18 @@ const register = asyncHandler(async (req, res) => {
       .json({ success: false, message: "Email already exists" });
   }
 
-  // 2. Hash password (using Argon2 via hash.js)
+  if (phone) {
+    const phoneTaken = await User.exists({ phone });
+    if (phoneTaken) {
+      return res.status(409).json({
+        success: false,
+        message: "Phone number is already registered",
+      });
+    }
+  }
+
   const password_hash = await hashPassword(password);
 
-  // 3. Create User Document and Profile atomically
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -101,10 +100,9 @@ const register = asyncHandler(async (req, res) => {
   } catch (transactionError) {
     await session.abortTransaction();
     session.endSession();
-    throw transactionError; // Will be caught by outer try-catch and forwarded to next(error)
+    throw transactionError;
   }
 
-  // 5. Generate and send verification OTP
   const otp = generateOTP();
   const verification = new EmailVerification({
     userId: user._id,
@@ -119,30 +117,44 @@ const register = asyncHandler(async (req, res) => {
     console.error("Failed to send verification email:", error);
   }
 
-  // 6. Respond with instructions
   return res.status(201).json({
     success: true,
     message: "Registration successful. Please verify your email.",
     data: {
       userId: user._id,
       role: user.role,
-      redirect_to: config ? config.redirectTo : "/email-verification",
+      account_status: user.account_status,
+      email_verified: user.email_verified,
+      redirect_to: "/email-verification",
     },
   });
 });
 
 /**
  * @desc    Check if email is available
- * @route   GET /api/auth/check-email
+ * @route   GET /api/auth/check-email?email=someone@example.com
  * @access  Public
  */
 const checkEmail = asyncHandler(async (req, res) => {
-  const { email } = req.validatedData;
-  const user = await User.findOne({ email });
+  const result = checkEmailSchema.safeParse(req.query);
+  if (!result.success) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid email",
+      errors: result.error.issues.map((i) => ({
+        field: i.path.join("."),
+        message: i.message,
+      })),
+    });
+  }
+
+  const { email } = result.data;
+  const exists = await User.exists({ email });
+
   return res.status(200).json({
     success: true,
-    available: !user,
-    message: user ? "Email is already in use" : "Email is available",
+    message: exists ? "Email is already in use" : "Email is available",
+    data: { available: !exists },
   });
 });
 
@@ -187,6 +199,73 @@ const sendOtp = asyncHandler(async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "If an account exists, an OTP has been sent.",
+    otp: otp, // temporary
+  });
+});
+
+/**
+ * @desc    Verify OTP and transition account status
+ * @route   POST /api/auth/verify-otp
+ * @access  Public
+ */
+const verifyOtp = asyncHandler(async (req, res) => {
+  const { email, otp } = req.validatedData;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid email or OTP" });
+  }
+
+  if (user.email_verified) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email is already verified" });
+  }
+
+  // Find valid OTP
+  const verification = await EmailVerification.findOne({
+    userId: user._id,
+    otp,
+    expiresAt: { $gt: Date.now() },
+  });
+
+  if (!verification) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid or expired OTP" });
+  }
+
+  // Update user verification and status
+  user.email_verified = true;
+  user.account_status = user.role === "student" ? "active" : "pending_approval";
+
+  await user.save();
+
+  // Cleanup OTPs
+  await EmailVerification.deleteMany({ userId: user._id });
+
+  // Generate authentication token
+  const accessToken = generateToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  return res.status(200).json({
+    success: true,
+    message: "Email verified successfully",
+    data: {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        account_status: user.account_status,
+        email_verified: user.email_verified,
+        profile_status: user.profile_status,
+      },
+      redirect_to: `/${user.role}-dashboard`,
+    },
   });
 });
 
@@ -233,12 +312,9 @@ const login = asyncHandler(async (req, res) => {
       .json({ success: false, message: "Account has been rejected" });
   }
 
-  // 5. Generate authentication token
-  const token = generateToken({
-    userId: user._id,
-    role: user.role,
-    email: user.email,
-  });
+  // Generate tokens
+  const accessToken = generateToken(user);
+  const refreshToken = generateRefreshToken(user);
 
   // 6. Redirect to appropriate dashboard (using roleConfig if available)
   const config = roleConfig[user.role];
@@ -248,9 +324,17 @@ const login = asyncHandler(async (req, res) => {
     success: true,
     message: "Login Successful",
     data: {
-      userId: user._id,
-      role: user.role,
-      token,
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        email: user.email,
+        full_name: user.full_name,
+        role: user.role,
+        account_status: user.account_status,
+        email_verified: user.email_verified,
+        profile_status: user.profile_status,
+      },
       redirect_to,
     },
   });
@@ -356,63 +440,59 @@ const resetPassword = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Verify OTP and transition account status
- * @route   POST /api/auth/verify-otp
- * @access  Public
+ * @desc    Issue a new access token using a valid refresh token
+ * @route   POST /api/auth/refresh-token
+ * @access  Public (requires a valid refresh token in the body)
  */
-const verifyOtp = asyncHandler(async (req, res) => {
-  const { email, otp } = req.validatedData;
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const { refreshToken } = req.body;
 
-  const user = await User.findOne({ email });
+  if (!refreshToken) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Refresh token is required" });
+  }
+
+  const decoded = verifyRefreshToken(refreshToken);
+  const user = await User.findById(decoded.id);
+
   if (!user) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid email or OTP" });
+    return res.status(401).json({ success: false, message: "User not found" });
   }
 
-  if (user.email_verified) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Email is already verified" });
-  }
-
-  // Find valid OTP
-  const verification = await EmailVerification.findOne({
-    userId: user._id,
-    otp,
-    expiresAt: { $gt: Date.now() },
-  });
-
-  if (!verification) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid or expired OTP" });
-  }
-
-  // Update user verification and status
-  user.email_verified = true;
-  user.account_status = user.role === "student" ? "active" : "pending_approval";
-
-  await user.save();
-
-  // Cleanup OTPs
-  await EmailVerification.deleteMany({ userId: user._id });
-
-  // Generate authentication token
-  const token = generateToken({
-    userId: user._id,
-    role: user.role,
-    email: user.email,
-  });
+  const newAccessToken = generateToken(user);
 
   return res.status(200).json({
     success: true,
-    message: "Email verified successfully",
+    message: "Token refreshed successfully",
     data: {
-      userId: user._id,
+      accessToken: newAccessToken,
+    },
+  });
+});
+
+/**
+ * @desc    Get the currently authenticated user's profile summary
+ * @route   GET /api/auth/me
+ * @access  Private
+ */
+const getMe = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found" });
+  }
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      id: user._id,
+      full_name: user.full_name,
+      email: user.email,
+      phone: user.phone,
       role: user.role,
-      token,
-      redirect_to: `/${user.role}-dashboard`,
+      account_status: user.account_status,
+      email_verified: user.email_verified,
+      profile_status: user.profile_status,
     },
   });
 });
@@ -425,4 +505,6 @@ module.exports = {
   login,
   forgotPassword,
   resetPassword,
+  refreshAccessToken,
+  getMe,
 };

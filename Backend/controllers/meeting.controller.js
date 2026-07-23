@@ -2,7 +2,6 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const Meeting = require("../models/Meeting");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
-//* GET: /api/meetings
 const listMeetings = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

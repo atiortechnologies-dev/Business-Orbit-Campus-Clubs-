@@ -1,12 +1,15 @@
 const express = require("express");
 const router = express.Router();
 
-const resourceController = require("../controllers/resourceController");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
+const {
+  listResources,
+  getResourceById,
+} = require("../controllers/resource.controller");
 
 router.use(protect, requireRole("student"));
 
-router.get("/", resourceController.listResources);
-router.get("/:id", resourceController.getResourceById);
+router.get("/", listResources);
+router.get("/:id", getResourceById);
 
 module.exports = router;

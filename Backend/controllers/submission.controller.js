@@ -1,19 +1,12 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const StartupStage = require("../models/StartupStage");
 const StageSubmission = require("../models/StageSubmission");
-const {
-  getOrCreateStartup,
-  recalcProgress,
-} = require("../utils/startupJourney");
-
-const MAX_TITLE_LENGTH = 150;
-const MAX_DESCRIPTION_LENGTH = 5000;
+const { getOrCreateStartup } = require("../utils/startupJourney");
 
 const getActiveStage = async (startupId) => {
   return StartupStage.findOne({ startup_id: startupId, status: "active" });
 };
 
-//*  POST: /api/startup/submit
 const submitIdea = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { title, description } = req.validatedData;
@@ -66,6 +59,7 @@ const submitIdea = asyncHandler(async (req, res) => {
   submission.status = "pending_review";
   submission.submitted_at = new Date();
   // TODO: assign_reviewer_id once an admin/reviewer role exists on User.
+
   await submission.save();
 
   activeStage.status = "submitted";
@@ -84,7 +78,6 @@ const submitIdea = asyncHandler(async (req, res) => {
   });
 });
 
-//* PUT: /api/startup/save-draft
 const saveDraft = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { title, description } = req.validatedData;
@@ -142,7 +135,6 @@ const saveDraft = asyncHandler(async (req, res) => {
   });
 });
 
-//* GET: /api/startup/submission-status
 const getSubmissionStatus = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

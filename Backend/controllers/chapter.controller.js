@@ -3,7 +3,6 @@ const Chapter = require("../models/Chapter");
 const ChapterChangeRequest = require("../models/ChapterChangeRequest");
 const StudentProfile = require("../models/StudentProfile");
 
-//* GET:- /api/student/chapter
 const getMyChapter = asyncHandler(async (req, res) => {
   const profile = await StudentProfile.findOne({
     user_id: req.user.id,
@@ -39,7 +38,6 @@ const getMyChapter = asyncHandler(async (req, res) => {
   });
 });
 
-//* GET:- /api/chapter/:chapterId/stats
 const getChapterStats = asyncHandler(async (req, res) => {
   const { chapterId } = req.params;
 
@@ -61,7 +59,6 @@ const getChapterStats = asyncHandler(async (req, res) => {
   });
 });
 
-//* POST:- /api/student/request-chapter-change
 const requestChapterChange = asyncHandler(async (req, res) => {
   const { reason, requested_chapter_id } = req.body;
 

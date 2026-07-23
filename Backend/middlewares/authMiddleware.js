@@ -36,6 +36,7 @@ const protect = asyncHandler(async (req, res, next) => {
     id: user._id.toString(),
     role: user.role,
     email: user.email,
+    full_name: user.full_name,
     account_status: user.account_status,
     email_verified: user.email_verified,
   };

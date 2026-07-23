@@ -1,27 +1,21 @@
-/**
- * @file server.js
- * @description Initializes the Express application, sets up global middlewares, establishes the database connection, and mounts the primary route handlers.
- * @architecture Serves as the main entry point for the Node.js application. It glues together configuration, routing, and middlewares into a single server instance.
- */
-
 require("dotenv").config();
 const express = require("express");
 const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes"); // mine one : authRoute
-const onboardingRoutes = require("./routes/onboardingRoutes");
-const dashboardRoutes = require("./routes/dashboardRoutes");
-const startupRoutes = require("./routes/startupRoutes");
-const resourceRoutes = require("./routes/resourceRoutes");
-const submissionRoutes = require("./routes/submissionRoutes");
-const meetingRoutes = require("./routes/meetingRoutes");
-const reviewRoutes = require("./routes/reviewRoutes");
+const onboardingRoutes = require("./routes/onboarding.routes");
+const dashboardRoutes = require("./routes/dashboard.routes");
+const startupRoutes = require("./routes/startup.routes");
+const resourceRoutes = require("./routes/resource.routes");
+const submissionRoutes = require("./routes/submission.routes");
+const meetingRoutes = require("./routes/meeting.routes");
+const reviewRoutes = require("./routes/review.routes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
-const { createProfileRouter } = require("./routes/profileRoutes");
+const { createProfileRouter } = require("./routes/profile.routes");
 const {
   studentChapterRouter,
   chapterStatsRouter,
-} = require("./routes/chapterRoutes");
+} = require("./routes/chapter.routes");
 const http = require("http");
 const { configureSocket } = require("./utils/socket");
 

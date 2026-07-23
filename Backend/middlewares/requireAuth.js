@@ -33,7 +33,7 @@ const requireAuth = asyncHandler(async (req, res, next) => {
     const decoded = verifyToken(token);
 
     // Fetch the user from the database
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
         success: false,

@@ -1,24 +1,27 @@
 const express = require("express");
 
-const chapterController = require("../controllers/chapterController");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
+const {
+  getMyChapter,
+  requestChapterChange,
+  getChapterStats,
+} = require("../controllers/chapter.controller");
 
-//* Mounted at /api/student ( Student can only access this router )
 const studentChapterRouter = express.Router();
-studentChapterRouter.use(protect, requireRole("student"));
-studentChapterRouter.get("/chapter", chapterController.getMyChapter);
-studentChapterRouter.post(
-  "/request-chapter-change",
-  chapterController.requestChapterChange,
-);
 
-//* Mounted at /api/chapter
+studentChapterRouter.use(protect, requireRole("student"));
+
+// api/student ( Student can only access this router )
+studentChapterRouter.get("/chapter", getMyChapter);
+studentChapterRouter.post("/request-chapter-change", requestChapterChange);
+
+// api/chapter
 const chapterStatsRouter = express.Router();
 chapterStatsRouter.get(
   "/:chapterId/stats",
   protect,
   requireRole("student"),
-  chapterController.getChapterStats,
+  getChapterStats,
 );
 
 module.exports = { studentChapterRouter, chapterStatsRouter };
