@@ -294,6 +294,37 @@ lines, don't take "theirs" or "mine."
   completely blank with an empty `#root` and no console error, check the
   actual terminal running `npm run dev` for an "Unhandled error" line
   before assuming it's a logic bug.
+- **Not every `ComingSoon` deserves to stay one — check whether it's
+  actually self-contained before reaching for the stub.** The rule applied
+  across the whole app in the pass that added this note: a `ComingSoon`
+  stays if it needs a backend, a real uploaded file, or a screen that
+  doesn't exist yet; it gets built if it's a client-side interaction
+  operating on data already on the page (a filter, a local add/remove, a
+  modal showing text, a client-generated file). Three small utilities
+  exist specifically so you don't have to stub these:
+  - **CSV export** — `downloadCsv(filename, columns, rows)` in
+    `src/utils/csv.js`. Serializes whatever's in local state to a real
+    `.csv` via `Blob` + `URL.createObjectURL`. No backend needed for
+    "export what's on screen right now."
+  - **Calendar events** — build a minimal `.ics` string by hand and
+    download it the same `Blob`/`URL.createObjectURL` way (see
+    `downloadIcs` in `pages/Notifications.jsx` or
+    `downloadReviewMeetingIcs` in `journey/mvp/SubmissionSuccess.jsx`).
+    Don't reach for a calendar-API integration for a single "add this one
+    event" button.
+  - **File attachments the user just picked** — if a user selects a file
+    in *this* session (a chat attachment, a photo, a logo), you already
+    have its real bytes. `URL.createObjectURL(file)` gives a real,
+    downloadable/viewable blob URL — render it as an actual `<a
+    download>`/`<img>`, don't wrap it in `ComingSoon`. That's different
+    from a *pre-seeded mock* attachment (a filename/size with no
+    underlying `File` object) — those stay `ComingSoon` since the bytes
+    genuinely never existed. See `pages/incubator/Messages.jsx`'s
+    attachment rendering for both cases side by side.
+  - Also watch for **dishonest counts riding along with a stub**
+    ("Showing 1-4 of 142", "12,482 logs") — when you unstub the real rows,
+    fix the count to match what's actually loaded rather than leaving an
+    old placeholder total next to real data.
 
 ## 7. Before calling a screen "done"
 

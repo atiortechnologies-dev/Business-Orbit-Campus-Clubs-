@@ -181,12 +181,32 @@ export default function DashboardPage() {
               </span>
             </Link>
 
-            {/* ComingSoon items */}
+            {/* Profile — real link, /settings already exists */}
+            <Link
+              to="/settings"
+              className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col items-center text-center space-y-4 hover:border-brand-black transition-colors cursor-pointer group active:scale-[0.98]"
+            >
+              <div className="w-12 h-12 placeholder-box rounded-lg group-hover:scale-105 transition-transform" />
+              <div className="space-y-1">
+                <h5 className="font-poppins font-medium text-card text-text-heading">
+                  Profile
+                </h5>
+                <p className="text-text-muted font-inter font-normal text-small">
+                  Manage your account.
+                </p>
+              </div>
+              <span className="mt-2 text-text-heading hover:underline flex items-center gap-1 font-poppins font-semibold text-small">
+                Edit <ArrowRight size={14} strokeWidth={2} />
+              </span>
+            </Link>
+
+            {/* ComingSoon items — these are entire directory/marketplace
+                features with no screens built yet, not just an unwired
+                link, so they stay stubbed until those exist. */}
             {[
               { title: 'Investors',      sub: 'Connect with funders.',  cta: 'Browse' },
               { title: 'Incubators',     sub: 'Supportive ecosystems.', cta: 'Explore' },
               { title: 'Freelancing',    sub: 'Monetize your skills.',  cta: 'Find Work' },
-              { title: 'Profile',        sub: 'Manage your account.',   cta: 'Edit' },
             ].map(({ title, sub, cta }) => (
               <ComingSoon key={title} label={title} position="top">
                 <div

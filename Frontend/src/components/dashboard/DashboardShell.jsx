@@ -109,16 +109,14 @@ export default function DashboardShell({ pageId = 'pg', children }) {
                   <Bell size={20} strokeWidth={2} />
                 </span>
               </Link>
-              <ComingSoon label="Settings" position="bottom" inline>
-                <span className="block p-2 rounded-full transition-colors hover:bg-canvas-bg">
-                  <Settings size={20} strokeWidth={2} />
-                </span>
-              </ComingSoon>
+              <Link to="/settings" className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted hover:text-text-heading">
+                <Settings size={20} strokeWidth={2} />
+              </Link>
               {/* Theme toggle */}
               <ThemeToggle size={20} className="block" />
-              <ComingSoon label="User" position="bottom" inline>
-                <div className="w-8 h-8 placeholder-box rounded-full" />
-              </ComingSoon>
+              <Link to="/settings" className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-[12px] select-none hover:opacity-80 transition-opacity">
+                AC
+              </Link>
             </div>
           </div>
         </header>
