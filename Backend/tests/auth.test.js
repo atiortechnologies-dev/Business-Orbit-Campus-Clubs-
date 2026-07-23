@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 const authRoutes = require("../routes/auth.routes");
 const { errorHandler } = require("../middlewares/errorHandler");
 
-const { hashPassword } = require("../utils/hash");
+const { hashPassword } = require("../utils/password");
 
 // Mock email to avoid actual emails being sent during tests
 jest.mock("../utils/email", () => ({
@@ -36,6 +36,7 @@ describe("Auth Routes Tests", () => {
   beforeEach(async () => {
     // Seed a test user for existing email tests
     const User = mongoose.model("User");
+    await User.deleteMany({});
     const password_hash = await hashPassword(baseUser.password);
     await new User({
       full_name: baseUser.full_name,
@@ -106,6 +107,9 @@ describe("Auth Routes Tests", () => {
           expertise: "Node.js",
           years_of_experience: 5,
         });
+      if (res.statusCode !== 201) {
+        console.log("Mentor Registration Failed:", res.body);
+      }
       expect(res.statusCode).toBe(201);
       expect(res.body.success).toBe(true);
     });
@@ -117,7 +121,7 @@ describe("Auth Routes Tests", () => {
         email: "john@example.com",
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.available).toBe(false);
+      expect(res.body.data.available).toBe(false);
     });
 
     it("should return available true for new email", async () => {
@@ -125,7 +129,7 @@ describe("Auth Routes Tests", () => {
         email: "newuser@example.com",
       });
       expect(res.statusCode).toBe(200);
-      expect(res.body.available).toBe(true);
+      expect(res.body.data.available).toBe(true);
     });
   });
 
@@ -160,7 +164,7 @@ describe("Auth Routes Tests", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.token).toBeDefined(); // Token is returned
+      expect(res.body.data.accessToken).toBeDefined(); // Token is returned
       expect(res.body.data.redirect_to).toBe("/student-dashboard"); // Redirect verified
 
       const updatedUser = await User.findById(user._id);
@@ -196,7 +200,7 @@ describe("Auth Routes Tests", () => {
       });
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.token).toBeDefined();
+      expect(res.body.data.accessToken).toBeDefined();
     });
   });
 

@@ -22,6 +22,7 @@ const {
   createFeaturedStartup,
   updateFeaturedStartup,
   deleteFeaturedStartup,
+  deleteUser,
 } = require("../controllers/admin.controller");
 
 const router = express.Router();
@@ -53,5 +54,8 @@ router.delete("/success-stories/:id", deleteSuccessStory);
 router.post("/featured-startups", createFeaturedStartup);
 router.put("/featured-startups/:id", updateFeaturedStartup);
 router.delete("/featured-startups/:id", deleteFeaturedStartup);
+
+// User Management Routes
+router.delete("/users/:id", deleteUser);
 
 module.exports = router;

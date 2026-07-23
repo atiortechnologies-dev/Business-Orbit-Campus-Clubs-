@@ -15,8 +15,8 @@ const MentorMeeting = require("../models/MentorMeeting");
 describe("Phase 1: Database Models Verification", () => {
   it("Startup model should have all required fields", () => {
     const startup = new Startup({
-      name: "TechNova",
-      stage: "Seed",
+      startup_name: "TechNova",
+      student_id: new mongoose.Types.ObjectId(),
       category: "EdTech",
       idea: "AI Learning Platform",
     });
@@ -25,12 +25,11 @@ describe("Phase 1: Database Models Verification", () => {
   });
 
   it("Startup model should fail validation if required fields are missing", () => {
-    const startup = new Startup({ name: "TechNova" });
+    const startup = new Startup({ category: "EdTech" });
     const err = startup.validateSync();
     expect(err).toBeDefined();
-    expect(err.errors.stage).toBeDefined();
-    expect(err.errors.category).toBeDefined();
-    expect(err.errors.idea).toBeDefined();
+    expect(err.errors.startup_name).toBeDefined();
+    expect(err.errors.student_id).toBeDefined();
   });
 
   it("MentorRequest model should have correct refs and validation", () => {

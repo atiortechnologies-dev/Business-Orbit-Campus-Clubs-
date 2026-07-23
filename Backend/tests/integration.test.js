@@ -233,7 +233,7 @@ describe("Integration Tests & Narrative Capture", () => {
       );
 
       expect(res.status).toBe(200);
-      expect(res.body.data.token).toBeDefined();
+      expect(res.body.data.accessToken).toBeDefined();
     });
 
     it("should fail login if account is pending_verification (Auth Failure)", async () => {

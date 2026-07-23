@@ -72,4 +72,16 @@ const userSchema = new mongoose.Schema(
 
 userSchema.index({ full_name: "text" });
 
+const cascadeService = require("../services/cascadeService");
+
+userSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    await cascadeService.deleteUserDependencies(doc._id);
+  }
+});
+
+userSchema.post("deleteOne", { document: true, query: false }, async function () {
+  await cascadeService.deleteUserDependencies(this._id);
+});
+
 module.exports = mongoose.model("User", userSchema);
