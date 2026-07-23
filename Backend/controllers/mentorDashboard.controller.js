@@ -69,7 +69,7 @@ exports.getRecentRequests = asyncHandler(async (req, res) => {
     .sort({ created_at: -1 })
     .limit(5)
     .populate("student_id", "full_name")
-    .populate("startup_id", "name stage")
+    .populate("startup_id", "startup_name current_stage")
     .lean();
 
   const formattedRequests = requests.map((req) => ({
@@ -77,8 +77,8 @@ exports.getRecentRequests = asyncHandler(async (req, res) => {
     studentId: req.student_id?._id,
     startupId: req.startup_id?._id,
     studentName: req.student_id?.full_name,
-    startupName: req.startup_id?.name,
-    startupStage: req.startup_id?.stage,
+    startupName: req.startup_id?.startup_name,
+    startupStage: req.startup_id?.current_stage,
     requestDate: req.created_at,
     requestStatus: req.status,
   }));

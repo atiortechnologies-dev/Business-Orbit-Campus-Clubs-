@@ -19,6 +19,9 @@ const mockResponse = () => {
 };
 
 describe("Mentor Meeting Controller", () => {
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
   let mentorId, studentId, startupId;
 
   beforeEach(() => {

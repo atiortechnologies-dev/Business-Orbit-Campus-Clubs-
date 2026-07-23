@@ -38,8 +38,49 @@ const searchChatsQuerySchema = z.object({
     .max(100, "Search query is too long"),
 });
 
+/**
+ * Validates the payload for adding meeting notes
+ */
+const addMeetingNotesSchema = z.object({
+  mentor_notes: z.string().trim().min(1, "Mentor notes are required"),
+  recommendations: z.string().trim().optional(),
+  outcome: z.string().trim().optional(),
+});
+
+/**
+ * Validates the payload for updating a mentor profile
+ */
+const updateMentorProfileSchema = z.object({
+  organization: z.string().trim().optional(),
+  designation: z.string().trim().optional(),
+  expertise: z.string().trim().optional(),
+  years_of_experience: z
+    .number()
+    .min(0, "Years of experience cannot be negative")
+    .optional(),
+  bio: z.string().trim().optional(),
+  skills: z.array(z.string().trim()).optional(),
+  linkedin_url: z
+    .string()
+    .url("Valid LinkedIn URL is required")
+    .or(z.literal(""))
+    .optional(),
+  portfolio_url: z
+    .string()
+    .url("Valid Portfolio URL is required")
+    .or(z.literal(""))
+    .optional(),
+  // Structure: A standard dictionary of string URLs, e.g. { "twitter": "https://twitter.com/...", "github": "https://github.com/..." }
+  social_links: z.record(z.string().url("Valid URL required")).optional(),
+  availability: z.string().trim().optional(),
+  full_name: z.string().trim().optional(),
+  phone: z.string().trim().optional(),
+});
+
 module.exports = {
   scheduleMeetingSchema,
   sendMessageSchema,
   searchChatsQuerySchema,
+  addMeetingNotesSchema,
+  updateMentorProfileSchema,
 };

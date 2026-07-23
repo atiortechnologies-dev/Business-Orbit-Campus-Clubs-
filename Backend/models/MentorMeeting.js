@@ -38,6 +38,10 @@ const mentorMeetingSchema = new mongoose.Schema(
       required: true,
       trim: true, // e.g., "Google Meet", "Zoom"
     },
+    agenda: {
+      type: String,
+      trim: true,
+    },
     meeting_link: {
       type: String,
       required: true,

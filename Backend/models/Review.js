@@ -19,7 +19,7 @@ const ReviewSchema = mongoose.Schema(
     },
     feedback: {
       type: String,
-      trime: true,
+      trim: true,
       default: null,
     },
     reviewed_at: {

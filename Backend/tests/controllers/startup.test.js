@@ -17,6 +17,13 @@ const mockResponse = () => {
 };
 
 describe("Startup Controller", () => {
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+  afterEach(async () => {
+    await Startup.deleteMany({});
+    await MentorAssignment.deleteMany({});
+  });
   let mentorId, studentId, startupId;
 
   beforeEach(async () => {
@@ -26,11 +33,12 @@ describe("Startup Controller", () => {
 
     await Startup.create({
       _id: startupId,
-      name: "Test Startup",
-      stage: "Seed",
+      student_id: studentId,
+      startup_name: "Test Startup",
+      current_stage: 1,
       category: "EdTech",
       idea: "Test Idea",
-      progress: "Building MVP",
+      progress_percentage: 20,
     });
   });
 
@@ -54,7 +62,7 @@ describe("Startup Controller", () => {
 
       const data = res.json.mock.calls[0][0];
       expect(data.name).toBe("Test Startup");
-      expect(data.progress).toBe("Building MVP");
+      expect(data.progress).toBe(20);
     });
 
     it("should return 403 if mentor is not actively assigned", async () => {

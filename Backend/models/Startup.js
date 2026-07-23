@@ -72,6 +72,6 @@ const startupSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-startupSchema.index({ name: "text" });
+startupSchema.index({ startup_name: "text" });
 
 module.exports = mongoose.model("Startup", startupSchema);

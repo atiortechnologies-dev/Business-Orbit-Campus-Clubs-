@@ -33,6 +33,18 @@ const mockResponse = () => {
 };
 
 describe("Mentor Dashboard Controller", () => {
+  afterAll(async () => {
+    await mongoose.connection.close();
+  });
+  afterEach(async () => {
+    await User.deleteMany({});
+    await Startup.deleteMany({});
+    await MentorAssignment.deleteMany({});
+    await MentorRequest.deleteMany({});
+    await MentorMeeting.deleteMany({});
+    await ChatRoom.deleteMany({});
+    await Message.deleteMany({});
+  });
   let mentorId;
   let studentId;
   let startupId;
@@ -46,7 +58,7 @@ describe("Mentor Dashboard Controller", () => {
     await User.create({
       _id: studentId,
       full_name: "Test Student",
-      email: "student@test.com",
+      email: `${studentId}@test.com`,
       password_hash: "hash",
       role: "student",
     });
@@ -54,8 +66,9 @@ describe("Mentor Dashboard Controller", () => {
     // Create a mock startup
     await Startup.create({
       _id: startupId,
-      name: "Test Startup",
-      stage: "Seed",
+      student_id: studentId,
+      startup_name: "Test Startup",
+      current_stage: 1,
       category: "EdTech",
       idea: "Test Idea",
     });
@@ -140,7 +153,7 @@ describe("Mentor Dashboard Controller", () => {
       expect(data.length).toBe(1);
       expect(data[0].studentName).toBe("Test Student");
       expect(data[0].startupName).toBe("Test Startup");
-      expect(data[0].startupStage).toBe("Seed");
+      expect(data[0].startupStage).toBe(1);
     });
   });
 
