@@ -67,6 +67,8 @@ export default function SettingsPage() {
   };
 
   const handleSave = () => {
+    // TODO(backend): PATCH the incubator profile with `form`, `industries`,
+    // `workingDays`, and `emailNotifications`.
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2000);
   };

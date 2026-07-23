@@ -133,6 +133,9 @@ export default function ChatsPage() {
       status: 'Sent',
     };
 
+    // TODO(backend): send `newMessage` over a real transport (websocket or
+    // polling) and persist it — this only appends to local React state, so
+    // it's gone on reload and the other party never actually receives it.
     setMessagesMap((prev) => ({
       ...prev,
       [activeConv]: [...prev[activeConv], newMessage],

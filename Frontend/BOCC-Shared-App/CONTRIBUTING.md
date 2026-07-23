@@ -20,15 +20,37 @@ src/
 
   layouts/
     AuthLayout.jsx           Wraps /login, /forgot-password,
-                              /reset-password, /role-selection
+                              /reset-password, /role-selection, /signup/*
 
   pages/                     One file per screen. This is almost always
                               where YOUR new work goes.
     auth/                    Login.jsx, ForgotPassword.jsx, ResetPassword.jsx,
-                              RoleSelection.jsx
+                              RoleSelection.jsx, StudentSignup.jsx,
+                              CompanySignup.jsx, InvestorSignup.jsx,
+                              MentorSignup.jsx, IncubatorSignup.jsx (the 5
+                              signup pages are thin config files — see
+                              components/auth/RoleSignupForm.jsx)
     Dashboard.jsx             Student portal
     Notifications.jsx
-    BuildStartupJourney.jsx
+    BuildStartupJourney.jsx   5-stage overview; Ideation/Validation/MVP
+                               circles link into journey/ below once that
+                               stage's review-result unlocks it
+    Settings.jsx               Student account settings
+    journey/                  Sub-flows for BuildStartupJourney's stages,
+                               one folder per stage, only Student-facing
+                               screens (nothing here overlaps admin/'s
+                               review pipelines — see INTEGRATION.md if
+                               that's ever unclear for a new screen)
+      ideation/                IdeationOverview → IdeaSubmission →
+                               SubmissionConfirmation, ReviewMeeting,
+                               ReviewResult, TemplatesResources
+      validation/              ValidationOverview → SurveyTracker →
+                               EvidenceUpload → ReportSubmission →
+                               SubmissionConfirmation, ReviewMeeting,
+                               ReviewResult
+      mvp/                     MvpOverview → ChooseProductType →
+                               MvpSubmission → SubmissionSuccess →
+                               IncubationProofSubmission
     incubator/                Incubator.jsx, Applications.jsx,
                                ApplicationReview.jsx, Messages.jsx, Settings.jsx
     admin/                    Admin.jsx (dashboard), VerificationQueue.jsx →
@@ -45,7 +67,8 @@ src/
                  DataTable, Modal
     layout/      PublicNav (shared top nav for all public/auth pages),
                  Sidebar (shared side panel for Student + Incubator + Admin)
-    auth/        RoleCard, PasswordStrengthMeter
+    auth/        RoleCard, PasswordStrengthMeter, RoleSignupForm (shared
+                 shell behind all 5 /signup/<role> pages — see §3)
     dashboard/   DashboardShell — the Student portal's page wrapper
     incubator/   IncubatorShell — the Incubator portal's page wrapper
     admin/       AdminShell — the Admin portal's page wrapper
@@ -107,6 +130,7 @@ Before writing a new component, check `components/ui/` and
 | A metric tile (label + big number + trend) | `components/ui/StatCard.jsx` |
 | A dense list/queue with columns | `components/ui/DataTable.jsx` — desktop grid, auto-collapses to stacked cards below `md`. Read the component's own doc comment before adding a 6+ column table; see the gotcha in §6 about column count vs. container width |
 | A confirmation/decision dialog | `components/ui/Modal.jsx` — Escape-to-close, backdrop-click-to-close, already wired for `role="dialog"` |
+| A role-specific signup form | `components/auth/RoleSignupForm.jsx` — owns password/confirm/strength/terms/submit for all 5 `/signup/<role>` pages; a new page just passes `fields` (its own field list) + copy, see `pages/auth/StudentSignup.jsx` for the ~25-line pattern. Don't build a 6th copy of the password/terms handling by hand |
 
 The design guide (ask whoever's tracking `Frontend/Working/` for the
 current copy — that folder is a scratch space that gets cleared out, so
@@ -252,6 +276,24 @@ lines, don't take "theirs" or "mine."
   `position: sticky; top: 0` header whose real `rectTop` was `0`. Don't
   "fix" real code chasing a screenshot artifact; re-screenshot or verify via
   JS first.
+- **A `computer` click at a coordinate captured before a DOM change (a
+  disabled→enabled button, a re-rendered list) can silently land on the
+  wrong element** — the click "succeeds" with no error, but nothing
+  happens, because the page reflowed between the coordinate capture and
+  the click. Don't conclude the underlying code is broken from a single
+  failed automated click. Re-run `read_page` for a fresh ref immediately
+  before clicking, or verify by dispatching the click via
+  `javascript_tool` (`document.querySelector(...).click()`) — if that
+  makes it work, the component was fine all along.
+- **`lucide-react` does not export brand/logo icons like `Github`** — only
+  generic UI icons (this version's git-related set is `GitFork`,
+  `GitBranch`, `GitCommit`, etc., no literal GitHub mark). Importing a
+  nonexistent icon name doesn't fail at build time — Vite's dev server
+  throws a runtime `SyntaxError` on first load instead, which renders as a
+  fully blank page with no visible React error. If a route renders
+  completely blank with an empty `#root` and no console error, check the
+  actual terminal running `npm run dev` for an "Unhandled error" line
+  before assuming it's a logic bug.
 
 ## 7. Before calling a screen "done"
 
