@@ -4,6 +4,11 @@ import Login from '@/pages/auth/Login';
 import ForgotPassword from '@/pages/auth/ForgotPassword';
 import ResetPassword from '@/pages/auth/ResetPassword';
 import RoleSelection from '@/pages/auth/RoleSelection';
+import StudentSignup from '@/pages/auth/StudentSignup';
+import CompanySignup from '@/pages/auth/CompanySignup';
+import InvestorSignup from '@/pages/auth/InvestorSignup';
+import MentorSignup from '@/pages/auth/MentorSignup';
+import IncubatorSignup from '@/pages/auth/IncubatorSignup';
 import Dashboard from '@/pages/Dashboard';
 import BuildStartupJourney from '@/pages/BuildStartupJourney';
 import Notifications from '@/pages/Notifications';
@@ -52,6 +57,11 @@ export const router = createBrowserRouter([
       { path: '/forgot-password', element: <ForgotPassword /> },
       { path: '/reset-password', element: <ResetPassword /> },
       { path: '/role-selection', element: <RoleSelection /> },
+      { path: '/signup/student', element: <StudentSignup /> },
+      { path: '/signup/company', element: <CompanySignup /> },
+      { path: '/signup/investor', element: <InvestorSignup /> },
+      { path: '/signup/mentor', element: <MentorSignup /> },
+      { path: '/signup/incubator', element: <IncubatorSignup /> },
     ],
   },
   { path: '/dashboard', element: <Dashboard /> },
