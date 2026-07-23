@@ -49,10 +49,17 @@ src/
   layouts/
     AuthLayout.jsx           Shared shell for Login, Forgot/Reset Password, Role Selection
   pages/
-    auth/                    Login, ForgotPassword, ResetPassword, RoleSelection
+    auth/                    Login, ForgotPassword, ResetPassword,
+                               RoleSelection, and a Signup page per role
+                               (Student/Company/Investor/Mentor/Incubator)
     Dashboard.jsx             Student dashboard
     Notifications.jsx         Student notifications
-    BuildStartupJourney.jsx   Student's 5-stage startup journey
+    Settings.jsx               Student account settings
+    BuildStartupJourney.jsx   Student's 5-stage startup journey overview
+    journey/                  Real sub-flows for 3 of those 5 stages —
+                               ideation/, validation/, mvp/ — each a
+                               multi-screen pipeline (submit → review
+                               meeting → review result, roughly)
     legal/PrivacyPolicy.jsx   Public Terms of Service & Privacy Policy
     incubator/                Incubator portal (dashboard, applications,
                                application review, messages, settings)
@@ -98,8 +105,11 @@ tooltip, `aria-disabled`) instead of a dead link or a fake page — see
 
 | Route | Portal |
 |---|---|
-| `/login`, `/forgot-password`, `/reset-password`, `/role-selection` | Auth |
-| `/dashboard`, `/notifications`, `/build-startup/journey` | Student |
+| `/login`, `/forgot-password`, `/reset-password`, `/role-selection`, `/signup/{student\|company\|investor\|mentor\|incubator}` | Auth |
+| `/dashboard`, `/notifications`, `/settings`, `/build-startup/journey` | Student |
+| `/build-startup/journey/ideation` (+ `/submit`, `/confirmation`, `/review-meeting`, `/review-result`, `/resources`) | Student — Ideation stage |
+| `/build-startup/journey/validation` (+ `/survey-tracker`, `/evidence-upload`, `/report-submission`, `/confirmation`, `/review-meeting`, `/review-result`) | Student — Validation stage |
+| `/build-startup/journey/mvp` (+ `/choose-product-type`, `/submit`, `/success`, `/incubation-proof`) | Student — MVP stage |
 | `/incubator`, `/incubator/applications`, `/incubator/applications/review`, `/incubator/messages`, `/incubator/settings` | Incubator |
 | `/admin`, `/admin/verification(/detail\|/decision)`, `/admin/reviews(/detail\|/workspace\|/outcome\|/schedule-meeting)`, `/admin/audit-log` | Admin |
 | `/legal/privacy-policy` | Public |
