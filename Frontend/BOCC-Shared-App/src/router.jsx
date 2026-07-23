@@ -7,6 +7,7 @@ import RoleSelection from '@/pages/auth/RoleSelection';
 import Dashboard from '@/pages/Dashboard';
 import BuildStartupJourney from '@/pages/BuildStartupJourney';
 import Notifications from '@/pages/Notifications';
+import StudentSettings from '@/pages/Settings';
 import Incubator from '@/pages/incubator/Incubator';
 import Applications from '@/pages/incubator/Applications';
 import ApplicationReview from '@/pages/incubator/ApplicationReview';
@@ -56,6 +57,7 @@ export const router = createBrowserRouter([
   { path: '/dashboard', element: <Dashboard /> },
   { path: '/build-startup/journey', element: <BuildStartupJourney /> },
   { path: '/notifications', element: <Notifications /> },
+  { path: '/settings', element: <StudentSettings /> },
   { path: '/incubator', element: <Incubator /> },
   { path: '/incubator/applications', element: <Applications /> },
   { path: '/incubator/applications/review', element: <ApplicationReview /> },

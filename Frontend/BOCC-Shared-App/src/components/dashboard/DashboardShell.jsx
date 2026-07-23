@@ -28,7 +28,7 @@ const NAV_ITEMS = [
   { icon: Wallet,          label: 'Investors',      href: '#', real: false },
   { icon: Building2,       label: 'Incubators',     href: '#', real: false },
   { icon: Briefcase,       label: 'Freelancing',    href: '#', real: false },
-  { icon: User,            label: 'Profile',        href: '#', real: false },
+  { icon: User,            label: 'Profile',        href: '/settings', real: true },
   { icon: HelpCircle,      label: 'Help',           href: '#', real: false },
 ];
 
