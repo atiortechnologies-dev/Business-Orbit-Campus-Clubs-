@@ -19,6 +19,13 @@ import IdeationSubmissionConfirmation from '@/pages/journey/ideation/SubmissionC
 import IdeationReviewMeeting from '@/pages/journey/ideation/ReviewMeeting';
 import IdeationReviewResult from '@/pages/journey/ideation/ReviewResult';
 import IdeationResources from '@/pages/journey/ideation/TemplatesResources';
+import ValidationOverview from '@/pages/journey/validation/ValidationOverview';
+import SurveyTracker from '@/pages/journey/validation/SurveyTracker';
+import EvidenceUpload from '@/pages/journey/validation/EvidenceUpload';
+import ValidationReportSubmission from '@/pages/journey/validation/ReportSubmission';
+import ValidationSubmissionConfirmation from '@/pages/journey/validation/SubmissionConfirmation';
+import ValidationReviewMeeting from '@/pages/journey/validation/ReviewMeeting';
+import ValidationReviewResult from '@/pages/journey/validation/ReviewResult';
 import AdminDashboard from '@/pages/admin/Admin';
 import VerificationQueue from '@/pages/admin/VerificationQueue';
 import VerificationDetail from '@/pages/admin/VerificationDetail';
@@ -56,6 +63,13 @@ export const router = createBrowserRouter([
   { path: '/build-startup/journey/ideation/review-meeting', element: <IdeationReviewMeeting /> },
   { path: '/build-startup/journey/ideation/review-result', element: <IdeationReviewResult /> },
   { path: '/build-startup/journey/ideation/resources', element: <IdeationResources /> },
+  { path: '/build-startup/journey/validation', element: <ValidationOverview /> },
+  { path: '/build-startup/journey/validation/survey-tracker', element: <SurveyTracker /> },
+  { path: '/build-startup/journey/validation/evidence-upload', element: <EvidenceUpload /> },
+  { path: '/build-startup/journey/validation/report-submission', element: <ValidationReportSubmission /> },
+  { path: '/build-startup/journey/validation/confirmation', element: <ValidationSubmissionConfirmation /> },
+  { path: '/build-startup/journey/validation/review-meeting', element: <ValidationReviewMeeting /> },
+  { path: '/build-startup/journey/validation/review-result', element: <ValidationReviewResult /> },
   { path: '/admin', element: <AdminDashboard /> },
   { path: '/admin/verification', element: <VerificationQueue /> },
   { path: '/admin/verification/detail', element: <VerificationDetail /> },
