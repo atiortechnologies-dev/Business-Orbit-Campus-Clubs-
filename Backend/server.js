@@ -1,3 +1,8 @@
+/**
+ * @file server.js
+ * @description Main application entry point and route aggregator.
+ * @architecture Initializes the Express application, configures middleware (CORS, error handling), connects to the database, and registers all module routes (auth, student, mentor, company, investor, admin).
+ */
 require("dotenv").config();
 const express = require("express");
 const configureCors = require("./config/cors");
@@ -45,6 +50,8 @@ const publicRoutes = require("./routes/public.routes");
 const adminRoutes = require("./routes/admin.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const studentRoutes = require("./routes/student.routes");
+const companyRoutes = require("./routes/company.routes");
+const investorRoutes = require("./routes/investor.routes");
 const { requireAuth, authorizeRoles } = require("./middlewares/requireAuth");
 
 app.use("/api/auth", authRoutes);
@@ -69,6 +76,8 @@ app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/mentor", requireAuth, authorizeRoles("mentor"), mentorRoutes);
 app.use("/api/student", requireAuth, authorizeRoles("student"), studentRoutes);
+app.use("/api/company", companyRoutes);
+app.use("/api/investor", investorRoutes);
 
 // Error handling
 app.use(notFound);

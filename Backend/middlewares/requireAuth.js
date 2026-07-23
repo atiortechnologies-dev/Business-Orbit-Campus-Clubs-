@@ -68,4 +68,18 @@ const authorizeRoles = (...roles) => {
   };
 };
 
-module.exports = { requireAuth, authorizeRoles };
+/**
+ * Middleware to check if the user's account is active (approved).
+ * Helps enforce business rules requiring account verification.
+ */
+const requireActiveAccount = (req, res, next) => {
+  if (req.user.account_status !== "active") {
+    return res.status(403).json({
+      success: false,
+      message: "Your account is pending approval or inactive. Access denied.",
+    });
+  }
+  next();
+};
+
+module.exports = { requireAuth, authorizeRoles, requireActiveAccount };
