@@ -42,6 +42,9 @@ export default function ForgotPasswordPage() {
     const err = validateEmail(email);
     setEmailError(err);
     if (!err) {
+      // TODO(backend): POST /api/auth/forgot-password with `email`. Keep
+      // showing this same confirmation view regardless of whether the
+      // address exists, to avoid leaking which emails are registered.
       setSubmitted(true);
     }
   }

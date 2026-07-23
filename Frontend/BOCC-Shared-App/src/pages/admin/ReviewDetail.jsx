@@ -199,6 +199,7 @@ export default function ReviewDetailPage() {
             <div className="space-y-2">
               <button
                 type="button"
+                // TODO(backend): POST a revision request for this submission.
                 onClick={() => setRevisionRequested(true)}
                 className="w-full py-2.5 border border-error text-error rounded-md font-poppins font-semibold text-small hover:bg-error/5 transition-colors"
               >
