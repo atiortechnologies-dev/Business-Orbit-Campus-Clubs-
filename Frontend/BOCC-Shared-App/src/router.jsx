@@ -13,6 +13,12 @@ import ApplicationReview from '@/pages/incubator/ApplicationReview';
 import Messages from '@/pages/incubator/Messages';
 import Settings from '@/pages/incubator/Settings';
 import PrivacyPolicy from '@/pages/legal/PrivacyPolicy';
+import IdeationOverview from '@/pages/journey/ideation/IdeationOverview';
+import IdeaSubmission from '@/pages/journey/ideation/IdeaSubmission';
+import IdeationSubmissionConfirmation from '@/pages/journey/ideation/SubmissionConfirmation';
+import IdeationReviewMeeting from '@/pages/journey/ideation/ReviewMeeting';
+import IdeationReviewResult from '@/pages/journey/ideation/ReviewResult';
+import IdeationResources from '@/pages/journey/ideation/TemplatesResources';
 import AdminDashboard from '@/pages/admin/Admin';
 import VerificationQueue from '@/pages/admin/VerificationQueue';
 import VerificationDetail from '@/pages/admin/VerificationDetail';
@@ -44,6 +50,12 @@ export const router = createBrowserRouter([
   { path: '/incubator/messages', element: <Messages /> },
   { path: '/incubator/settings', element: <Settings /> },
   { path: '/legal/privacy-policy', element: <PrivacyPolicy /> },
+  { path: '/build-startup/journey/ideation', element: <IdeationOverview /> },
+  { path: '/build-startup/journey/ideation/submit', element: <IdeaSubmission /> },
+  { path: '/build-startup/journey/ideation/confirmation', element: <IdeationSubmissionConfirmation /> },
+  { path: '/build-startup/journey/ideation/review-meeting', element: <IdeationReviewMeeting /> },
+  { path: '/build-startup/journey/ideation/review-result', element: <IdeationReviewResult /> },
+  { path: '/build-startup/journey/ideation/resources', element: <IdeationResources /> },
   { path: '/admin', element: <AdminDashboard /> },
   { path: '/admin/verification', element: <VerificationQueue /> },
   { path: '/admin/verification/detail', element: <VerificationDetail /> },
