@@ -8,7 +8,7 @@ const express = require("express");
 const router = express.Router();
 
 const { validateRequest } = require("../middlewares/validateRequest");
-const { upload, uploadImage } = require("../utils/uploadService");
+const upload = require("../utils/uploadService");
 const {
   scheduleMeetingSchema,
   sendMessageSchema,
@@ -69,7 +69,7 @@ router.put(
   validateRequest(updateMentorProfileSchema, "body"),
   updateMentorProfile,
 );
-router.post("/profile/photo", uploadImage.single("file"), uploadProfilePhoto);
+router.post("/profile/photo", upload.single("file"), uploadProfilePhoto);
 
 // Requests & Profiles
 // Note (Extra): MentorAssignment and MentorRequest workflows were added to securely track the lifecycle of mentorships before meetings occur.

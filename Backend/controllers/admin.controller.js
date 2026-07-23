@@ -5,6 +5,7 @@
  */
 
 const FAQ = require("../models/FAQ");
+const User = require("../models/User");
 const {
   createFaqSchema,
   updateFaqSchema,
@@ -167,3 +168,21 @@ exports.updateFeaturedStartup = updateResource(
   updateFeaturedStartupSchema,
 );
 exports.deleteFeaturedStartup = deleteResource(FeaturedStartup);
+
+/**
+ * @route   DELETE /api/admin/users/:id
+ * @desc    Delete a User (and automatically cascade delete all their dependencies)
+ * @access  Private (Admin)
+ */
+exports.deleteUser = async (req, res, next) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user)
+      return res.status(404).json({ success: false, message: "User not found" });
+    res
+      .status(200)
+      .json({ success: true, message: "User and all associated data deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -8,18 +8,38 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 
 beforeAll(async () => {
-  // Disconnect if already connected
   if (mongoose.connection.readyState !== 0) {
     await mongoose.disconnect();
   }
 
-  const uri = process.env.MONGODB_URI;
-  if (!uri) {
-    throw new Error("MONGODB_URI is not defined in .env");
+  let uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/project_test_db";
+
+  // Automatically derive a test database name.
+  if (uri.includes("mongodb+srv")) {
+    uri = uri.replace(/\/([^/?]+)(\?|$)/, "/$1_test$2");
+  } else if (!uri.includes("test")) {
+    const parts = uri.split("/");
+    const dbName = parts.pop();
+    uri = [...parts, dbName + "_test"].join("/");
   }
 
   await mongoose.connect(uri);
+
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.connection.dropDatabase();
+  }
+
+  // Ensure all indexes are built before tests run to prevent WriteConflicts during transactions
+  await Promise.all(
+    Object.values(mongoose.models).map((model) => model.init())
+  );
 });
 
-// The afterAll and afterEach hooks have been removed to prevent global side-effects.
-// Individual test files are now responsible for managing their own teardown/cleanup logic.
+afterAll(async () => {
+  // Wait briefly for any pending operations
+  await new Promise(resolve => setTimeout(resolve, 500));
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.connection.dropDatabase();
+    await mongoose.disconnect();
+  }
+}, 15000); // Increase Jest's afterAll timeout

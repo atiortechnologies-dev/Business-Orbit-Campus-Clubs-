@@ -22,8 +22,14 @@ const ResourceSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    download_count: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
+
+ResourceSchema.index({ title: "text", description: "text" });
 
 module.exports = mongoose.model("Resource", ResourceSchema);

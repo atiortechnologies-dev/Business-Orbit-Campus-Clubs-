@@ -50,34 +50,7 @@ beforeAll(async () => {
   // DB Connection is managed by tests/setup.js
 });
 
-afterAll(async () => {
-  // Selective Teardown: Surgically delete only what was created during this test
-  if (studentId) {
-    await User.deleteOne({ _id: studentId });
-    await StudentProfile.deleteOne({ user_id: studentId });
-    await EmailVerification.deleteOne({ userId: studentId });
-  }
-  if (mentorId) {
-    await User.deleteOne({ _id: mentorId });
-  }
-  if (startupId) await Startup.deleteOne({ _id: startupId });
-  if (requestId) await MentorRequest.deleteOne({ _id: requestId });
-  if (mentorId) {
-    await MentorAssignment.deleteMany({ mentor_id: mentorId });
-    await MentorMeeting.deleteMany({ mentor_id: mentorId });
-  }
-  if (chatId) {
-    await ChatRoom.deleteOne({ _id: chatId });
-    await Message.deleteMany({ chat_id: chatId });
-  }
-  if (faqId) await FAQ.deleteOne({ _id: faqId });
-  if (partnerLogoId) await PartnerLogo.deleteOne({ _id: partnerLogoId });
-  if (enquiryId) await ContactEnquiry.deleteOne({ _id: enquiryId });
 
-  if (mongoose.connection.readyState !== 0) {
-    await mongoose.connection.close();
-  }
-});
 
 describe("Full Lifecycle Integration Journey", () => {
   describe("Part 2: Authentication Flow", () => {
@@ -119,9 +92,9 @@ describe("Full Lifecycle Integration Journey", () => {
       const res = await request(app).post("/api/auth/verify-otp").send(payload);
 
       expect(res.status).toBe(200);
-      expect(res.body.data.token).toBeDefined();
+      expect(res.body.data.accessToken).toBeDefined();
 
-      studentJwt = res.body.data.token;
+      studentJwt = res.body.data.accessToken;
 
       const user = await User.findById(studentId);
       expect(user.account_status).toBe("active");
@@ -136,7 +109,7 @@ describe("Full Lifecycle Integration Journey", () => {
       const res = await request(app).post("/api/auth/login").send(payload);
 
       expect(res.status).toBe(200);
-      expect(res.body.data.token).toBeDefined();
+      expect(res.body.data.accessToken).toBeDefined();
     });
   });
 
@@ -216,8 +189,9 @@ describe("Full Lifecycle Integration Journey", () => {
   describe("Transition Data Seeding", () => {
     it("Seed Data directly to MongoDB (Bypassing 501 Endpoints)", async () => {
       const startup = await Startup.create({
-        name: "Postman Startup Inc.",
-        stage: "MVP",
+        startup_name: "Postman Startup Inc.",
+        student_id: studentId,
+        current_stage: 1,
         category: "EdTech",
         idea: "Revolutionizing postman tests",
         progress: "Building prototype",
@@ -254,7 +228,7 @@ describe("Full Lifecycle Integration Journey", () => {
       const res = await request(app).post("/api/auth/login").send(payload);
 
       expect(res.status).toBe(200);
-      mentorJwt = res.body.data.token;
+      mentorJwt = res.body.data.accessToken;
     });
   });
 
@@ -389,7 +363,7 @@ describe("Full Lifecycle Integration Journey", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.name).toBe("Postman Startup Inc.");
-      expect(res.body.stage).toBe("MVP");
+      expect(res.body.stage).toBe(1);
     });
   });
 });

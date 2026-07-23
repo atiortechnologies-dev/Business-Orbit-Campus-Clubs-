@@ -22,6 +22,11 @@ const ReviewSchema = mongoose.Schema(
       trim: true,
       default: null,
     },
+    improvement_suggestions: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     reviewed_at: {
       type: Date,
       default: null,

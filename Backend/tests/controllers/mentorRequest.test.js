@@ -32,10 +32,17 @@ describe("Mentor Request Controller", () => {
   });
   let mentorId, studentId, startupId;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mentorId = new mongoose.Types.ObjectId();
     studentId = new mongoose.Types.ObjectId();
     startupId = new mongoose.Types.ObjectId();
+    await MentorRequest.createCollection();
+    await MentorAssignment.createCollection();
+    await ChatRoom.createCollection();
+    const Notification = require("../../models/Notification");
+    const ActivityLog = require("../../models/ActivityLog");
+    await Notification.createCollection();
+    await ActivityLog.createCollection();
   });
 
   describe("acceptRequest", () => {
@@ -54,7 +61,9 @@ describe("Mentor Request Controller", () => {
       };
       const res = mockResponse();
 
-      await acceptRequest(req, res, () => {});
+      const next = jest.fn((err) => { if (err) console.error("NEXT ERROR:", err); });
+      await acceptRequest(req, res, next);
+      if (next.mock.calls.length > 0) throw next.mock.calls[0][0];
 
       expect(res.status).toHaveBeenCalledWith(200);
 

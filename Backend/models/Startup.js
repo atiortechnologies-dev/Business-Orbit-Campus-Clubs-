@@ -74,4 +74,16 @@ const startupSchema = new mongoose.Schema(
 
 startupSchema.index({ startup_name: "text" });
 
+const cascadeService = require("../services/cascadeService");
+
+startupSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    await cascadeService.deleteStartupDependencies(doc._id);
+  }
+});
+
+startupSchema.post("deleteOne", { document: true, query: false }, async function () {
+  await cascadeService.deleteStartupDependencies(this._id);
+});
+
 module.exports = mongoose.model("Startup", startupSchema);
