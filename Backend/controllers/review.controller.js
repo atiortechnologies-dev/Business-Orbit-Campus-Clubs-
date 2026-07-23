@@ -3,7 +3,6 @@ const { getOrCreateStartup } = require("../utils/startupJourney");
 const StageSubmission = require("../models/StageSubmission");
 const Review = require("../models/Review");
 
-//* GET /api/review/result
 const getReviewResult = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

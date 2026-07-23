@@ -1,14 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const reviewController = require("../controllers/reviewController");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { getDashboard } = require("../controllers/dashboard.controller");
 
-router.get(
-  "/result",
-  protect,
-  requireRole("student"),
-  reviewController.getReviewResult,
-);
+router.get("/dashboard", protect, requireRole("student"), getDashboard);
 
 module.exports = router;

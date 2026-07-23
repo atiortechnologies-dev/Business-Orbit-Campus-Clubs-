@@ -1,11 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const meetingController = require("../controllers/meetingController");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { getReviewResult } = require("../controllers/review.controller");
 
-router.use(protect, requireRole("student"));
-
-router.get("/", meetingController.listMeetings);
+router.get("/result", protect, requireRole("student"), getReviewResult);
 
 module.exports = router;

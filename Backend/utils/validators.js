@@ -147,7 +147,9 @@ const toArray = z.preprocess(
       try {
         const parsed = JSON.parse(trimmed);
         if (Array.isArray(parsed)) return parsed;
-      } catch (error) {}
+      } catch (error) {
+        console.error(error);
+      }
       return trimmed
         .split(",")
         .map((s) => s.trim())

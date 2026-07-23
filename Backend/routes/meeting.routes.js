@@ -1,12 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const startupController = require("../controllers/startupController");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { listMeetings } = require("../controllers/meeting.controller");
 
 router.use(protect, requireRole("student"));
 
-router.get("/progress", startupController.getProgress);
-router.get("/stages", startupController.getStages);
+router.get("/", listMeetings);
 
 module.exports = router;

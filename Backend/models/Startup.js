@@ -7,24 +7,45 @@ const mongoose = require("mongoose");
 
 const startupSchema = new mongoose.Schema(
   {
-    name: {
+    student_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      unique: true,
+    },
+    startup_name: {
       type: String,
       required: true,
       trim: true,
     },
-    stage: {
-      type: String,
-      required: true,
-      trim: true,
+    current_stage: {
+      type: Number,
+      default: 1,
     },
+    progress_percentage: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+    // name: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
+    // stage: {
+    //   type: String,
+    //   required: true,
+    //   trim: true,
+    // },
     category: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     idea: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     progress: {

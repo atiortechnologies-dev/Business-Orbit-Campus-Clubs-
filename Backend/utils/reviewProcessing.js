@@ -1,5 +1,8 @@
+const Review = require("../models/Review");
 const StageSubmission = require("../models/StageSubmission");
+const Startup = require("../models/Startup");
 const StartupStage = require("../models/StartupStage");
+const { recalcProgress } = require("./startupJourney");
 
 const processReview = async ({
   submissionId,
@@ -32,7 +35,7 @@ const processReview = async ({
   submission.status = decision;
   await submission.save();
 
-  if (decission === "approved") {
+  if (decision === "approved") {
     stage.status = "approved";
     stage.completed_at = new Date();
     await stage.save();

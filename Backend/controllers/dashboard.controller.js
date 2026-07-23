@@ -1,5 +1,3 @@
-//* GET: /api/student/dashboard
-
 const asyncHandler = require("../middlewares/asyncHandler");
 const Meeting = require("../models/Meeting");
 const StartupStage = require("../models/StartupStage");
@@ -20,7 +18,6 @@ const getDashboard = asyncHandler(async (req, res) => {
       .json({ success: false, message: "Your account is not yet approved" });
   }
 
-  // Load student profile
   const profile = await StudentProfile.findOne({ user_id: userId });
   if (!profile) {
     return res
@@ -28,18 +25,13 @@ const getDashboard = asyncHandler(async (req, res) => {
       .json({ success: false, message: "Student profile not found" });
   }
 
-  // console.log("")
-
-  // load startup journey
   const startup = await getOrCreateStartup(userId, `${req.user.id}'s Startup`);
 
-  // load current active stage
   const activeStage = await StartupStage.findOne({
     startup_id: startup._id,
     status: "active",
   });
 
-  // Load upcoming review meetings
   const upcomingMeetings = await Meeting.find({
     startup_id: startup._id,
     status: "scheduled",
