@@ -1,3 +1,10 @@
+/**
+ * @file submission.controller.js
+ * @description Manages the lifecycle of stage deliverables.
+ * @architecture Handles state transitions and employs edit-locks when a submission is under review or approved.
+ */
+
+const mongoose = require("mongoose");
 const asyncHandler = require("../middlewares/asyncHandler");
 const StartupStage = require("../models/StartupStage");
 const StageSubmission = require("../models/StageSubmission");
@@ -7,6 +14,11 @@ const getActiveStage = async (startupId) => {
   return StartupStage.findOne({ startup_id: startupId, status: "active" });
 };
 
+/**
+ * @desc    Submit an idea or deliverable for the active stage
+ * @route   POST /api/submissions
+ * @access  Private (Student)
+ */
 const submitIdea = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { title, description } = req.validatedData;
@@ -34,50 +46,68 @@ const submitIdea = asyncHandler(async (req, res) => {
     });
   }
 
-  // Reuse an existing draft for this stage if one exists, otherwise create fresh.
-  let submission = await StageSubmission.findOne({
-    stage_id: activeStage._id,
-    status: "draft",
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  const attachment_url = submission?.attachment_url || "";
-
-  if (submission) {
-    submission.title = title;
-    submission.description = description;
-    submission.attachment_url = attachment_url;
-  } else {
-    submission = new StageSubmission({
-      startup_id: startup._id,
+  try {
+    // Reuse an existing draft for this stage if one exists, otherwise create fresh.
+    let submission = await StageSubmission.findOne({
       stage_id: activeStage._id,
-      title,
-      description,
-      attachment_url,
+      status: "draft",
+    }).session(session);
+
+    const attachment_url = submission?.attachment_url || "";
+
+    if (submission) {
+      submission.title = title;
+      submission.description = description;
+      submission.attachment_url = attachment_url;
+    } else {
+      submission = new StageSubmission({
+        startup_id: startup._id,
+        stage_id: activeStage._id,
+        title,
+        description,
+        attachment_url,
+      });
+    }
+
+    submission.status = "pending_review";
+    submission.submitted_at = new Date();
+    // By leaving reviewer_id undefined/null, this submission explicitly falls into the "Unassigned" global queue.
+    // Admins can later claim and assign reviewers via a separate assignment endpoint.
+
+    await submission.save({ session });
+
+    activeStage.status = "submitted";
+    await activeStage.save({ session });
+
+    // Notification creation for (reviewer)
+
+    await session.commitTransaction();
+
+    return res.status(201).json({
+      success: true,
+      message: "Idea submitted successfully. It's now pending review.",
+      data: {
+        submissionId: submission._id,
+        submittedAt: submission.submitted_at,
+        status: submission.status,
+      },
     });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  submission.status = "pending_review";
-  submission.submitted_at = new Date();
-  // TODO: assign_reviewer_id once an admin/reviewer role exists on User.
-
-  await submission.save();
-
-  activeStage.status = "submitted";
-  await activeStage.save();
-
-  // Notification creation for (reviewer)
-
-  return res.status(201).json({
-    success: true,
-    message: "Idea submitted successfully. It's now pending review.",
-    data: {
-      submissionId: submission._id,
-      submittedAt: submission.submitted_at,
-      status: submission.status,
-    },
-  });
 });
 
+/**
+ * @desc    Save a draft of an idea or deliverable for the active stage
+ * @route   POST /api/submissions/draft
+ * @access  Private (Student)
+ */
 const saveDraft = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { title, description } = req.validatedData;
@@ -135,6 +165,11 @@ const saveDraft = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get the submission status for the active stage
+ * @route   GET /api/submissions/status
+ * @access  Private (Student)
+ */
 const getSubmissionStatus = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

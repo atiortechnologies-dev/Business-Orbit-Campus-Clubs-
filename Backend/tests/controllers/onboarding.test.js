@@ -17,7 +17,10 @@ describe("Onboarding Controller", () => {
     },
     {
       description: "pending verification",
-      userOpts: { email_verified: true, account_status: "pending_verification" },
+      userOpts: {
+        email_verified: true,
+        account_status: "pending_verification",
+      },
       expectedNextScreen: "verification_pending",
     },
     {
@@ -37,17 +40,31 @@ describe("Onboarding Controller", () => {
     },
     {
       description: "active but profile not started",
-      userOpts: { email_verified: true, account_status: "active", profile_status: "not_started" },
+      userOpts: {
+        email_verified: true,
+        account_status: "active",
+        profile_status: "not_started",
+      },
       expectedNextScreen: "complete_profile",
     },
     {
       description: "active and profile completed (student)",
-      userOpts: { email_verified: true, account_status: "active", profile_status: "completed", role: "student" },
+      userOpts: {
+        email_verified: true,
+        account_status: "active",
+        profile_status: "completed",
+        role: "student",
+      },
       expectedNextScreen: "student_dashboard",
     },
     {
       description: "active and profile skipped (mentor)",
-      userOpts: { email_verified: true, account_status: "active", profile_status: "skipped", role: "mentor" },
+      userOpts: {
+        email_verified: true,
+        account_status: "active",
+        profile_status: "skipped",
+        role: "mentor",
+      },
       expectedNextScreen: "mentor_dashboard",
     },
   ];
@@ -78,7 +95,11 @@ describe("Onboarding Controller", () => {
     });
 
     it("should return 404 if user not found", async () => {
-      const token = generateToken(new mongoose.Types.ObjectId(), "student", "test@example.com");
+      const token = generateToken(
+        new mongoose.Types.ObjectId(),
+        "student",
+        "test@example.com",
+      );
 
       const res = await request(app)
         .get("/api/onboarding/status")

@@ -6,7 +6,11 @@
 const express = require("express");
 const router = express.Router();
 const investorDiscoveryController = require("../controllers/investorDiscovery.controller");
-const { requireAuth, authorizeRoles, requireActiveAccount } = require("../middlewares/requireAuth");
+const {
+  requireAuth,
+  authorizeRoles,
+  requireActiveAccount,
+} = require("../middlewares/requireAuth");
 
 // All routes require authentication, active account, and investor role
 router.use(requireAuth, requireActiveAccount, authorizeRoles("investor"));
@@ -25,7 +29,10 @@ router.post("/pitch/view", investorDiscoveryController.trackPitchView);
 
 // Watchlist
 router.post("/watchlist", investorDiscoveryController.addToWatchlist);
-router.delete("/watchlist/:id", investorDiscoveryController.removeFromWatchlist);
+router.delete(
+  "/watchlist/:id",
+  investorDiscoveryController.removeFromWatchlist,
+);
 
 // Actions
 router.post("/notes", investorDiscoveryController.addNote);

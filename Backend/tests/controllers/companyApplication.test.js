@@ -74,7 +74,7 @@ describe("Company Application Controller", () => {
         expect.objectContaining({
           success: true,
           data: expect.any(Array),
-        })
+        }),
       );
       expect(res.json.mock.calls[0][0].data.length).toBe(1);
     });
@@ -101,14 +101,20 @@ describe("Company Application Controller", () => {
       };
       const res = mockResponse();
 
-      await companyApplicationController.updateApplicationStatus(req, res, mockNext);
+      await companyApplicationController.updateApplicationStatus(
+        req,
+        res,
+        mockNext,
+      );
 
       expect(res.status).toHaveBeenCalledWith(200);
-      
+
       const updatedApp = await Application.findById(application._id);
       expect(updatedApp.application_status).toBe("shortlisted");
 
-      const log = await ApplicantStatus.findOne({ application_id: application._id });
+      const log = await ApplicantStatus.findOne({
+        application_id: application._id,
+      });
       expect(log).not.toBeNull();
       expect(log.status).toBe("shortlisted");
     });
@@ -129,8 +135,10 @@ describe("Company Application Controller", () => {
       await companyApplicationController.scheduleInterview(req, res, mockNext);
 
       expect(res.status).toHaveBeenCalledWith(201);
-      
-      const interview = await ApplicationInterview.findOne({ application_id: application._id });
+
+      const interview = await ApplicationInterview.findOne({
+        application_id: application._id,
+      });
       expect(interview).not.toBeNull();
       expect(interview.meeting_link).toBe("http://zoom.us/test");
 
@@ -174,7 +182,7 @@ describe("Company Application Controller", () => {
             shortlisted: 0,
             rejected: 0,
           }),
-        })
+        }),
       );
     });
   });
@@ -202,7 +210,11 @@ describe("Company Application Controller", () => {
       };
       const res = mockResponse();
 
-      await companyApplicationController.getApplicationDetails(req, res, mockNext);
+      await companyApplicationController.getApplicationDetails(
+        req,
+        res,
+        mockNext,
+      );
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
@@ -213,7 +225,7 @@ describe("Company Application Controller", () => {
               _id: application._id,
             }),
           }),
-        })
+        }),
       );
     });
   });
@@ -230,7 +242,9 @@ describe("Company Application Controller", () => {
       await companyApplicationController.addRecruiterNote(req, res, mockNext);
 
       expect(res.status).toHaveBeenCalledWith(201);
-      const note = await RecruiterNote.findOne({ application_id: application._id });
+      const note = await RecruiterNote.findOne({
+        application_id: application._id,
+      });
       expect(note).not.toBeNull();
       expect(note.note).toBe("Great candidate");
     });
@@ -253,7 +267,7 @@ describe("Company Application Controller", () => {
           data: expect.objectContaining({
             resume_url: "http://example.com/resume.pdf",
           }),
-        })
+        }),
       );
     });
   });

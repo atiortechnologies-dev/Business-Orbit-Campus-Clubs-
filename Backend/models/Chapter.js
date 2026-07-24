@@ -1,3 +1,9 @@
+/**
+ * @file Chapter.js
+ * @description Mongoose schema for Chapters, representing campus clubs or hubs.
+ * @architecture Holds core metadata, active status, and aggregated statistics (e.g., total members, active startups).
+ */
+
 const mongoose = require("mongoose");
 
 const chapterSchema = new mongoose.Schema(
@@ -21,4 +27,7 @@ const chapterSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
+/**
+ * @module Chapter
+ */
 module.exports = mongoose.model("Chapter", chapterSchema);

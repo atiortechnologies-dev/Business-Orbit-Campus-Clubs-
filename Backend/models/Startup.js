@@ -82,8 +82,12 @@ startupSchema.post("findOneAndDelete", async function (doc) {
   }
 });
 
-startupSchema.post("deleteOne", { document: true, query: false }, async function () {
-  await cascadeService.deleteStartupDependencies(this._id);
-});
+startupSchema.post(
+  "deleteOne",
+  { document: true, query: false },
+  async function () {
+    await cascadeService.deleteStartupDependencies(this._id);
+  },
+);
 
 module.exports = mongoose.model("Startup", startupSchema);

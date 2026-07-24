@@ -1,3 +1,9 @@
+/**
+ * @file profile.routes.js
+ * @description Implements a dynamic router factory for profile management.
+ * @architecture Dynamically generates profile routers (get, create, update, skip) by injecting a specific role, promoting reusability.
+ */
+
 const express = require("express");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
 const {
@@ -7,6 +13,11 @@ const {
   skipProfile,
 } = require("../controllers/profile.controller");
 
+/**
+ * @desc    Factory function to create a profile router for a specific role
+ * @param   {string} role - The user role (e.g., 'student', 'mentor', 'investor')
+ * @returns {express.Router} Configured Express router
+ */
 const createProfileRouter = (role) => {
   const router = express.Router();
 

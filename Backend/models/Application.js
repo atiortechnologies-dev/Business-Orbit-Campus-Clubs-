@@ -31,7 +31,7 @@ const applicationSchema = new mongoose.Schema(
       type: String,
     },
   },
-  { timestamps: { createdAt: "applied_at", updatedAt: "updated_at" } }
+  { timestamps: { createdAt: "applied_at", updatedAt: "updated_at" } },
 );
 
 // 🛡️ Correctness & Data Integrity: Prevent duplicate applications from the same student

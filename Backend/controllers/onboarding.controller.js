@@ -1,3 +1,9 @@
+/**
+ * @file onboarding.controller.js
+ * @description Controls the dynamic onboarding flow for new users.
+ * @architecture Uses a state-machine-like logic to evaluate user statuses and dictate the next frontend screen.
+ */
+
 const asyncHandler = require("../middlewares/asyncHandler");
 const User = require("../models/User");
 const roleConfig = require("../utils/roleConfig");
@@ -40,6 +46,11 @@ const resolveNextScreen = (user) => {
   return config ? config.dashboardRedirect : "dashboard";
 };
 
+/**
+ * @desc    Get the current onboarding status and next screen for the user
+ * @route   GET /api/onboarding/status
+ * @access  Private
+ */
 const getOnboardingStatus = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user.id);
   if (!user) {

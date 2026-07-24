@@ -1,3 +1,9 @@
+/**
+ * @file Meeting.js
+ * @description Mongoose schema for scheduling and tracking meetings between startups and reviewers.
+ * @architecture Captures meeting link, date, and lifecycle status (scheduled, completed, etc.).
+ */
+
 const mongoose = require("mongoose");
 
 const MeetingSchema = mongoose.Schema(
@@ -29,4 +35,7 @@ const MeetingSchema = mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
+/**
+ * @module Meeting
+ */
 module.exports = mongoose.model("Meeting", MeetingSchema);

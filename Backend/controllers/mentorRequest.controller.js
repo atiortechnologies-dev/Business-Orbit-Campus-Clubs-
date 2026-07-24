@@ -63,7 +63,12 @@ exports.getAllPendingRequests = asyncHandler(async (req, res) => {
   ];
 
   // Apply related filters
-  if (stage) pipeline.push({ $match: { "startup.current_stage": !isNaN(stage) ? Number(stage) : stage } });
+  if (stage)
+    pipeline.push({
+      $match: {
+        "startup.current_stage": !isNaN(stage) ? Number(stage) : stage,
+      },
+    });
   if (category) pipeline.push({ $match: { "startup.category": category } });
   if (college) pipeline.push({ $match: { "studentProfile.college": college } });
 
@@ -238,44 +243,61 @@ exports.declineRequest = asyncHandler(async (req, res) => {
   const { requestId } = req.params;
   const mentorId = req.user._id;
 
-  const request = await MentorRequest.findOne({
-    _id: requestId,
-    mentor_id: mentorId,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!request) {
-    return res
-      .status(404)
-      .json({ message: "Request not found or unauthorized." });
+  try {
+    const request = await MentorRequest.findOne({
+      _id: requestId,
+      mentor_id: mentorId,
+    }).session(session);
+
+    if (!request) {
+      return res
+        .status(404)
+        .json({ message: "Request not found or unauthorized." });
+    }
+
+    if (request.status !== REQUEST_STATUS.PENDING) {
+      return res
+        .status(400)
+        .json({ message: "Only pending requests can be declined." });
+    }
+
+    request.status = REQUEST_STATUS.DECLINED;
+    await request.save({ session });
+
+    // Store decline action for audit purposes and Notify student
+    await ActivityLog.create(
+      [
+        {
+          user_id: mentorId,
+          action: "DECLINE_MENTOR_REQUEST",
+          entity_type: "MentorRequest",
+          entity_id: requestId,
+          description: "Mentor declined the mentorship request.",
+        },
+      ],
+      { session },
+    );
+
+    const notification = new Notification({
+      recipient_id: request.student_id,
+      title: "Mentorship Request Declined",
+      message: "Your mentorship request was declined.",
+      type: "warning",
+    });
+    await notification.save({ session });
+
+    await session.commitTransaction();
+
+    res
+      .status(200)
+      .json({ message: "Mentorship request declined successfully." });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  if (request.status !== REQUEST_STATUS.PENDING) {
-    return res
-      .status(400)
-      .json({ message: "Only pending requests can be declined." });
-  }
-
-  request.status = REQUEST_STATUS.DECLINED;
-  await request.save();
-
-  // Store decline action for audit purposes and Notify student
-  await ActivityLog.create({
-    user_id: mentorId,
-    action: "DECLINE_MENTOR_REQUEST",
-    entity_type: "MentorRequest",
-    entity_id: requestId,
-    description: "Mentor declined the mentorship request.",
-  });
-
-  const notification = new Notification({
-    recipient_id: request.student_id,
-    title: "Mentorship Request Declined",
-    message: "Your mentorship request was declined.",
-    type: "warning",
-  });
-  await notification.save();
-
-  res
-    .status(200)
-    .json({ message: "Mentorship request declined successfully." });
 });

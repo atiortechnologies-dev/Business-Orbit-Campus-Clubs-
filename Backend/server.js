@@ -94,4 +94,7 @@ if (require.main === module) {
   });
 }
 
+/**
+ * @module server
+ */
 module.exports = { app, server };

@@ -103,7 +103,9 @@ describe("Cascading Deletions Integration Test", () => {
     const foundUser = await User.findById(studentUser._id);
     expect(foundUser).toBeNull();
 
-    const foundProfile = await StudentProfile.findOne({ user_id: studentUser._id });
+    const foundProfile = await StudentProfile.findOne({
+      user_id: studentUser._id,
+    });
     expect(foundProfile).toBeNull();
 
     const foundStartup = await Startup.findOne({ student_id: studentUser._id });
@@ -113,10 +115,14 @@ describe("Cascading Deletions Integration Test", () => {
     const foundStage = await StartupStage.findOne({ startup_id: startup._id });
     expect(foundStage).toBeNull();
 
-    const foundSubmission = await StageSubmission.findOne({ startup_id: startup._id });
+    const foundSubmission = await StageSubmission.findOne({
+      startup_id: startup._id,
+    });
     expect(foundSubmission).toBeNull();
 
-    const foundChatRoom = await ChatRoom.findOne({ student_id: studentUser._id });
+    const foundChatRoom = await ChatRoom.findOne({
+      student_id: studentUser._id,
+    });
     expect(foundChatRoom).toBeNull();
 
     const foundMessage = await Message.findOne({ chat_id: chatRoom._id });

@@ -50,8 +50,6 @@ beforeAll(async () => {
   // DB Connection is managed by tests/setup.js
 });
 
-
-
 describe("Full Lifecycle Integration Journey", () => {
   describe("Part 2: Authentication Flow", () => {
     it("Test 2.1: Register Student", async () => {

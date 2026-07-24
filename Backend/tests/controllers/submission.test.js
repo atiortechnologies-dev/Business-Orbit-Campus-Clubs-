@@ -44,7 +44,10 @@ describe("Submission Controller", () => {
     });
 
     it("should successfully save a draft", async () => {
-      const startup = await Startup.create({ student_id: userId, startup_name: "My Startup" });
+      const startup = await Startup.create({
+        student_id: userId,
+        startup_name: "My Startup",
+      });
       await StartupStage.create({
         startup_id: startup._id,
         stage_number: 1,
@@ -69,7 +72,10 @@ describe("Submission Controller", () => {
 
   describe("submitIdea", () => {
     it("should successfully submit an idea and change stage status", async () => {
-      const startup = await Startup.create({ student_id: userId, startup_name: "My Startup" });
+      const startup = await Startup.create({
+        student_id: userId,
+        startup_name: "My Startup",
+      });
       const stage = await StartupStage.create({
         startup_id: startup._id,
         stage_number: 1,
@@ -86,7 +92,9 @@ describe("Submission Controller", () => {
       expect(res.body.success).toBe(true);
       expect(res.body.message).toMatch(/submitted successfully/);
 
-      const submission = await StageSubmission.findById(res.body.data.submissionId);
+      const submission = await StageSubmission.findById(
+        res.body.data.submissionId,
+      );
       expect(submission.title).toBe("Final Idea");
       expect(submission.status).toBe("pending_review");
 
@@ -97,7 +105,10 @@ describe("Submission Controller", () => {
 
   describe("getSubmissionStatus", () => {
     it("should return the submission status of the active stage", async () => {
-      const startup = await Startup.create({ student_id: userId, startup_name: "My Startup" });
+      const startup = await Startup.create({
+        student_id: userId,
+        startup_name: "My Startup",
+      });
       const stage = await StartupStage.create({
         startup_id: startup._id,
         stage_number: 1,

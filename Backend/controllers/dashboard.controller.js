@@ -1,9 +1,20 @@
+/**
+ * @file dashboard.controller.js
+ * @description Serves aggregated data required for the main student dashboard.
+ * @architecture Aggregates profile data, startup progress, and active stages ensuring the user has a startup entity.
+ */
+
 const asyncHandler = require("../middlewares/asyncHandler");
 const Meeting = require("../models/Meeting");
 const StartupStage = require("../models/StartupStage");
 const StudentProfile = require("../models/StudentProfile");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
+/**
+ * @desc    Get aggregated dashboard data for the authenticated student
+ * @route   GET /api/dashboard
+ * @access  Private (Student)
+ */
 const getDashboard = asyncHandler(async (req, res) => {
   const { id: userId, account_status, email_verified } = req.user;
 

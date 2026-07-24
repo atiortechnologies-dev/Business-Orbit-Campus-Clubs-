@@ -11,6 +11,9 @@ const StudentProfile = require("../models/StudentProfile");
 const Startup = require("../models/Startup");
 const MentorRequest = require("../models/MentorRequest");
 
+/**
+ * @desc    Seeds the database with mock mentor requests, students, and startups for development purposes.
+ */
 const seedRequests = async () => {
   try {
     // 1. Connect to the database
