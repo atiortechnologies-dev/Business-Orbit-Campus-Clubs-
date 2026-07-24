@@ -47,7 +47,9 @@ describe("MentorRequest Controller - Transactions", () => {
       mentor_id: mentor._id,
       student_id: student._id,
       startup_id: new mongoose.Types.ObjectId(),
-      request_summary: "Need help with marketing",
+      problem_statement: "Need help with marketing",
+      help_required: "Need help with marketing",
+      preferred_time: "Now",
       status: "pending",
     });
   });

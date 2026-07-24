@@ -7,25 +7,33 @@
 const ChatRoom = require("../models/ChatRoom");
 
 /**
- * Gets hydrated chat rooms for a mentor, including student name, latest message, and unread count.
+/**
+ * Gets hydrated chat rooms for a user, including participant name, latest message, and unread count.
  * Optimizes MongoDB aggregations by strictly limiting sub-pipeline lookups instead of loading arrays into memory.
  *
- * @param {mongoose.Types.ObjectId} mentorId - The mentor's ID
+ * @param {mongoose.Types.ObjectId} userId - The user's ID
+ * @param {string} role - The user's role ('student' or 'mentor')
  * @param {number|null} limit - Optional limit on the number of returned chats
  * @returns {Promise<Array>} Array of hydrated chat room objects
  */
-exports.getHydratedChatRooms = async (mentorId, limit = null) => {
+exports.getHydratedChatRooms = async (userId, role, limit = null) => {
+  const mongoose = require("mongoose");
+  const uid = new mongoose.Types.ObjectId(userId);
+  const matchObj = role === "mentor" ? { mentor_id: uid } : { student_id: uid };
+  const lookupField = role === "mentor" ? "student_id" : "mentor_id";
+  const participantAlias = role === "mentor" ? "student" : "mentor";
+
   const pipeline = [
-    { $match: { mentor_id: mentorId } },
+    { $match: matchObj },
     {
       $lookup: {
         from: "users",
-        localField: "student_id",
+        localField: lookupField,
         foreignField: "_id",
-        as: "student",
+        as: "participant",
       },
     },
-    { $unwind: "$student" },
+    { $unwind: { path: "$participant", preserveNullAndEmptyArrays: true } },
     {
       $lookup: {
         from: "startups",
@@ -59,8 +67,8 @@ exports.getHydratedChatRooms = async (mentorId, limit = null) => {
               $expr: {
                 $and: [
                   { $eq: ["$chat_id", "$$chatId"] },
-                  { $eq: ["$is_read", false] },
-                  { $ne: ["$sender_id", mentorId] },
+                  { $eq: ["$read_at", null] },
+                  { $ne: ["$sender_id", uid] },
                 ],
               },
             },
@@ -89,14 +97,15 @@ exports.getHydratedChatRooms = async (mentorId, limit = null) => {
     $project: {
       chatId: "$_id",
       studentId: "$student_id",
+      mentorId: "$mentor_id",
       startupId: "$startup_id",
-      studentName: "$student.full_name",
+      participantName: "$participant.full_name",
       startupName: "$startup.startup_name",
       lastMessage: "$lastMessage.message",
       lastMessageTime: "$lastMessage.created_at",
       onlineStatus: "offline",
       unreadCount: "$unreadCount",
-    },
+    }
   });
 
   return ChatRoom.aggregate(pipeline);

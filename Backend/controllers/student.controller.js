@@ -10,6 +10,10 @@ const User = require("../models/User");
 const Startup = require("../models/Startup");
 const MentorRequest = require("../models/MentorRequest");
 const Notification = require("../models/Notification");
+const MentorProfile = require("../models/MentorProfile");
+
+// Utility to escape string for use in a MongoDB $regex
+const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /**
  * @desc    Submit a mentorship request to a mentor (Creates a MentorRequest)
@@ -17,9 +21,16 @@ const Notification = require("../models/Notification");
  * @access  Private (Student)
  */
 exports.requestMentor = asyncHandler(async (req, res, next) => {
-  const { mentorId } = req.params;
+  const mentorId = req.params.mentorId || req.body.mentorId;
   const studentId = req.user._id;
-  const { request_summary } = req.body;
+  const { problem_statement, help_required, preferred_meeting_mode, preferred_time, additional_notes } = req.body;
+
+  if (!mentorId) {
+    return res.status(400).json({
+      success: false,
+      message: "mentorId is required.",
+    });
+  }
 
   // 1. Verify that the requested mentor exists and has the correct role
   const mentor = await User.findOne({ _id: mentorId, role: "mentor" });
@@ -65,7 +76,11 @@ exports.requestMentor = asyncHandler(async (req, res, next) => {
           mentor_id: mentorId,
           student_id: studentId,
           startup_id: startup._id,
-          request_summary,
+          problem_statement,
+          help_required,
+          preferred_meeting_mode,
+          preferred_time,
+          additional_notes,
           status: "pending",
         },
       ],
@@ -84,6 +99,19 @@ exports.requestMentor = asyncHandler(async (req, res, next) => {
       { session },
     );
 
+    await require("../models/ActivityLog").create(
+      [
+        {
+          user_id: studentId,
+          action: "SUBMIT_MENTOR_REQUEST",
+          entity_type: "MentorRequest",
+          entity_id: mentorRequest._id,
+          description: `Student submitted a mentorship request to mentor ${mentorId}.`,
+        },
+      ],
+      { session },
+    );
+
     await session.commitTransaction();
 
     res.status(201).json({
@@ -97,4 +125,181 @@ exports.requestMentor = asyncHandler(async (req, res, next) => {
   } finally {
     session.endSession();
   }
+});
+
+/**
+ * @desc    Get student's mentorship requests and status
+ * @route   GET /api/student/mentorship/request-status
+ * @access  Private (Student)
+ */
+exports.getMentorshipRequestStatus = asyncHandler(async (req, res, next) => {
+  const studentId = req.user._id;
+
+  const requests = await MentorRequest.find({ student_id: studentId })
+    .populate({
+      path: "mentor_id",
+      select: "full_name email profile_photo",
+    })
+    .sort({ updated_at: -1 });
+
+  res.status(200).json({
+    success: true,
+    count: requests.length,
+    data: requests,
+  });
+});
+
+/**
+ * @desc    List all approved mentors
+ * @route   GET /api/student/mentors
+ * @access  Private (Student)
+ */
+exports.listMentors = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const startIndex = (page - 1) * limit;
+
+  // Find all active mentor users first to apply proper DB-level pagination
+  const activeMentorUsers = await User.find({ role: "mentor", account_status: "active" }).select("_id");
+  const activeMentorIds = activeMentorUsers.map((u) => u._id);
+  
+  const query = { 
+    profile_status: "completed", 
+    is_visible: true,
+    user_id: { $in: activeMentorIds }
+  };
+  
+  const total = await MentorProfile.countDocuments(query);
+  const mentors = await MentorProfile.find(query)
+    .populate("user_id", "full_name email")
+    .skip(startIndex)
+    .limit(limit)
+    .sort({ rating: -1, total_sessions: -1 });
+
+  res.status(200).json({
+    success: true,
+    count: mentors.length,
+    pagination: {
+      total,
+      page,
+      limit,
+    },
+    data: mentors,
+  });
+});
+
+/**
+ * @desc    Search and filter mentors
+ * @route   POST /api/student/mentors/filter
+ * @access  Private (Student)
+ */
+exports.searchMentors = asyncHandler(async (req, res, next) => {
+  const { expertise, industry, availability, sort } = req.body;
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const startIndex = (page - 1) * limit;
+
+  // Find all active mentor users first to apply proper DB-level pagination
+  const activeMentorUsers = await User.find({ role: "mentor", account_status: "active" }).select("_id");
+  const activeMentorIds = activeMentorUsers.map((u) => u._id);
+
+  let query = { 
+    profile_status: "completed", 
+    is_visible: true,
+    user_id: { $in: activeMentorIds }
+  };
+
+  if (expertise) {
+    query.expertise = { $regex: escapeRegex(expertise), $options: "i" };
+  }
+  
+  if (industry) {
+    query.mentoring_domains = { $in: [new RegExp(escapeRegex(industry), "i")] };
+  }
+  
+  if (availability) {
+    query.availability = { $regex: escapeRegex(availability), $options: "i" };
+  }
+
+  let sortObj = { rating: -1 };
+  if (sort === "experience") sortObj = { years_of_experience: -1 };
+
+  const total = await MentorProfile.countDocuments(query);
+  const mentors = await MentorProfile.find(query)
+    .populate("user_id", "full_name email")
+    .skip(startIndex)
+    .limit(limit)
+    .sort(sortObj);
+
+  res.status(200).json({
+    success: true,
+    count: mentors.length,
+    pagination: {
+      total,
+      page,
+      limit,
+    },
+    data: mentors,
+  });
+});
+
+/**
+ * @desc    Get full mentor profile
+ * @route   GET /api/student/mentors/:id
+ * @access  Private (Student)
+ */
+exports.getMentorProfileStudentView = asyncHandler(async (req, res, next) => {
+  const mentorId = req.params.id;
+
+  // mentorId could be User._id
+  const profile = await MentorProfile.findOne({ user_id: mentorId, profile_status: "completed" })
+    .populate("user_id", "full_name email");
+
+  if (!profile || !profile.user_id) {
+    return res.status(404).json({ success: false, message: "Mentor not found or profile incomplete." });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: profile,
+  });
+});
+
+/**
+ * @desc    Get mentor reviews (Mocked for now)
+ * @route   GET /api/student/mentors/:id/reviews
+ * @access  Private (Student)
+ */
+exports.getMentorReviews = asyncHandler(async (req, res, next) => {
+  // TODO: MentorReview model is not yet implemented in the codebase.
+  // This endpoint is currently a stub for frontend UI development.
+  // When MentorReview is implemented, replace this with an actual DB query.
+  res.status(200).json({
+    success: true,
+    count: 0,
+    data: [],
+    message: "Mentor reviews are not yet implemented.",
+  });
+});
+
+/**
+ * @desc    Get mentor availability
+ * @route   GET /api/student/mentors/:id/availability
+ * @access  Private (Student)
+ */
+exports.getMentorAvailability = asyncHandler(async (req, res, next) => {
+  const mentorId = req.params.id;
+
+  const profile = await MentorProfile.findOne({ user_id: mentorId }).select("availability");
+  
+  if (!profile) {
+    return res.status(404).json({ success: false, message: "Mentor not found." });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      availability: profile.availability || "Not specified",
+    },
+  });
 });

@@ -172,7 +172,7 @@ describe("Investor Discovery Controller", () => {
 
   describe("getPitches", () => {
     it("should return all active pitches", async () => {
-      const req = {};
+      const req = { query: {} };
       const res = mockResponse();
 
       await investorDiscoveryController.getPitches(req, res, mockNext);
@@ -203,7 +203,7 @@ describe("Investor Discovery Controller", () => {
 
   describe("filterPitches", () => {
     it("should return filtered pitches", async () => {
-      const req = { body: { industry: "Tech" } };
+      const req = { body: { industry: "Tech" }, query: {} };
       const res = mockResponse();
 
       await investorDiscoveryController.filterPitches(req, res, mockNext);

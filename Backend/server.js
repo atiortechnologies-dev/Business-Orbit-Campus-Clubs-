@@ -52,6 +52,7 @@ const mentorRoutes = require("./routes/mentor.routes");
 const studentRoutes = require("./routes/student.routes");
 const companyRoutes = require("./routes/company.routes");
 const investorRoutes = require("./routes/investor.routes");
+const chatRoutes = require("./routes/chat.routes");
 const { requireAuth, authorizeRoles } = require("./middlewares/requireAuth");
 
 app.use("/api/auth", authRoutes);
@@ -78,6 +79,7 @@ app.use("/api/mentor", requireAuth, authorizeRoles("mentor"), mentorRoutes);
 app.use("/api/student", requireAuth, authorizeRoles("student"), studentRoutes);
 app.use("/api/company", companyRoutes);
 app.use("/api/investor", investorRoutes);
+app.use("/api/chat", chatRoutes);
 
 // Error handling
 app.use(notFound);

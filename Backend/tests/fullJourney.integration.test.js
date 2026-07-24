@@ -211,7 +211,9 @@ describe("Full Lifecycle Integration Journey", () => {
         student_id: studentId,
         startup_id: startupId,
         mentor_id: mentorId,
-        request_summary: "We need guidance on testing.",
+        problem_statement: "We need guidance on testing.",
+        help_required: "Guidance on testing",
+        preferred_time: "Now",
         status: REQUEST_STATUS.PENDING,
       });
       requestId = requestObj._id;
@@ -225,6 +227,7 @@ describe("Full Lifecycle Integration Journey", () => {
 
       const res = await request(app).post("/api/auth/login").send(payload);
 
+      if (res.status !== 200) console.error("TEST T.1 FAILED. STATUS:", res.status, "BODY:", res.body);
       expect(res.status).toBe(200);
       mentorJwt = res.body.data.accessToken;
     });
@@ -296,7 +299,7 @@ describe("Full Lifecycle Integration Journey", () => {
 
     it("Test 5.5: Fetch Initialized Chat Rooms", async () => {
       const res = await request(app)
-        .get("/api/mentor/chats")
+        .get("/api/chat/conversations")
         .set("Authorization", `Bearer ${mentorJwt}`);
 
       expect(res.status).toBe(200);
@@ -311,7 +314,7 @@ describe("Full Lifecycle Integration Journey", () => {
 
     it("Test 5.6: Send Chat Message", async () => {
       const res = await request(app)
-        .post(`/api/mentor/chats/${apiChatId}/messages`)
+        .post(`/api/chat/send/${apiChatId}`)
         .set("Authorization", `Bearer ${mentorJwt}`)
         .send({ message: "Hello! Looking forward to working together." });
 
@@ -326,8 +329,9 @@ describe("Full Lifecycle Integration Journey", () => {
 
     it("Test 5.7: Fetch Chat Messages", async () => {
       const res = await request(app)
-        .get(`/api/mentor/chats/${apiChatId}/messages`)
+        .get(`/api/chat/messages/${apiChatId}`)
         .set("Authorization", `Bearer ${mentorJwt}`);
+      console.log("TEST 5.7 RESPONSE STATUS:", res.status, "BODY:", res.body);
 
       expect(res.status).toBe(200);
       expect(res.body.messages.length).toBeGreaterThan(0);
