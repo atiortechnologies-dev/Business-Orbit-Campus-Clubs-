@@ -1,3 +1,9 @@
+/**
+ * @file auth.controller.js
+ * @description Manages user authentication and registration flows including OTP, JWT generation, and profile initialization.
+ * @architecture Relies on transactional operations to create User and profile records simultaneously.
+ */
+
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const EmailVerification = require("../models/EmailVerification");

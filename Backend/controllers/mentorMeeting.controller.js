@@ -168,7 +168,6 @@ exports.addMeetingNotes = asyncHandler(async (req, res) => {
   }
 
   if (meeting.status === MEETING_STATUS.COMPLETED) {
-    // TODO (Frontend): Ensure the UI actively guides mentors to save their notes before marking the session as completed to prevent frustrating UX data locks.
     return res
       .status(400)
       .json({ message: "Cannot add notes to a completed meeting. Read-only." });
@@ -218,6 +217,13 @@ exports.completeMeeting = asyncHandler(async (req, res) => {
 
   if (meeting.status === MEETING_STATUS.COMPLETED) {
     return res.status(400).json({ message: "Meeting is already completed" });
+  }
+
+  const notes = await MeetingNotes.findOne({ meeting_id: meeting._id });
+  if (!notes || !notes.mentor_notes) {
+    return res.status(400).json({
+      message: "Cannot complete meeting without saving notes first.",
+    });
   }
 
   meeting.status = MEETING_STATUS.COMPLETED;

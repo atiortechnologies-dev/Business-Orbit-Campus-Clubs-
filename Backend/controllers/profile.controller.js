@@ -1,3 +1,9 @@
+/**
+ * @file profile.controller.js
+ * @description Centralizes profile management for all user roles.
+ * @architecture Dynamically constructs validation schemas based on user role and allows creating/updating role-specific profiles.
+ */
+
 const {
   roleSpecificCompleteSchemas,
   commonProfileFields,
@@ -31,6 +37,11 @@ const validateBody = (schema, req, res) => {
   return result.data;
 };
 
+/**
+ * @desc    Create a role-specific profile for the authenticated user
+ * @route   POST /api/profiles
+ * @access  Private
+ */
 const createProfile = asyncHandler(async (req, res) => {
   const { role, id: userId, account_status, email_verified } = req.user;
   const config = roleConfig[role];
@@ -91,6 +102,11 @@ const createProfile = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Skip the profile creation step during onboarding
+ * @route   POST /api/profiles/skip
+ * @access  Private
+ */
 const skipProfile = asyncHandler(async (req, res) => {
   const { role, id: userId } = req.user;
   const config = roleConfig[role];
@@ -113,6 +129,11 @@ const skipProfile = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Update the user's role-specific profile
+ * @route   PUT /api/profiles
+ * @access  Private
+ */
 const updateProfile = asyncHandler(async (req, res) => {
   const { role, id: userId } = req.user;
   const config = roleConfig[role];
@@ -141,6 +162,11 @@ const updateProfile = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get the authenticated user's role-specific profile
+ * @route   GET /api/profiles/me
+ * @access  Private
+ */
 const getMyProfile = asyncHandler(async (req, res) => {
   const { role, id: userId } = req.user;
   const config = roleConfig[role];

@@ -248,6 +248,15 @@ const saveDraftSchema = z.object({
     .optional(),
 });
 
+//* Mentor Requests
+const requestMentorSchema = z.object({
+  request_summary: z
+    .string()
+    .trim()
+    .min(10, "Request summary must be at least 10 characters")
+    .max(1000, "Request summary must be under 1000 characters"),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -262,4 +271,5 @@ module.exports = {
   roleSpecificCompleteSchemas,
   submitIdeaSchema,
   saveDraftSchema,
+  requestMentorSchema,
 };

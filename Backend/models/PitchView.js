@@ -19,7 +19,7 @@ const pitchViewSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: { createdAt: "viewed_at", updatedAt: false } }
+  { timestamps: { createdAt: "viewed_at", updatedAt: false } },
 );
 
 module.exports = mongoose.model("PitchView", pitchViewSchema);

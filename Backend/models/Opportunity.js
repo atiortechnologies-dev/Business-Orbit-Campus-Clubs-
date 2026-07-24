@@ -51,7 +51,7 @@ const opportunitySchema = new mongoose.Schema(
       index: true, // ⚡ Performance: Fast filtering by active status
     },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
 // ⚡ Performance: Text index for global search features

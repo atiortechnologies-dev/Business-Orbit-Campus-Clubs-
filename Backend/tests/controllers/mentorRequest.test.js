@@ -61,7 +61,9 @@ describe("Mentor Request Controller", () => {
       };
       const res = mockResponse();
 
-      const next = jest.fn((err) => { if (err) console.error("NEXT ERROR:", err); });
+      const next = jest.fn((err) => {
+        if (err) console.error("NEXT ERROR:", err);
+      });
       await acceptRequest(req, res, next);
       if (next.mock.calls.length > 0) throw next.mock.calls[0][0];
 

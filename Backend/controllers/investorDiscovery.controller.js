@@ -13,6 +13,7 @@ const Meeting = require("../models/Meeting"); // Reusing for startup meetings
 const InvestorChatRoom = require("../models/InvestorChatRoom");
 const InvestorMessage = require("../models/InvestorMessage");
 const Notification = require("../models/Notification");
+const mongoose = require("mongoose");
 
 /**
  * @desc    Get dashboard summary
@@ -48,9 +49,15 @@ exports.getStats = asyncHandler(async (req, res) => {
   const investorId = req.user._id;
 
   const totalPitches = await StartupPitch.countDocuments({ status: "active" });
-  const watchlistCount = await InvestorWatchlist.countDocuments({ investor_id: investorId });
-  const reviewedCount = await PitchView.countDocuments({ investor_id: investorId });
-  const activeConversations = await InvestorChatRoom.countDocuments({ investor_id: investorId });
+  const watchlistCount = await InvestorWatchlist.countDocuments({
+    investor_id: investorId,
+  });
+  const reviewedCount = await PitchView.countDocuments({
+    investor_id: investorId,
+  });
+  const activeConversations = await InvestorChatRoom.countDocuments({
+    investor_id: investorId,
+  });
 
   res.status(200).json({
     success: true,
@@ -100,17 +107,19 @@ exports.getPitches = asyncHandler(async (req, res) => {
     .limit(limit);
 
   // Filter out null startup_ids (caused by $regex match failing)
-  const filteredPitches = search ? pitches.filter((p) => p.startup_id !== null) : pitches;
+  const filteredPitches = search
+    ? pitches.filter((p) => p.startup_id !== null)
+    : pitches;
   const total = await StartupPitch.countDocuments(query);
 
-  res.status(200).json({ 
-    success: true, 
+  res.status(200).json({
+    success: true,
     data: filteredPitches,
     pagination: {
       total,
       page,
       pages: Math.ceil(total / limit),
-    }
+    },
   });
 });
 
@@ -121,7 +130,9 @@ exports.getPitches = asyncHandler(async (req, res) => {
 exports.getPitchDetails = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const pitch = await StartupPitch.findById(id).populate("startup_id").populate("founder_id", "first_name last_name");
+  const pitch = await StartupPitch.findById(id)
+    .populate("startup_id")
+    .populate("founder_id", "first_name last_name");
   if (!pitch || pitch.status === "hidden") {
     return res.status(404).json({ message: "Pitch not found" });
   }
@@ -142,7 +153,7 @@ exports.filterPitches = asyncHandler(async (req, res) => {
   const query = { status: "active" };
   if (industry) query.industry = industry;
   if (funding_stage) query.funding_stage = funding_stage;
-  
+
   // Chapter & Technology filtering requires deeper lookup, for simplicity matching technology against industry or custom startup fields if populated
   if (technology) query.industry = { $regex: technology, $options: "i" }; // Assuming technology is part of industry for now
 
@@ -155,14 +166,14 @@ exports.filterPitches = asyncHandler(async (req, res) => {
 
   const total = await StartupPitch.countDocuments(query);
 
-  res.status(200).json({ 
-    success: true, 
+  res.status(200).json({
+    success: true,
     data: pitches,
     pagination: {
       total,
       page,
       pages: Math.ceil(total / limit),
-    }
+    },
   });
 });
 
@@ -198,27 +209,50 @@ exports.addToWatchlist = asyncHandler(async (req, res) => {
     investor_id: req.user._id,
     startup_id,
   });
-  
+
   if (existing) {
-    return res.status(400).json({ message: "Startup is already in your watchlist" });
+    return res
+      .status(400)
+      .json({ message: "Startup is already in your watchlist" });
   }
 
-  const item = await InvestorWatchlist.create({
-    investor_id: req.user._id,
-    startup_id,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (Notification) {
-    await Notification.create({
-      recipient_id: startup.student_id,
-      title: "Startup Watchlisted",
-      message: "An investor has added your startup to their watchlist.",
-      type: "watchlist",
-      related_id: item._id,
-    });
+  try {
+    const [item] = await InvestorWatchlist.create(
+      [
+        {
+          investor_id: req.user._id,
+          startup_id,
+        },
+      ],
+      { session },
+    );
+
+    if (Notification) {
+      await Notification.create(
+        [
+          {
+            recipient_id: startup.student_id,
+            title: "Startup Watchlisted",
+            message: "An investor has added your startup to their watchlist.",
+            type: "watchlist",
+            related_id: item._id,
+          },
+        ],
+        { session },
+      );
+    }
+
+    await session.commitTransaction();
+    res.status(201).json({ success: true, data: item });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  res.status(201).json({ success: true, data: item });
 });
 
 /**
@@ -233,7 +267,8 @@ exports.removeFromWatchlist = asyncHandler(async (req, res) => {
     investor_id: req.user._id,
   });
 
-  if (!item) return res.status(404).json({ message: "Watchlist item not found" });
+  if (!item)
+    return res.status(404).json({ message: "Watchlist item not found" });
 
   res.status(200).json({ success: true, message: "Removed from watchlist" });
 });
@@ -245,7 +280,8 @@ exports.removeFromWatchlist = asyncHandler(async (req, res) => {
 exports.addNote = asyncHandler(async (req, res) => {
   const { startup_id, note } = req.body;
 
-  if (!startup_id) return res.status(400).json({ message: "Startup ID is required" });
+  if (!startup_id)
+    return res.status(400).json({ message: "Startup ID is required" });
   if (!note) return res.status(400).json({ message: "Note is required" });
 
   const newNote = await InvestorNote.create({
@@ -268,28 +304,52 @@ exports.requestMeeting = asyncHandler(async (req, res) => {
   if (!startup) return res.status(404).json({ message: "Startup not found" });
 
   if (new Date(meeting_date) < new Date()) {
-    return res.status(400).json({ message: "Meeting date must be in the future" });
+    return res
+      .status(400)
+      .json({ message: "Meeting date must be in the future" });
   }
 
-  const meeting = await Meeting.create({
-    startup_id,
-    reviewer_id: req.user._id, // Investor acting as reviewer
-    meeting_date,
-    meeting_link,
-    status: "scheduled",
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (Notification) {
-    await Notification.create({
-      recipient_id: startup.student_id, // Founder
-      title: "Investor Meeting Requested",
-      message: "An investor has requested a meeting regarding your startup.",
-      type: "meeting",
-      related_id: meeting._id,
-    });
+  try {
+    const [meeting] = await Meeting.create(
+      [
+        {
+          startup_id,
+          reviewer_id: req.user._id, // Investor acting as reviewer
+          meeting_date,
+          meeting_link,
+          status: "scheduled",
+        },
+      ],
+      { session },
+    );
+
+    if (Notification) {
+      await Notification.create(
+        [
+          {
+            recipient_id: startup.student_id, // Founder
+            title: "Investor Meeting Requested",
+            message:
+              "An investor has requested a meeting regarding your startup.",
+            type: "meeting",
+            related_id: meeting._id,
+          },
+        ],
+        { session },
+      );
+    }
+
+    await session.commitTransaction();
+    res.status(201).json({ success: true, data: meeting });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  res.status(201).json({ success: true, data: meeting });
 });
 
 /**
@@ -301,37 +361,70 @@ exports.startConversation = asyncHandler(async (req, res) => {
   const investorId = req.user._id;
 
   if (!founder_id || !message) {
-    return res.status(400).json({ message: "Founder ID and message are required" });
+    return res
+      .status(400)
+      .json({ message: "Founder ID and message are required" });
   }
 
-  // Find existing chat room or create one
-  let chatRoom = await InvestorChatRoom.findOne({
-    investor_id: investorId, founder_id: founder_id,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!chatRoom) {
-    chatRoom = await InvestorChatRoom.create({
+  try {
+    // Find existing chat room or create one
+    let chatRoom = await InvestorChatRoom.findOne({
       investor_id: investorId,
       founder_id: founder_id,
-    });
+    }).session(session);
+
+    if (!chatRoom) {
+      const [newRoom] = await InvestorChatRoom.create(
+        [
+          {
+            investor_id: investorId,
+            founder_id: founder_id,
+          },
+        ],
+        { session },
+      );
+      chatRoom = newRoom;
+    }
+
+    // Create the actual message
+    const [newMessage] = await InvestorMessage.create(
+      [
+        {
+          chat_id: chatRoom._id,
+          sender_id: investorId,
+          message: message,
+        },
+      ],
+      { session },
+    );
+
+    if (Notification) {
+      await Notification.create(
+        [
+          {
+            recipient_id: founder_id,
+            title: "New Message from Investor",
+            message:
+              "You have received a new message from an investor regarding your pitch.",
+            type: "message",
+            related_id: chatRoom._id,
+          },
+        ],
+        { session },
+      );
+    }
+
+    await session.commitTransaction();
+    res
+      .status(201)
+      .json({ success: true, data: { chatRoom, message: newMessage } });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  // Create the actual message
-  const newMessage = await InvestorMessage.create({
-    chat_id: chatRoom._id,
-    sender_id: investorId,
-    message: message,
-  });
-
-  if (Notification) {
-    await Notification.create({
-      recipient_id: founder_id,
-      title: "New Message from Investor",
-      message: "You have received a new message from an investor regarding your pitch.",
-      type: "message",
-      related_id: chatRoom._id,
-    });
-  }
-
-  res.status(201).json({ success: true, data: { chatRoom, message: newMessage } });
 });

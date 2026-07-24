@@ -1,9 +1,20 @@
+/**
+ * @file reviewProcessing.js
+ * @description Contains the core business logic for processing a stage review.
+ * @architecture Encapsulates the flow of approving/rejecting a submission, unlocking subsequent stages, and updating startup progress.
+ */
+
 const Review = require("../models/Review");
 const StageSubmission = require("../models/StageSubmission");
 const Startup = require("../models/Startup");
 const StartupStage = require("../models/StartupStage");
 const { recalcProgress } = require("./startupJourney");
 
+/**
+ * @desc    Process a review for a stage submission, updating stage statuses and startup progress
+ * @param   {Object} params - Contains submissionId, reviewerId, decision, feedback, and improvementSuggestions
+ * @returns {Promise<Object>} The created Review document
+ */
 const processReview = async ({
   submissionId,
   reviewerId,

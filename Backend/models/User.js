@@ -80,8 +80,12 @@ userSchema.post("findOneAndDelete", async function (doc) {
   }
 });
 
-userSchema.post("deleteOne", { document: true, query: false }, async function () {
-  await cascadeService.deleteUserDependencies(this._id);
-});
+userSchema.post(
+  "deleteOne",
+  { document: true, query: false },
+  async function () {
+    await cascadeService.deleteUserDependencies(this._id);
+  },
+);
 
 module.exports = mongoose.model("User", userSchema);

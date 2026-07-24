@@ -30,7 +30,7 @@ const investorMessageSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
 module.exports = mongoose.model("InvestorMessage", investorMessageSchema);

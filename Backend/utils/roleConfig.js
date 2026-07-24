@@ -1,9 +1,19 @@
+/**
+ * @file roleConfig.js
+ * @description Centralized configuration mapping user roles to their respective profile models, fields, and routing logic.
+ * @architecture Acts as a lookup dictionary used dynamically during onboarding and profile creation.
+ */
+
 const StudentProfile = require("../models/StudentProfile");
 const MentorProfile = require("../models/MentorProfile");
 const InvestorProfile = require("../models/InvestorProfile");
 const IncubatorProfile = require("../models/IncubatorProfile");
 const CompanyProfile = require("../models/CompanyProfile");
 
+/**
+ * @constant {Object} roleConfig
+ * @description Maps role strings to their specific profile model and required configuration details.
+ */
 const roleConfig = {
   student: {
     ProfileModel: StudentProfile,

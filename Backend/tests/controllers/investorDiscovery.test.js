@@ -71,7 +71,7 @@ describe("Investor Discovery Controller", () => {
             recentPitches: expect.any(Array),
             watchlist: expect.any(Array),
           }),
-        })
+        }),
       );
     });
   });
@@ -87,8 +87,11 @@ describe("Investor Discovery Controller", () => {
       await investorDiscoveryController.trackPitchView(req, res, mockNext);
 
       expect(res.status).toHaveBeenCalledWith(201);
-      
-      const view = await PitchView.findOne({ investor_id: investorId, pitch_id: pitch._id });
+
+      const view = await PitchView.findOne({
+        investor_id: investorId,
+        pitch_id: pitch._id,
+      });
       expect(view).not.toBeNull();
     });
   });
@@ -105,7 +108,10 @@ describe("Investor Discovery Controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(201);
 
-      const item = await InvestorWatchlist.findOne({ investor_id: investorId, startup_id: startup._id });
+      const item = await InvestorWatchlist.findOne({
+        investor_id: investorId,
+        startup_id: startup._id,
+      });
       expect(item).not.toBeNull();
     });
 
@@ -124,7 +130,9 @@ describe("Investor Discovery Controller", () => {
       await investorDiscoveryController.addToWatchlist(req, res, mockNext);
 
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ message: "Startup is already in your watchlist" });
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Startup is already in your watchlist",
+      });
     });
   });
 
@@ -145,7 +153,7 @@ describe("Investor Discovery Controller", () => {
             reviewedCount: 0,
             activeConversations: 0,
           }),
-        })
+        }),
       );
     });
   });
@@ -188,7 +196,7 @@ describe("Investor Discovery Controller", () => {
           data: expect.objectContaining({
             _id: pitch._id,
           }),
-        })
+        }),
       );
     });
   });
@@ -207,21 +215,29 @@ describe("Investor Discovery Controller", () => {
 
   describe("removeFromWatchlist", () => {
     it("should remove item from watchlist", async () => {
-      const item = await InvestorWatchlist.create({ investor_id: investorId, startup_id: startup._id });
+      const item = await InvestorWatchlist.create({
+        investor_id: investorId,
+        startup_id: startup._id,
+      });
       const req = { params: { id: item._id }, user: { _id: investorId } };
       const res = mockResponse();
 
       await investorDiscoveryController.removeFromWatchlist(req, res, mockNext);
 
       expect(res.status).toHaveBeenCalledWith(200);
-      const remaining = await InvestorWatchlist.countDocuments({ investor_id: investorId });
+      const remaining = await InvestorWatchlist.countDocuments({
+        investor_id: investorId,
+      });
       expect(remaining).toBe(0);
     });
   });
 
   describe("addNote", () => {
     it("should add a private note", async () => {
-      const req = { body: { startup_id: startup._id, note: "Interesting" }, user: { _id: investorId } };
+      const req = {
+        body: { startup_id: startup._id, note: "Interesting" },
+        user: { _id: investorId },
+      };
       const res = mockResponse();
 
       await investorDiscoveryController.addNote(req, res, mockNext);
@@ -232,13 +248,13 @@ describe("Investor Discovery Controller", () => {
 
   describe("requestMeeting", () => {
     it("should request a meeting", async () => {
-      const req = { 
-        body: { 
-          startup_id: startup._id, 
-          meeting_date: new Date(Date.now() + 86400000), 
-          meeting_link: "link" 
-        }, 
-        user: { _id: investorId } 
+      const req = {
+        body: {
+          startup_id: startup._id,
+          meeting_date: new Date(Date.now() + 86400000),
+          meeting_link: "link",
+        },
+        user: { _id: investorId },
       };
       const res = mockResponse();
 
@@ -250,7 +266,10 @@ describe("Investor Discovery Controller", () => {
 
   describe("startConversation", () => {
     it("should create or return chatroom", async () => {
-      const req = { body: { founder_id: founderId, message: "Hello" }, user: { _id: investorId } };
+      const req = {
+        body: { founder_id: founderId, message: "Hello" },
+        user: { _id: investorId },
+      };
       const res = mockResponse();
 
       await investorDiscoveryController.startConversation(req, res, mockNext);
@@ -259,4 +278,3 @@ describe("Investor Discovery Controller", () => {
     });
   });
 });
-

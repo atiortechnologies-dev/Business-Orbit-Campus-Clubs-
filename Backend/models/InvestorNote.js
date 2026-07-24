@@ -23,7 +23,7 @@ const investorNoteSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: false } }
+  { timestamps: { createdAt: "created_at", updatedAt: false } },
 );
 
 module.exports = mongoose.model("InvestorNote", investorNoteSchema);

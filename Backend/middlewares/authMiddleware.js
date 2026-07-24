@@ -1,7 +1,16 @@
+/**
+ * @file authMiddleware.js
+ * @description The core authentication and authorization middleware layer.
+ * @architecture Intercepts requests to verify JWT access tokens, injects user context, enforces role-based access, and handles refresh tokens.
+ */
+
 const { verifyToken, verifyRefreshToken } = require("../utils/token");
 const User = require("../models/User");
 const asyncHandler = require("./asyncHandler");
 
+/**
+ * @desc    Middleware to verify JWT and inject user context into request
+ */
 const protect = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization || "";
 
@@ -43,6 +52,10 @@ const protect = asyncHandler(async (req, res, next) => {
   next();
 });
 
+/**
+ * @desc    Middleware factory to enforce role-based access restrictions
+ * @param   {string} role - The allowed user role (e.g., 'student', 'admin')
+ */
 const requireRole = (role) => (req, res, next) => {
   if (!req.user || req.user.role !== role) {
     return res.status(403).json({
@@ -53,6 +66,9 @@ const requireRole = (role) => (req, res, next) => {
   next();
 };
 
+/**
+ * @desc    Middleware to validate a refresh token and inject basic user context
+ */
 const verifyRefreshTokenMiddleware = asyncHandler(async (req, res, next) => {
   const { refreshToken } = req.body;
 

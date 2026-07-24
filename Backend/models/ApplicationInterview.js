@@ -28,7 +28,10 @@ const applicationInterviewSchema = new mongoose.Schema(
       default: "scheduled",
     },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-module.exports = mongoose.model("ApplicationInterview", applicationInterviewSchema);
+module.exports = mongoose.model(
+  "ApplicationInterview",
+  applicationInterviewSchema,
+);

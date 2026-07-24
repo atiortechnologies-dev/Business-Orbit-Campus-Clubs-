@@ -44,7 +44,10 @@ describe("StartupProgress Controller", () => {
     });
 
     it("should reflect pending review status", async () => {
-      const startup = await Startup.create({ student_id: userId, startup_name: "My Startup" });
+      const startup = await Startup.create({
+        student_id: userId,
+        startup_name: "My Startup",
+      });
       const stage = await StartupStage.create({
         startup_id: startup._id,
         stage_number: 1,

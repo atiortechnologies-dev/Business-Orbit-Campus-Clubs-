@@ -55,7 +55,7 @@ const startupPitchSchema = new mongoose.Schema(
       default: [],
     },
   },
-  { timestamps: { createdAt: "submitted_at", updatedAt: "updated_at" } }
+  { timestamps: { createdAt: "submitted_at", updatedAt: "updated_at" } },
 );
 
 module.exports = mongoose.model("StartupPitch", startupPitchSchema);

@@ -1,3 +1,9 @@
+/**
+ * @file auth.routes.js
+ * @description Defines the core authentication API routes (register, login, OTP handling, password reset, token refresh).
+ * @architecture Leverages the validateRequest middleware to validate incoming request bodies/queries against Joi schemas.
+ */
+
 const router = require("express").Router();
 const {
   register,
@@ -66,4 +72,8 @@ router.post(
 // GET /api/auth/me
 router.get("/me", protect, getMe);
 
+/**
+ * @module authRouter
+ * @description Express router for authentication endpoints.
+ */
 module.exports = router;

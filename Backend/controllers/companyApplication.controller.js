@@ -50,19 +50,29 @@ exports.getApplicants = asyncHandler(async (req, res) => {
     .limit(limit);
 
   // Filter out where match failed (student_id is null)
-  applications = search ? applications.filter(app => app.student_id !== null) : applications;
+  applications = search
+    ? applications.filter((app) => app.student_id !== null)
+    : applications;
 
   // Extract student IDs for deep population
-  const studentIds = applications.map(app => app.student_id ? app.student_id._id : null).filter(Boolean);
+  const studentIds = applications
+    .map((app) => (app.student_id ? app.student_id._id : null))
+    .filter(Boolean);
 
   // Fetch Student Profiles (College, Degree, Skills) and Startups in bulk
-  const studentProfiles = await StudentProfile.find({ user_id: { $in: studentIds } });
+  const studentProfiles = await StudentProfile.find({
+    user_id: { $in: studentIds },
+  });
   const startups = await Startup.find({ student_id: { $in: studentIds } });
 
   // Map the data into the final response
-  const enhancedApplications = applications.map(app => {
-    const profile = studentProfiles.find(p => p.user_id.equals(app.student_id._id));
-    const startup = startups.find(s => s.student_id.equals(app.student_id._id));
+  const enhancedApplications = applications.map((app) => {
+    const profile = studentProfiles.find((p) =>
+      p.user_id.equals(app.student_id._id),
+    );
+    const startup = startups.find((s) =>
+      s.student_id.equals(app.student_id._id),
+    );
     return {
       ...app.toObject(),
       student_profile: profile || null,
@@ -72,13 +82,12 @@ exports.getApplicants = asyncHandler(async (req, res) => {
 
   const total = await Application.countDocuments({ opportunity_id: id });
 
-  res.status(200).json({ 
-    success: true, 
+  res.status(200).json({
+    success: true,
     data: enhancedApplications,
-    pagination: { total, page, pages: Math.ceil(total / limit) }
+    pagination: { total, page, pages: Math.ceil(total / limit) },
   });
 });
-
 
 /**
  * @desc    Get application stats for an opportunity
@@ -135,12 +144,17 @@ exports.filterApplications = asyncHandler(async (req, res) => {
     if (college) profileQuery.college = { $regex: college, $options: "i" };
     if (degree) profileQuery.degree = { $regex: degree, $options: "i" };
     if (skills && skills.length > 0) profileQuery.skills = { $in: skills };
-    
-    const matchedProfiles = await StudentProfile.find(profileQuery).select("user_id");
-    matchedUserIds = matchedProfiles.map(p => p.user_id);
-    
+
+    const matchedProfiles =
+      await StudentProfile.find(profileQuery).select("user_id");
+    matchedUserIds = matchedProfiles.map((p) => p.user_id);
+
     if (matchedUserIds.length === 0) {
-      return res.status(200).json({ success: true, data: [], pagination: { total: 0, page, pages: 0 } });
+      return res.status(200).json({
+        success: true,
+        data: [],
+        pagination: { total: 0, page, pages: 0 },
+      });
     }
   }
 
@@ -150,11 +164,16 @@ exports.filterApplications = asyncHandler(async (req, res) => {
   if (matchedUserIds) query.student_id = { $in: matchedUserIds };
 
   if (opportunity_id) {
-    const { error, status: errStatus } = await verifyOpportunityAccess(opportunity_id, companyId);
+    const { error, status: errStatus } = await verifyOpportunityAccess(
+      opportunity_id,
+      companyId,
+    );
     if (error) return res.status(errStatus).json({ message: error });
     query.opportunity_id = opportunity_id;
   } else {
-    const opportunities = await Opportunity.find({ company_id: companyId }).select("_id");
+    const opportunities = await Opportunity.find({
+      company_id: companyId,
+    }).select("_id");
     query.opportunity_id = { $in: opportunities.map((o) => o._id) };
   }
 
@@ -167,13 +186,21 @@ exports.filterApplications = asyncHandler(async (req, res) => {
     .limit(limit);
 
   // 4. Extract IDs and map deep data (College, Degree, Skills, Startup)
-  const studentIds = applications.map(app => app.student_id ? app.student_id._id : null).filter(Boolean);
-  const studentProfiles = await StudentProfile.find({ user_id: { $in: studentIds } });
+  const studentIds = applications
+    .map((app) => (app.student_id ? app.student_id._id : null))
+    .filter(Boolean);
+  const studentProfiles = await StudentProfile.find({
+    user_id: { $in: studentIds },
+  });
   const startups = await Startup.find({ student_id: { $in: studentIds } });
 
-  const enhancedApplications = applications.map(app => {
-    const profile = studentProfiles.find(p => p.user_id.equals(app.student_id._id));
-    const startup = startups.find(s => s.student_id.equals(app.student_id._id));
+  const enhancedApplications = applications.map((app) => {
+    const profile = studentProfiles.find((p) =>
+      p.user_id.equals(app.student_id._id),
+    );
+    const startup = startups.find((s) =>
+      s.student_id.equals(app.student_id._id),
+    );
     return {
       ...app.toObject(),
       student_profile: profile || null,
@@ -183,10 +210,10 @@ exports.filterApplications = asyncHandler(async (req, res) => {
 
   const total = await Application.countDocuments(query);
 
-  res.status(200).json({ 
-    success: true, 
+  res.status(200).json({
+    success: true,
     data: enhancedApplications,
-    pagination: { total, page, pages: Math.ceil(total / limit) }
+    pagination: { total, page, pages: Math.ceil(total / limit) },
   });
 });
 
@@ -199,9 +226,13 @@ exports.updateApplicationStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
 
   const application = await Application.findById(id).populate("opportunity_id");
-  if (!application) return res.status(404).json({ message: "Application not found" });
+  if (!application)
+    return res.status(404).json({ message: "Application not found" });
 
-  if (!application.opportunity_id || !application.opportunity_id.company_id.equals(req.user._id)) {
+  if (
+    !application.opportunity_id ||
+    !application.opportunity_id.company_id.equals(req.user._id)
+  ) {
     return res.status(403).json({ message: "Unauthorized access" });
   }
 
@@ -215,32 +246,53 @@ exports.updateApplicationStatus = asyncHandler(async (req, res) => {
   };
 
   if (!allowedTransitions[application.application_status]?.includes(status)) {
-    return res.status(400).json({ 
-      message: `Invalid status transition. Cannot move from ${application.application_status} to ${status}.` 
+    return res.status(400).json({
+      message: `Invalid status transition. Cannot move from ${application.application_status} to ${status}.`,
     });
   }
 
-  application.application_status = status;
-  await application.save();
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  await ApplicantStatus.create({
-    application_id: application._id,
-    status,
-    updated_by: req.user._id,
-  });
+  try {
+    application.application_status = status;
+    await application.save({ session });
 
-  // Create notification
-  if (Notification) {
-    await Notification.create({
-      recipient_id: application.student_id,
-      title: "Application Status Updated",
-      message: `Your application for ${application.opportunity_id.title} has been ${status}.`,
-      type: "application_update",
-      related_id: application._id,
-    });
+    await ApplicantStatus.create(
+      [
+        {
+          application_id: application._id,
+          status,
+          updated_by: req.user._id,
+        },
+      ],
+      { session },
+    );
+
+    // Create notification
+    if (Notification) {
+      await Notification.create(
+        [
+          {
+            recipient_id: application.student_id,
+            title: "Application Status Updated",
+            message: `Your application for ${application.opportunity_id.title} has been ${status}.`,
+            type: "application_update",
+            related_id: application._id,
+          },
+        ],
+        { session },
+      );
+    }
+
+    await session.commitTransaction();
+    res.status(200).json({ success: true, data: application });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  res.status(200).json({ success: true, data: application });
 });
 
 /**
@@ -254,16 +306,26 @@ exports.getApplicationDetails = asyncHandler(async (req, res) => {
     .populate("student_id")
     .populate("opportunity_id");
 
-  if (!application) return res.status(404).json({ message: "Application not found" });
+  if (!application)
+    return res.status(404).json({ message: "Application not found" });
 
-  if (!application.opportunity_id || !application.opportunity_id.company_id.equals(req.user._id)) {
+  if (
+    !application.opportunity_id ||
+    !application.opportunity_id.company_id.equals(req.user._id)
+  ) {
     return res.status(403).json({ message: "Unauthorized access" });
   }
 
   // Fetch timeline and notes
-  const timeline = await ApplicantStatus.find({ application_id: id }).sort({ created_at: 1 });
-  const notes = await RecruiterNote.find({ application_id: id }).sort({ created_at: -1 });
-  const interviews = await ApplicationInterview.find({ application_id: id }).sort({ interview_date: -1 });
+  const timeline = await ApplicantStatus.find({ application_id: id }).sort({
+    created_at: 1,
+  });
+  const notes = await RecruiterNote.find({ application_id: id }).sort({
+    created_at: -1,
+  });
+  const interviews = await ApplicationInterview.find({
+    application_id: id,
+  }).sort({ interview_date: -1 });
 
   res.status(200).json({
     success: true,
@@ -285,13 +347,19 @@ exports.addRecruiterNote = asyncHandler(async (req, res) => {
   const { note } = req.body;
 
   if (!note || note.length > 1000) {
-    return res.status(400).json({ message: "Note is required and cannot exceed 1000 characters." });
+    return res
+      .status(400)
+      .json({ message: "Note is required and cannot exceed 1000 characters." });
   }
 
   const application = await Application.findById(id).populate("opportunity_id");
-  if (!application) return res.status(404).json({ message: "Application not found" });
+  if (!application)
+    return res.status(404).json({ message: "Application not found" });
 
-  if (!application.opportunity_id || !application.opportunity_id.company_id.equals(req.user._id)) {
+  if (
+    !application.opportunity_id ||
+    !application.opportunity_id.company_id.equals(req.user._id)
+  ) {
     return res.status(403).json({ message: "Unauthorized access" });
   }
 
@@ -313,42 +381,74 @@ exports.scheduleInterview = asyncHandler(async (req, res) => {
   const { interview_date, meeting_link } = req.body;
 
   if (new Date(interview_date) < new Date()) {
-    return res.status(400).json({ message: "Interview date must be in the future." });
+    return res
+      .status(400)
+      .json({ message: "Interview date must be in the future." });
   }
 
   const application = await Application.findById(id).populate("opportunity_id");
-  if (!application) return res.status(404).json({ message: "Application not found" });
+  if (!application)
+    return res.status(404).json({ message: "Application not found" });
 
-  if (!application.opportunity_id || !application.opportunity_id.company_id.equals(req.user._id)) {
+  if (
+    !application.opportunity_id ||
+    !application.opportunity_id.company_id.equals(req.user._id)
+  ) {
     return res.status(403).json({ message: "Unauthorized access" });
   }
 
-  const interview = await ApplicationInterview.create({
-    application_id: id,
-    interview_date,
-    meeting_link,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  application.application_status = "interviewing";
-  await application.save();
+  try {
+    const [interview] = await ApplicationInterview.create(
+      [
+        {
+          application_id: id,
+          interview_date,
+          meeting_link,
+        },
+      ],
+      { session },
+    );
 
-  await ApplicantStatus.create({
-    application_id: application._id,
-    status: "interviewing",
-    updated_by: req.user._id,
-  });
+    application.application_status = "interviewing";
+    await application.save({ session });
 
-  if (Notification) {
-    await Notification.create({
-      recipient_id: application.student_id,
-      title: "Interview Scheduled",
-      message: `An interview for ${application.opportunity_id.title} has been scheduled.`,
-      type: "interview",
-      related_id: interview._id,
-    });
+    await ApplicantStatus.create(
+      [
+        {
+          application_id: application._id,
+          status: "interviewing",
+          updated_by: req.user._id,
+        },
+      ],
+      { session },
+    );
+
+    if (Notification) {
+      await Notification.create(
+        [
+          {
+            recipient_id: application.student_id,
+            title: "Interview Scheduled",
+            message: `An interview for ${application.opportunity_id.title} has been scheduled.`,
+            type: "interview",
+            related_id: interview._id,
+          },
+        ],
+        { session },
+      );
+    }
+
+    await session.commitTransaction();
+    res.status(201).json({ success: true, data: interview });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  res.status(201).json({ success: true, data: interview });
 });
 
 /**
@@ -359,13 +459,19 @@ exports.getResume = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
   const application = await Application.findById(id).populate("opportunity_id");
-  if (!application) return res.status(404).json({ message: "Application not found" });
+  if (!application)
+    return res.status(404).json({ message: "Application not found" });
 
-  if (!application.opportunity_id || !application.opportunity_id.company_id.equals(req.user._id)) {
+  if (
+    !application.opportunity_id ||
+    !application.opportunity_id.company_id.equals(req.user._id)
+  ) {
     return res.status(403).json({ message: "Unauthorized access" });
   }
 
-  res.status(200).json({ success: true, data: { resume_url: application.resume_url } });
+  res
+    .status(200)
+    .json({ success: true, data: { resume_url: application.resume_url } });
 });
 
 /**
@@ -381,22 +487,47 @@ exports.contactApplicant = asyncHandler(async (req, res) => {
   }
 
   const application = await Application.findById(id).populate("opportunity_id");
-  if (!application) return res.status(404).json({ message: "Application not found" });
+  if (!application)
+    return res.status(404).json({ message: "Application not found" });
 
-  if (!application.opportunity_id || !application.opportunity_id.company_id.equals(req.user._id)) {
+  if (
+    !application.opportunity_id ||
+    !application.opportunity_id.company_id.equals(req.user._id)
+  ) {
     return res.status(403).json({ message: "Unauthorized access" });
   }
 
-  // Create notification directed at the applicant regarding this message
-  if (Notification) {
-    await Notification.create({
-      recipient_id: application.student_id,
-      title: `Message from ${req.user.full_name || "Recruiter"}`,
-      message: `Recruiter message regarding your application for ${application.opportunity_id.title}:\n\n${message}`,
-      type: "message",
-      related_id: application._id,
-    });
-  }
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  res.status(200).json({ success: true, message: "Applicant contacted successfully" });
+  try {
+    // Create notification directed at the applicant regarding this message
+    if (Notification) {
+      await Notification.create(
+        [
+          {
+            recipient_id: application.student_id,
+            title: `Message from ${req.user.full_name || "Recruiter"}`,
+            message: `Recruiter message regarding your application for ${application.opportunity_id.title}:\n\n${message}`,
+            type: "message",
+            related_id: application._id,
+          },
+        ],
+        { session },
+      );
+    }
+
+    // In a real system, there would also be a RecruiterMessage or Email entity stored here,
+    // but for now, we just guarantee the Notification creation is safe.
+
+    await session.commitTransaction();
+    res
+      .status(200)
+      .json({ success: true, message: "Applicant contacted successfully" });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 });

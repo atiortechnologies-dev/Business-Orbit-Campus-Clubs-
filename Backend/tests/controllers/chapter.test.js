@@ -82,7 +82,9 @@ describe("Chapter Controller", () => {
         .set("Authorization", `Bearer ${studentJwt}`);
 
       expect(res.statusCode).toBe(409);
-      expect(res.body.message).toBe("No chapter assigned yet. Please complete registration first.");
+      expect(res.body.message).toBe(
+        "No chapter assigned yet. Please complete registration first.",
+      );
     });
 
     it("should successfully retrieve the chapter details if assigned", async () => {
@@ -177,9 +179,13 @@ describe("Chapter Controller", () => {
 
       expect(res.statusCode).toBe(201);
       expect(res.body.success).toBe(true);
-      expect(res.body.message).toBe("Chapter change request submitted. It's pending admin review.");
+      expect(res.body.message).toBe(
+        "Chapter change request submitted. It's pending admin review.",
+      );
 
-      const requestObj = await ChapterChangeRequest.findOne({ student_id: studentId });
+      const requestObj = await ChapterChangeRequest.findOne({
+        student_id: studentId,
+      });
       expect(requestObj).not.toBeNull();
       expect(requestObj.status).toBe("pending");
     });
@@ -196,10 +202,15 @@ describe("Chapter Controller", () => {
       const res = await request(app)
         .post("/api/student/request-chapter-change")
         .set("Authorization", `Bearer ${studentJwt}`)
-        .send({ reason: "Moving again", requested_chapter_id: anotherChapterId });
+        .send({
+          reason: "Moving again",
+          requested_chapter_id: anotherChapterId,
+        });
 
       expect(res.statusCode).toBe(409);
-      expect(res.body.message).toBe("You already have a pending chapter change request");
+      expect(res.body.message).toBe(
+        "You already have a pending chapter change request",
+      );
     });
   });
 });
