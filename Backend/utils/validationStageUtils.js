@@ -83,8 +83,50 @@ const getValidationProgress = async (startupId) => {
   }
 };
 
+const getValidationMetrics = async (startupId) => {
+  try {
+    const [surveys, evidence, report] = await Promise.all([
+      ValidationSurvey.find({ startup_id: startupId }).lean(),
+      ValidationEvidence.find({
+        startup_id: startupId,
+        upload_status: "uploaded",
+      }).lean(),
+      ValidationReport.findOne({ startup_id: startupId }).lean(),
+    ]);
+
+    const totalResponses = surveys.reduce(
+      (sum, survey) => sum + (survey.responses_count || 0),
+      0,
+    );
+    const totalInterviews = surveys.reduce(
+      (sum, survey) => sum + (survey.interviews_count || 0),
+      0,
+    );
+
+    return {
+      surveys_count: surveys.length,
+      total_responses: totalResponses,
+      total_interviews: totalInterviews,
+      evidence_files: evidence.length,
+      problem_validated: report?.problem_validated || false,
+      market_size_estimate: report?.market_size_estimate || "",
+    };
+  } catch (error) {
+    console.error("Error calculating validation metrics:", error);
+    return {
+      surveys_count: 0,
+      total_responses: 0,
+      total_interviews: 0,
+      evidence_files: 0,
+      problem_validated: false,
+      market_size_estimate: "",
+    };
+  }
+};
+
 module.exports = {
   isStage1Approved,
   getChecklistProgress,
   getValidationProgress,
+  getValidationMetrics,
 };
