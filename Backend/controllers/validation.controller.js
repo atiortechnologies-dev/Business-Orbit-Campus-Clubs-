@@ -1,6 +1,7 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const StartupStage = require("../models/StartupStage");
 const ValidationChecklistItem = require("../models/ValidationChecklistItem");
+const ValidationEvidence = require("../models/ValidationEvidence");
 const ValidationReport = require("../models/ValidationReport");
 const ValidationSurvey = require("../models/ValidationSurvey");
 const { getOrCreateStartup } = require("../utils/startupJourney");
@@ -243,6 +244,100 @@ const deleteSurvey = asyncHandler(async (req, res) => {
   });
 });
 
+// ================= EVIDENCE UPLOAD =================
+
+// POST /api/student/validation/evidence
+const uploadEvidence = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { file_name, file_url, file_type, file_size } = req.validatedData;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Check for duplicates
+  const existing = await ValidationEvidence.findOne({
+    startup_id: startup._id,
+    file_name,
+  });
+
+  if (existing) {
+    return res.status(409).json({
+      success: false,
+      message:
+        "A file with this name already exists. Please rename and try again.",
+    });
+  }
+
+  const evidence = new ValidationEvidence({
+    startup_id: startup._id,
+    student_id: userId,
+    file_name,
+    file_url,
+    file_type: file_type || "other",
+    file_size,
+    upload_status: "uploaded",
+  });
+
+  await evidence.save();
+
+  // Update checklist
+  await updateChecklistItem(startup._id, "Upload evidence", true);
+
+  res.status(201).json({
+    success: true,
+    message: "Evidence uploaded successfully",
+    data: evidence,
+  });
+});
+
+// GET /api/student/validation/evidence
+const listEvidence = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const evidence = await ValidationEvidence.find({
+    startup_id: startup._id,
+    upload_status: "uploaded",
+  })
+    .select("-__v")
+    .lean();
+
+  res.status(200).json({
+    success: true,
+    data: evidence,
+    count: evidence.length,
+  });
+});
+
+// DELETE /api/student/validation/evidence/:evidenceId
+const deleteEvidence = asyncHandler(async (req, res) => {
+  const { evidenceId } = req.params;
+  const { id: userId } = req.user;
+
+  const evidence = await ValidationEvidence.findById(evidenceId);
+  if (!evidence) {
+    return res.status(404).json({
+      success: false,
+      message: "Evidence not found",
+    });
+  }
+
+  // Verify ownership
+  if (evidence.student_id.toString() !== userId) {
+    return res.status(403).json({
+      success: false,
+      message: "Not authorized to delete this evidence",
+    });
+  }
+
+  await ValidationEvidence.deleteOne({ _id: evidenceId });
+
+  res.status(200).json({
+    success: true,
+    message: "Evidence deleted successfully",
+  });
+});
+
 module.exports = {
   getValidationOverview,
   getValidationStatus,
@@ -251,4 +346,7 @@ module.exports = {
   createSurvey,
   updateSurvey,
   deleteSurvey,
+  uploadEvidence,
+  listEvidence,
+  deleteEvidence,
 };

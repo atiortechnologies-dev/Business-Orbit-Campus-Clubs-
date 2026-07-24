@@ -7,6 +7,7 @@ const { validateRequest } = require("../middlewares/validateRequest");
 const {
   createSurveySchema,
   updateSurveySchema,
+  uploadEvidenceSchema,
 } = require("../utils/validators");
 
 // All validation requires student role and authentication
@@ -32,5 +33,14 @@ router.put(
   validationController.updateSurvey,
 );
 router.delete("/surveys/:surveyId", validationController.deleteSurvey);
+
+// ================= EVIDENCE UPLOAD =================
+router.post(
+  "/evidence",
+  validateRequest(uploadEvidenceSchema),
+  validationController.uploadEvidence,
+);
+router.get("/evidence", validationController.listEvidence);
+router.delete("/evidence/:evidenceId", validationController.deleteEvidence);
 
 module.exports = router;

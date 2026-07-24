@@ -292,6 +292,30 @@ const updateSurveySchema = z.object({
   status: z.enum(["draft", "completed"]).optional(),
 });
 
+const uploadEvidenceSchema = z.object({
+  file_name: z
+    .string()
+    .min(1, "File name is required")
+    .max(255, "File name is too long"),
+  file_type: z
+    .enum([
+      "survey_results",
+      "interview_notes",
+      "photo",
+      "video",
+      "research_document",
+      "pdf",
+      "spreadsheet",
+      "other",
+    ])
+    .optional()
+    .default("other"),
+  file_size: z
+    .number()
+    .min(1, "File size must be greater than 0")
+    .max(50 * 1024 * 1024, "File size cannot exceed 50MB"),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -308,4 +332,5 @@ module.exports = {
   saveDraftSchema,
   createSurveySchema,
   updateSurveySchema,
+  uploadEvidenceSchema,
 };
