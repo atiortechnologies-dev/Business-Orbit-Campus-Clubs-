@@ -10,4 +10,8 @@ router.use(protect, requireRole("student"));
 // ================= VALIDATION OVERVIEW =================
 router.get("/overview", validationController.getValidationOverview);
 
+// ================= VALIDATION STATUS & METRICS =================
+router.get("/status", validationController.getValidationStatus);
+router.get("/checklist", validationController.getValidationChecklist);
+
 module.exports = router;

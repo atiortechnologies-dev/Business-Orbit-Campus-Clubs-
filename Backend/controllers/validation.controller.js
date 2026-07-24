@@ -1,11 +1,13 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const StartupStage = require("../models/StartupStage");
 const ValidationChecklistItem = require("../models/ValidationChecklistItem");
+const ValidationReport = require("../models/ValidationReport");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 const {
   isStage1Approved,
   getChecklistProgress,
   getValidationProgress,
+  getValidationMetrics,
 } = require("../utils/validationStageUtils");
 
 // ================= VALIDATION OVERVIEW =================
@@ -81,4 +83,57 @@ const getValidationOverview = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getValidationOverview };
+// ================= VALIDATION STATUS & METRICS =================
+
+const getValidationStatus = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const [progress, metrics, report] = await Promise.all([
+    getValidationProgress(startup._id),
+    getValidationMetrics(startup._id),
+    ValidationReport.findOne({ startup_id: startup._id }).lean(),
+  ]);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      progress,
+      metrics,
+      report_status: report?.status || "not_started",
+      report_submitted_at: report?.submitted_at,
+    },
+  });
+});
+
+const getValidationChecklist = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const checklist = await ValidationChecklistItem.find({
+    startup_id: startup._id,
+  }).lean();
+  const progress = await getChecklistProgress(startup._id);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      items: checklist.map((item) => ({
+        id: item._id,
+        name: item.item_name,
+        completed: item.is_completed,
+        completed_at: item.completed_at,
+        notes: item.notes,
+      })),
+      progress_percentage: progress,
+    },
+  });
+});
+
+module.exports = {
+  getValidationOverview,
+  getValidationStatus,
+  getValidationChecklist,
+};
