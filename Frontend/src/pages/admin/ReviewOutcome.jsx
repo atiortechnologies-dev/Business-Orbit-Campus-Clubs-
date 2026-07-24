@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Leaf, CheckCircle, Unlock, Lock, Star, Upload, Mail, Undo2, Info, PenLine } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import Badge from '@/components/ui/Badge';
@@ -13,6 +14,7 @@ const TIMELINE = [
 
 export default function ReviewOutcomePage() {
   useDocumentTitle('Review Outcome: EcoLoop — BOCC Admin');
+  const navigate = useNavigate();
   const [published, setPublished] = useState(false);
   const [revisions, setRevisions] = useState([
     { text: 'Clarify revenue model for Q4 campus rollout.', done: true },
@@ -151,11 +153,13 @@ export default function ReviewOutcomePage() {
                   <Mail size={16} strokeWidth={2} /> Notify Founder
                 </span>
               </ComingSoon>
-              <ComingSoon label="Return to Queue" position="top" inline={false}>
-                <span className="flex items-center justify-center gap-2 py-3 border border-border-subtle rounded-md font-inter font-medium text-small text-text-heading">
-                  <Undo2 size={16} strokeWidth={2} /> Return to Queue
-                </span>
-              </ComingSoon>
+              <button
+                type="button"
+                onClick={() => navigate('/admin/reviews')}
+                className="flex items-center justify-center gap-2 py-3 border border-border-subtle rounded-md font-inter font-medium text-small text-text-heading hover:bg-canvas-bg transition-colors"
+              >
+                <Undo2 size={16} strokeWidth={2} /> Return to Queue
+              </button>
             </div>
 
             <div className="mt-8 pt-8 border-t border-divider-line">

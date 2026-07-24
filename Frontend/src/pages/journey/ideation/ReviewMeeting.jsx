@@ -63,7 +63,7 @@ export default function IdeationReviewMeetingPage() {
             </div>
             <div>
               <p className="font-inter text-caption text-text-muted uppercase tracking-wider">Assigned Mentor</p>
-              <p className="font-poppins font-semibold text-body text-text-heading">Mentor Placeholder</p>
+              <p className="font-poppins font-semibold text-body text-text-heading">Jordan Blake — Ideation Mentor</p>
               <p className="flex items-center gap-1.5 font-inter text-small text-text-muted mt-0.5">
                 <Video size={14} strokeWidth={2} /> Online — Zoom
               </p>

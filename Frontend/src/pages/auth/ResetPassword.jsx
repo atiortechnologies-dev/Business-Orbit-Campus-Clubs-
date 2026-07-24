@@ -18,7 +18,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Key, Lock, Shield, Eye, EyeOff } from 'lucide-react';
+import { Lock, Shield, Eye, EyeOff } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -103,17 +103,40 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-sm">
         <Card className="p-8 flex flex-col gap-6">
 
-          {/* Illustration placeholder */}
-          <div
-            className="w-full aspect-[5/2] border border-dashed border-border-subtle bg-transparent flex flex-col items-center justify-center gap-2 text-text-muted rounded-lg"
+          {/* Custom illustration — "secured" motif: a shield with a keyhole,
+              accent-neon lit up. Distinct from ForgotPassword's envelope
+              (that's the "request in flight" moment; this is the "new
+              password locks it back down" moment right before this form's
+              own submit). The keyhole is drawn with fixed accent-neon, not
+              a theme-reactive token, so it reads as one continuous element
+              with the fixed brand-black shield regardless of theme — the
+              two rings around it are theme-reactive since they sit on the
+              Card's own reactive background, not on the shield's fill. */}
+          <svg
+            viewBox="0 0 500 200"
+            className="w-full aspect-[5/2] rounded-lg"
             role="img"
-            aria-label="Illustration placeholder"
+            aria-label="Illustration of a shield with a keyhole, representing a secured account"
           >
-            <Key size={32} strokeWidth={2} className="text-text-muted" aria-hidden="true" />
-            <span className="text-[11px] uppercase tracking-widest select-none font-inter font-medium">
-              Placeholder
-            </span>
-          </div>
+            {/* Protective rings around the shield */}
+            <circle cx="250" cy="105" r="85" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+            <circle cx="250" cy="105" r="65" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+
+            {/* Shield */}
+            <path
+              d="M250 45 L300 63 L300 105 Q300 143 250 165 Q200 143 200 105 L200 63 Z"
+              fill="var(--color-brand-black)"
+            />
+
+            {/* Keyhole */}
+            <circle cx="250" cy="93" r="13" fill="var(--color-accent-neon)" />
+            <polygon points="242,102 258,102 251,130 249,130" fill="var(--color-accent-neon)" />
+
+            {/* Ambient dots */}
+            <circle cx="110" cy="60" r="3" fill="var(--color-border-subtle)" />
+            <circle cx="395" cy="150" r="3" fill="var(--color-border-subtle)" />
+            <circle cx="120" cy="155" r="4" fill="var(--color-border-subtle)" />
+          </svg>
 
           {/* Heading + description */}
           <div className="flex flex-col gap-2 text-center">

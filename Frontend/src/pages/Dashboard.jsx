@@ -64,8 +64,41 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {/* Placeholder image — hidden on mobile */}
-          <div className="w-48 h-48 placeholder-box rounded-lg hidden md:block" />
+          {/* Custom illustration — "idea spark" motif, matching the same
+              geometric line-art language as Login's orbit and the Startup
+              Journey path (thin theme-reactive strokes + fixed brand-black/
+              accent-neon accents). Fits the student's current Ideation
+              stage. Hidden on mobile like the placeholder it replaced. */}
+          <svg
+            viewBox="0 0 200 200"
+            className="w-48 h-48 rounded-lg hidden md:block shrink-0"
+            role="img"
+            aria-label="Illustration of a radiating idea spark"
+          >
+            <circle cx="100" cy="100" r="90" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+            <circle cx="100" cy="100" r="62" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+
+            {/* Radiating rays */}
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
+              const rad = (deg * Math.PI) / 180;
+              const x1 = 100 + Math.cos(rad) * 40;
+              const y1 = 100 + Math.sin(rad) * 40;
+              const x2 = 100 + Math.cos(rad) * 78;
+              const y2 = 100 + Math.sin(rad) * 78;
+              return (
+                <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-border-subtle)" strokeWidth="2" strokeLinecap="round" />
+              );
+            })}
+
+            {/* Central hub */}
+            <circle cx="100" cy="100" r="32" fill="var(--color-brand-black)" />
+            <circle cx="100" cy="100" r="11" fill="var(--color-accent-neon)" />
+
+            {/* A few nodes catching the light */}
+            <circle cx="167" cy="100" r="4" fill="var(--color-accent-neon)" />
+            <circle cx="100" cy="18" r="3" fill="var(--color-border-subtle)" />
+            <circle cx="33" cy="100" r="3" fill="var(--color-border-subtle)" />
+          </svg>
         </section>
 
         {/* ── 4. Today's Next Step ──────────────────────────────── */}
@@ -181,12 +214,32 @@ export default function DashboardPage() {
               </span>
             </Link>
 
-            {/* ComingSoon items */}
+            {/* Profile — real link, /settings already exists */}
+            <Link
+              to="/settings"
+              className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col items-center text-center space-y-4 hover:border-brand-black transition-colors cursor-pointer group active:scale-[0.98]"
+            >
+              <div className="w-12 h-12 placeholder-box rounded-lg group-hover:scale-105 transition-transform" />
+              <div className="space-y-1">
+                <h5 className="font-poppins font-medium text-card text-text-heading">
+                  Profile
+                </h5>
+                <p className="text-text-muted font-inter font-normal text-small">
+                  Manage your account.
+                </p>
+              </div>
+              <span className="mt-2 text-text-heading hover:underline flex items-center gap-1 font-poppins font-semibold text-small">
+                Edit <ArrowRight size={14} strokeWidth={2} />
+              </span>
+            </Link>
+
+            {/* ComingSoon items — these are entire directory/marketplace
+                features with no screens built yet, not just an unwired
+                link, so they stay stubbed until those exist. */}
             {[
               { title: 'Investors',      sub: 'Connect with funders.',  cta: 'Browse' },
               { title: 'Incubators',     sub: 'Supportive ecosystems.', cta: 'Explore' },
               { title: 'Freelancing',    sub: 'Monetize your skills.',  cta: 'Find Work' },
-              { title: 'Profile',        sub: 'Manage your account.',   cta: 'Edit' },
             ].map(({ title, sub, cta }) => (
               <ComingSoon key={title} label={title} position="top">
                 <div
