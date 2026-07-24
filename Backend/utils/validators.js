@@ -274,6 +274,11 @@ const requestMentorSchema = z.object({
     .optional(),
 });
 
+const mentorReviewSchema = z.object({
+  rating: z.number().min(1).max(5, "Rating must be between 1 and 5"),
+  review_text: z.string().trim().max(500, "Review cannot exceed 500 characters").optional()
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -289,4 +294,5 @@ module.exports = {
   submitIdeaSchema,
   saveDraftSchema,
   requestMentorSchema,
+  mentorReviewSchema,
 };

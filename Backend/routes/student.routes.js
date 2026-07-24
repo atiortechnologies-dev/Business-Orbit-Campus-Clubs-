@@ -9,7 +9,7 @@ const router = express.Router();
 
 const { requireAuth, authorizeRoles } = require("../middlewares/requireAuth");
 const { validateRequest } = require("../middlewares/validateRequest");
-const { requestMentorSchema } = require("../utils/validators");
+const { requestMentorSchema, mentorReviewSchema } = require("../utils/validators");
 const { 
   requestMentor, 
   getMentorshipRequestStatus,
@@ -17,6 +17,7 @@ const {
   searchMentors,
   getMentorProfileStudentView,
   getMentorReviews,
+  submitMentorReview,
   getMentorAvailability
 } = require("../controllers/student.controller");
 
@@ -73,6 +74,17 @@ router.get("/mentors/:id", requireAuth, authorizeRoles("student"), getMentorProf
 // @desc    Get mentor reviews
 // @access  Private (Student)
 router.get("/mentors/:id/reviews", requireAuth, authorizeRoles("student"), getMentorReviews);
+
+// @route   POST /api/student/mentors/:id/reviews
+// @desc    Submit a mentor review
+// @access  Private (Student)
+router.post(
+  "/mentors/:id/reviews",
+  requireAuth,
+  authorizeRoles("student"),
+  validateRequest(mentorReviewSchema, "body"),
+  submitMentorReview
+);
 
 // @route   GET /api/student/mentors/:id/availability
 // @desc    Get mentor availability

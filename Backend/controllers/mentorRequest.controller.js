@@ -112,10 +112,17 @@ exports.viewStudentProfile = asyncHandler(async (req, res) => {
   const mentorId = req.user._id;
 
   // Ensure the mentor is assigned or has a request from this student to get the startup_id
-  const assignmentOrRequest = await MentorRequest.findOne({
+  let assignmentOrRequest = await MentorAssignment.findOne({
     mentor_id: mentorId,
     student_id: studentId,
   }).populate("startup_id");
+
+  if (!assignmentOrRequest) {
+    assignmentOrRequest = await MentorRequest.findOne({
+      mentor_id: mentorId,
+      student_id: studentId,
+    }).populate("startup_id");
+  }
 
   if (!assignmentOrRequest) {
     return res
