@@ -94,33 +94,45 @@ export default function ForgotPasswordPage() {
           ) : (
             /* ── Form view ─────────────────────────────────── */
             <>
-              {/* Custom illustration — same orbit motif as Login (this
-                  screen is a step in the same auth flow), recomposed for
-                  the wider aspect-[5/2] frame. */}
+              {/* Custom illustration — "recovery request" motif: an email
+                  being sent out, with the key to your account riding along
+                  with it. Distinct from Login's orbit (that's a brand mark;
+                  this is about what's actually happening on THIS screen —
+                  requesting access back via email) and from ResetPassword's
+                  shield motif (that's the "secured" end state, this is the
+                  "request in flight" moment). The envelope has its own
+                  fixed brand-black fill (like the Sidebar), so the flap
+                  lines drawn on it are literal white, not the reactive
+                  border-subtle token — see CONTRIBUTING.md §6. */}
               <svg
                 viewBox="0 0 500 200"
                 className="w-full aspect-[5/2] rounded-lg"
                 role="img"
-                aria-label="Illustration of campus clubs orbiting a central hub"
+                aria-label="Illustration of an email being sent with an account recovery key"
               >
-                <ellipse cx="250" cy="100" rx="220" ry="45" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-6 250 100)" />
-                <ellipse cx="250" cy="100" rx="170" ry="65" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(9 250 100)" />
-                <ellipse cx="250" cy="100" rx="120" ry="80" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-12 250 100)" />
+                {/* Motion trail — envelope "in flight" */}
+                <circle cx="120" cy="70" r="3" fill="var(--color-border-subtle)" />
+                <circle cx="145" cy="85" r="4" fill="var(--color-border-subtle)" />
+                <circle cx="170" cy="98" r="5" fill="var(--color-border-subtle)" />
 
-                <circle cx="250" cy="100" r="24" fill="var(--color-brand-black)" />
-                <circle cx="250" cy="100" r="8" fill="var(--color-accent-neon)" />
+                {/* Envelope body */}
+                <rect x="185" y="55" width="150" height="100" rx="10" fill="var(--color-brand-black)" />
+                <line x1="185" y1="65" x2="260" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="335" y1="65" x2="260" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
 
-                <circle cx="410" cy="88" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
-                <circle cx="410" cy="88" r="2.5" fill="var(--color-accent-neon)" />
+                {/* Key — the reset link/access riding along with the email.
+                    Ring + horizontal shaft + perpendicular teeth, not a
+                    ring-plus-diagonal-line (that reads as a magnifying
+                    glass, not a key — first draft of this shape made
+                    exactly that mistake). */}
+                <circle cx="375" cy="115" r="15" fill="none" stroke="var(--color-accent-neon)" strokeWidth="5" />
+                <rect x="389" y="111" width="52" height="8" fill="var(--color-accent-neon)" />
+                <rect x="420" y="119" width="7" height="13" fill="var(--color-accent-neon)" />
+                <rect x="433" y="119" width="7" height="9" fill="var(--color-accent-neon)" />
 
-                <circle cx="105" cy="122" r="7" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
-                <circle cx="105" cy="122" r="2" fill="var(--color-accent-neon)" />
-
-                <circle cx="330" cy="165" r="5" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
-                <circle cx="175" cy="35" r="4" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
-
-                <circle cx="70" cy="60" r="3" fill="var(--color-border-subtle)" />
-                <circle cx="420" cy="150" r="3" fill="var(--color-border-subtle)" />
+                {/* Ambient dots */}
+                <circle cx="80" cy="150" r="3" fill="var(--color-border-subtle)" />
+                <circle cx="440" cy="60" r="3" fill="var(--color-border-subtle)" />
               </svg>
 
               {/* Heading + description */}

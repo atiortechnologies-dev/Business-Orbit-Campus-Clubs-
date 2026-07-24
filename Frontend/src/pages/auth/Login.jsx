@@ -84,11 +84,15 @@ export default function LoginPage() {
         {/* Custom illustration — abstract "orbit" motif: a central hub with
             campus clubs orbiting it, themed entirely with design tokens so
             it adapts to light/dark like every other element on this page.
-            Reused (recomposed per aspect ratio) on every pre-auth screen —
-            ForgotPassword, ResetPassword — and echoed by different motifs
-            elsewhere (Dashboard's idea spark, Startup Journey's path,
-            MVP Overview's assembling blocks) using the same geometric
-            line-art language. */}
+            This one's specific to Login (it's literally the brand name) —
+            ForgotPassword and ResetPassword each get their own motif tied
+            to what's actually happening on THOSE screens (an envelope+key
+            "request in flight," a shield+keyhole "secured" state) rather
+            than reusing this one for generic auth-flow consistency, which
+            read as irrelevant on a password-recovery screen. All of them
+            share the same geometric line-art language (Dashboard's idea
+            spark, Startup Journey's path, MVP Overview's assembling blocks
+            included) even though each motif itself is bespoke per screen. */}
         <svg
           viewBox="0 0 400 300"
           className="w-full aspect-[4/3] rounded-lg"

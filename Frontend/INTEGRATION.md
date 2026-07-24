@@ -31,16 +31,20 @@ lists the exact file/function to replace.
 
 ### `/forgot-password` — `src/pages/auth/ForgotPassword.jsx`
 - **Real:** email validation, submit swaps the card to a confirmation view
-  (client state only). Illustration placeholder replaced with the same
-  orbit-motif SVG as `/login`, recomposed for this card's wider `aspect-[5/2]`
-  frame.
+  (client state only). Illustration placeholder replaced with a custom
+  inline SVG specific to this screen's moment in the flow — an envelope
+  with a key riding along ("your recovery request is in flight"). Not the
+  same orbit motif as `/login`: that reuse read as generic/irrelevant on a
+  password-recovery screen, so each auth screen now gets its own motif.
 - **Stub:** no email is ever sent. The confirmation view is cosmetic.
 - **Coming Soon:** Support Center link.
 
 ### `/reset-password` — `src/pages/auth/ResetPassword.jsx`
 - **Real:** live password-strength calculation, confirm-password match
   validation, two independent eye toggles. Illustration placeholder
-  replaced with the same orbit-motif SVG as `/login`/`/forgot-password`.
+  replaced with a custom inline SVG — a shield with a keyhole ("your
+  account is secured"), the deliberate "end state" counterpart to
+  ForgotPassword's "request in flight" envelope.
 - **Stub:** `handleSubmit` — redirects to `/login` without ever changing a
   password anywhere. Replace with `POST /api/auth/reset-password`.
 

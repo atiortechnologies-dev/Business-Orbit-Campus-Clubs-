@@ -103,33 +103,39 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-sm">
         <Card className="p-8 flex flex-col gap-6">
 
-          {/* Custom illustration — same orbit motif as Login/ForgotPassword
-              (this screen is a step in the same auth flow), recomposed for
-              the wider aspect-[5/2] frame. */}
+          {/* Custom illustration — "secured" motif: a shield with a keyhole,
+              accent-neon lit up. Distinct from ForgotPassword's envelope
+              (that's the "request in flight" moment; this is the "new
+              password locks it back down" moment right before this form's
+              own submit). The keyhole is drawn with fixed accent-neon, not
+              a theme-reactive token, so it reads as one continuous element
+              with the fixed brand-black shield regardless of theme — the
+              two rings around it are theme-reactive since they sit on the
+              Card's own reactive background, not on the shield's fill. */}
           <svg
             viewBox="0 0 500 200"
             className="w-full aspect-[5/2] rounded-lg"
             role="img"
-            aria-label="Illustration of campus clubs orbiting a central hub"
+            aria-label="Illustration of a shield with a keyhole, representing a secured account"
           >
-            <ellipse cx="250" cy="100" rx="220" ry="45" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-6 250 100)" />
-            <ellipse cx="250" cy="100" rx="170" ry="65" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(9 250 100)" />
-            <ellipse cx="250" cy="100" rx="120" ry="80" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-12 250 100)" />
+            {/* Protective rings around the shield */}
+            <circle cx="250" cy="105" r="85" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+            <circle cx="250" cy="105" r="65" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
 
-            <circle cx="250" cy="100" r="24" fill="var(--color-brand-black)" />
-            <circle cx="250" cy="100" r="8" fill="var(--color-accent-neon)" />
+            {/* Shield */}
+            <path
+              d="M250 45 L300 63 L300 105 Q300 143 250 165 Q200 143 200 105 L200 63 Z"
+              fill="var(--color-brand-black)"
+            />
 
-            <circle cx="410" cy="88" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
-            <circle cx="410" cy="88" r="2.5" fill="var(--color-accent-neon)" />
+            {/* Keyhole */}
+            <circle cx="250" cy="93" r="13" fill="var(--color-accent-neon)" />
+            <polygon points="242,102 258,102 251,130 249,130" fill="var(--color-accent-neon)" />
 
-            <circle cx="105" cy="122" r="7" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
-            <circle cx="105" cy="122" r="2" fill="var(--color-accent-neon)" />
-
-            <circle cx="330" cy="165" r="5" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
-            <circle cx="175" cy="35" r="4" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
-
-            <circle cx="70" cy="60" r="3" fill="var(--color-border-subtle)" />
-            <circle cx="420" cy="150" r="3" fill="var(--color-border-subtle)" />
+            {/* Ambient dots */}
+            <circle cx="110" cy="60" r="3" fill="var(--color-border-subtle)" />
+            <circle cx="395" cy="150" r="3" fill="var(--color-border-subtle)" />
+            <circle cx="120" cy="155" r="4" fill="var(--color-border-subtle)" />
           </svg>
 
           {/* Heading + description */}
