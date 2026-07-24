@@ -42,6 +42,7 @@ const protect = asyncHandler(async (req, res, next) => {
   }
 
   req.user = {
+    _id: user._id,
     id: user._id.toString(),
     role: user.role,
     email: user.email,
@@ -98,6 +99,7 @@ const verifyRefreshTokenMiddleware = asyncHandler(async (req, res, next) => {
   }
 
   req.user = {
+    _id: user._id,
     id: user._id.toString(),
     role: user.role,
     email: user.email,

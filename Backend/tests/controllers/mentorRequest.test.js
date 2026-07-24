@@ -51,7 +51,9 @@ describe("Mentor Request Controller", () => {
         mentor_id: mentorId,
         student_id: studentId,
         startup_id: startupId,
-        request_summary: "Help me",
+        problem_statement: "Help me",
+        help_required: "Help me",
+        preferred_time: "Now",
         status: "pending",
       });
 
@@ -92,7 +94,9 @@ describe("Mentor Request Controller", () => {
         mentor_id: mentorId,
         student_id: studentId,
         startup_id: startupId,
-        request_summary: "Help me",
+        problem_statement: "Help me",
+        help_required: "Help me",
+        preferred_time: "Now",
         status: "declined",
       });
 
@@ -119,7 +123,9 @@ describe("Mentor Request Controller", () => {
         mentor_id: mentorId,
         student_id: studentId,
         startup_id: startupId,
-        request_summary: "Help me",
+        problem_statement: "Help me",
+        help_required: "Help me",
+        preferred_time: "Now",
         status: "pending",
       });
 

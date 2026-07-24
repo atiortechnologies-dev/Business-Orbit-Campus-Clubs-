@@ -88,8 +88,11 @@ const seedRequests = async () => {
       mentor_id: mentor._id,
       student_id: student1._id,
       startup_id: startup1._id,
-      request_summary:
-        "We are struggling with our blockchain architecture and would love your guidance!",
+      problem_statement: "We are struggling with our blockchain architecture.",
+      help_required: "We would love your guidance!",
+      preferred_meeting_mode: "online",
+      preferred_time: "Weekends",
+      additional_notes: "",
       status: "pending",
     }).save();
 
@@ -97,8 +100,11 @@ const seedRequests = async () => {
       mentor_id: mentor._id,
       student_id: student2._id,
       startup_id: startup2._id,
-      request_summary:
-        "We have an MVP but need help structuring our pitch deck for investors.",
+      problem_statement: "We have an MVP but need help structuring our pitch deck.",
+      help_required: "Need help structuring pitch deck for investors.",
+      preferred_meeting_mode: "online",
+      preferred_time: "Weekdays evening",
+      additional_notes: "",
       status: "pending",
     }).save();
 

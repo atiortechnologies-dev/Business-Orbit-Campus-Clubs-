@@ -250,11 +250,28 @@ const saveDraftSchema = z.object({
 
 //* Mentor Requests
 const requestMentorSchema = z.object({
-  request_summary: z
+  problem_statement: z
     .string()
     .trim()
-    .min(10, "Request summary must be at least 10 characters")
-    .max(1000, "Request summary must be under 1000 characters"),
+    .min(10, "Problem statement must be at least 10 characters"),
+  help_required: z
+    .string()
+    .trim()
+    .min(10, "Help required must be at least 10 characters"),
+  preferred_meeting_mode: z
+    .enum(["online", "in-person", "any"], {
+      error: "Mode must be online, in-person, or any",
+    })
+    .default("online"),
+  preferred_time: z
+    .string()
+    .trim()
+    .min(1, "Preferred time is required"),
+  additional_notes: z
+    .string()
+    .trim()
+    .max(1000, "Notes must be under 1000 characters")
+    .optional(),
 });
 
 module.exports = {

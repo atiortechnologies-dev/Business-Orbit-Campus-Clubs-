@@ -87,7 +87,11 @@ exports.getAllPendingRequests = asyncHandler(async (req, res) => {
       startupName: "$startup.startup_name",
       startupStage: "$startup.current_stage",
       startupCategory: "$startup.category",
-      requestSummary: "$request_summary",
+      problemStatement: "$problem_statement",
+      helpRequired: "$help_required",
+      preferredMeetingMode: "$preferred_meeting_mode",
+      preferredTime: "$preferred_time",
+      additionalNotes: "$additional_notes",
       submittedDate: "$created_at",
       requestStatus: "$status",
     },
@@ -124,9 +128,22 @@ exports.viewStudentProfile = asyncHandler(async (req, res) => {
   }).populate("user_id", "full_name email");
   const startup = assignmentOrRequest.startup_id;
 
+  // Fallback to basic User data if the student hasn't completed their StudentProfile yet
+  let name = "Unknown Student";
+  if (studentProfile && studentProfile.user_id) {
+    name = studentProfile.user_id.full_name;
+  } else {
+    // If StudentProfile doesn't exist, we can still try to get the basic user info
+    const User = require("../models/User");
+    const user = await User.findById(studentId).select("full_name");
+    if (user) {
+      name = user.full_name;
+    }
+  }
+
   res.status(200).json({
     studentInformation: {
-      name: studentProfile?.user_id?.full_name,
+      name: name,
       college: studentProfile?.college,
       degree: studentProfile?.degree,
       graduationYear: studentProfile?.graduation_year,
@@ -221,6 +238,19 @@ exports.acceptRequest = asyncHandler(async (req, res, next) => {
       type: "success",
     });
     await notification.save({ session });
+
+    await ActivityLog.create(
+      [
+        {
+          user_id: mentorId,
+          action: "ACCEPT_MENTOR_REQUEST",
+          entity_type: "MentorRequest",
+          entity_id: requestId,
+          description: "Mentor accepted the mentorship request.",
+        },
+      ],
+      { session },
+    );
 
     await session.commitTransaction();
     res

@@ -64,6 +64,7 @@ describe("Company Application Controller", () => {
       const req = {
         params: { id: opportunity._id },
         user: { _id: companyId },
+        query: {},
       };
       const res = mockResponse();
 
@@ -192,6 +193,7 @@ describe("Company Application Controller", () => {
       const req = {
         body: { status: "applied", opportunity_id: opportunity._id },
         user: { _id: companyId },
+        query: {},
       };
       const res = mockResponse();
 
