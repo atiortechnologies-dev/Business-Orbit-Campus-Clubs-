@@ -248,6 +248,50 @@ const saveDraftSchema = z.object({
     .optional(),
 });
 
+// Survey validators
+const createSurveySchema = z.object({
+  survey_title: z
+    .string()
+    .min(1, "Survey title is required")
+    .max(200, "Survey title must be less than 200 characters"),
+  responses_count: z
+    .number()
+    .min(0, "Responses count cannot be negative")
+    .optional()
+    .default(0),
+  interviews_count: z
+    .number()
+    .min(0, "Interviews count cannot be negative")
+    .optional()
+    .default(0),
+  findings: z
+    .string()
+    .max(5000, "Findings must be less than 5000 characters")
+    .optional()
+    .default(""),
+});
+
+const updateSurveySchema = z.object({
+  survey_title: z
+    .string()
+    .min(1, "Survey title is required")
+    .max(200, "Survey title must be less than 200 characters")
+    .optional(),
+  responses_count: z
+    .number()
+    .min(0, "Responses count cannot be negative")
+    .optional(),
+  interviews_count: z
+    .number()
+    .min(0, "Interviews count cannot be negative")
+    .optional(),
+  findings: z
+    .string()
+    .max(5000, "Findings must be less than 5000 characters")
+    .optional(),
+  status: z.enum(["draft", "completed"]).optional(),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -262,4 +306,6 @@ module.exports = {
   roleSpecificCompleteSchemas,
   submitIdeaSchema,
   saveDraftSchema,
+  createSurveySchema,
+  updateSurveySchema,
 };

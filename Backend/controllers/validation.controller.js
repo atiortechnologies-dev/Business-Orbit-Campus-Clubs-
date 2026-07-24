@@ -2,12 +2,14 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const StartupStage = require("../models/StartupStage");
 const ValidationChecklistItem = require("../models/ValidationChecklistItem");
 const ValidationReport = require("../models/ValidationReport");
+const ValidationSurvey = require("../models/ValidationSurvey");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 const {
   isStage1Approved,
   getChecklistProgress,
   getValidationProgress,
   getValidationMetrics,
+  updateChecklistItem,
 } = require("../utils/validationStageUtils");
 
 // ================= VALIDATION OVERVIEW =================
@@ -132,8 +134,121 @@ const getValidationChecklist = asyncHandler(async (req, res) => {
   });
 });
 
+// ================= SURVEY MANAGEMENT =================
+
+const listSurveys = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+  const surveys = await ValidationSurvey.find({ startup_id: startup._id })
+    .select("-__v")
+    .lean();
+
+  res.status(200).json({
+    success: true,
+    data: surveys,
+    count: surveys.length,
+  });
+});
+
+const createSurvey = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { survey_title, responses_count, interviews_count, findings } =
+    req.validatedData;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const survey = new ValidationSurvey({
+    startup_id: startup._id,
+    student_id: userId,
+    survey_title,
+    responses_count: responses_count || 0,
+    interviews_count: interviews_count || 0,
+    findings: findings || "",
+    status: "draft",
+  });
+
+  await survey.save();
+
+  // Update checklist if applicable
+  if (responses_count > 0 || interviews_count > 0) {
+    await updateChecklistItem(startup._id, "Conduct primary research", true);
+  }
+
+  res.status(201).json({
+    success: true,
+    message: "Survey created successfully",
+    data: survey,
+  });
+});
+
+// PUT /api/student/validation/surveys/:id
+const updateSurvey = asyncHandler(async (req, res) => {
+  const { id: surveyId } = req.params;
+  const { id: userId } = req.user;
+  const updateData = req.validatedData;
+
+  const survey = await ValidationSurvey.findById(surveyId);
+  if (!survey) {
+    return res.status(404).json({
+      success: false,
+      message: "Survey not found",
+    });
+  }
+
+  // Verify ownership
+  if (survey.student_id.toString() !== userId) {
+    return res.status(403).json({
+      success: false,
+      message: "Not authorized to update this survey",
+    });
+  }
+
+  // Update fields
+  Object.assign(survey, updateData);
+  await survey.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Survey updated successfully",
+    data: survey,
+  });
+});
+
+// DELETE /api/student/validation/surveys/:id
+const deleteSurvey = asyncHandler(async (req, res) => {
+  const { id: surveyId } = req.params;
+  const { id: userId } = req.user;
+
+  const survey = await ValidationSurvey.findById(surveyId);
+  if (!survey) {
+    return res.status(404).json({
+      success: false,
+      message: "Survey not found",
+    });
+  }
+
+  // Verify ownership
+  if (survey.student_id.toString() !== userId) {
+    return res.status(403).json({
+      success: false,
+      message: "Not authorized to delete this survey",
+    });
+  }
+
+  await ValidationSurvey.deleteOne({ _id: surveyId });
+
+  res.status(200).json({
+    success: true,
+    message: "Survey deleted successfully",
+  });
+});
+
 module.exports = {
   getValidationOverview,
   getValidationStatus,
   getValidationChecklist,
+  listSurveys,
+  createSurvey,
+  updateSurvey,
+  deleteSurvey,
 };

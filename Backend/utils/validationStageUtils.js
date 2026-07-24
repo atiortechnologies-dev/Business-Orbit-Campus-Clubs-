@@ -124,9 +124,28 @@ const getValidationMetrics = async (startupId) => {
   }
 };
 
+const updateChecklistItem = async (startupId, itemName, isCompleted = true) => {
+  try {
+    const result = await ValidationChecklistItem.findOneAndUpdate(
+      { startup_id: startupId, item_name: itemName },
+      {
+        is_completed: isCompleted,
+        completed_at: isCompleted ? new Date() : null,
+      },
+      { new: true },
+    );
+
+    return result;
+  } catch (error) {
+    console.error("Error updating checklist item:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   isStage1Approved,
   getChecklistProgress,
   getValidationProgress,
   getValidationMetrics,
+  updateChecklistItem,
 };
