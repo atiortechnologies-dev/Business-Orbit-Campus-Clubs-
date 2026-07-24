@@ -40,10 +40,6 @@ const ValidationEvidenceSchema = new mongoose.Schema(
       type: Number,
       required: true, // in bytes
     },
-    mime_type: {
-      type: String,
-      default: "",
-    },
     upload_status: {
       type: String,
       enum: ["pending", "uploaded", "failed"],
