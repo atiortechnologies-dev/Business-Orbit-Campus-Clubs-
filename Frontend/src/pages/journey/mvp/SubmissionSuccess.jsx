@@ -1,8 +1,33 @@
 import { Link } from 'react-router-dom';
 import { CheckCircle2, ArrowRight, ChevronRight, Calendar, ShieldCheck } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
-import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+
+// Builds a minimal .ics file client-side and triggers a download — no
+// backend or calendar-API integration needed for a single manual event.
+function downloadReviewMeetingIcs() {
+  const ics = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//BOCC//Journey//EN',
+    'BEGIN:VEVENT',
+    'UID:mvp-review-meeting@bocc',
+    'DTSTART:20261024T140000Z',
+    'DTEND:20261024T143000Z',
+    'SUMMARY:BOCC MVP Review Meeting',
+    'DESCRIPTION:Technical review of your submitted MVP.',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n');
+
+  const blob = new Blob([ics], { type: 'text/calendar' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'mvp-review-meeting.ics';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export default function MvpSubmissionSuccessPage() {
   useDocumentTitle('MVP Submitted — BOCC');
@@ -71,11 +96,13 @@ export default function MvpSubmissionSuccessPage() {
       </div>
 
       <div className="flex justify-center mt-6">
-        <ComingSoon label="Add to Calendar" position="top" inline>
-          <span className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg font-poppins font-semibold text-caption text-text-heading">
-            <Calendar size={14} strokeWidth={2} /> Add to Calendar
-          </span>
-        </ComingSoon>
+        <button
+          type="button"
+          onClick={downloadReviewMeetingIcs}
+          className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg font-poppins font-semibold text-caption text-text-heading hover:bg-canvas-bg transition-colors"
+        >
+          <Calendar size={14} strokeWidth={2} /> Add to Calendar
+        </button>
       </div>
     </DashboardShell>
   );

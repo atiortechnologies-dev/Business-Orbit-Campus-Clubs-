@@ -15,6 +15,7 @@ import {
 import AdminShell from '@/components/admin/AdminShell';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
+import Modal from '@/components/ui/Modal';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const TIMELINE = [
@@ -30,10 +31,16 @@ const FILES = [
   { name: 'prototype_screens_v1.zip', size: '28.5 MB', icon: FileArchive },
 ];
 
+const PREVIOUS_REVIEWS = [
+  { stage: 'Validation', date: 'Sep 05, 2024', reviewer: 'Priya Sharma', outcome: 'Approved', note: 'Strong evidence of problem/solution fit from 120 survey responses.' },
+  { stage: 'Idea', date: 'Aug 12, 2024', reviewer: 'Alex Rivera', outcome: 'Approved', note: 'Clear value proposition; encouraged to narrow initial target segment.' },
+];
+
 export default function ReviewDetailPage() {
   useDocumentTitle('Review: Luminara AI — BOCC Admin');
   const navigate = useNavigate();
   const [revisionRequested, setRevisionRequested] = useState(false);
+  const [previousReviewsOpen, setPreviousReviewsOpen] = useState(false);
 
   return (
     <AdminShell>
@@ -187,11 +194,13 @@ export default function ReviewDetailPage() {
                 <Download size={16} strokeWidth={2} /> Download All Files
               </span>
             </ComingSoon>
-            <ComingSoon label="View Previous Reviews" position="top" inline={false}>
-              <span className="w-full flex items-center gap-2 py-2.5 px-3 border border-border-subtle rounded-md font-inter font-medium text-small text-text-heading">
-                <History size={16} strokeWidth={2} /> View Previous Reviews
-              </span>
-            </ComingSoon>
+            <button
+              type="button"
+              onClick={() => setPreviousReviewsOpen(true)}
+              className="w-full flex items-center gap-2 py-2.5 px-3 border border-border-subtle rounded-md font-inter font-medium text-small text-text-heading hover:bg-canvas-bg transition-colors"
+            >
+              <History size={16} strokeWidth={2} /> View Previous Reviews
+            </button>
           </section>
 
           <section className="border-2 border-dashed border-border-subtle rounded-lg p-6">
@@ -216,6 +225,21 @@ export default function ReviewDetailPage() {
           </section>
         </div>
       </div>
+
+      <Modal isOpen={previousReviewsOpen} onClose={() => setPreviousReviewsOpen(false)} title="Previous Reviews — Luminara AI">
+        <div className="space-y-4">
+          {PREVIOUS_REVIEWS.map(({ stage, date, reviewer, outcome, note }) => (
+            <div key={stage} className="border border-border-subtle rounded-lg p-4">
+              <div className="flex items-center justify-between mb-1.5">
+                <Badge variant="brand">{stage}</Badge>
+                <span className="font-inter text-caption text-text-muted">{date}</span>
+              </div>
+              <p className="font-inter font-semibold text-small text-text-heading">{reviewer} · {outcome}</p>
+              <p className="font-inter text-small text-text-muted mt-1">{note}</p>
+            </div>
+          ))}
+        </div>
+      </Modal>
     </AdminShell>
   );
 }

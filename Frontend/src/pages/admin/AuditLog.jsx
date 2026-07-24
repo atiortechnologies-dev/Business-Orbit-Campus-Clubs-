@@ -1,17 +1,17 @@
 import { useState, useMemo } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Zap, User as UserIcon, AlertTriangle, FileText, Cloud } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Zap, User as UserIcon, AlertTriangle, FileText, Cloud, Download } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
-import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { downloadCsv } from '@/utils/csv';
 
 const LOGS = [
-  { id: 'l1', timestamp: '2024-10-24 14:22:01', initials: 'JD', user: 'j_doe_admin', module: 'Security', action: 'Updated User Permissions', target: 'ID: 8829-X-22', status: 'Success', ip: '192.168.1.104' },
-  { id: 'l2', timestamp: '2024-10-24 14:18:55', initials: 'SM', user: 's_miller_op', module: 'Clubs', action: 'Modified Club Metadata', target: 'Central Tennis Hub', status: 'Success', ip: '216.58.214.14' },
-  { id: 'l3', timestamp: '2024-10-24 13:55:12', initials: '??', user: 'Unknown', module: 'Auth', action: 'Failed Login Attempt', target: 'Admin Portal Login', status: 'Rejected', ip: '45.12.8.212', flagged: true },
-  { id: 'l4', timestamp: '2024-10-24 13:40:02', initials: 'AK', user: 'a_kapoor_sys', module: 'System', action: 'Backup Execution Initiated', target: 'Global Storage Cluster', status: 'Pending', ip: '10.0.0.42' },
-  { id: 'l5', timestamp: '2024-10-24 13:22:11', initials: 'JD', user: 'j_doe_admin', module: 'Content', action: 'Archived Report Cycle', target: 'FY23_Q3_Final', status: 'Success', ip: '192.168.1.104' },
+  { id: 'l1', timestamp: '2024-10-24 14:22:01', date: '2024-10-24', initials: 'JD', user: 'j_doe_admin', module: 'Security', action: 'Updated User Permissions', target: 'ID: 8829-X-22', status: 'Success', ip: '192.168.1.104' },
+  { id: 'l2', timestamp: '2024-10-24 14:18:55', date: '2024-10-24', initials: 'SM', user: 's_miller_op', module: 'Clubs', action: 'Modified Club Metadata', target: 'Central Tennis Hub', status: 'Success', ip: '216.58.214.14' },
+  { id: 'l3', timestamp: '2024-10-24 13:55:12', date: '2024-10-24', initials: '??', user: 'Unknown', module: 'Auth', action: 'Failed Login Attempt', target: 'Admin Portal Login', status: 'Rejected', ip: '45.12.8.212', flagged: true },
+  { id: 'l4', timestamp: '2024-10-23 13:40:02', date: '2024-10-23', initials: 'AK', user: 'a_kapoor_sys', module: 'System', action: 'Backup Execution Initiated', target: 'Global Storage Cluster', status: 'Pending', ip: '10.0.0.42' },
+  { id: 'l5', timestamp: '2024-10-22 13:22:11', date: '2024-10-22', initials: 'JD', user: 'j_doe_admin', module: 'Content', action: 'Archived Report Cycle', target: 'FY23_Q3_Final', status: 'Success', ip: '192.168.1.104' },
 ];
 
 const MODULES = ['All', 'Security', 'Clubs', 'Auth', 'System', 'Content'];
@@ -32,11 +32,21 @@ export default function AuditLogPage() {
   useDocumentTitle('Audit Log — BOCC Admin');
   const [moduleFilter, setModuleFilter] = useState('All');
   const [userFilter, setUserFilter] = useState('All');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [dateFilterOpen, setDateFilterOpen] = useState(false);
 
   const filteredLogs = useMemo(
-    () => LOGS.filter((l) => (moduleFilter === 'All' || l.module === moduleFilter) && (userFilter === 'All' || l.user === userFilter)),
-    [moduleFilter, userFilter]
+    () => LOGS.filter((l) =>
+      (moduleFilter === 'All' || l.module === moduleFilter) &&
+      (userFilter === 'All' || l.user === userFilter) &&
+      (!dateFrom || l.date >= dateFrom) &&
+      (!dateTo || l.date <= dateTo)
+    ),
+    [moduleFilter, userFilter, dateFrom, dateTo]
   );
+
+  const dateRangeLabel = dateFrom || dateTo ? `${dateFrom || '…'} → ${dateTo || '…'}` : 'Last 24 Hours';
 
   const columns = [
     { key: 'timestamp', label: 'Timestamp', width: '1.3fr' },
@@ -79,12 +89,30 @@ export default function AuditLogPage() {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
         <div className="xl:col-span-9 space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <ComingSoon label="Date range filter" position="bottom" inline>
-                <span className="flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border-subtle rounded-md font-inter text-small text-text-heading">
-                  <Calendar size={14} strokeWidth={2} /> Last 24 Hours
-                </span>
-              </ComingSoon>
+            <div className="flex flex-wrap items-center gap-2 relative">
+              <button
+                type="button"
+                onClick={() => setDateFilterOpen((v) => !v)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border-subtle rounded-md font-inter text-small text-text-heading hover:bg-canvas-bg transition-colors"
+              >
+                <Calendar size={14} strokeWidth={2} /> {dateRangeLabel}
+              </button>
+              {dateFilterOpen && (
+                <div className="absolute top-full left-0 mt-1 z-20 bg-surface-white border border-border-subtle rounded-md shadow-overlay p-4 flex flex-col gap-3 w-64">
+                  <label className="flex flex-col gap-1">
+                    <span className="font-inter text-caption text-text-muted">From</span>
+                    <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="px-2 py-1.5 bg-canvas-bg border border-border-subtle rounded-md font-inter text-small text-text-heading focus:outline-none focus:ring-1 focus:ring-brand-black" />
+                  </label>
+                  <label className="flex flex-col gap-1">
+                    <span className="font-inter text-caption text-text-muted">To</span>
+                    <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="px-2 py-1.5 bg-canvas-bg border border-border-subtle rounded-md font-inter text-small text-text-heading focus:outline-none focus:ring-1 focus:ring-brand-black" />
+                  </label>
+                  <div className="flex justify-between">
+                    <button type="button" onClick={() => { setDateFrom(''); setDateTo(''); }} className="font-inter text-caption text-text-muted hover:text-text-heading transition-colors">Clear</button>
+                    <button type="button" onClick={() => setDateFilterOpen(false)} className="font-inter font-semibold text-caption text-text-heading">Apply</button>
+                  </div>
+                </div>
+              )}
               <select
                 value={moduleFilter}
                 onChange={(e) => setModuleFilter(e.target.value)}
@@ -100,25 +128,35 @@ export default function AuditLogPage() {
                 {USERS.map((u) => <option key={u} value={u}>{u === 'All' ? 'User: All' : u}</option>)}
               </select>
             </div>
-            <ComingSoon label="Export .CSV" position="bottom" inline>
-              <span className="flex items-center gap-1.5 px-4 py-1.5 border border-border-subtle rounded-md font-inter font-semibold text-small text-text-heading">
-                Export .CSV
-              </span>
-            </ComingSoon>
+            <button
+              type="button"
+              onClick={() => downloadCsv('audit-log', [
+                { key: 'timestamp', label: 'Timestamp' },
+                { key: 'user', label: 'Admin / User' },
+                { key: 'module', label: 'Module' },
+                { key: 'action', label: 'Action' },
+                { key: 'target', label: 'Target Entity' },
+                { key: 'status', label: 'Status' },
+                { key: 'ip', label: 'IP Address' },
+              ], filteredLogs)}
+              className="flex items-center gap-1.5 px-4 py-1.5 border border-border-subtle rounded-md font-inter font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
+            >
+              <Download size={14} strokeWidth={2} /> Export .CSV
+            </button>
           </div>
 
           <DataTable columns={columns} rows={filteredLogs} emptyMessage="No log entries match these filters." />
 
           <div className="flex items-center justify-between">
-            <span className="font-inter text-small text-text-muted">Showing 1-{filteredLogs.length} of 12,482 logs</span>
+            <span className="font-inter text-small text-text-muted">Showing {filteredLogs.length} of {LOGS.length} logs</span>
             <div className="flex items-center gap-2">
-              <ComingSoon label="Previous page" position="top" inline>
-                <span className="p-1.5 border border-border-subtle rounded text-text-muted"><ChevronLeft size={16} strokeWidth={2} /></span>
-              </ComingSoon>
+              <button type="button" disabled className="p-1.5 border border-border-subtle rounded text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
+                <ChevronLeft size={16} strokeWidth={2} />
+              </button>
               <span className="px-3 py-1 bg-brand-black text-white font-inter font-semibold text-small rounded">1</span>
-              <ComingSoon label="Next page" position="top" inline>
-                <span className="p-1.5 border border-border-subtle rounded text-text-muted"><ChevronRight size={16} strokeWidth={2} /></span>
-              </ComingSoon>
+              <button type="button" disabled className="p-1.5 border border-border-subtle rounded text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
+                <ChevronRight size={16} strokeWidth={2} />
+              </button>
             </div>
           </div>
         </div>

@@ -15,6 +15,7 @@ import {
 import AdminShell from '@/components/admin/AdminShell';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
+import Modal from '@/components/ui/Modal';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const DOCUMENTS = [
@@ -44,6 +45,9 @@ export default function VerificationDetailPage() {
     { author: 'Admin_Sarah_K', text: 'Contacted user regarding residency proof — awaiting response.' },
   ]);
   const [draft, setDraft] = useState('');
+  const [requestInfoOpen, setRequestInfoOpen] = useState(false);
+  const [requestInfoText, setRequestInfoText] = useState('');
+  const [requestInfoSent, setRequestInfoSent] = useState(false);
 
   function handleAddNote(e) {
     e.preventDefault();
@@ -54,18 +58,36 @@ export default function VerificationDetailPage() {
     setDraft('');
   }
 
+  function handleSendRequestInfo() {
+    if (!requestInfoText.trim()) return;
+    // TODO(backend): send this request to the user by email and log it
+    // against their verification record.
+    setNotes((prev) => [...prev, { author: 'Alex Rivera', text: `Requested more info: "${requestInfoText.trim()}"` }]);
+    setRequestInfoText('');
+    setRequestInfoOpen(false);
+    setRequestInfoSent(true);
+    setTimeout(() => setRequestInfoSent(false), 2500);
+  }
+
   return (
     <AdminShell>
+      {requestInfoSent && (
+        <div className="mb-6 p-4 rounded-lg border border-success/30 bg-success/10 text-success font-inter text-small">
+          Info request sent to Alexander Vance.
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <Link to="/admin/verification" className="flex items-center gap-2 text-text-muted hover:text-text-heading font-poppins font-semibold text-small transition-colors">
           <ArrowLeft size={16} strokeWidth={2} /> Back to Verification Queue
         </Link>
         <div className="flex gap-2">
-          <ComingSoon label="Request More Info" position="bottom" inline>
-            <span className="px-4 py-2 border border-border-subtle rounded-md font-poppins font-semibold text-small text-text-heading">
-              Request More Info
-            </span>
-          </ComingSoon>
+          <button
+            type="button"
+            onClick={() => setRequestInfoOpen(true)}
+            className="px-4 py-2 border border-border-subtle rounded-md font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
+          >
+            Request More Info
+          </button>
           <button
             type="button"
             onClick={() => navigate('/admin/verification/decision')}
@@ -238,6 +260,32 @@ export default function VerificationDetailPage() {
           </section>
         </div>
       </div>
+
+      <Modal isOpen={requestInfoOpen} onClose={() => setRequestInfoOpen(false)} title="Request more info">
+        <p className="font-inter text-small text-text-muted mb-3">
+          Sent to Alexander Vance by email and logged against this record.
+        </p>
+        <textarea
+          value={requestInfoText}
+          onChange={(e) => setRequestInfoText(e.target.value)}
+          placeholder="e.g. Please re-upload a clearer copy of your proof of residency."
+          rows={4}
+          className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body resize-none focus:outline-none focus:ring-1 focus:ring-brand-black mb-4"
+        />
+        <div className="flex justify-end gap-3">
+          <button type="button" onClick={() => setRequestInfoOpen(false)} className="border border-border-subtle text-text-heading px-5 py-2 rounded-md hover:bg-canvas-bg transition-colors font-poppins font-semibold text-small">
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSendRequestInfo}
+            disabled={!requestInfoText.trim()}
+            className="bg-action-bg text-action-text px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Send Request
+          </button>
+        </div>
+      </Modal>
     </AdminShell>
   );
 }

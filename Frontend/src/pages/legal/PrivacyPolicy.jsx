@@ -19,7 +19,7 @@ const LEFT_NAV = [
   { icon: Cookie,     label: 'Cookie Policy',    href: '#cookies',    active: false },
   { icon: ListChecks, label: 'Acceptable Use',   href: '#user-responsibilities',   active: false },
   { icon: Database,   label: 'Data Processing',  href: '#data-security',  active: false },
-  { icon: LifeBuoy,   label: 'Contact Support',  href: '#',  active: false, divider: true, comingSoon: true },
+  { icon: LifeBuoy,   label: 'Contact Support',  href: '#contact-information',  active: false, divider: true },
 ];
 
 const SECTIONS = [
@@ -195,14 +195,14 @@ export default function PrivacyPolicyPage() {
                       Accept &amp; Continue
                     </button>
                   </Link>
-                  <ComingSoon label="Download PDF" position="top" inline>
-                    <span
-                      className="bg-surface-white border border-border-subtle text-text-heading px-6 py-3 rounded-md hover:bg-canvas-bg transition-all flex items-center gap-2 active:scale-[0.98] font-inter font-medium text-small inline-block"
-                    >
-                      <Download size={18} strokeWidth={2} />
-                      Download PDF
-                    </span>
-                  </ComingSoon>
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="bg-surface-white border border-border-subtle text-text-heading px-6 py-3 rounded-md hover:bg-canvas-bg transition-all flex items-center gap-2 active:scale-[0.98] font-inter font-medium text-small"
+                  >
+                    <Download size={18} strokeWidth={2} />
+                    Download PDF
+                  </button>
                 </div>
                 <a href="#contact-information" className="text-text-body hover:underline font-inter font-normal text-small">
                   Still have questions? <span className="underline">Contact Support</span>

@@ -64,12 +64,14 @@ export default function ApplicationReview() {
               </div>
             </div>
 
-            <ComingSoon label="Print PDF" position="bottom" inline>
-              <span className="bg-surface-white border border-border-subtle px-4 py-2.5 rounded-lg font-poppins font-semibold text-small text-text-heading flex items-center gap-2 hover:bg-canvas-bg cursor-pointer transition-colors">
-                <Printer size={16} strokeWidth={2} />
-                Print PDF
-              </span>
-            </ComingSoon>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="bg-surface-white border border-border-subtle px-4 py-2.5 rounded-lg font-poppins font-semibold text-small text-text-heading flex items-center gap-2 hover:bg-canvas-bg cursor-pointer transition-colors"
+            >
+              <Printer size={16} strokeWidth={2} />
+              Print PDF
+            </button>
           </div>
 
           {/* Overview Grid */}
