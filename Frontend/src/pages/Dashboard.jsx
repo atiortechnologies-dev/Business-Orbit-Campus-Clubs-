@@ -64,8 +64,41 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {/* Placeholder image — hidden on mobile */}
-          <div className="w-48 h-48 placeholder-box rounded-lg hidden md:block" />
+          {/* Custom illustration — "idea spark" motif, matching the same
+              geometric line-art language as Login's orbit and the Startup
+              Journey path (thin theme-reactive strokes + fixed brand-black/
+              accent-neon accents). Fits the student's current Ideation
+              stage. Hidden on mobile like the placeholder it replaced. */}
+          <svg
+            viewBox="0 0 200 200"
+            className="w-48 h-48 rounded-lg hidden md:block shrink-0"
+            role="img"
+            aria-label="Illustration of a radiating idea spark"
+          >
+            <circle cx="100" cy="100" r="90" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+            <circle cx="100" cy="100" r="62" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+
+            {/* Radiating rays */}
+            {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => {
+              const rad = (deg * Math.PI) / 180;
+              const x1 = 100 + Math.cos(rad) * 40;
+              const y1 = 100 + Math.sin(rad) * 40;
+              const x2 = 100 + Math.cos(rad) * 78;
+              const y2 = 100 + Math.sin(rad) * 78;
+              return (
+                <line key={deg} x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--color-border-subtle)" strokeWidth="2" strokeLinecap="round" />
+              );
+            })}
+
+            {/* Central hub */}
+            <circle cx="100" cy="100" r="32" fill="var(--color-brand-black)" />
+            <circle cx="100" cy="100" r="11" fill="var(--color-accent-neon)" />
+
+            {/* A few nodes catching the light */}
+            <circle cx="167" cy="100" r="4" fill="var(--color-accent-neon)" />
+            <circle cx="100" cy="18" r="3" fill="var(--color-border-subtle)" />
+            <circle cx="33" cy="100" r="3" fill="var(--color-border-subtle)" />
+          </svg>
         </section>
 
         {/* ── 4. Today's Next Step ──────────────────────────────── */}

@@ -80,8 +80,37 @@ export default function JourneyPage() {
             Start Your Journey
           </Link>
         </div>
-        {/* Placeholder box */}
-        <div className="md:col-span-5 h-64 md:h-80 placeholder-box rounded-lg" />
+        {/* Custom illustration — abstract "5-stage ascending path" motif,
+            matching the STAGES list below: a winding line rising through
+            5 waypoints toward a flag, themed entirely with design tokens.
+            Same geometric line-art language as Login's orbit, Dashboard's
+            idea spark, and MVP Overview's assembling blocks. */}
+        <svg
+          viewBox="0 0 400 320"
+          className="md:col-span-5 w-full h-64 md:h-80 rounded-lg"
+          role="img"
+          aria-label="Illustration of a path rising through five stages toward a flag"
+        >
+          <path
+            d="M 30 280 C 90 280, 90 220, 130 210 S 190 190, 200 150 S 250 110, 260 90 S 320 60, 340 40"
+            fill="none"
+            stroke="var(--color-border-subtle)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeDasharray="1 14"
+          />
+
+          {/* Waypoints 1-4 (Ideation → Traction) */}
+          <circle cx="30" cy="280" r="9" fill="var(--color-brand-black)" />
+          <circle cx="130" cy="210" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="2" />
+          <circle cx="200" cy="150" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="2" />
+          <circle cx="260" cy="90" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="2" />
+
+          {/* Waypoint 5 (Launch & Pitch) — flag */}
+          <circle cx="340" cy="40" r="10" fill="var(--color-accent-neon)" />
+          <line x1="340" y1="40" x2="340" y2="14" stroke="var(--color-brand-black)" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M 340 14 L 366 21 L 340 28 Z" fill="var(--color-brand-black)" />
+        </svg>
       </section>
 
       {/* ── Journey Roadmap ────────────────────────────────────────── */}
