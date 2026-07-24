@@ -370,6 +370,16 @@ const updateValidationReportSchema = z.object({
     .optional(),
 });
 
+// Meeting reschedule validator (for student)
+const requestMeetingRescheduleSchema = z.object({
+  reschedule_reason: z
+    .string()
+    .min(5, "Reason must be at least 5 characters")
+    .max(500, "Reason must be less than 500 characters")
+    .optional()
+    .default(""),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -389,4 +399,5 @@ module.exports = {
   uploadEvidenceSchema,
   submitValidationReportSchema,
   updateValidationReportSchema,
+  requestMeetingRescheduleSchema,
 };

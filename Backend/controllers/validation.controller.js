@@ -1,4 +1,6 @@
 const asyncHandler = require("../middlewares/asyncHandler");
+const MeetingFeedback = require("../models/MeetingFeedback");
+const ReviewMeeting = require("../models/ReviewMeeting");
 const StageSubmission = require("../models/StageSubmission");
 const StartupStage = require("../models/StartupStage");
 const ValidationChecklistItem = require("../models/ValidationChecklistItem");
@@ -497,6 +499,143 @@ const submitValidationReport = asyncHandler(async (req, res) => {
   });
 });
 
+// ================= REVIEW MEETING =================
+
+// GET /api/student/validation/meeting
+const getReviewMeeting = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Find the meeting for this startup
+  const meeting = await ReviewMeeting.findOne({ startup_id: startup._id })
+    .populate("reviewer_id", "full_name email")
+    .lean();
+
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "No review meeting scheduled yet",
+    });
+  }
+
+  // Get feedback if meeting is completed
+  const feedback = await MeetingFeedback.findOne({
+    meeting_id: meeting._id,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      meeting: {
+        id: meeting._id,
+        meeting_date: meeting.meeting_date,
+        meeting_link: meeting.meeting_link,
+        status: meeting.status,
+        agenda: meeting.agenda,
+        student_notes: meeting.student_notes,
+      },
+      reviewer: {
+        name: meeting.reviewer_id?.full_name,
+        email: meeting.reviewer_id?.email,
+      },
+      feedback: feedback
+        ? {
+            reviewer_comments: feedback.reviewer_comments,
+            recommendations: feedback.recommendations,
+            validation_approved: feedback.validation_approved,
+          }
+        : null,
+    },
+  });
+});
+
+// POST /api/student/validation/meeting/reschedule
+const requestMeetingReschedule = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { reschedule_reason } = req.validatedData;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Find the meeting
+  const meeting = await ReviewMeeting.findOne({ startup_id: startup._id });
+
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "No review meeting found",
+    });
+  }
+
+  // Can only reschedule if currently scheduled
+  if (meeting.status !== "scheduled") {
+    return res.status(409).json({
+      success: false,
+      message: `Cannot reschedule a meeting with status: ${meeting.status}`,
+    });
+  }
+
+  // Update meeting status and reschedule details
+  meeting.status = "reschedule_requested";
+  meeting.reschedule_reason = reschedule_reason || "";
+  meeting.reschedule_requested_at = new Date();
+  await meeting.save();
+
+  res.status(200).json({
+    success: true,
+    message:
+      "Reschedule request submitted. Your mentor will confirm a new time.",
+    data: {
+      meeting_id: meeting._id,
+      status: meeting.status,
+      reschedule_requested_at: meeting.reschedule_requested_at,
+    },
+  });
+});
+
+// GET /api/student/validation/meeting/feedback
+const getMeetingFeedback = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Find meeting
+  const meeting = await ReviewMeeting.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "No review meeting found",
+    });
+  }
+
+  // Find feedback
+  const feedback = await MeetingFeedback.findOne({ meeting_id: meeting._id })
+    .populate("reviewer_id", "full_name email")
+    .lean();
+
+  if (!feedback) {
+    return res.status(404).json({
+      success: false,
+      message: "No feedback available yet",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      reviewer_name: feedback.reviewer_id?.full_name,
+      reviewer_email: feedback.reviewer_id?.email,
+      reviewer_comments: feedback.reviewer_comments,
+      recommendations: feedback.recommendations,
+      validation_approved: feedback.validation_approved,
+      feedback_date: feedback.created_at,
+    },
+  });
+});
+
 module.exports = {
   getValidationOverview,
   getValidationStatus,
@@ -511,4 +650,7 @@ module.exports = {
   getValidationReport,
   updateValidationReport,
   submitValidationReport,
+  getReviewMeeting,
+  requestMeetingReschedule,
+  getMeetingFeedback,
 };

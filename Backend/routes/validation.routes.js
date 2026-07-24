@@ -10,6 +10,7 @@ const {
   uploadEvidenceSchema,
   updateValidationReportSchema,
   submitValidationReportSchema,
+  requestMeetingRescheduleSchema,
 } = require("../utils/validators");
 
 // All validation requires student role and authentication
@@ -57,5 +58,14 @@ router.post(
   validateRequest(submitValidationReportSchema),
   validationController.submitValidationReport,
 );
+
+// ================= REVIEW MEETING =================
+router.get("/meeting", validationController.getReviewMeeting);
+router.post(
+  "/meeting/reschedule",
+  validateRequest(requestMeetingRescheduleSchema),
+  validationController.requestMeetingReschedule,
+);
+router.get("/meeting/feedback", validationController.getMeetingFeedback);
 
 module.exports = router;
