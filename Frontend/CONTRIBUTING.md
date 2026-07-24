@@ -325,6 +325,23 @@ lines, don't take "theirs" or "mine."
     ("Showing 1-4 of 142", "12,482 logs") — when you unstub the real rows,
     fix the count to match what's actually loaded rather than leaving an
     old placeholder total next to real data.
+- **Custom SVG illustrations inside a fixed-black container need literal
+  `white`, not the `surface-white` token.** Same root cause as the
+  Sidebar's own fixed-vs-reactive rule above, but it bit an inline SVG
+  this time: `journey/mvp/MvpOverview.jsx`'s "assembling blocks"
+  illustration sits inside its own `fill="var(--color-brand-black)"` rect
+  (a fixed-black surface, like the sidebar), but the blocks inside it were
+  first written with `var(--color-surface-white)` — which flips to a dark
+  color in dark mode and went nearly invisible against a background that
+  never inverts. Caught by an actual dark-mode screenshot, not by reading
+  the code. Fixed by using the literal string `"white"` (optionally with
+  `fillOpacity`/`strokeOpacity`) for anything drawn on that fixed surface.
+  Contrast with `Dashboard.jsx`'s "idea spark" SVG, which correctly uses
+  `var(--color-border-subtle)` for its rings — that illustration has no
+  background fill of its own, it sits directly on the page's own
+  theme-reactive canvas, so the reactive token is the right call there.
+  Rule of thumb: the token choice depends on what's *behind* the shape,
+  not on what the shape depicts.
 
 ## 7. Before calling a screen "done"
 

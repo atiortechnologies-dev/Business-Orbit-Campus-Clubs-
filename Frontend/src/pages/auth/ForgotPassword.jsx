@@ -11,7 +11,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Lock, Mail, ArrowRight, CheckCircle } from 'lucide-react';
+import { ChevronLeft, Mail, ArrowRight, CheckCircle } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -94,17 +94,34 @@ export default function ForgotPasswordPage() {
           ) : (
             /* ── Form view ─────────────────────────────────── */
             <>
-              {/* Illustration placeholder */}
-              <div
-                className="w-full aspect-[5/2] border border-dashed border-border-subtle bg-transparent flex flex-col items-center justify-center gap-2 text-text-muted rounded-lg"
+              {/* Custom illustration — same orbit motif as Login (this
+                  screen is a step in the same auth flow), recomposed for
+                  the wider aspect-[5/2] frame. */}
+              <svg
+                viewBox="0 0 500 200"
+                className="w-full aspect-[5/2] rounded-lg"
                 role="img"
-                aria-label="Illustration placeholder"
+                aria-label="Illustration of campus clubs orbiting a central hub"
               >
-                <Lock size={32} strokeWidth={2} className="text-text-muted" aria-hidden="true" />
-                <span className="text-[11px] uppercase tracking-widest select-none font-inter font-medium">
-                  Placeholder
-                </span>
-              </div>
+                <ellipse cx="250" cy="100" rx="220" ry="45" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-6 250 100)" />
+                <ellipse cx="250" cy="100" rx="170" ry="65" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(9 250 100)" />
+                <ellipse cx="250" cy="100" rx="120" ry="80" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-12 250 100)" />
+
+                <circle cx="250" cy="100" r="24" fill="var(--color-brand-black)" />
+                <circle cx="250" cy="100" r="8" fill="var(--color-accent-neon)" />
+
+                <circle cx="410" cy="88" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+                <circle cx="410" cy="88" r="2.5" fill="var(--color-accent-neon)" />
+
+                <circle cx="105" cy="122" r="7" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+                <circle cx="105" cy="122" r="2" fill="var(--color-accent-neon)" />
+
+                <circle cx="330" cy="165" r="5" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+                <circle cx="175" cy="35" r="4" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+
+                <circle cx="70" cy="60" r="3" fill="var(--color-border-subtle)" />
+                <circle cx="420" cy="150" r="3" fill="var(--color-border-subtle)" />
+              </svg>
 
               {/* Heading + description */}
               <div className="flex flex-col gap-2 text-center">

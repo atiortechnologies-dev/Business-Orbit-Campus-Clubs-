@@ -19,7 +19,10 @@ lists the exact file/function to replace.
 
 ### `/login` — `src/pages/auth/Login.jsx`
 - **Real:** email/password format validation, password show/hide, remember-me
-  checkbox (visual toggle, not persisted).
+  checkbox (visual toggle, not persisted). The illustration placeholder is
+  gone — replaced with a custom inline SVG (an abstract "orbit" motif, hub +
+  campus-club nodes) built entirely from design tokens. The small decorative
+  mark above "Welcome Back" is now the real `<Logo variant="mark" />`.
 - **Stub:** `handleSubmit` — any validly-formatted email/password redirects
   straight to `/dashboard`. No real authentication happens; anyone can "log
   in" as anyone. Replace with a real `POST /api/auth/login`, keep the
@@ -28,13 +31,16 @@ lists the exact file/function to replace.
 
 ### `/forgot-password` — `src/pages/auth/ForgotPassword.jsx`
 - **Real:** email validation, submit swaps the card to a confirmation view
-  (client state only).
+  (client state only). Illustration placeholder replaced with the same
+  orbit-motif SVG as `/login`, recomposed for this card's wider `aspect-[5/2]`
+  frame.
 - **Stub:** no email is ever sent. The confirmation view is cosmetic.
 - **Coming Soon:** Support Center link.
 
 ### `/reset-password` — `src/pages/auth/ResetPassword.jsx`
 - **Real:** live password-strength calculation, confirm-password match
-  validation, two independent eye toggles.
+  validation, two independent eye toggles. Illustration placeholder
+  replaced with the same orbit-motif SVG as `/login`/`/forgot-password`.
 - **Stub:** `handleSubmit` — redirects to `/login` without ever changing a
   password anywhere. Replace with `POST /api/auth/reset-password`.
 
@@ -71,6 +77,10 @@ shared logic in `src/components/auth/RoleSignupForm.jsx`
   `/build-startup/journey`. "View All" → real navigation to `/notifications`.
   "Profile" quick action → real navigation to `/settings`. Header Settings
   icon and avatar (in `DashboardShell`) → real navigation to `/settings`.
+  The hero's illustration placeholder is now a custom inline SVG ("idea
+  spark" motif — radiating rays around a central hub, fitting the
+  student's current Ideation stage), same geometric line-art language as
+  the other custom illustrations across the app.
 - **Coming Soon:** Investors/Incubators/Freelancing quick actions, all 4
   Resources cards, sidebar Mentors/Investors/Incubators/Freelancing/Help,
   header Search — all genuinely blocked on directory/marketplace screens
@@ -98,7 +108,9 @@ shared logic in `src/components/auth/RoleSignupForm.jsx`
   from any real per-student state.
 - **Real:** breadcrumb "Dashboard" and "Back to Dashboard" → real
   navigation. Both "Start Your Journey" CTAs and the active Ideation stage
-  circle → real navigation into `journey/ideation/`.
+  circle → real navigation into `journey/ideation/`. The illustration
+  placeholder is now a custom inline SVG — a "5-stage ascending path" motif
+  (waypoints rising to a flag) matching the STAGES list below it.
 
 ### Startup Journey — Ideation Stage — `src/pages/journey/ideation/*.jsx`
 Six screens: `IdeationOverview` → `IdeaSubmission` → `SubmissionConfirmation`,
@@ -143,6 +155,11 @@ Seven screens: `ValidationOverview` → `SurveyTracker` → `EvidenceUpload` →
 ### Startup Journey — MVP Stage — `src/pages/journey/mvp/*.jsx`
 Five screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
 `SubmissionSuccess` → `IncubationProofSubmission`.
+- `MvpOverview`'s Development Roadmap illustration placeholder is now a
+  custom inline SVG — an "assembling blocks" motif on a fixed-black
+  surface. See `CONTRIBUTING.md` §6 for a real dark-mode token bug this
+  illustration shipped with and how it was fixed (fixed-black container
+  needs literal `white`, not the `surface-white` token).
 - **Real:** `ChooseProductType`'s 2-card selection gates Continue,
   `MvpSubmission`'s 9-field form with a **live-updating preview panel**
   (title/description reflect as you type — this is the one place in the

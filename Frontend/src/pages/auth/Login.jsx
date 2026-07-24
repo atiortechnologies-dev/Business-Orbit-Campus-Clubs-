@@ -12,17 +12,16 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Activity,
   ChevronLeft,
   Mail,
   Lock,
   Eye,
   EyeOff,
-  Image as ImageIcon,
 } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Logo from '@/components/ui/Logo';
 
 /* ── Validation helpers ─────────────────────────────────── */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -82,17 +81,43 @@ export default function LoginPage() {
         className="hidden lg:flex flex-col gap-8 pl-20 pr-4 pt-10 pb-14 bg-canvas-bg"
         aria-labelledby="hero-heading"
       >
-        {/* Illustration placeholder */}
-        <div
-          className="w-full aspect-[4/3] border border-dashed border-border-subtle bg-transparent flex flex-col items-center justify-center gap-2 text-text-muted rounded-lg"
+        {/* Custom illustration — abstract "orbit" motif: a central hub with
+            campus clubs orbiting it, themed entirely with design tokens so
+            it adapts to light/dark like every other element on this page.
+            Reused (recomposed per aspect ratio) on every pre-auth screen —
+            ForgotPassword, ResetPassword — and echoed by different motifs
+            elsewhere (Dashboard's idea spark, Startup Journey's path,
+            MVP Overview's assembling blocks) using the same geometric
+            line-art language. */}
+        <svg
+          viewBox="0 0 400 300"
+          className="w-full aspect-[4/3] rounded-lg"
           role="img"
-          aria-label="Illustration placeholder"
+          aria-label="Illustration of campus clubs orbiting a central hub"
         >
-          <ImageIcon size={40} strokeWidth={2} aria-hidden="true" />
-          <span className="text-[11px] uppercase tracking-widest select-none font-inter font-medium">
-            Placeholder
-          </span>
-        </div>
+          <ellipse cx="200" cy="150" rx="170" ry="70" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-8 200 150)" />
+          <ellipse cx="200" cy="150" rx="130" ry="100" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(12 200 150)" />
+          <ellipse cx="200" cy="150" rx="90" ry="130" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-15 200 150)" />
+
+          {/* Central hub */}
+          <circle cx="200" cy="150" r="26" fill="var(--color-brand-black)" />
+          <circle cx="200" cy="150" r="9" fill="var(--color-accent-neon)" />
+
+          {/* Orbiting nodes ("clubs") */}
+          <circle cx="332" cy="128" r="10" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+          <circle cx="332" cy="128" r="3" fill="var(--color-accent-neon)" />
+
+          <circle cx="88" cy="185" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+          <circle cx="88" cy="185" r="2.5" fill="var(--color-accent-neon)" />
+
+          <circle cx="255" cy="245" r="7" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+
+          <circle cx="140" cy="45" r="6" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+
+          <circle cx="60" cy="90" r="4" fill="var(--color-border-subtle)" />
+          <circle cx="330" cy="220" r="4" fill="var(--color-border-subtle)" />
+          <circle cx="230" cy="30" r="3" fill="var(--color-border-subtle)" />
+        </svg>
 
         {/* Heading + paragraph */}
         <div className="flex flex-col gap-4">
@@ -151,13 +176,11 @@ export default function LoginPage() {
         <div className="flex-1 flex flex-col items-center justify-center gap-5 py-6">
           <div className="w-full max-w-[546px] flex flex-col items-center gap-5">
 
-            {/* Decorative Activity icon above heading */}
-            <Activity
-              size={26}
-              strokeWidth={2}
-              className="text-text-heading"
-              aria-hidden="true"
-            />
+            {/* BOCC mark above heading — PublicNav already renders the
+                horizontal lockup above this page, so this is a secondary
+                instance (no `priority`) sized to match the small
+                decorative-icon role it replaces, not a header-scale logo. */}
+            <Logo variant="mark" size={28} />
 
             {/* Heading + subtext */}
             <div className="text-center flex flex-col gap-1.5">
