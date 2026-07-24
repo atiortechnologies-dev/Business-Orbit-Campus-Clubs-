@@ -316,6 +316,60 @@ const uploadEvidenceSchema = z.object({
     .max(50 * 1024 * 1024, "File size cannot exceed 50MB"),
 });
 
+// Validation report validators
+const submitValidationReportSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(200, "Title must be less than 200 characters"),
+  summary: z
+    .string()
+    .min(10, "Summary must be at least 10 characters")
+    .max(5000, "Summary must be less than 5000 characters"),
+  key_findings: z
+    .string()
+    .max(3000, "Key findings must be less than 3000 characters")
+    .optional()
+    .default(""),
+  problem_validated: z.boolean().optional().default(false),
+  market_size_estimate: z
+    .string()
+    .max(200, "Market size estimate must be less than 200 characters")
+    .optional()
+    .default(""),
+  next_steps: z
+    .string()
+    .max(1000, "Next steps must be less than 1000 characters")
+    .optional()
+    .default(""),
+});
+
+const updateValidationReportSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(200, "Title must be less than 200 characters")
+    .optional(),
+  summary: z
+    .string()
+    .min(10, "Summary must be at least 10 characters")
+    .max(5000, "Summary must be less than 5000 characters")
+    .optional(),
+  key_findings: z
+    .string()
+    .max(3000, "Key findings must be less than 3000 characters")
+    .optional(),
+  problem_validated: z.boolean().optional(),
+  market_size_estimate: z
+    .string()
+    .max(200, "Market size estimate must be less than 200 characters")
+    .optional(),
+  next_steps: z
+    .string()
+    .max(1000, "Next steps must be less than 1000 characters")
+    .optional(),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -333,4 +387,6 @@ module.exports = {
   createSurveySchema,
   updateSurveySchema,
   uploadEvidenceSchema,
+  submitValidationReportSchema,
+  updateValidationReportSchema,
 };

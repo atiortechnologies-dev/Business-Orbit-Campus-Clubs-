@@ -1,4 +1,5 @@
 const asyncHandler = require("../middlewares/asyncHandler");
+const StageSubmission = require("../models/StageSubmission");
 const StartupStage = require("../models/StartupStage");
 const ValidationChecklistItem = require("../models/ValidationChecklistItem");
 const ValidationEvidence = require("../models/ValidationEvidence");
@@ -338,6 +339,164 @@ const deleteEvidence = asyncHandler(async (req, res) => {
   });
 });
 
+// ================= VALIDATION REPORT =================
+
+// GET /api/student/validation/report
+const getValidationReport = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  let report = await ValidationReport.findOne({ startup_id: startup._id });
+
+  if (!report) {
+    // Create empty report
+    report = new ValidationReport({
+      startup_id: startup._id,
+      student_id: userId,
+      title: "",
+      summary: "",
+      status: "draft",
+    });
+    await report.save();
+  }
+
+  res.status(200).json({
+    success: true,
+    data: report,
+  });
+});
+
+// PUT /api/student/validation/report
+const updateValidationReport = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const updateData = req.validatedData;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  let report = await ValidationReport.findOne({ startup_id: startup._id });
+
+  if (!report) {
+    report = new ValidationReport({
+      startup_id: startup._id,
+      student_id: userId,
+      title: updateData.title || "",
+      summary: updateData.summary || "",
+    });
+  }
+
+  // Update fields
+  Object.assign(report, updateData);
+  await report.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Report updated successfully",
+    data: report,
+  });
+});
+
+// POST /api/student/validation/report/submit
+const submitValidationReport = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const {
+    title,
+    summary,
+    key_findings,
+    problem_validated,
+    market_size_estimate,
+    next_steps,
+  } = req.validatedData;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Check if report is already submitted
+  const existingSubmission = await ValidationReport.findOne({
+    startup_id: startup._id,
+    status: { $in: ["submitted", "under_review", "approved"] },
+  });
+
+  if (existingSubmission) {
+    return res.status(409).json({
+      success: false,
+      message:
+        "A report has already been submitted. You cannot submit another one.",
+    });
+  }
+
+  // Verify minimum requirements
+  const evidenceCount = await ValidationEvidence.countDocuments({
+    startup_id: startup._id,
+    upload_status: "uploaded",
+  });
+
+  if (evidenceCount === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "You must upload at least one evidence file before submitting",
+    });
+  }
+
+  // Get or create report
+  let report = await ValidationReport.findOne({ startup_id: startup._id });
+  if (!report) {
+    report = new ValidationReport({
+      startup_id: startup._id,
+      student_id: userId,
+    });
+  }
+
+  // Update report
+  report.title = title;
+  report.summary = summary;
+  report.key_findings = key_findings || "";
+  report.problem_validated = problem_validated || false;
+  report.market_size_estimate = market_size_estimate || "";
+  report.next_steps = next_steps || "";
+  report.status = "submitted";
+  report.submitted_at = new Date();
+
+  await report.save();
+
+  // Get Stage 2 and create submission
+  const stage2 = await StartupStage.findOne({
+    startup_id: startup._id,
+    stage_number: 2,
+  });
+
+  if (stage2) {
+    // Create or update stage submission
+    let submission = await StageSubmission.findOne({ stage_id: stage2._id });
+
+    submission.title = title;
+    submission.description = summary;
+    submission.status = "pending_review";
+    submission.submitted_at = new Date();
+
+    await submission.save();
+
+    report.stage_submission_id = submission._id;
+    await report.save();
+
+    // Update stage status
+    stage2.status = "submitted";
+    await stage2.save();
+  }
+
+  // Update checklist
+  await updateChecklistItem(startup._id, "Submit report", true);
+
+  res.status(201).json({
+    success: true,
+    message: "Report submitted successfully. It's now pending review.",
+    data: {
+      reportId: report._id,
+      submittedAt: report.submitted_at,
+      status: report.status,
+    },
+  });
+});
+
 module.exports = {
   getValidationOverview,
   getValidationStatus,
@@ -349,4 +508,7 @@ module.exports = {
   uploadEvidence,
   listEvidence,
   deleteEvidence,
+  getValidationReport,
+  updateValidationReport,
+  submitValidationReport,
 };

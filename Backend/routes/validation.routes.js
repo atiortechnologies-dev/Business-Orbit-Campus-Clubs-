@@ -8,6 +8,8 @@ const {
   createSurveySchema,
   updateSurveySchema,
   uploadEvidenceSchema,
+  updateValidationReportSchema,
+  submitValidationReportSchema,
 } = require("../utils/validators");
 
 // All validation requires student role and authentication
@@ -42,5 +44,18 @@ router.post(
 );
 router.get("/evidence", validationController.listEvidence);
 router.delete("/evidence/:evidenceId", validationController.deleteEvidence);
+
+// ================= VALIDATION REPORT =================
+router.get("/report", validationController.getValidationReport);
+router.put(
+  "/report",
+  validateRequest(updateValidationReportSchema),
+  validationController.updateValidationReport,
+);
+router.post(
+  "/report/submit",
+  validateRequest(submitValidationReportSchema),
+  validationController.submitValidationReport,
+);
 
 module.exports = router;
