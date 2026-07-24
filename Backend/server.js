@@ -10,6 +10,7 @@ const resourceRoutes = require("./routes/resource.routes");
 const submissionRoutes = require("./routes/submission.routes");
 const meetingRoutes = require("./routes/meeting.routes");
 const reviewRoutes = require("./routes/review.routes");
+const validationRoutes = require("./routes/validation.routes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const { createProfileRouter } = require("./routes/profile.routes");
 const {
@@ -56,14 +57,20 @@ app.use("/api/investor/profile", createProfileRouter("investor"));
 app.use("/api/incubator/profile", createProfileRouter("incubator"));
 app.use("/api/company/profile", createProfileRouter("company"));
 
+//
 app.use("/api/student", studentChapterRouter);
 app.use("/api/chapter", chapterStatsRouter);
+
+// startup ( stage 1: Ideation )
 app.use("/api/student", dashboardRoutes);
 app.use("/api/startup", startupRoutes);
 app.use("/api/startup", submissionRoutes);
 app.use("/api/resources", resourceRoutes);
 app.use("/api/meetings", meetingRoutes);
 app.use("/api/review", reviewRoutes);
+
+// startup ( stage 2: Validation )
+app.use("/api/student/validation", validationRoutes);
 
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
