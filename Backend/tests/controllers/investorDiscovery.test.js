@@ -171,14 +171,27 @@ describe("Investor Discovery Controller", () => {
   });
 
   describe("getPitches", () => {
-    it("should return all active pitches", async () => {
-      const req = { query: {} };
+    it("should return all active pitches and test pagination", async () => {
+      const req = { query: { page: "1", limit: "10" } };
+      const res = mockResponse();
+
+      await investorDiscoveryController.getPitches(req, res, mockNext);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json.mock.calls[0][0].success).toBe(true);
+      expect(res.json.mock.calls[0][0].data.length).toBe(1);
+      expect(res.json.mock.calls[0][0].pagination.total).toBe(1);
+    });
+
+    it("should filter by search text against startup_name", async () => {
+      const req = { query: { search: "Test" } };
       const res = mockResponse();
 
       await investorDiscoveryController.getPitches(req, res, mockNext);
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json.mock.calls[0][0].data.length).toBe(1);
+      expect(res.json.mock.calls[0][0].data[0].startup_id.startup_name).toBe("Test Startup");
     });
   });
 
@@ -202,7 +215,7 @@ describe("Investor Discovery Controller", () => {
   });
 
   describe("filterPitches", () => {
-    it("should return filtered pitches", async () => {
+    it("should return filtered pitches by industry", async () => {
       const req = { body: { industry: "Tech" }, query: {} };
       const res = mockResponse();
 
@@ -210,15 +223,37 @@ describe("Investor Discovery Controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json.mock.calls[0][0].data.length).toBe(1);
+      expect(res.json.mock.calls[0][0].pagination.total).toBe(1);
+    });
+
+    it("should not return pitches for non-matching industry", async () => {
+      const req = { body: { industry: "Healthcare" }, query: {} };
+      const res = mockResponse();
+
+      await investorDiscoveryController.filterPitches(req, res, mockNext);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json.mock.calls[0][0].data.length).toBe(0);
+      expect(res.json.mock.calls[0][0].pagination.total).toBe(0);
     });
   });
 
   describe("removeFromWatchlist", () => {
-    it("should remove item from watchlist", async () => {
+    it("should remove item from watchlist and cascade delete Notification", async () => {
+      const Notification = require("../../models/Notification");
       const item = await InvestorWatchlist.create({
         investor_id: investorId,
         startup_id: startup._id,
       });
+
+      await Notification.create({
+        recipient_id: founderId,
+        title: "Test",
+        message: "Test msg",
+        type: "watchlist",
+        related_id: item._id
+      });
+
       const req = { params: { id: item._id }, user: { _id: investorId } };
       const res = mockResponse();
 
@@ -229,6 +264,11 @@ describe("Investor Discovery Controller", () => {
         investor_id: investorId,
       });
       expect(remaining).toBe(0);
+
+      const remainingNotif = await Notification.countDocuments({
+        related_id: item._id
+      });
+      expect(remainingNotif).toBe(0);
     });
   });
 

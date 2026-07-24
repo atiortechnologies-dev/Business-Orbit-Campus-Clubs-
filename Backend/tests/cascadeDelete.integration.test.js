@@ -96,7 +96,9 @@ describe("Cascading Deletions Integration Test", () => {
   });
 
   it("should cascade delete all dependencies when a User is deleted", async () => {
-    // Delete the user
+    // Simulate what the controller does: cascade first, then delete user
+    const cascadeService = require("../services/cascadeService");
+    await cascadeService.deleteUserDependencies(studentUser._id);
     await User.findByIdAndDelete(studentUser._id);
 
     // Assertions

@@ -4,6 +4,7 @@
  * @architecture Controller layer isolating the real-time and RESTful chat business logic between mentors and students.
  */
 
+const mongoose = require("mongoose");
 const asyncHandler = require("../middlewares/asyncHandler");
 const ChatRoom = require("../models/ChatRoom");
 const Message = require("../models/Message");
@@ -187,21 +188,32 @@ exports.sendMessage = asyncHandler(async (req, res) => {
 
   await verifyChatAccess(userId, role, chatRoom);
 
-  const newMessage = await Message.create({
-    chat_id: chatId,
-    sender_id: userId,
-    message: message.trim(),
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  const recipientId = chatRoom.mentor_id.toString() === userId.toString() ? chatRoom.student_id : chatRoom.mentor_id;
-  await Notification.create({
-    recipient_id: recipientId,
-    title: "New Chat Message",
-    message: `You have received a new message from ${req.user.full_name || "a user"}.`,
-    type: "info",
-  });
+  try {
+    const [newMessage] = await Message.create([{
+      chat_id: chatId,
+      sender_id: userId,
+      message: message.trim(),
+    }], { session });
 
-  res.status(201).json(newMessage);
+    const recipientId = chatRoom.mentor_id.toString() === userId.toString() ? chatRoom.student_id : chatRoom.mentor_id;
+    await Notification.create([{
+      recipient_id: recipientId,
+      title: "New Chat Message",
+      message: `You have received a new message from ${req.user.full_name || "a user"}.`,
+      type: "info",
+    }], { session });
+
+    await session.commitTransaction();
+    res.status(201).json(newMessage);
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 });
 
 /**
@@ -230,23 +242,34 @@ exports.uploadAttachment = asyncHandler(async (req, res) => {
   // Generate public URL based on the file path
   const attachmentUrl = `/assets/uploads/${req.file.filename}`;
 
-  const newMessage = await Message.create({
-    chat_id: chatId,
-    sender_id: userId,
-    message: req.body.message || "",
-    attachment_url: attachmentUrl,
-    message_type: "file",
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  const recipientId = chatRoom.mentor_id.toString() === userId.toString() ? chatRoom.student_id : chatRoom.mentor_id;
-  await Notification.create({
-    recipient_id: recipientId,
-    title: "New File Received",
-    message: `You have received a new file attachment from ${req.user.full_name || "a user"}.`,
-    type: "info",
-  });
+  try {
+    const [newMessage] = await Message.create([{
+      chat_id: chatId,
+      sender_id: userId,
+      message: req.body.message || "",
+      attachment_url: attachmentUrl,
+      message_type: "file",
+    }], { session });
 
-  res.status(201).json(newMessage);
+    const recipientId = chatRoom.mentor_id.toString() === userId.toString() ? chatRoom.student_id : chatRoom.mentor_id;
+    await Notification.create([{
+      recipient_id: recipientId,
+      title: "New File Received",
+      message: `You have received a new file attachment from ${req.user.full_name || "a user"}.`,
+      type: "info",
+    }], { session });
+
+    await session.commitTransaction();
+    res.status(201).json(newMessage);
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 });
 
 /**

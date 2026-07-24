@@ -37,13 +37,10 @@ const configureSocket = (server) => {
 
   // Event Listeners
   io.on("connection", (socket) => {
-    console.log(`Socket connected: User ${socket.user.id}`);
-
     // Join a specific chat room (chatId)
     socket.on("joinChat", ({ chatId }) => {
       if (chatId) {
         socket.join(chatId);
-        console.log(`User ${socket.user.id} joined chat room: ${chatId}`);
       }
     });
 
@@ -69,7 +66,6 @@ const configureSocket = (server) => {
     });
 
     socket.on("disconnect", () => {
-      console.log(`Socket disconnected: User ${socket.user.id}`);
     });
   });
 

@@ -94,27 +94,59 @@ exports.getPitches = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit;
   const search = req.query.search;
 
-  const query = { status: "active" };
+  const pipeline = [
+    { $match: { status: "active" } },
+    {
+      $lookup: {
+        from: "startups",
+        localField: "startup_id",
+        foreignField: "_id",
+        as: "startup_id",
+      },
+    },
+    { $unwind: { path: "$startup_id", preserveNullAndEmptyArrays: false } },
+  ];
 
-  const pitches = await StartupPitch.find(query)
-    .populate({
-      path: "startup_id",
-      select: "startup_name category",
-      match: search ? { startup_name: { $regex: search, $options: "i" } } : {},
-    })
-    .sort({ submitted_at: -1 })
-    .skip(skip)
-    .limit(limit);
+  if (search) {
+    pipeline.push({
+      $match: {
+        "startup_id.startup_name": { $regex: search, $options: "i" },
+      },
+    });
+  }
 
-  // Filter out null startup_ids (caused by $regex match failing)
-  const filteredPitches = search
-    ? pitches.filter((p) => p.startup_id !== null)
-    : pitches;
-  const total = await StartupPitch.countDocuments(query);
+  // Count total matches before pagination
+  const countPipeline = [...pipeline, { $count: "total" }];
+  const countResult = await StartupPitch.aggregate(countPipeline);
+  const total = countResult.length > 0 ? countResult[0].total : 0;
+
+  // Pagination and sorting
+  pipeline.push({ $sort: { submitted_at: -1 } });
+  pipeline.push({ $skip: skip });
+  pipeline.push({ $limit: limit });
+
+  // Format the startup_id to match original populated output
+  pipeline.push({
+    $project: {
+      "startup_id.created_at": 0,
+      "startup_id.updated_at": 0,
+      "startup_id.student_id": 0,
+      "startup_id.current_stage": 0,
+      "startup_id.progress_percentage": 0,
+      "startup_id.idea": 0,
+      "startup_id.progress": 0,
+      "startup_id.pitch_deck": 0,
+      "startup_id.mvp_details": 0,
+      "startup_id.financials": 0,
+      "startup_id.cohort": 0,
+    },
+  });
+
+  const pitches = await StartupPitch.aggregate(pipeline);
 
   res.status(200).json({
     success: true,
-    data: filteredPitches,
+    data: pitches,
     pagination: {
       total,
       page,
@@ -150,21 +182,49 @@ exports.filterPitches = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
-  const query = { status: "active" };
-  if (industry) query.industry = industry;
-  if (funding_stage) query.funding_stage = funding_stage;
+  const matchStage = { status: "active" };
+  if (industry) matchStage.industry = industry;
+  if (funding_stage) matchStage.funding_stage = funding_stage;
+  if (technology) matchStage.industry = { $regex: technology, $options: "i" };
 
-  // Chapter & Technology filtering requires deeper lookup, for simplicity matching technology against industry or custom startup fields if populated
-  if (technology) query.industry = { $regex: technology, $options: "i" }; // Assuming technology is part of industry for now
+  const pipeline = [
+    { $match: matchStage },
+    {
+      $lookup: {
+        from: "startups",
+        localField: "startup_id",
+        foreignField: "_id",
+        as: "startup_id",
+      },
+    },
+    { $unwind: { path: "$startup_id", preserveNullAndEmptyArrays: false } },
+  ];
 
-  // Populate startup to filter by chapter if necessary (requires cross-collection filtering or in-memory map)
-  let pitches = await StartupPitch.find(query)
-    .populate("startup_id", "startup_name category student_id")
-    .sort({ submitted_at: -1 })
-    .skip(skip)
-    .limit(limit);
+  // Count total matches before pagination
+  const countPipeline = [...pipeline, { $count: "total" }];
+  const countResult = await StartupPitch.aggregate(countPipeline);
+  const total = countResult.length > 0 ? countResult[0].total : 0;
 
-  const total = await StartupPitch.countDocuments(query);
+  pipeline.push({ $sort: { submitted_at: -1 } });
+  pipeline.push({ $skip: skip });
+  pipeline.push({ $limit: limit });
+
+  pipeline.push({
+    $project: {
+      "startup_id.created_at": 0,
+      "startup_id.updated_at": 0,
+      "startup_id.current_stage": 0,
+      "startup_id.progress_percentage": 0,
+      "startup_id.idea": 0,
+      "startup_id.progress": 0,
+      "startup_id.pitch_deck": 0,
+      "startup_id.mvp_details": 0,
+      "startup_id.financials": 0,
+      "startup_id.cohort": 0,
+    },
+  });
+
+  const pitches = await StartupPitch.aggregate(pipeline);
 
   res.status(200).json({
     success: true,
@@ -262,15 +322,36 @@ exports.addToWatchlist = asyncHandler(async (req, res) => {
 exports.removeFromWatchlist = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  const item = await InvestorWatchlist.findOneAndDelete({
-    _id: id,
-    investor_id: req.user._id,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!item)
-    return res.status(404).json({ message: "Watchlist item not found" });
+  try {
+    const item = await InvestorWatchlist.findOneAndDelete({
+      _id: id,
+      investor_id: req.user._id,
+    }).session(session);
 
-  res.status(200).json({ success: true, message: "Removed from watchlist" });
+    if (!item) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: "Watchlist item not found" });
+    }
+
+    if (Notification) {
+      await Notification.deleteMany(
+        { related_id: item._id, type: "watchlist" },
+        { session }
+      );
+    }
+
+    await session.commitTransaction();
+    res.status(200).json({ success: true, message: "Removed from watchlist" });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 });
 
 /**

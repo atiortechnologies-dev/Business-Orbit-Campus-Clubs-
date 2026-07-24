@@ -11,6 +11,8 @@ const Startup = require("../models/Startup");
 const MentorRequest = require("../models/MentorRequest");
 const Notification = require("../models/Notification");
 const MentorProfile = require("../models/MentorProfile");
+const MentorReview = require("../models/MentorReview");
+const MentorMeeting = require("../models/MentorMeeting");
 
 // Utility to escape string for use in a MongoDB $regex
 const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -266,20 +268,103 @@ exports.getMentorProfileStudentView = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * @desc    Get mentor reviews (Mocked for now)
+ * @desc    Get mentor reviews
  * @route   GET /api/student/mentors/:id/reviews
  * @access  Private (Student)
  */
 exports.getMentorReviews = asyncHandler(async (req, res, next) => {
-  // TODO: MentorReview model is not yet implemented in the codebase.
-  // This endpoint is currently a stub for frontend UI development.
-  // When MentorReview is implemented, replace this with an actual DB query.
+  const mentorId = req.params.id;
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const startIndex = (page - 1) * limit;
+
+  const total = await MentorReview.countDocuments({ mentor_id: mentorId });
+  const reviews = await MentorReview.find({ mentor_id: mentorId })
+    .populate("student_id", "full_name profile_photo")
+    .sort({ created_at: -1 })
+    .skip(startIndex)
+    .limit(limit);
+
   res.status(200).json({
     success: true,
-    count: 0,
-    data: [],
-    message: "Mentor reviews are not yet implemented.",
+    count: reviews.length,
+    pagination: {
+      total,
+      page,
+      limit,
+    },
+    data: reviews,
   });
+});
+
+/**
+ * @desc    Submit a mentor review
+ * @route   POST /api/student/mentors/:id/reviews
+ * @access  Private (Student)
+ */
+exports.submitMentorReview = asyncHandler(async (req, res, next) => {
+  const mentorId = req.params.id;
+  const studentId = req.user._id;
+  const { rating, review_text } = req.validatedData;
+
+  // Verify eligibility: Must have at least one completed meeting with the mentor
+  const hasCompletedMeeting = await MentorMeeting.exists({
+    mentor_id: mentorId,
+    student_id: studentId,
+    status: "completed",
+  });
+
+  if (!hasCompletedMeeting) {
+    return res.status(403).json({
+      success: false,
+      message: "You can only review mentors you have had a completed session with.",
+    });
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // 1. Upsert the review
+    await MentorReview.findOneAndUpdate(
+      { mentor_id: mentorId, student_id: studentId },
+      { rating, review_text },
+      { returnDocument: 'after', upsert: true, session }
+    );
+
+    // 2. Recalculate average rating for mentor
+    const aggResult = await MentorReview.aggregate([
+      { $match: { mentor_id: new mongoose.Types.ObjectId(mentorId) } },
+      { $group: { _id: "$mentor_id", avgRating: { $avg: "$rating" } } }
+    ]).session(session);
+
+    let newAvg = rating;
+    if (aggResult.length > 0) {
+      newAvg = aggResult[0].avgRating;
+    }
+    
+    // Round to 1 decimal place
+    newAvg = Math.round(newAvg * 10) / 10;
+
+    // 3. Update MentorProfile
+    await MentorProfile.findOneAndUpdate(
+      { user_id: mentorId },
+      { rating: newAvg },
+      { session, returnDocument: 'after' }
+    );
+
+    await session.commitTransaction();
+
+    res.status(200).json({
+      success: true,
+      message: "Review submitted successfully.",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    next(error);
+  } finally {
+    session.endSession();
+  }
 });
 
 /**

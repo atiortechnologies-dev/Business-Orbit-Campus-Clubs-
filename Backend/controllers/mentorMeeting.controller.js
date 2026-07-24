@@ -14,6 +14,7 @@ const {
   MEETING_STATUS,
   ASSIGNMENT_STATUS,
 } = require("../constants/statusConstants");
+const mongoose = require("mongoose");
 
 /**
  * @desc    Schedule a new meeting with a startup
@@ -45,31 +46,53 @@ exports.scheduleMeeting = asyncHandler(async (req, res) => {
     });
   }
 
-  // Create the meeting
-  const meeting = await MentorMeeting.create({
-    mentor_id: mentorId,
-    student_id: studentId,
-    startup_id: startupId,
-    date,
-    time,
-    platform,
-    meeting_link: meetingLink,
-    agenda,
-    status: MEETING_STATUS.SCHEDULED,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  // Send notification to student
-  await Notification.create({
-    recipient_id: studentId,
-    title: "New Mentor Meeting Scheduled",
-    message: `A new mentoring session is scheduled for ${date} at ${time}. Platform: ${platform}`,
-    type: "info",
-  });
+  try {
+    // Create the meeting
+    const [meeting] = await MentorMeeting.create(
+      [
+        {
+          mentor_id: mentorId,
+          student_id: studentId,
+          startup_id: startupId,
+          date,
+          time,
+          platform,
+          meeting_link: meetingLink,
+          agenda,
+          status: MEETING_STATUS.SCHEDULED,
+        },
+      ],
+      { session }
+    );
 
-  res.status(201).json({
-    message: "Meeting scheduled successfully",
-    meeting,
-  });
+    // Send notification to student
+    await Notification.create(
+      [
+        {
+          recipient_id: studentId,
+          title: "New Mentor Meeting Scheduled",
+          message: `A new mentoring session is scheduled for ${date} at ${time}. Platform: ${platform}`,
+          type: "info",
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({
+      message: "Meeting scheduled successfully",
+      meeting,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 });
 
 /**
@@ -226,19 +249,40 @@ exports.completeMeeting = asyncHandler(async (req, res) => {
     });
   }
 
-  meeting.status = MEETING_STATUS.COMPLETED;
-  await meeting.save();
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  await ActivityLog.create({
-    user_id: req.user._id,
-    action: "Completed a mentoring session",
-    entity_type: "MentorMeeting",
-    entity_id: meeting._id,
-    description: `Session completed for startup ${meeting.startup_id}`,
-  });
+  try {
+    await MentorMeeting.updateOne(
+      { _id: meeting._id },
+      { $set: { status: MEETING_STATUS.COMPLETED } },
+      { session }
+    );
+    meeting.status = MEETING_STATUS.COMPLETED;
 
-  res.status(200).json({
-    message: "Meeting marked as completed",
-    meeting,
-  });
+    await ActivityLog.create(
+      [
+        {
+          user_id: req.user._id,
+          action: "Completed a mentoring session",
+          entity_type: "MentorMeeting",
+          entity_id: meeting._id,
+          description: `Session completed for startup ${meeting.startup_id}`,
+        },
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({
+      message: "Meeting marked as completed",
+      meeting,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 });

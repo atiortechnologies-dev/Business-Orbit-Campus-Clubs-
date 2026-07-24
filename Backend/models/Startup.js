@@ -76,17 +76,50 @@ startupSchema.index({ startup_name: "text" });
 
 const cascadeService = require("../services/cascadeService");
 
-startupSchema.post("findOneAndDelete", async function (doc) {
+startupSchema.post("findOneAndDelete", async function (doc, next) {
   if (doc) {
-    await cascadeService.deleteStartupDependencies(doc._id);
+    const session = this.getOptions().session;
+    await cascadeService.deleteStartupDependencies(doc._id, session);
   }
+  next();
 });
 
 startupSchema.post(
   "deleteOne",
   { document: true, query: false },
-  async function () {
-    await cascadeService.deleteStartupDependencies(this._id);
+  async function (doc, next) {
+    const session = this.$session();
+    await cascadeService.deleteStartupDependencies(this._id, session);
+    next();
+  },
+);
+
+startupSchema.pre(
+  "deleteOne",
+  { document: false, query: true },
+  async function (next) {
+    const doc = await this.model
+      .findOne(this.getFilter())
+      .session(this.getOptions().session);
+    if (doc) {
+      this._cascadeStartupId = doc._id;
+    }
+    next();
+  },
+);
+
+startupSchema.post(
+  "deleteOne",
+  { document: false, query: true },
+  async function (res, next) {
+    if (this._cascadeStartupId) {
+      const session = this.getOptions().session;
+      await cascadeService.deleteStartupDependencies(
+        this._cascadeStartupId,
+        session,
+      );
+    }
+    next();
   },
 );
 

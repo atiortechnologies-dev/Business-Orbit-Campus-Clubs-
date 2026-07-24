@@ -159,6 +159,8 @@ describe("Comprehensive Cascading Deletions", () => {
   });
 
   it("should cascade delete all Company dependencies (Opportunity, Application, etc.)", async () => {
+    const cascadeService = require("../services/cascadeService");
+    await cascadeService.deleteUserDependencies(companyUser._id);
     await User.findByIdAndDelete(companyUser._id);
 
     // Verify Company is gone
@@ -185,6 +187,8 @@ describe("Comprehensive Cascading Deletions", () => {
   });
 
   it("should cascade delete all Investor dependencies", async () => {
+    const cascadeService = require("../services/cascadeService");
+    await cascadeService.deleteUserDependencies(investorUser._id);
     await User.findByIdAndDelete(investorUser._id);
 
     expect(await User.findById(investorUser._id)).toBeNull();
@@ -206,6 +210,8 @@ describe("Comprehensive Cascading Deletions", () => {
   });
 
   it("should cascade delete all Student dependencies", async () => {
+    const cascadeService = require("../services/cascadeService");
+    await cascadeService.deleteUserDependencies(studentUser._id);
     await User.findByIdAndDelete(studentUser._id);
 
     // Verify Student is gone
