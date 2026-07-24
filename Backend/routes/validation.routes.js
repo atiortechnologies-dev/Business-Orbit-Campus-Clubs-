@@ -68,4 +68,8 @@ router.post(
 );
 router.get("/meeting/feedback", validationController.getMeetingFeedback);
 
+// ================= VALIDATION RESULT SCREEN =================
+router.get("/result", validationController.getValidationResult);
+// router.get("/stage-progression", validationController.checkStageProgression);
+
 module.exports = router;

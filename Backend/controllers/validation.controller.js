@@ -636,6 +636,83 @@ const getMeetingFeedback = asyncHandler(async (req, res) => {
   });
 });
 
+// ================= VALIDATION RESULT SCREEN =================
+
+// GET /api/student/validation/result
+const getValidationResult = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Get the validation report (has the decision/status)
+  const report = await ValidationReport.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!report) {
+    return res.status(404).json({
+      success: false,
+      message: "No validation report found",
+    });
+  }
+
+  // Get feedback from meeting
+  const meeting = await ReviewMeeting.findOne({
+    startup_id: startup._id,
+  }).lean();
+  const feedback = meeting
+    ? await MeetingFeedback.findOne({ meeting_id: meeting._id }).lean()
+    : null;
+
+  // Determine decision based on report status
+  let decision = "pending_review";
+  if (report.status === "approved") decision = "approved";
+  else if (report.status === "changes_requested")
+    decision = "changes_requested";
+  else if (report.status === "rejected") decision = "rejected";
+
+  const nextActionMessages = {
+    approved:
+      "Stage 3 (Prototype Development) has been unlocked. You can now proceed.",
+    changes_requested: "You can edit your report and resubmit for review.",
+    rejected: "You can revise your validation approach and submit again.",
+    pending_review:
+      "Waiting for mentor review. A meeting will be scheduled soon.",
+  };
+
+  // 2. Pick the message, or fall back to the default
+  const nextAction = nextActionMessages[decision] || "Waiting for review...";
+
+  res.status(200).json({
+    success: true,
+    data: {
+      decision, // "pending_review", "approved", "changes_requested", "rejected"
+      report_status: report.status,
+      submitted_at: report.submitted_at,
+      approval_date: feedback?.created_at || null,
+
+      feedback: feedback
+        ? {
+            reviewer_comments: feedback.reviewer_comments,
+            recommendations: feedback.recommendations,
+            validation_approved: feedback.validation_approved,
+          }
+        : null,
+
+      report: {
+        title: report.title,
+        summary: report.summary,
+        key_findings: report.key_findings,
+        problem_validated: report.problem_validated,
+        market_size_estimate: report.market_size_estimate,
+        next_steps: report.next_steps,
+      },
+
+      next_action: nextAction,
+    },
+  });
+});
+
 module.exports = {
   getValidationOverview,
   getValidationStatus,
@@ -653,4 +730,5 @@ module.exports = {
   getReviewMeeting,
   requestMeetingReschedule,
   getMeetingFeedback,
+  getValidationResult,
 };
