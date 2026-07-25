@@ -139,7 +139,7 @@ export default function RoleSelectionPage() {
           </Link>
           {' '}·{' '}
           <Link
-            to="/login"
+            to="/landing"
             className="text-text-body hover:text-text-heading transition-all duration-150 ease-linear"
           >
             Back to Home

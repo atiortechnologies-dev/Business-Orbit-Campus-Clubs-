@@ -150,7 +150,7 @@ export default function LoginPage() {
         aria-labelledby="login-heading"
       >
         <Link
-          to="/login"
+          to="/landing"
           className="inline-flex items-center gap-1 text-small text-text-muted hover:text-text-heading transition-all duration-150 ease-linear self-start font-inter"
           aria-label="Back to home page"
         >
