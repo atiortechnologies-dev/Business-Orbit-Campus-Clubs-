@@ -56,6 +56,11 @@ import LandingIncubator from '@/pages/landing/Incubator';
 import InvestorPortal from '@/pages/investor/Investor';
 import IncomingPitchDecks from '@/pages/investor/IncomingPitchDecks';
 import PitchDeck from '@/pages/investor/PitchDeck';
+import MentorPortal from '@/pages/mentor/Mentor';
+import MentorRequests from '@/pages/mentor/Requests';
+import MentorChats from '@/pages/mentor/Chats';
+import MentorMeetings from '@/pages/mentor/Meetings';
+import MentorProfile from '@/pages/mentor/Profile';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -120,4 +125,9 @@ export const router = createBrowserRouter([
   { path: '/investor', element: <InvestorPortal /> },
   { path: '/investor/pitch-decks', element: <IncomingPitchDecks /> },
   { path: '/investor/pitch-decks/review', element: <PitchDeck /> },
+  { path: '/mentor', element: <MentorPortal /> },
+  { path: '/mentor/requests', element: <MentorRequests /> },
+  { path: '/mentor/chats', element: <MentorChats /> },
+  { path: '/mentor/meetings', element: <MentorMeetings /> },
+  { path: '/mentor/profile', element: <MentorProfile /> },
 ]);
