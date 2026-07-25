@@ -296,6 +296,122 @@ const getStartupProgress = asyncHandler(async (req, res) => {
   });
 });
 
+// ========== SCREEN 4: STAGE 4 ==========
+
+// GET /api/student/stages/traction
+const getStage4Overview = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Check verification approved
+  const verification = await IncubationVerification.findOne({
+    startup_id: startup._id,
+    verification_status: "Approved",
+  }).lean();
+
+  if (!verification) {
+    return res.status(403).json({
+      success: false,
+      message: "Incubation verification must be approved first",
+    });
+  }
+
+  // Get Stage 4
+  const stage4 = await StartupStage.findOne({
+    startup_id: startup._id,
+    stage_number: 4,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      stage: {
+        number: 4,
+        name: "Traction & Growth",
+        description: "Build momentum and demonstrate market traction",
+        status: stage4?.status || "locked",
+        started_at: stage4?.started_at,
+      },
+      learning_objectives: [
+        "Acquire first customers",
+        "Validate market demand",
+        "Build sustainable growth",
+        "Prepare for Series A",
+      ],
+      estimated_duration: "6-12 months",
+      deliverables: [
+        "Customer acquisition strategy",
+        "Growth metrics dashboard",
+        "Revenue model implementation",
+        "Series A pitch deck",
+      ],
+    },
+  });
+});
+
+// GET /api/student/stages/traction/checklist
+const getStage4Checklist = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  res.status(200).json({
+    success: true,
+    data: {
+      items: [
+        { name: "Define traction goals", is_completed: false },
+        { name: "Implement growth strategy", is_completed: false },
+        { name: "Track key metrics", is_completed: false },
+        { name: "Acquire first 100 customers", is_completed: false },
+        { name: "Prepare Series A pitch", is_completed: false },
+      ],
+      startup: startup,
+      progress_percentage: 0,
+    },
+  });
+});
+
+// POST /api/student/stages/traction/start
+const startStage4 = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Check verification
+  const verification = await IncubationVerification.findOne({
+    startup_id: startup._id,
+    verification_status: "Approved",
+  }).lean();
+
+  if (!verification) {
+    return res.status(403).json({
+      success: false,
+      message: "Incubation verification must be approved",
+    });
+  }
+
+  // Update or create Stage 4
+  const stage4 = await StartupStage.findOneAndUpdate(
+    { startup_id: startup._id, stage_number: 4 },
+    {
+      status: "active",
+      started_at: new Date(),
+    },
+    { new: true, upsert: true },
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Stage 4 started successfully",
+    data: {
+      stage: 4,
+      status: stage4.status,
+      started_at: stage4.started_at,
+    },
+  });
+});
+
 module.exports = {
   submitIncubationVerification,
   getIncubationVerification,
@@ -305,4 +421,7 @@ module.exports = {
   getVerificationDocuments,
   getVerificationResult,
   getStartupProgress,
+  getStage4Overview,
+  getStage4Checklist,
+  startStage4,
 };
