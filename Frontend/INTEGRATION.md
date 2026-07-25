@@ -15,6 +15,66 @@ lists the exact file/function to replace.
 
 ---
 
+## API Surface (quick reference for backend integration)
+
+Every screen-by-screen section below has its own `TODO(backend)` markers
+at the exact call site. This section rolls all ~35 of them up into one
+endpoint-oriented list, so a backend engineer doesn't have to walk every
+file to reconstruct what's needed. Grouped by resource, not by screen.
+
+**Already real, in `Backend/`** (see `Backend/routes/authRoute.js`):
+- `POST /api/auth/register` — implemented, validated by
+  `Backend/utils/validators.js`'s `registerSchema`. **Not wired up from
+  this frontend yet** — see `components/auth/RoleSignupForm.jsx`'s
+  `TODO(backend)` for the exact field-name mismatches per role (3 of the
+  5 signup forms are missing fields the schema requires outright, not
+  just naming differences — Investor, Incubator, and Company signups
+  need new fields added before this endpoint can register those roles).
+- `GET /api/auth/check-email` — implemented, unused by this frontend.
+
+**Auth — not yet built on the backend:**
+- `POST /api/auth/login` (`pages/auth/Login.jsx`)
+- `POST /api/auth/forgot-password` (`pages/auth/ForgotPassword.jsx`)
+- `POST /api/auth/reset-password` (`pages/auth/ResetPassword.jsx`)
+
+**Profile / settings (PATCH, one per role + Student's own settings):**
+- Student: `pages/Settings.jsx` (profile, password, delete account)
+- Onboarding complete-profile, one per role: `pages/onboarding/complete-profile/{Student,Mentor,Investor,Incubator,Company}.jsx`
+- Incubator: `pages/incubator/Settings.jsx`
+- Mentor: `pages/mentor/Profile.jsx`
+
+**Student journey submissions (one POST per gated stage):**
+- Ideation: `pages/journey/ideation/IdeaSubmission.jsx`
+- Validation: `pages/journey/validation/{SurveyTracker,EvidenceUpload,ReportSubmission}.jsx`
+- MVP: `pages/journey/mvp/{ChooseProductType,MvpSubmission,IncubationProofSubmission}.jsx`
+
+**Incubator review pipeline:**
+- `pages/incubator/ApplicationReview.jsx` — save draft, submit decision
+- `pages/incubator/Messages.jsx` — send message / attachment
+
+**Admin — two review pipelines + one dashboard action:**
+- Verification: `pages/admin/{VerificationDetail,VerificationDecision}.jsx`
+- Startup review: `pages/admin/{ReviewWorkspace,ReviewOutcome,ScheduleMeeting}.jsx`
+- `pages/admin/Admin.jsx` — dismiss a Critical Action
+
+**Investor:**
+- `pages/investor/PitchDeck.jsx` — save due-diligence notes
+
+**Mentor:**
+- `pages/mentor/{Mentor,Requests}.jsx` — accept/decline a mentorship request
+- `pages/mentor/Meetings.jsx` — save session notes/outcome
+- `pages/mentor/Chats.jsx` — send message
+
+**Shared:**
+- `components/layout/Sidebar.jsx` — every portal's sidebar footer shows a
+  hardcoded name/initials/role; needs real authenticated-user data once
+  a session exists, one place for all six portal shells.
+
+No env vars, API base URL, or auth/session provider are configured in
+this frontend yet — see Cross-cutting at the bottom of this file.
+
+---
+
 ## Public Landing Pages
 
 Six public marketing pages, `src/pages/landing/*.jsx` — no auth required,

@@ -44,8 +44,17 @@ export default function PitchDeckPage() {
   useDocumentTitle('AeroFlow Dynamics — Pitch Deck — BOCC');
   const [currentSlide, setCurrentSlide] = useState(4);
   const [investorNotes, setInvestorNotes] = useState('');
+  const [notesSaved, setNotesSaved] = useState(false);
 
   const activeSlide = SLIDES.find((s) => s.id === currentSlide);
+
+  const handleSaveNotes = () => {
+    // TODO(backend): PATCH these due-diligence notes against this deck
+    // ({ dealId, investorNotes }) once there's a real multi-deck dataset
+    // for them to belong to.
+    setNotesSaved(true);
+    setTimeout(() => setNotesSaved(false), 2000);
+  };
 
   return (
     <InvestorShell>
@@ -196,6 +205,16 @@ export default function PitchDeckPage() {
               rows={4}
               className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all resize-none"
             />
+            <div className="flex items-center gap-3 mt-2">
+              {notesSaved && <span className="font-inter text-caption text-success">Saved</span>}
+              <button
+                type="button"
+                onClick={handleSaveNotes}
+                className="font-poppins font-semibold text-caption text-text-heading hover:underline"
+              >
+                Save Notes
+              </button>
+            </div>
           </div>
 
           <ComingSoon label="Request Pitch Meeting" position="top" inline={false} className="flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small px-4 py-2.5 rounded-md">

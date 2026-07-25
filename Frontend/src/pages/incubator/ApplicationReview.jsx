@@ -273,6 +273,9 @@ export default function ApplicationReview() {
             <div className="border-t border-divider-line pt-4 flex items-center justify-between">
               <button
                 type="button"
+                // TODO(backend): PATCH this review as a draft ({ applicationId,
+                // reviewerNotes, decision: selectedDecision }) so it survives
+                // a reload; currently only held in local state.
                 onClick={() => setDraftSaved(true)}
                 className="text-text-muted hover:text-text-heading font-poppins font-semibold text-small transition-colors focus:outline-none"
               >
@@ -282,6 +285,9 @@ export default function ApplicationReview() {
               <button
                 type="button"
                 disabled={!selectedDecision}
+                // TODO(backend): POST the final decision ({ applicationId,
+                // decision: selectedDecision, reviewerNotes }) once there's
+                // somewhere for a decision to go — see INTEGRATION.md.
                 onClick={() => setDecisionSubmitted(true)}
                 className={`px-5 py-2.5 rounded-md font-poppins font-semibold text-small transition-all ${
                   selectedDecision

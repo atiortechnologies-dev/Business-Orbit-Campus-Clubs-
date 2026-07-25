@@ -89,6 +89,9 @@ export default function AdminDashboardPage() {
   const funnel = FUNNEL_VIEWS[funnelView];
   const funnelMax = funnel[0].value;
 
+  // TODO(backend): PATCH this critical action as acknowledged server-side
+  // (e.g. { actionId: id, status: 'dismissed' }) so it doesn't reappear
+  // for this admin on next load — the local removal below is optimistic.
   const dismissAction = (id) => setCriticalActions((prev) => prev.filter((a) => a.id !== id));
 
   return (

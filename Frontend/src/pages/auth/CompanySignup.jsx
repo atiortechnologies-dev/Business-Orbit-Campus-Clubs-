@@ -2,6 +2,14 @@ import { Building2 } from 'lucide-react';
 import RoleSignupForm from '@/components/auth/RoleSignupForm';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
+// Backend/utils/validators.js's companyFields expects: company_name
+// (companyName here is a rename), industry (matches), company_size
+// (companySize here is a rename), website (matches, but required on the
+// backend — this form already requires it too, good). contact_person is
+// also required and isn't collected here — note it's distinct from the
+// base fullName field (the registering user vs. the company's named
+// point of contact could be different people), so this needs its own
+// field, not a reuse of fullName.
 const FIELDS = [
   { name: 'fullName', label: 'Full Name', placeholder: 'e.g. Jordan Lee' },
   { name: 'email', label: 'Official Email', type: 'email', placeholder: 'you@company.com' },

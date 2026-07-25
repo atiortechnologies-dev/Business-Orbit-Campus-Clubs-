@@ -2,6 +2,12 @@ import { Rocket } from 'lucide-react';
 import RoleSignupForm from '@/components/auth/RoleSignupForm';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
+// Backend/utils/validators.js's incubatorFields expects: incubator_name
+// (companyName here is a rename), city (campus here is a rename), website
+// (matches, optional both sides). organization is also required by the
+// backend and isn't collected by this form at all — the incubator's
+// parent org/institution is a distinct field from the incubator's own
+// name, and needs to be added here for registration to work.
 const FIELDS = [
   { name: 'fullName', label: 'Full Name', placeholder: 'e.g. Sarah Jenkins' },
   { name: 'email', label: 'Email', type: 'email', placeholder: 'you@incubator.com' },
