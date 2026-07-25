@@ -51,7 +51,7 @@ export default function ApplicationReview() {
           {/* Header Info */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
-              <h1 className="font-poppins font-bold text-headline-lg text-text-heading mb-2">
+              <h1 className="font-poppins font-bold text-section text-text-heading mb-2">
                 NeuralPath AI
               </h1>
               <div className="flex flex-wrap items-center gap-2">
@@ -84,7 +84,7 @@ export default function ApplicationReview() {
                 <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                   Lead Founder
                 </span>
-                <span className="font-inter text-body-md font-semibold text-text-heading">
+                <span className="font-inter text-small font-semibold text-text-heading">
                   Elena Rodriguez
                 </span>
               </div>
@@ -92,7 +92,7 @@ export default function ApplicationReview() {
                 <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                   University/College
                 </span>
-                <span className="font-inter text-body-md font-semibold text-text-heading truncate">
+                <span className="font-inter text-small font-semibold text-text-heading truncate">
                   School of Engineering
                 </span>
               </div>
@@ -100,7 +100,7 @@ export default function ApplicationReview() {
                 <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                   Stage
                 </span>
-                <span className="font-inter text-body-md font-semibold text-text-heading">
+                <span className="font-inter text-small font-semibold text-text-heading">
                   Pre-Seed / Prototype
                 </span>
               </div>
@@ -108,7 +108,7 @@ export default function ApplicationReview() {
                 <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                   Industry
                 </span>
-                <span className="font-inter text-body-md font-semibold text-text-heading">
+                <span className="font-inter text-small font-semibold text-text-heading">
                   HealthTech / AI
                 </span>
               </div>
@@ -120,7 +120,7 @@ export default function ApplicationReview() {
             <h3 className="font-poppins font-bold text-card text-text-heading mb-3">
               Problem Statement
             </h3>
-            <div className="font-inter text-body-lg text-text-body space-y-4">
+            <div className="font-inter text-body text-text-body space-y-4">
               <p>
                 Currently, diagnostic radiology experiences a 30% bottleneck due to high volumes of routine screening scans. Radiologists spend significant time on baseline assessments, leading to burnout and delayed results for critical cases.
               </p>
@@ -135,7 +135,7 @@ export default function ApplicationReview() {
             <h3 className="font-poppins font-bold text-card text-text-heading mb-3">
               Solution Overview
             </h3>
-            <div className="font-inter text-body-lg text-text-body">
+            <div className="font-inter text-body text-text-body">
               <p>
                 NeuralPath AI is a lightweight, edge-computing based diagnostic assistant designed for cost-effective integration. We provide a 'First-Pass' analysis layer that flags potential anomalies and organizes queue priority based on severity detected in real-time. Our proprietary model reduces initial scan review time by 45%.
               </p>
@@ -150,19 +150,19 @@ export default function ApplicationReview() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
-                <span className="font-inter text-body-md text-text-body">
+                <span className="font-inter text-small text-text-body">
                   MVP successfully piloted at City General Hospital with 5,000 anonymized datasets.
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
-                <span className="font-inter text-body-md text-text-body">
+                <span className="font-inter text-small text-text-body">
                   92% accuracy in identifying stage-1 pulmonary nodules vs. 84% industry average.
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
-                <span className="font-inter text-body-md text-text-body">
+                <span className="font-inter text-small text-text-body">
                   Signed LOIs from 3 regional clinics for beta phase testing starting Q3 2024.
                 </span>
               </li>
@@ -224,7 +224,7 @@ export default function ApplicationReview() {
               <h3 className="font-poppins font-bold text-card text-text-heading mb-1">
                 Reviewer Decision
               </h3>
-              <p className="font-inter text-body-md text-text-muted">
+              <p className="font-inter text-small text-text-muted">
                 Record your evaluation notes and final verdict below.
               </p>
             </div>
@@ -236,7 +236,7 @@ export default function ApplicationReview() {
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full bg-canvas-bg border border-border-subtle rounded-lg p-3 font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all resize-none"
+                className="w-full bg-canvas-bg border border-border-subtle rounded-lg p-3 font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all resize-none"
                 placeholder="Add observations on team composition, market fit, or technical viability..."
                 rows={6}
               />

@@ -224,7 +224,7 @@ export default function ChatsPage() {
                         {conv.time}
                       </span>
                     </div>
-                    <p className="font-inter text-body-md text-text-muted truncate">
+                    <p className="font-inter text-small text-text-muted truncate">
                       {conv.preview}
                     </p>
                   </div>
@@ -324,7 +324,7 @@ export default function ChatsPage() {
                           : 'bg-surface-white text-text-body border-border-subtle rounded-tl-none'
                       }`}
                     >
-                      <p className="font-inter text-body-md whitespace-pre-line leading-relaxed">
+                      <p className="font-inter text-small whitespace-pre-line leading-relaxed">
                         {msg.text}
                       </p>
                     </div>
@@ -406,7 +406,7 @@ export default function ChatsPage() {
                     handleSendMessage(e);
                   }
                 }}
-                className="w-full bg-transparent border-none focus:ring-0 font-inter text-body-md text-text-body resize-none h-10 max-h-32 p-0 focus:outline-none placeholder:text-text-muted"
+                className="w-full bg-transparent border-none focus:ring-0 font-inter text-small text-text-body resize-none h-10 max-h-32 p-0 focus:outline-none placeholder:text-text-muted"
                 placeholder="Type a message..."
               />
               <div className="flex items-center justify-between mt-2 pt-2 border-t border-border-subtle/50">
@@ -481,7 +481,7 @@ export default function ChatsPage() {
             <h3 className="font-poppins font-bold text-card text-text-heading">
               {activeDetails.name}
             </h3>
-            <p className="font-inter text-body-md text-text-muted mt-0.5">
+            <p className="font-inter text-small text-text-muted mt-0.5">
               {activeDetails.subtitle}
             </p>
             <div className="flex flex-wrap justify-center gap-1.5 mt-3">
@@ -538,7 +538,7 @@ export default function ChatsPage() {
                 </h4>
                 <Milestone size={18} className="text-text-muted" />
               </div>
-              <p className="font-inter text-body-md text-text-body font-semibold">
+              <p className="font-inter text-small text-text-body font-semibold">
                 Pilot Launch Phase A
               </p>
               <div className="flex items-center justify-between text-xs text-text-muted font-inter">

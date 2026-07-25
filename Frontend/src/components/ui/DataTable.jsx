@@ -42,7 +42,7 @@ export default function DataTable({ columns, rows, onRowClick, emptyMessage = 'N
   if (rows.length === 0) {
     return (
       <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card p-10 text-center">
-        <p className="font-inter text-body-md text-text-muted">{emptyMessage}</p>
+        <p className="font-inter text-small text-text-muted">{emptyMessage}</p>
       </div>
     );
   }
