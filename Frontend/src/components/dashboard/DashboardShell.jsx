@@ -83,9 +83,14 @@ export default function DashboardShell({ pageId = 'pg', children }) {
             >
               <Menu size={24} strokeWidth={2} />
             </button>
-            <p className="hidden md:block font-poppins font-semibold text-section text-text-heading whitespace-nowrap">
-              BOCC Campus Clubs
-            </p>
+            <div className="hidden md:block">
+              <p className="font-poppins font-semibold text-section text-text-heading whitespace-nowrap">
+                BOCC Student
+              </p>
+              <p className="font-inter text-caption text-text-muted whitespace-nowrap">
+                Founder Workspace
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-6">

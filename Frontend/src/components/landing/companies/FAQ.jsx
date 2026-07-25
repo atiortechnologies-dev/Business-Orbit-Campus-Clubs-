@@ -3,7 +3,7 @@ import { Plus, Minus } from 'lucide-react';
 import SectionHeading from './SectionHeading';
 
 const FAQS = [
-  { q: 'What is BOCC?', a: 'Business Orbit Campus Club (BOCC) is a unified ecosystem that connects companies with verified student talent, startups, mentors, and university research — bridging the gap between campus and industry.' },
+  { q: 'What is BOCC?', a: 'Business Orbit Campus Clubs (BOCC) is a unified ecosystem that connects companies with verified student talent, startups, mentors, and university research — bridging the gap between campus and industry.' },
   { q: 'Who can partner with BOCC?', a: 'Companies of all sizes, from early-stage startups to large enterprises, can partner with BOCC to access talent, sponsor research, or collaborate on innovation projects.' },
   { q: 'How does recruitment work?', a: 'Post an opportunity, review verified applicant profiles matched to your requirements, then hire and onboard talent or launch collaborative projects — all managed through a single dashboard.' },
   { q: 'Do startups qualify for partnerships?', a: 'Yes. Verified startups can both contribute talent and collaborate on co-innovation projects, sponsored research, and product validation initiatives.' },
@@ -19,7 +19,7 @@ export default function FAQ() {
         <SectionHeading
           eyebrow="FAQ"
           title="Frequently Asked Questions"
-          subtitle="Everything you need to know about partnering with Business Orbit Campus Club."
+          subtitle="Everything you need to know about partnering with Business Orbit Campus Clubs."
         />
 
         <div className="mt-12 divide-y divide-border-subtle border-y border-border-subtle">

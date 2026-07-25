@@ -43,7 +43,7 @@ const ACHIEVEMENTS = [
 ];
 
 export default function JourneyPage() {
-  useDocumentTitle('Startup Journey — BOCC Campus Clubs');
+  useDocumentTitle('Startup Journey — BOCC');
 
   return (
     <DashboardShell pageId="journey">

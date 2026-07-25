@@ -77,7 +77,7 @@ export default function Footer() {
 
         <div className="mt-14 pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="font-inter text-caption text-text-muted">
-            © 2024 Business Orbit Campus Club (BOCC). All rights reserved.
+            © 2024 Business Orbit Campus Clubs (BOCC). All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link to="/legal/privacy-policy" className="font-inter text-caption text-text-muted hover:text-text-heading transition-colors">Privacy</Link>
