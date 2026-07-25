@@ -147,7 +147,7 @@ export default function ReviewOutcomePage() {
               </button>
             )}
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <ComingSoon label="Notify Founder" position="top" inline={false}>
                 <span className="flex items-center justify-center gap-2 py-3 border border-border-subtle rounded-md font-inter font-medium text-small text-text-heading">
                   <Mail size={16} strokeWidth={2} /> Notify Founder

@@ -27,15 +27,12 @@ export default function DashboardPage() {
   return (
     <DashboardShell pageId="db">
 
-      {/* 12-column grid */}
       <div
         className="grid grid-cols-1 md:grid-cols-12"
         style={{ gap: 'var(--spacing-gutter)' }}
       >
 
-        {/* ── 1. Welcome Hero ───────────────────────────────────── */}
         <section className="md:col-span-12 lg:col-span-8 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col md:flex-row items-center gap-8">
-          {/* Text block */}
           <div className="flex-1 space-y-4 text-center md:text-left">
             <h3 className="text-text-heading font-poppins font-semibold text-page">
               Welcome back, Alex
@@ -46,7 +43,6 @@ export default function DashboardPage() {
                 Current Stage:{' '}
                 <span className="font-bold text-text-heading">Ideation</span>
               </p>
-              {/* Progress bar — 0% */}
               <div className="w-full bg-divider-line h-2 rounded-full overflow-hidden">
                 <div className="bg-brand-black h-full w-[0%]" />
               </div>
@@ -64,11 +60,7 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          {/* Custom illustration — "idea spark" motif, matching the same
-              geometric line-art language as Login's orbit and the Startup
-              Journey path (thin theme-reactive strokes + fixed brand-black/
-              accent-neon accents). Fits the student's current Ideation
-              stage. Hidden on mobile like the placeholder it replaced. */}
+          {/* "Idea spark" motif, same geometric line-art language as Login's orbit and the Startup Journey path — hidden on mobile like the placeholder it replaced */}
           <svg
             viewBox="0 0 200 200"
             className="w-48 h-48 rounded-lg hidden md:block shrink-0"
@@ -101,20 +93,9 @@ export default function DashboardPage() {
           </svg>
         </section>
 
-        {/* ── 4. Today's Next Step ──────────────────────────────── */}
-        {/* This card is always brand-black (fixed token, not theme-reactive)
-            — same "permanently dark surface" pattern as the sidebar. Every
-            color inside it must be a fixed value too, not a theme-reactive
-            token, or it'll invert against a background that never inverts.
-            border-border-subtle below is the one exception worth watching:
-            it's still theme-reactive and nearly disappears against this
-            fixed-black card in dark mode (border-subtle → #2D2D2D, close to
-            the card's #0B0B0B) — kept for now since it's a minor 1px seam,
-            not a legibility bug like the ones fixed below, but flagged here
-            for whoever revisits this file. */}
+        {/* Fixed brand-black card, like the sidebar — colors inside must stay fixed too, or they'll invert against a background that never does. border-border-subtle is a known, deliberately unfixed exception (barely visible in dark mode here, just a 1px seam). */}
         <section className="md:col-span-12 lg:col-span-4 bg-brand-black text-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col justify-between">
           <div className="space-y-4">
-            {/* "Next Step" eyebrow */}
             <div className="flex items-center gap-2 text-accent-neon">
               <Zap size={18} strokeWidth={2} />
               <span className="uppercase tracking-wider font-inter font-medium text-caption">
@@ -127,10 +108,7 @@ export default function DashboardPage() {
           </div>
 
           <Link to="/build-startup/journey" className="block mt-8">
-            {/* Fixed white/black, not bg-surface-white/hover:bg-canvas-bg —
-                this button sits on the permanently-black card above, so its
-                colors can't be theme-reactive either (see comment on the
-                <section> above). */}
+            {/* Fixed white/black, not bg-surface-white — sits on the permanently-black card above, so it can't be theme-reactive either */}
             <button
               className="w-full bg-white text-brand-black px-6 py-3 rounded-md hover:opacity-90 transition-colors active:scale-[0.98] font-poppins font-semibold text-body"
             >
@@ -139,15 +117,12 @@ export default function DashboardPage() {
           </Link>
         </section>
 
-        {/* ── 2. Startup Progress ───────────────────────────────── */}
         <section className="md:col-span-12 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <h4 className="text-text-heading font-poppins font-semibold text-section mb-8">
             Startup Progress
           </h4>
 
-          {/* Stages row */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 relative">
-            {/* Connecting line — desktop only */}
             <div className="absolute top-1/2 left-0 w-full h-[1px] bg-border-subtle -z-10 hidden md:block" />
 
             {STAGES.map(({ label, status }) => (
@@ -182,7 +157,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* ── 3. Quick Actions ──────────────────────────────────── */}
         <section className="md:col-span-12">
           <h4 className="text-text-heading font-poppins font-semibold text-section mb-6">
             Quick Actions
@@ -192,7 +166,6 @@ export default function DashboardPage() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
             style={{ gap: 'var(--spacing-gutter)' }}
           >
-            {/* Build Startup */}
             <Link
               to="/build-startup/journey"
               className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col items-center text-center space-y-4 hover:border-brand-black transition-colors cursor-pointer group active:scale-[0.98]"
@@ -206,9 +179,7 @@ export default function DashboardPage() {
                   Step-by-step guidance.
                 </p>
               </div>
-              {/* text-text-heading, not text-brand-black — this card's
-                  surface is theme-reactive (bg-surface-white), so a fixed
-                  black label goes near-invisible once the card goes dark. */}
+              {/* text-heading, not text-brand-black — this card's surface is theme-reactive, so a fixed-black label would go near-invisible once it's dark */}
               <span className="mt-2 text-text-heading hover:underline flex items-center gap-1 font-poppins font-semibold text-small">
                 Open <ArrowRight size={14} strokeWidth={2} />
               </span>
@@ -233,9 +204,7 @@ export default function DashboardPage() {
               </span>
             </Link>
 
-            {/* ComingSoon items — these are entire directory/marketplace
-                features with no screens built yet, not just an unwired
-                link, so they stay stubbed until those exist. */}
+            {/* These are entire directory/marketplace features with no screens built yet, not just an unwired link, so they stay stubbed until those exist */}
             {[
               { title: 'Investors',      sub: 'Connect with funders.',  cta: 'Browse' },
               { title: 'Incubators',     sub: 'Supportive ecosystems.', cta: 'Explore' },
@@ -263,7 +232,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* ── 5. Recent Notifications ───────────────────────────── */}
         <section className="md:col-span-6 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <div className="flex justify-between items-center mb-6">
             <h4 className="text-text-heading font-poppins font-semibold text-section">
@@ -278,7 +246,6 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-4">
-            {/* Notification 1 — unread (accent neon dot) */}
             <div className="flex items-start gap-4 pb-4 border-b border-divider-line">
               <div className="w-2 h-2 rounded-full bg-accent-neon mt-2 shrink-0" />
               <div>
@@ -291,7 +258,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Notification 2 — unread (accent neon dot) */}
             <div className="flex items-start gap-4 pb-4 border-b border-divider-line">
               <div className="w-2 h-2 rounded-full bg-accent-neon mt-2 shrink-0" />
               <div>
@@ -304,7 +270,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Notification 3 — read (subtle border/gray dot) */}
             <div className="flex items-start gap-4">
               <div className="w-2 h-2 rounded-full bg-border-subtle mt-2 shrink-0" />
               <div>
@@ -319,7 +284,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* ── 6. Resources ──────────────────────────────────────── */}
         <section className="md:col-span-6 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <h4 className="text-text-heading font-poppins font-semibold text-section mb-6">
             Resources

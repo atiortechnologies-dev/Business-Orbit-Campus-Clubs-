@@ -34,7 +34,6 @@ export default function ApplicationReview() {
 
   return (
     <IncubatorShell>
-      {/* Back to Queue Navigation */}
       <div className="mb-6 flex items-center justify-between">
         <Link
           to="/incubator/applications"
@@ -46,9 +45,7 @@ export default function ApplicationReview() {
       </div>
 
       <div className="grid grid-cols-12 gap-8">
-        {/* Left Column: Application Details */}
         <div className="col-span-12 lg:col-span-8 space-y-6">
-          {/* Header Info */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
               <h1 className="font-poppins font-bold text-section text-text-heading mb-2">
@@ -74,7 +71,6 @@ export default function ApplicationReview() {
             </button>
           </div>
 
-          {/* Overview Grid */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <h3 className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider mb-4">
               Application Overview
@@ -115,7 +111,6 @@ export default function ApplicationReview() {
             </div>
           </section>
 
-          {/* Problem Statement */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <h3 className="font-poppins font-bold text-card text-text-heading mb-3">
               Problem Statement
@@ -130,7 +125,6 @@ export default function ApplicationReview() {
             </div>
           </section>
 
-          {/* Solution Overview */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <h3 className="font-poppins font-bold text-card text-text-heading mb-3">
               Solution Overview
@@ -142,7 +136,6 @@ export default function ApplicationReview() {
             </div>
           </section>
 
-          {/* Validation & MVP */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <h3 className="font-poppins font-bold text-card text-text-heading mb-4">
               Validation &amp; MVP
@@ -169,7 +162,6 @@ export default function ApplicationReview() {
             </ul>
           </section>
 
-          {/* Supporting Documents */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <h3 className="font-poppins font-bold text-card text-text-heading mb-4">
               Supporting Documents
@@ -216,9 +208,7 @@ export default function ApplicationReview() {
           </section>
         </div>
 
-        {/* Right Column: Reviewer Panel */}
         <div className="col-span-12 lg:col-span-4 space-y-6">
-          {/* Decision Panel */}
           <div className="bg-surface-white border-2 border-brand-black dark:border-border-subtle rounded-xl p-6 shadow-card flex flex-col gap-6 transition-colors duration-150 ease-linear">
             <div>
               <h3 className="font-poppins font-bold text-card text-text-heading mb-1">
@@ -243,7 +233,6 @@ export default function ApplicationReview() {
             </div>
 
             <div className="flex flex-col gap-3">
-              {/* Decision Option Buttons */}
               <button
                 type="button"
                 onClick={() => setSelectedDecision('approve')}
@@ -281,7 +270,6 @@ export default function ApplicationReview() {
               </button>
             </div>
 
-            {/* Save & Submit Decision Controls */}
             <div className="border-t border-divider-line pt-4 flex items-center justify-between">
               <button
                 type="button"
@@ -305,7 +293,6 @@ export default function ApplicationReview() {
               </button>
             </div>
 
-            {/* Success Notifications */}
             {draftSaved && (
               <div className="text-center font-inter text-small text-success mt-2 select-none animate-fade-in">
                 Draft saved
@@ -320,7 +307,6 @@ export default function ApplicationReview() {
             )}
           </div>
 
-          {/* Timeline Metadata */}
           <div className="bg-canvas-bg rounded-xl p-6 border border-border-subtle transition-colors duration-150 ease-linear">
             <h4 className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-widest mb-4">
               Application Timeline

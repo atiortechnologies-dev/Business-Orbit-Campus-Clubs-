@@ -74,7 +74,6 @@ const RECENTLY_INCUBATED = [
 export default function IncubatorDashboard() {
   return (
     <IncubatorShell>
-      {/* Welcome Section */}
       <section className="mb-8">
         <h1 className="font-poppins font-bold text-section text-text-heading mb-2">
           Welcome back,
@@ -84,7 +83,6 @@ export default function IncubatorDashboard() {
         </p>
       </section>
 
-      {/* Quick Actions */}
       <section className="flex flex-wrap gap-4 mb-8">
         <Link to="/incubator/applications">
           <button className="px-6 py-2.5 bg-action-bg text-action-text rounded-md font-poppins font-semibold text-small hover:opacity-90 active:scale-[0.98] transition-all">
@@ -105,7 +103,6 @@ export default function IncubatorDashboard() {
         </ComingSoon>
       </section>
 
-      {/* Stat Cards */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {STATS.map(({ label, value, icon: Icon, subtext }) => (
           <div key={label} className="bg-surface-white border border-border-subtle p-6 rounded-xl shadow-card transition-colors duration-150 ease-linear">
@@ -123,9 +120,7 @@ export default function IncubatorDashboard() {
         ))}
       </section>
 
-      {/* Main Grid Layout */}
       <div className="grid grid-cols-12 gap-8">
-        {/* Left Column: Recent Activity */}
         <section className="col-span-12 lg:col-span-8 bg-surface-white border border-border-subtle rounded-xl shadow-card overflow-hidden transition-colors duration-150 ease-linear">
           <div className="p-6 border-b border-border-subtle flex justify-between items-center bg-canvas-bg/50">
             <h4 className="font-poppins font-bold text-card text-text-heading">
@@ -175,9 +170,7 @@ export default function IncubatorDashboard() {
           </div>
         </section>
 
-        {/* Right Column: Sidebar Panels */}
         <section className="col-span-12 lg:col-span-4 space-y-6">
-          {/* Pending Reviews */}
           <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card overflow-hidden transition-colors duration-150 ease-linear">
             <div className="p-4 border-b border-border-subtle flex justify-between items-center bg-canvas-bg/50">
               <h4 className="font-poppins font-semibold text-small text-text-heading">
@@ -211,7 +204,6 @@ export default function IncubatorDashboard() {
             </div>
           </div>
 
-          {/* Recently Incubated */}
           <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card overflow-hidden transition-colors duration-150 ease-linear">
             <div className="p-4 border-b border-border-subtle bg-canvas-bg/50">
               <h4 className="font-poppins font-semibold text-small text-text-heading">
