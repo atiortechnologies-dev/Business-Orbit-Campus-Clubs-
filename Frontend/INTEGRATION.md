@@ -663,6 +663,43 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")*
 
 ---
 
+## Company Portal
+
+*(Added by a different contributor directly to `main`, outside the usual
+branch/PR process this doc otherwise assumes — currently mid-remediation
+to bring it in line with the rest of this app. This section will be
+rewritten once that's done; until then, treat everything below as a
+known-bad state, not a template to copy.)*
+
+### `/company/dashboard` — `src/pages/company/Dashboard.jsx`
+### `/company/my-opportunities` — `src/pages/company/MyOpportunities.jsx`
+- **Real:** page-level layout renders; navigating between the two routes
+  works.
+- **Stub:** all stats, applicant rows, postings, and opportunities are
+  hardcoded, same as every other portal's dashboard at this stage — not
+  itself a problem.
+- **Not stubbed, just dead:** unlike every other `ComingSoon`-marked
+  screen in this app, most of the interactive-looking controls here have
+  **no `onClick` handler at all** — not a stub, not `ComingSoon`, nothing:
+  the sidebar's Post Opportunity/Applicants/Profile/Settings nav items
+  (dead `path: "#"` anchors), Post New Opportunity, Manage Opportunities,
+  View Applicants, See All Job Posts, View all, every table row action,
+  and the pagination controls. The header search input isn't wired to
+  any state at all, unlike every other search box in this app.
+- **Structural:** does not use `layouts/CompanyDashboardShell.jsx` (which
+  itself correctly wraps the real `DashboardShell`) — instead hand-rolls
+  its own `Sidebar`/`TopBar` from `components/bocc/`, bypassing the app's
+  real shared `Sidebar.jsx` (no dark mode, no mobile drawer, no desktop
+  collapse as a result). No design tokens anywhere in `pages/company/*`,
+  `components/bocc/*`, or `components/OpportunitiesTable.jsx` — hardcoded
+  hex/gray colors throughout, zero `dark:` classes.
+- **Coming Soon:** none — this is the gap. Every dead control above should
+  either become real (client-side state, matching this app's "build it if
+  it's just local data" rule) or get wrapped in `ComingSoon` like
+  everywhere else, not silently do nothing.
+
+---
+
 ## Onboarding & Verification Flow
 
 *(Ported from the same second intern's repo — the pre-dashboard steps
