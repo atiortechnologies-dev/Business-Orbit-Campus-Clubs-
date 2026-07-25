@@ -8,7 +8,6 @@ import {
   Plus,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { cn } from "@/lib/utils";
 
 const navItems = [
   {
@@ -69,12 +68,11 @@ export default function Sidebar() {
               key={item.label}
               to={item.path}
               className={({ isActive }) =>
-                cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                   isActive
                     ? "bg-[#E5E7EB] text-black"
                     : "text-gray-600 hover:bg-gray-50 hover:text-black"
-                )
+                }`
               }
             >
               <Icon className="w-4 h-4" />

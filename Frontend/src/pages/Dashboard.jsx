@@ -1,8 +1,31 @@
-import CompanyDashboardShell from "@/layouts/CompanyDashboardShell";
+import {
+  Zap,
+  Lock,
+  ArrowRight,
+  BookOpen,
+  FileText,
+  CircleHelp,
+  LifeBuoy,
+  Check,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import DashboardShell from '@/components/dashboard/DashboardShell';
+import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
-export default function CompanyDashboard() {
+const STAGES = [
+  { label: 'Ideation', status: 'active' },
+  { label: 'Validation', status: 'locked' },
+  { label: 'MVP', status: 'locked' },
+  { label: 'Traction', status: 'locked' },
+  { label: 'Launch & Pitch', status: 'locked' },
+];
+
+export default function DashboardPage() {
+  useDocumentTitle('Dashboard — BOCC Student Portal');
+
   return (
-    <CompanyDashboardShell pageId="db">
+    <DashboardShell pageId="db">
 
       <div
         className="grid grid-cols-1 md:grid-cols-12"
@@ -287,10 +310,7 @@ export default function CompanyDashboard() {
           </div>
         </section>
 
-        <p className="mt-2 text-text-muted">
-          Company dashboard is working.
-        </p>
       </div>
-    </CompanyDashboardShell>
+    </DashboardShell>
   );
 }
