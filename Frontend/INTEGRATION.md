@@ -665,38 +665,42 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")*
 
 ## Company Portal
 
-*(Added by a different contributor directly to `main`, outside the usual
-branch/PR process this doc otherwise assumes — currently mid-remediation
-to bring it in line with the rest of this app. This section will be
-rewritten once that's done; until then, treat everything below as a
-known-bad state, not a template to copy.)*
+*(Originally added by a different contributor directly to `main`, outside
+the usual branch/PR process this doc otherwise assumes. Fully remediated
+— rebuilt on the same shell/token/component conventions as every other
+portal. `components/company/CompanyShell.jsx` is the fifth instance of
+the shared three-piece shell pattern (Dashboard/Incubator/Admin/
+Investor/Mentor before it); the old `layouts/CompanyDashboardShell.jsx`
+and `components/bocc/*` are gone.)*
 
 ### `/company/dashboard` — `src/pages/company/Dashboard.jsx`
+- **Stub:** all 4 stat cards, the Recent Applicant Activity table, and
+  the Latest Postings list are hardcoded snapshots — same as every other
+  portal's dashboard at this stage.
+- **Real:** "Manage Opportunities" and "SEE ALL JOB POSTS" → real
+  navigation to `/company/my-opportunities`.
+- **Coming Soon:** "Post New Opportunity," "View Applicants," "View all"
+  (applicant activity) — all genuinely blocked on screens that don't
+  exist yet (a create-opportunity form, an applicants directory).
+
 ### `/company/my-opportunities` — `src/pages/company/MyOpportunities.jsx`
-- **Real:** page-level layout renders; navigating between the two routes
-  works.
-- **Stub:** all stats, applicant rows, postings, and opportunities are
-  hardcoded, same as every other portal's dashboard at this stage — not
-  itself a problem.
-- **Not stubbed, just dead:** unlike every other `ComingSoon`-marked
-  screen in this app, most of the interactive-looking controls here have
-  **no `onClick` handler at all** — not a stub, not `ComingSoon`, nothing:
-  the sidebar's Post Opportunity/Applicants/Profile/Settings nav items
-  (dead `path: "#"` anchors), Post New Opportunity, Manage Opportunities,
-  View Applicants, See All Job Posts, View all, every table row action,
-  and the pagination controls. The header search input isn't wired to
-  any state at all, unlike every other search box in this app.
-- **Structural:** does not use `layouts/CompanyDashboardShell.jsx` (which
-  itself correctly wraps the real `DashboardShell`) — instead hand-rolls
-  its own `Sidebar`/`TopBar` from `components/bocc/`, bypassing the app's
-  real shared `Sidebar.jsx` (no dark mode, no mobile drawer, no desktop
-  collapse as a result). No design tokens anywhere in `pages/company/*`,
-  `components/bocc/*`, or `components/OpportunitiesTable.jsx` — hardcoded
-  hex/gray colors throughout, zero `dark:` classes.
-- **Coming Soon:** none — this is the gap. Every dead control above should
-  either become real (client-side state, matching this app's "build it if
-  it's just local data" rule) or get wrapped in `ComingSoon` like
-  everywhere else, not silently do nothing.
+- **Real:** search genuinely filters the 4 seeded opportunities
+  client-side (by title or ref), using the shared `DataTable` component
+  (desktop grid → stacked mobile cards, same as every other table in the
+  app).
+- **Stub:** filtering only operates on 4 hardcoded rows. Pagination is
+  real (not `ComingSoon`-wrapped) but honestly disabled, and "Showing N
+  of 4" reflects the real filtered/total counts — same honest-count
+  convention as Admin/Investor's tables.
+- **Coming Soon:** "New Opportunity," each row's Actions (kebab) menu —
+  both blocked on screens that don't exist yet.
+
+### Shell — `components/company/CompanyShell.jsx`
+Sidebar nav: Dashboard and My Opportunities are real; Post Opportunity,
+Applicants, Profile, and Settings are `real: false` (render as
+`ComingSoon` automatically via the shared `Sidebar.jsx`) since none of
+those screens exist yet. Header search and notifications are
+`ComingSoon`, matching every other portal shell's header.
 
 ---
 

@@ -23,8 +23,6 @@ src/
     AuthLayout.jsx           Wraps /login, /forgot-password,
                               /reset-password, /role-selection, /signup/*,
                               and every /onboarding/* route
-    CompanyDashboardShell.jsx Company portal's shell — thin wrapper around
-                              components/dashboard/DashboardShell.jsx
 
   pages/                     One file per screen. This is almost always
                               where YOUR new work goes.
@@ -80,13 +78,10 @@ src/
                                PitchDeck.jsx
     mentor/                   Mentor.jsx (dashboard), Requests.jsx, Chats.jsx,
                                Meetings.jsx, Profile.jsx
-    company/                  Dashboard.jsx, MyOpportunities.jsx — added by a
-                               different contributor directly to main; does
-                               NOT yet follow this file's conventions (no
-                               design tokens, no dark mode, several dead
-                               buttons with no handler at all) — see
-                               INTEGRATION.md's Company section for the exact
-                               remediation status before building on top of it
+    company/                  Dashboard.jsx, MyOpportunities.jsx — originally
+                               added by a different contributor directly to
+                               main; fully remediated onto this file's
+                               conventions, see components/company/ below
 
   components/
     ui/          Generic, reusable anywhere: Button, Card, Input, Logo,
@@ -102,16 +97,15 @@ src/
                  complete-profile/<role> pages, same pattern as
                  RoleSignupForm above) + shared field components: TagInput,
                  CheckboxPills, RadioPills, SelectField, TextAreaField
-    dashboard/   DashboardShell — the Student portal's page wrapper, also
-                 reused (via CompanyDashboardShell) by the Company portal
+    dashboard/   DashboardShell — the Student portal's page wrapper
     incubator/   IncubatorShell — the Incubator portal's page wrapper
     admin/       AdminShell — the Admin portal's page wrapper
     investor/    InvestorShell — the Investor portal's page wrapper
     mentor/      MentorShell — the Mentor portal's page wrapper
-    bocc/        Company portal's page-content components (ApplicantTable,
-                 RightPanel, Sidebar, StatsRow, TopBar) — this folder is the
-                 one part of the app that doesn't follow this document yet;
-                 don't copy its patterns into new work, see INTEGRATION.md
+    company/     CompanyShell (the fifth instance of the same shell
+                 pattern) — the Company portal's page wrapper, plus its
+                 page-content components (ApplicantTable, RightPanel,
+                 StatsRow, OpportunitiesTable)
     landing/     Public marketing-page sections — landing/{Navbar,Footer,
                  FAQ,...}.jsx shared across pages, plus one subfolder per
                  role (landing/student/, landing/mentor/, etc.) for
