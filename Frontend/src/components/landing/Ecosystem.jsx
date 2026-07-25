@@ -37,7 +37,7 @@ export default function Ecosystem() {
               ))}
             </ul>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {TILES.map(({ icon: Icon, label }) => (
               <div key={label} className="bg-white/5 border border-white/10 rounded-lg p-6 flex flex-col items-center justify-center text-center hover:bg-white/10 transition-colors">
                 <Icon size={22} strokeWidth={2} />

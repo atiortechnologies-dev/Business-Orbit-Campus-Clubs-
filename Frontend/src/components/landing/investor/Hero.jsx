@@ -39,7 +39,7 @@ export default function Hero() {
             </ComingSoon>
           </div>
 
-          <div className="mt-12 grid grid-cols-3 gap-6 border-t border-border-subtle pt-8">
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 border-t border-border-subtle pt-8">
             {STATS.map((s) => (
               <div key={s.label}>
                 <div className="font-poppins font-bold text-3xl md:text-4xl text-text-heading">{s.value}</div>
