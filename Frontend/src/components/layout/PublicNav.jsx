@@ -3,7 +3,16 @@ import ComingSoon from '@/components/ui/ComingSoon';
 import Logo from '@/components/ui/Logo';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 
-const NAV_LINKS = ['Clubs', 'Events', 'Partners', 'About'];
+// 'href' only set where a real destination exists — 'About' is the one
+// genuine match among the four (the general landing page's own intro
+// content); 'Clubs'/'Events'/'Partners' have no matching page yet and stay
+// ComingSoon rather than being forced onto an unrelated landing page.
+const NAV_LINKS = [
+  { label: 'Clubs' },
+  { label: 'Events' },
+  { label: 'Partners' },
+  { label: 'About', href: '/landing' },
+];
 
 /**
  * PublicNav — the "Global Top Navbar" from the design guide: fixed 72px
@@ -31,13 +40,23 @@ export default function PublicNav() {
         <div className="flex items-center gap-6">
           <Logo variant="horizontal" size={28} priority />
           <div className="hidden md:flex items-center" style={{ gap: 'var(--spacing-gutter)' }}>
-            {NAV_LINKS.map((item) => (
-              <ComingSoon key={item} label={item} position="bottom" inline>
-                <span className="text-text-body hover:text-text-heading transition-colors font-inter font-medium text-small">
-                  {item}
-                </span>
-              </ComingSoon>
-            ))}
+            {NAV_LINKS.map((item) =>
+              item.href ? (
+                <Link
+                  key={item.label}
+                  to={item.href}
+                  className="text-text-body hover:text-text-heading transition-colors font-inter font-medium text-small"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <ComingSoon key={item.label} label={item.label} position="bottom" inline>
+                  <span className="text-text-body hover:text-text-heading transition-colors font-inter font-medium text-small">
+                    {item.label}
+                  </span>
+                </ComingSoon>
+              )
+            )}
           </div>
         </div>
         <div className="flex items-center gap-4">
