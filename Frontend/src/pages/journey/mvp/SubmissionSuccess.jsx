@@ -3,8 +3,7 @@ import { CheckCircle2, ArrowRight, ChevronRight, Calendar, ShieldCheck } from 'l
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
-// Builds a minimal .ics file client-side and triggers a download — no
-// backend or calendar-API integration needed for a single manual event.
+// Builds a minimal .ics file client-side and triggers a download — no backend or calendar-API integration needed for a single manual event.
 function downloadReviewMeetingIcs() {
   const ics = [
     'BEGIN:VCALENDAR',

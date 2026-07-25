@@ -56,9 +56,7 @@ const INITIAL_APPLICATIONS = [
   },
 ];
 
-// Filter dropdown options are derived from the actual data above — every
-// value here appears on at least one row, so every filter combination
-// returns something instead of silently going to zero results.
+// Every value below appears on at least one row above, so no filter combination silently returns zero results.
 const STAGE_OPTIONS = ['All Stages', 'Ideation', 'MVP', 'Pre-Seed', 'Seed Stage', 'Series A'];
 const INDUSTRY_OPTIONS = ['All Industries', 'DeepTech', 'Agritech', 'Fintech', 'Healthtech', 'Big Data'];
 const STATUS_OPTIONS = [
@@ -124,7 +122,6 @@ export default function ApplicationsQueue() {
 
   return (
     <IncubatorShell>
-      {/* Page Header */}
       <section className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
           <h2 className="font-poppins font-bold text-section text-text-heading">
@@ -153,7 +150,6 @@ export default function ApplicationsQueue() {
         </div>
       </section>
 
-      {/* Filters Strip */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 p-4 bg-surface-white border border-border-subtle rounded-xl shadow-card transition-colors duration-150 ease-linear">
         <div className="space-y-1">
           <label className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase tracking-wider px-1">
@@ -201,9 +197,7 @@ export default function ApplicationsQueue() {
         </div>
       </section>
 
-      {/* Applications Grid */}
       <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card overflow-hidden transition-colors duration-150 ease-linear">
-        {/* Table Header */}
         <div className="hidden md:grid grid-cols-[80px_1.5fr_1fr_1fr_1fr_120px] gap-4 px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
           <div className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider">
             Logo
@@ -225,7 +219,6 @@ export default function ApplicationsQueue() {
           </div>
         </div>
 
-        {/* List Items */}
         <div className="divide-y divide-border-subtle">
           {visibleApplications.length === 0 && (
             <p className="px-6 py-10 text-center text-text-muted font-inter text-small">
@@ -242,11 +235,7 @@ export default function ApplicationsQueue() {
                 {app.name.charAt(0)}
               </div>
               <div>
-                {/* text-heading is already the boldest token this theme has
-                    — there's no darker token to hover "to", and the old
-                    fixed group-hover:text-brand-black flipped invisible
-                    against a dark-mode card. opacity gives a real hover
-                    cue that works in both themes instead. */}
+                {/* text-heading is already the boldest token here — a fixed group-hover color has no darker token to go to and went invisible in dark mode, so opacity is used for the hover cue instead */}
                 <p className="font-poppins font-bold text-card text-text-heading group-hover:opacity-70 transition-opacity">
                   {app.name}
                 </p>
@@ -279,7 +268,6 @@ export default function ApplicationsQueue() {
           ))}
         </div>
 
-        {/* Table Footer / Pagination */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle bg-canvas-bg/20">
           <p className="text-small text-text-muted font-inter">
             Showing {visibleApplications.length} of {INITIAL_APPLICATIONS.length} applications

@@ -93,7 +93,6 @@ export default function AdminDashboardPage() {
 
   return (
     <AdminShell>
-      {/* ── KPI row ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard label="Total Users" value="12,482" icon={<Users size={18} strokeWidth={2} />} subtext="+8.4% this month" trendDirection="up" />
         <StatCard label="Active Startups" value="456" icon={<Rocket size={18} strokeWidth={2} />} subtext="92% engagement" />
@@ -109,7 +108,6 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-        {/* User Distribution */}
         <section className="lg:col-span-5 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <h3 className="font-poppins font-semibold text-card text-text-heading mb-6">User Distribution</h3>
           <div className="space-y-4 mb-6">
@@ -130,7 +128,6 @@ export default function AdminDashboardPage() {
           </ComingSoon>
         </section>
 
-        {/* Startup Journey Funnel */}
         <section className="lg:col-span-7 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-poppins font-semibold text-card text-text-heading">Startup Journey Funnel</h3>
@@ -182,7 +179,6 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-        {/* Critical Actions */}
         <section className="lg:col-span-7 bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden">
           <div className="px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
             <h3 className="font-poppins font-semibold text-card text-text-heading">Critical Actions</h3>
@@ -220,7 +216,6 @@ export default function AdminDashboardPage() {
           )}
         </section>
 
-        {/* Activity Stream */}
         <section className="lg:col-span-5 bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden">
           <div className="px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
             <h3 className="font-poppins font-semibold text-card text-text-heading">Activity Stream</h3>
@@ -239,7 +234,6 @@ export default function AdminDashboardPage() {
         </section>
       </div>
 
-      {/* Upcoming Cycle — inverted panel */}
       <section className="bg-brand-black text-white rounded-lg p-6 shadow-card">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex-1">
