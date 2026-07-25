@@ -17,6 +17,10 @@ const {
   studentChapterRouter,
   chapterStatsRouter,
 } = require("./routes/chapter.routes");
+
+const stage3StageRoutes = require("./routes/stage3.routes");
+const stage3ProductTypeRoutes = require("./routes/productType.routes");
+
 const http = require("http");
 const { configureSocket } = require("./utils/socket");
 
@@ -71,6 +75,10 @@ app.use("/api/review", reviewRoutes);
 
 // startup ( stage 2: Validation )
 app.use("/api/student/validation", validationRoutes);
+
+// Register Stage 3 Routes
+app.use("/api/student", stage3StageRoutes);
+app.use("/api/student", stage3ProductTypeRoutes);
 
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
