@@ -16,6 +16,7 @@ import {
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import Modal from '@/components/ui/Modal';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const DEFAULT_FORM_STATE = {
   incubatorName: 'BOCC Incubator',
@@ -43,6 +44,7 @@ const INITIAL_WORKING_DAYS = {
 };
 
 export default function SettingsPage() {
+  useDocumentTitle('Settings — BOCC Incubator Portal');
   const [form, setForm] = useState(DEFAULT_FORM_STATE);
   const [industries, setIndustries] = useState(INITIAL_INDUSTRIES);
   const [workingDays, setWorkingDays] = useState(INITIAL_WORKING_DAYS);

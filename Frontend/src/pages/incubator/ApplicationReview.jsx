@@ -11,8 +11,10 @@ import {
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function ApplicationReview() {
+  useDocumentTitle('Application Review — BOCC Incubator Portal');
   const [notes, setNotes] = useState('');
   const [selectedDecision, setSelectedDecision] = useState(null); // 'approve' | 'revisions' | 'reject'
   const [draftSaved, setDraftSaved] = useState(false);

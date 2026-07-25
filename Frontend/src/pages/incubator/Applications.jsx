@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import { downloadCsv } from '@/utils/csv';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const INITIAL_APPLICATIONS = [
   {
@@ -68,6 +69,7 @@ const STATUS_OPTIONS = [
 ];
 
 export default function ApplicationsQueue() {
+  useDocumentTitle('Applications — BOCC Incubator Portal');
   const [stageFilter, setStageFilter] = useState('All Stages');
   const [industryFilter, setIndustryFilter] = useState('All Industries');
   const [statusFilter, setStatusFilter] = useState('ALL');

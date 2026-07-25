@@ -11,6 +11,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Logo from '@/components/ui/Logo';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,6 +28,7 @@ function validateField(name, value) {
 }
 
 export default function LoginPage() {
+  useDocumentTitle('Login — BOCC');
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
