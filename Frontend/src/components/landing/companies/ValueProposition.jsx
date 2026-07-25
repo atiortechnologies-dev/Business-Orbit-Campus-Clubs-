@@ -10,7 +10,7 @@ const CARDS = [
 export default function ValueProposition() {
   return (
     <section id="partners" className="bg-surface-white py-20 lg:py-28" aria-labelledby="value-heading">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[var(--spacing-container-max)] px-6 lg:px-10">
         <SectionHeading
           eyebrow="Why BOCC"
           title="Why Leading Companies Choose BOCC"

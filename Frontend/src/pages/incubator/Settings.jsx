@@ -612,7 +612,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Bottom Sticky Action Bar */}
-      <footer className="fixed bottom-0 right-0 left-0 lg:left-[264px] h-20 bg-surface-white border-t border-border-subtle flex items-center justify-between px-6 md:px-8 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.03)] transition-colors duration-150 ease-linear">
+      <footer className="fixed bottom-0 right-0 left-0 lg:left-[var(--spacing-sidebar-width)] h-20 bg-surface-white border-t border-border-subtle flex items-center justify-between px-6 md:px-8 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.03)] transition-colors duration-150 ease-linear">
         <div>
           {saveSuccess && (
             <div className="flex items-center gap-2 text-success font-poppins font-semibold text-small animate-fade-in select-none">

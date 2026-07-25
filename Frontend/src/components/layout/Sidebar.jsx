@@ -98,7 +98,7 @@ export default function Sidebar({
         className={`flex flex-col h-screen py-6 fixed left-0 top-0 z-50 border-r border-white/10 bg-brand-black
           transform transition-[transform,width] duration-200 ease-out
           lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          ${collapsed ? 'lg:w-20' : 'lg:w-[264px]'} w-[264px]`}
+          ${collapsed ? 'lg:w-20' : 'lg:w-[var(--spacing-sidebar-width)]'} w-[var(--spacing-sidebar-width)]`}
       >
       {/* IMPORTANT for anyone editing this file: this sidebar's background
           is ALWAYS brand-black, in both light and dark theme — it does not

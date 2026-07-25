@@ -60,7 +60,7 @@ export default function IncubatorShell({ children }) {
       </Sidebar>
 
       {/* ── Main content wrapper ─────────────────────────────────────── */}
-      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[264px]'} min-h-screen flex flex-col`}>
+      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[var(--spacing-sidebar-width)]'} min-h-screen flex flex-col`}>
         {/* Header */}
         <header
           className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear"
@@ -138,7 +138,7 @@ export default function IncubatorShell({ children }) {
         </header>
 
         {/* Page Content Canvas */}
-        <div className="flex-1 p-6 md:p-8 max-w-[1440px] w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-[var(--spacing-container-max)] w-full mx-auto flex flex-col">
           {children}
         </div>
 

@@ -10,7 +10,7 @@ const STATS = [
 export default function Hero() {
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-heading">
-      <div className="relative mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-24">
+      <div className="relative mx-auto grid max-w-[var(--spacing-container-max)] grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-24">
         <div className="flex flex-col">
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border-subtle bg-surface-white px-3.5 py-1.5 font-inter text-caption font-medium text-text-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-accent-neon" />
