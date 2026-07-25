@@ -414,6 +414,17 @@ const updateStartupSchema = z.object({
     .default(""),
 });
 
+const selectProductTypeSchema = z.object({
+  product_type: z
+    .enum(["Digital", "Physical"])
+    .refine((val) => val !== null, "Product type is required"),
+  product_description: z
+    .string()
+    .max(1000, "Description too long")
+    .optional()
+    .default(""),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -436,4 +447,5 @@ module.exports = {
   requestMeetingRescheduleSchema,
   updateProfileSchema,
   updateStartupSchema,
+  selectProductTypeSchema,
 };

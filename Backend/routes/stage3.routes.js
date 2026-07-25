@@ -3,7 +3,7 @@ const { protect, requireRole } = require("../../middlewares/authMiddleware");
 const {
   getMVPStageOverview,
   getMVPChecklist,
-} = require("../../controllers/stage3/stageOverview.controller");
+} = require("../controllers/stage3Overview.controller");
 const router = express.Router();
 
 router.use(protect, requireRole("student"));
