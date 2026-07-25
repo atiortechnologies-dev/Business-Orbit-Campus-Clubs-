@@ -1,9 +1,10 @@
 # Contributing to BOCC-Shared-App
 
 This is the shared frontend for **every** BOCC role (Student, Incubator,
-Auth) — one Vite + React app, not one project per role. Read this before
-adding a new screen, especially if someone else might be building a
-different screen of the *same* portal at the same time as you.
+Admin, Investor, Mentor, Company, plus Auth/Onboarding and public
+Landing) — one Vite + React app, not one project per role. Read this
+before adding a new screen, especially if someone else might be building
+a different screen of the *same* portal at the same time as you.
 
 ## 1. Where things live
 
@@ -20,7 +21,10 @@ src/
 
   layouts/
     AuthLayout.jsx           Wraps /login, /forgot-password,
-                              /reset-password, /role-selection, /signup/*
+                              /reset-password, /role-selection, /signup/*,
+                              and every /onboarding/* route
+    CompanyDashboardShell.jsx Company portal's shell — thin wrapper around
+                              components/dashboard/DashboardShell.jsx
 
   pages/                     One file per screen. This is almost always
                               where YOUR new work goes.
@@ -65,18 +69,49 @@ src/
                                Investor.jsx, Companies.jsx, Incubator.jsx —
                                see INTEGRATION.md's "Public Landing Pages"
                                section for what's real vs. stub on each
+    onboarding/               Post-signup flow, wrapped in AuthLayout:
+                               Welcome.jsx → VerifyEmail.jsx →
+                               VerificationProgress.jsx (or
+                               ApplicationRejected.jsx), then
+                               complete-profile/{Student,Mentor,Investor,
+                               Incubator,Company}.jsx — 5 thin pages behind
+                               components/onboarding/CompleteProfileShell.jsx
+    investor/                 Investor.jsx (dashboard), IncomingPitchDecks.jsx,
+                               PitchDeck.jsx
+    mentor/                   Mentor.jsx (dashboard), Requests.jsx, Chats.jsx,
+                               Meetings.jsx, Profile.jsx
+    company/                  Dashboard.jsx, MyOpportunities.jsx — added by a
+                               different contributor directly to main; does
+                               NOT yet follow this file's conventions (no
+                               design tokens, no dark mode, several dead
+                               buttons with no handler at all) — see
+                               INTEGRATION.md's Company section for the exact
+                               remediation status before building on top of it
 
   components/
     ui/          Generic, reusable anywhere: Button, Card, Input, Logo,
                  ComingSoon, ThemeToggle, ThemeProvider, Badge, StatCard,
                  DataTable, Modal
     layout/      PublicNav (shared top nav for all public/auth pages),
-                 Sidebar (shared side panel for Student + Incubator + Admin)
+                 Sidebar (shared side panel — used by every authenticated
+                 portal's shell: Student, Incubator, Admin, Investor,
+                 Mentor, Company)
     auth/        RoleCard, PasswordStrengthMeter, RoleSignupForm (shared
                  shell behind all 5 /signup/<role> pages — see §3)
-    dashboard/   DashboardShell — the Student portal's page wrapper
+    onboarding/  CompleteProfileShell (shared shell behind all 5
+                 complete-profile/<role> pages, same pattern as
+                 RoleSignupForm above) + shared field components: TagInput,
+                 CheckboxPills, RadioPills, SelectField, TextAreaField
+    dashboard/   DashboardShell — the Student portal's page wrapper, also
+                 reused (via CompanyDashboardShell) by the Company portal
     incubator/   IncubatorShell — the Incubator portal's page wrapper
     admin/       AdminShell — the Admin portal's page wrapper
+    investor/    InvestorShell — the Investor portal's page wrapper
+    mentor/      MentorShell — the Mentor portal's page wrapper
+    bocc/        Company portal's page-content components (ApplicantTable,
+                 RightPanel, Sidebar, StatsRow, TopBar) — this folder is the
+                 one part of the app that doesn't follow this document yet;
+                 don't copy its patterns into new work, see INTEGRATION.md
     landing/     Public marketing-page sections — landing/{Navbar,Footer,
                  FAQ,...}.jsx shared across pages, plus one subfolder per
                  role (landing/student/, landing/mentor/, etc.) for
@@ -91,7 +126,12 @@ src/
     useDocumentTitle.js      Call this at the top of a page to set the tab title
     useSidebarCollapsed.js   Backs the desktop sidebar's collapse/expand
                               toggle; localStorage-persisted, shared by all
-                              three shells so the state survives navigation
+                              portal shells so the state survives navigation
+
+  utils/
+    csv.js                   downloadCsv(filename, columns, rows) — turns
+                              local table state into a real .csv download,
+                              shared by every "Export CSV" action
 
 public/
   logos/       Brand logo PNGs — don't add new logo assets without checking
