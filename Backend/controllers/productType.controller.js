@@ -1,7 +1,7 @@
-const asyncHandler = require("../../middlewares/asyncHandler");
-const StartupProduct = require("../../models/StartupProduct");
-const { getOrCreateStartup } = require("../../utils/startupJourney");
+const asyncHandler = require("../middlewares/asyncHandler");
 const MVPChecklist = require("../models/MVPChecklist");
+const StartupProduct = require("../models/StartupProduct");
+const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // POST /api/student/startup/product-type
 const selectProductType = asyncHandler(async (req, res) => {

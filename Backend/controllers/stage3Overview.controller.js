@@ -1,7 +1,7 @@
-const asyncHandler = require("../../middlewares/asyncHandler");
-const StartupStage = require("../../models/StartupStage");
-const { getOrCreateStartup } = require("../../utils/startupJourney");
+const asyncHandler = require("../middlewares/asyncHandler");
 const MVPChecklist = require("../models/MVPChecklist");
+const StartupStage = require("../models/StartupStage");
+const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // GET /api/student/stages/mvp
 const getMVPStageOverview = asyncHandler(async (req, res) => {

@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
-const { protect, requireRole } = require("../../middlewares/authMiddleware");
-const { validateRequest } = require("../../middlewares/validateRequest");
 
 const { selectProductTypeSchema } = require("../utils/validators");
 const {
   selectProductType,
   getProductType,
 } = require("../controllers/productType.controller");
+const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { validateRequest } = require("../middlewares/validateRequest");
 
 router.use(protect, requireRole("student"));
 
