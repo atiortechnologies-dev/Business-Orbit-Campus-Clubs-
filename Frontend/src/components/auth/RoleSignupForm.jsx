@@ -44,7 +44,15 @@ export default function RoleSignupForm({ roleId, title, subtitle, icon, fields }
       return;
     }
     setError('');
-    // TODO(backend): POST { role: roleId, ...values, password } to the registration endpoint.
+    // TODO(backend): POST to Backend/routes/authRoute.js's real
+    // POST /api/auth/register (Backend/utils/validators.js's registerSchema).
+    // Base fields need renaming to match: fullName -> full_name,
+    // confirmPassword -> confirm_password (email/phone/password already
+    // match). role must be sent as the literal roleId string. Each role's
+    // *Signup.jsx FIELDS array has its own comment mapping that role's
+    // fields to the backend's role-specific schema — check those before
+    // wiring this up, three of the five forms are missing fields the
+    // backend actually requires (not just naming mismatches).
     setSubmitted(true);
   };
 

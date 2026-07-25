@@ -2,6 +2,12 @@ import { Briefcase } from 'lucide-react';
 import RoleSignupForm from '@/components/auth/RoleSignupForm';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
+// Backend/utils/validators.js's investorFields expects: organization
+// (orgName here is a straight rename), investment_focus, investment_stage
+// (both required — profile_url is the only optional one). This form is
+// currently missing investment_focus and investment_stage entirely; the
+// backend can't register an investor from what this form collects today
+// without those two fields being added.
 const FIELDS = [
   { name: 'fullName', label: 'Full Name', placeholder: 'e.g. Morgan Wells' },
   { name: 'email', label: 'Email', type: 'email', placeholder: 'you@fund.com' },
