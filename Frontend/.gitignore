@@ -142,6 +142,13 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# Frontend/Working/ is a scratch space (design guide, planning docs, raw
-# wireframe material) for BOCC-Shared-App — never meant to be committed.
-Frontend/Working/
+# Working/ is a scratch space (design guide, planning docs, raw wireframe
+# material) for BOCC-Shared-App — never meant to be committed. This file
+# already lives inside Frontend/, so the pattern is relative to here, not
+# repo root — a "Frontend/Working/" prefix here would look for a nonexistent
+# Frontend/Frontend/Working/ and silently never match.
+Working/
+
+# Claude Code's local dev-server launch config for the browser-preview tool
+# — personal tooling, not a project convention teammates need.
+.claude/
