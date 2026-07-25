@@ -42,7 +42,7 @@ export default function DashboardPage() {
             </h3>
 
             <div className="space-y-1">
-              <p className="text-text-body font-inter text-body-lg">
+              <p className="text-text-body font-inter text-body">
                 Current Stage:{' '}
                 <span className="font-bold text-text-heading">Ideation</span>
               </p>

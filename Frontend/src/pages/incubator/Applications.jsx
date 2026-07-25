@@ -127,10 +127,10 @@ export default function ApplicationsQueue() {
       {/* Page Header */}
       <section className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h2 className="font-poppins font-bold text-headline-lg text-text-heading">
+          <h2 className="font-poppins font-bold text-section text-text-heading">
             Incoming Applications
           </h2>
-          <p className="text-text-muted mt-1 font-inter text-body-md">
+          <p className="text-text-muted mt-1 font-inter text-small">
             Review and manage new startup applications for the Spring 2024 cohort.
           </p>
         </div>
@@ -162,7 +162,7 @@ export default function ApplicationsQueue() {
           <select
             value={stageFilter}
             onChange={(e) => setStageFilter(e.target.value)}
-            className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-body-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
+            className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-small py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
           >
             {STAGE_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
           </select>
@@ -174,7 +174,7 @@ export default function ApplicationsQueue() {
           <select
             value={industryFilter}
             onChange={(e) => setIndustryFilter(e.target.value)}
-            className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-body-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
+            className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-small py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
           >
             {INDUSTRY_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
           </select>
@@ -186,7 +186,7 @@ export default function ApplicationsQueue() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-body-md py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
+            className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-small py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
           >
             {STATUS_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
@@ -228,7 +228,7 @@ export default function ApplicationsQueue() {
         {/* List Items */}
         <div className="divide-y divide-border-subtle">
           {visibleApplications.length === 0 && (
-            <p className="px-6 py-10 text-center text-text-muted font-inter text-body-md">
+            <p className="px-6 py-10 text-center text-text-muted font-inter text-small">
               No applications match the current filters.
             </p>
           )}
@@ -250,12 +250,12 @@ export default function ApplicationsQueue() {
                 <p className="font-poppins font-bold text-card text-text-heading group-hover:opacity-70 transition-opacity">
                   {app.name}
                 </p>
-                <p className="font-inter text-body-md text-text-muted">
+                <p className="font-inter text-small text-text-muted">
                   {app.founder}
                 </p>
               </div>
               <div>
-                <p className="font-inter text-body-md text-text-heading">
+                <p className="font-inter text-small text-text-heading">
                   {app.chapter}
                 </p>
                 <p className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase tracking-wider">

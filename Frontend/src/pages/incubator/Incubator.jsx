@@ -76,10 +76,10 @@ export default function IncubatorDashboard() {
     <IncubatorShell>
       {/* Welcome Section */}
       <section className="mb-8">
-        <h1 className="font-poppins font-bold text-headline-lg text-text-heading mb-2">
+        <h1 className="font-poppins font-bold text-section text-text-heading mb-2">
           Welcome back,
         </h1>
-        <p className="text-text-muted font-inter text-body-lg">
+        <p className="text-text-muted font-inter text-body">
           Here's what's happening in your incubator ecosystem today.
         </p>
       </section>
@@ -112,7 +112,7 @@ export default function IncubatorDashboard() {
             <p className="text-text-muted font-poppins font-semibold text-caption uppercase tracking-wider mb-2">
               {label}
             </p>
-            <h3 className="font-poppins font-bold text-headline-lg text-text-heading mb-2">
+            <h3 className="font-poppins font-bold text-section text-text-heading mb-2">
               {value}
             </h3>
             <div className="flex items-center gap-1.5 text-text-muted text-xs">

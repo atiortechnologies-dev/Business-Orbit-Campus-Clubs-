@@ -131,10 +131,10 @@ export default function SettingsPage() {
   return (
     <IncubatorShell>
       <header className="mb-8">
-        <h2 className="font-poppins font-bold text-headline-lg text-text-heading">
+        <h2 className="font-poppins font-bold text-section text-text-heading">
           Profile Management
         </h2>
-        <p className="font-inter text-body-lg text-text-muted mt-1">
+        <p className="font-inter text-body text-text-muted mt-1">
           Manage your organization's presence and administrative settings.
         </p>
       </header>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
                   BOCC Incubator
                 </h3>
               </div>
-              <p className="font-inter text-body-md text-text-muted mb-6">
+              <p className="font-inter text-small text-text-muted mb-6">
                 Sarah Jenkins • Lead Representative
               </p>
               
@@ -187,13 +187,13 @@ export default function SettingsPage() {
               </h4>
               <div className="space-y-2">
                 <ComingSoon label="Download Data Audit" position="top" inline={false}>
-                  <div className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-body-md text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
+                  <div className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-small text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
                     <span>Download Data Audit</span>
                     <Download size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </ComingSoon>
 
-                <label className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-body-md text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
+                <label className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-small text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
                   <span>Update Organization Logo</span>
                   <Camera size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                   <input type="file" accept="image/*" onChange={handleLogoChange} className="sr-only" />
@@ -223,7 +223,7 @@ export default function SettingsPage() {
                   name="incubatorName"
                   value={form.incubatorName}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
               <div className="space-y-1">
@@ -235,7 +235,7 @@ export default function SettingsPage() {
                   name="repName"
                   value={form.repName}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
               <div className="space-y-1">
@@ -246,7 +246,7 @@ export default function SettingsPage() {
                   type="email"
                   disabled
                   value="sarah.j@incubatorhub.com"
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-muted/60 bg-canvas-bg/80 cursor-not-allowed"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-muted/60 bg-canvas-bg/80 cursor-not-allowed"
                 />
               </div>
               <div className="space-y-1">
@@ -258,7 +258,7 @@ export default function SettingsPage() {
                   name="phone"
                   value={form.phone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
               <div className="space-y-1 md:col-span-2">
@@ -270,7 +270,7 @@ export default function SettingsPage() {
                   name="website"
                   value={form.website}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
               <div className="space-y-1 md:col-span-2">
@@ -282,7 +282,7 @@ export default function SettingsPage() {
                   name="address"
                   value={form.address}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
             </div>
@@ -306,7 +306,7 @@ export default function SettingsPage() {
                   value={form.about}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
 
@@ -365,7 +365,7 @@ export default function SettingsPage() {
                     name="stages"
                     value={form.stages}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                    className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                   >
                     <option>Pre-seed to Seed</option>
                     <option>Seed to Series A</option>
@@ -381,7 +381,7 @@ export default function SettingsPage() {
                     name="maxStartups"
                     value={form.maxStartups}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                    className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                   />
                 </div>
               </div>
@@ -405,7 +405,7 @@ export default function SettingsPage() {
                   name="meetingPreference"
                   value={form.meetingPreference}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 >
                   <option>Video Call (Remote)</option>
                   <option>In-person (On-site)</option>
@@ -420,7 +420,7 @@ export default function SettingsPage() {
                   name="primaryComm"
                   value={form.primaryComm}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 >
                   <option>Email</option>
                   <option>Slack</option>
@@ -470,7 +470,7 @@ export default function SettingsPage() {
                     <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                       Time Range
                     </span>
-                    <span className="font-inter text-body-md font-semibold text-text-heading">
+                    <span className="font-inter text-small font-semibold text-text-heading">
                       09:00 AM - 05:30 PM
                     </span>
                   </div>
@@ -499,7 +499,7 @@ export default function SettingsPage() {
                     <p className="font-poppins font-semibold text-small text-text-heading">
                       Password Security
                     </p>
-                    <p className="font-inter text-body-md text-text-muted">
+                    <p className="font-inter text-small text-text-muted">
                       Last changed 4 months ago.
                     </p>
                   </div>
@@ -522,7 +522,7 @@ export default function SettingsPage() {
                           value={passwordForm.current}
                           onChange={handlePasswordField}
                           placeholder="Current password"
-                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body-md py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
                         />
                         <input
                           type="password"
@@ -530,7 +530,7 @@ export default function SettingsPage() {
                           value={passwordForm.next}
                           onChange={handlePasswordField}
                           placeholder="New password"
-                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body-md py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
                         />
                         <input
                           type="password"
@@ -538,7 +538,7 @@ export default function SettingsPage() {
                           value={passwordForm.confirm}
                           onChange={handlePasswordField}
                           placeholder="Confirm new password"
-                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body-md py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
                         />
                         {passwordError && <p className="text-error font-inter text-small">{passwordError}</p>}
                         <button
@@ -560,7 +560,7 @@ export default function SettingsPage() {
                   <p className="font-poppins font-semibold text-small text-text-heading">
                     Email Notifications
                   </p>
-                  <p className="font-inter text-body-md text-text-muted">
+                  <p className="font-inter text-small text-text-muted">
                     Receive alerts about new startup applications.
                   </p>
                 </div>
@@ -592,7 +592,7 @@ export default function SettingsPage() {
                     <p className="font-poppins font-semibold text-small text-error">
                       Deactivate Account
                     </p>
-                    <p className="font-inter text-body-md text-text-muted">
+                    <p className="font-inter text-small text-text-muted">
                       Temporarily disable your incubator profile.
                     </p>
                   </div>
@@ -649,7 +649,7 @@ export default function SettingsPage() {
           value={deactivateConfirmText}
           onChange={(e) => setDeactivateConfirmText(e.target.value)}
           placeholder="DEACTIVATE"
-          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body-md py-2.5 px-3 mb-4 focus:outline-none focus:ring-1 focus:ring-error"
+          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 mb-4 focus:outline-none focus:ring-1 focus:ring-error"
         />
         <div className="flex justify-end gap-3">
           <button
