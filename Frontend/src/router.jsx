@@ -70,6 +70,8 @@ import MentorRequests from '@/pages/mentor/Requests';
 import MentorChats from '@/pages/mentor/Chats';
 import MentorMeetings from '@/pages/mentor/Meetings';
 import MentorProfile from '@/pages/mentor/Profile';
+import CompanyDashboard from '@/pages/company/Dashboard';
+import CompanyMyOpportunities from '@/pages/company/MyOpportunities';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -96,6 +98,8 @@ export const router = createBrowserRouter([
       { path: '/onboarding/complete-profile/company', element: <CompleteProfileCompany /> },
     ],
   },
+  { path: '/company/dashboard', element: <CompanyDashboard /> },
+  { path: '/company/my-opportunities', element: <CompanyMyOpportunities /> },
   { path: '/landing', element: <LandingHome /> },
   { path: '/landing/student', element: <LandingStudent /> },
   { path: '/landing/mentor', element: <LandingMentor /> },
