@@ -33,9 +33,9 @@ const NAV_ITEMS = [
 ];
 
 export default function DashboardShell({ pageId = 'pg', children }) {
-  // Drawer state for the sidebar below `lg` — see Sidebar.jsx's isOpen/
-  // onClose doc comment. Owned here (not inside Sidebar) because the
-  // header's Menu button that opens it lives in this file, not there.
+  // Drawer state for the sidebar below `lg` — owned here (not inside
+  // Sidebar) because the header's Menu button that opens it lives in this
+  // file, not there.
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, onToggleCollapse] = useSidebarCollapsed();
 
@@ -65,16 +65,13 @@ export default function DashboardShell({ pageId = 'pg', children }) {
         onToggleCollapse={onToggleCollapse}
       />
 
-      {/* ── Main canvas ──────────────────────────────────────────────── */}
       <main id={`${pageId}-main`} className="flex flex-col min-h-screen">
 
-        {/* Top header */}
         <header
           id={`${pageId}-header`}
           className="flex justify-between items-center w-full sticky top-0 h-[72px] bg-surface-white border-b border-divider-line z-40"
           style={{ paddingLeft: 'var(--spacing-margin-mobile)', paddingRight: 'var(--spacing-margin-mobile)' }}
         >
-          {/* Left */}
           <div className="flex items-center gap-4">
             {/* Opens the Sidebar drawer below `lg` — previously rendered
                 with no onClick at all, i.e. it did nothing when tapped. */}
@@ -91,7 +88,6 @@ export default function DashboardShell({ pageId = 'pg', children }) {
             </p>
           </div>
 
-          {/* Right */}
           <div className="flex items-center gap-6">
             <ComingSoon
               label="Search"
@@ -112,16 +108,14 @@ export default function DashboardShell({ pageId = 'pg', children }) {
               <Link to="/settings" className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted hover:text-text-heading">
                 <Settings size={20} strokeWidth={2} />
               </Link>
-              {/* Theme toggle */}
               <ThemeToggle size={20} className="block" />
-              <Link to="/settings" className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-[12px] select-none hover:opacity-80 transition-opacity">
+              <Link to="/settings" className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity">
                 AC
               </Link>
             </div>
           </div>
         </header>
 
-        {/* Page content slot */}
         <div
           id={`${pageId}-content`}
           className="flex-1 py-8 w-full mx-auto"
@@ -134,7 +128,6 @@ export default function DashboardShell({ pageId = 'pg', children }) {
           {children}
         </div>
 
-        {/* Footer */}
         <footer
           id={`${pageId}-footer`}
           className="flex flex-col md:flex-row justify-between items-center w-full bg-canvas-bg border-t border-divider-line py-6 mt-auto"

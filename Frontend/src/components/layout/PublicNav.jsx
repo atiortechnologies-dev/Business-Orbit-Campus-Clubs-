@@ -14,22 +14,13 @@ const NAV_LINKS = [
   { label: 'About', href: '/landing' },
 ];
 
-/**
- * PublicNav — the "Global Top Navbar" from the design guide: fixed 72px
- * height, solid white surface, border-subtle bottom line.
- *
- * Shared by every unauthenticated route: the 4 auth pages (via AuthLayout)
- * and the standalone Privacy Policy page. Pulled into one component instead
- * of copy-pasting this JSX into both places because the design guide
- * explicitly forbids per-layout styling variations of the same pattern
- * ("Component Usage Limitations") — one source of truth here means a future
- * link/spacing/logo change only has to happen once, and the two call sites
- * can never silently drift apart again.
- *
- * Intentionally takes no props — every current consumer needs the exact
- * same links/actions. Add an explicit prop later only if a real future page
- * needs to differ; don't pre-build flexibility nobody's asked for yet.
- */
+// Shared by every unauthenticated route (the 4 auth pages via AuthLayout,
+// plus the standalone Privacy Policy page) — one component instead of
+// copy-pasting this JSX into both places, because the design guide forbids
+// per-layout variations of the same pattern ("Component Usage
+// Limitations"). Takes no props on purpose: every current consumer needs
+// identical links/actions; add a prop later only if a real future page
+// needs to differ.
 export default function PublicNav() {
   return (
     <nav className="w-full top-0 sticky bg-surface-white border-b border-divider-line z-50">
