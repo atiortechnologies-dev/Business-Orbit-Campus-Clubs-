@@ -152,7 +152,7 @@ export default function SettingsPage() {
                 {!logoUrl && 'BI'}
               </div>
               <div className="flex items-center gap-1 mb-1">
-                <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+                <h3 className="font-poppins font-bold text-card text-text-heading">
                   BOCC Incubator
                 </h3>
               </div>
@@ -209,7 +209,7 @@ export default function SettingsPage() {
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex items-center gap-2 mb-6">
               <Building size={20} className="text-text-muted" />
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+              <h3 className="font-poppins font-bold text-card text-text-heading">
                 Organization Information
               </h3>
             </div>
@@ -292,7 +292,7 @@ export default function SettingsPage() {
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex items-center gap-2 mb-6">
               <Info size={20} className="text-text-muted" />
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+              <h3 className="font-poppins font-bold text-card text-text-heading">
                 Incubator Details
               </h3>
             </div>
@@ -392,7 +392,7 @@ export default function SettingsPage() {
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex items-center gap-2 mb-6">
               <Calendar size={20} className="text-text-muted" />
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+              <h3 className="font-poppins font-bold text-card text-text-heading">
                 Contact &amp; Availability
               </h3>
             </div>
@@ -483,7 +483,7 @@ export default function SettingsPage() {
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex items-center gap-2 mb-6">
               <Lock size={20} className="text-text-muted" />
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+              <h3 className="font-poppins font-bold text-card text-text-heading">
                 Account &amp; Privacy
               </h3>
             </div>

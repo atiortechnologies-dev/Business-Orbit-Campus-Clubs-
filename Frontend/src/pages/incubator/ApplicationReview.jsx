@@ -117,7 +117,7 @@ export default function ApplicationReview() {
 
           {/* Problem Statement */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-3">
+            <h3 className="font-poppins font-bold text-card text-text-heading mb-3">
               Problem Statement
             </h3>
             <div className="font-inter text-body-lg text-text-body space-y-4">
@@ -132,7 +132,7 @@ export default function ApplicationReview() {
 
           {/* Solution Overview */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-3">
+            <h3 className="font-poppins font-bold text-card text-text-heading mb-3">
               Solution Overview
             </h3>
             <div className="font-inter text-body-lg text-text-body">
@@ -144,7 +144,7 @@ export default function ApplicationReview() {
 
           {/* Validation & MVP */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-4">
+            <h3 className="font-poppins font-bold text-card text-text-heading mb-4">
               Validation &amp; MVP
             </h3>
             <ul className="space-y-3">
@@ -171,7 +171,7 @@ export default function ApplicationReview() {
 
           {/* Supporting Documents */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-4">
+            <h3 className="font-poppins font-bold text-card text-text-heading mb-4">
               Supporting Documents
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -221,7 +221,7 @@ export default function ApplicationReview() {
           {/* Decision Panel */}
           <div className="bg-surface-white border-2 border-brand-black dark:border-border-subtle rounded-xl p-6 shadow-card flex flex-col gap-6 transition-colors duration-150 ease-linear">
             <div>
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-1">
+              <h3 className="font-poppins font-bold text-card text-text-heading mb-1">
                 Reviewer Decision
               </h3>
               <p className="font-inter text-body-md text-text-muted">

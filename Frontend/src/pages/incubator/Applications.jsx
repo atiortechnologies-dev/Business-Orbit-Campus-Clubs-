@@ -247,7 +247,7 @@ export default function ApplicationsQueue() {
                     fixed group-hover:text-brand-black flipped invisible
                     against a dark-mode card. opacity gives a real hover
                     cue that works in both themes instead. */}
-                <p className="font-poppins font-bold text-headline-sm text-text-heading group-hover:opacity-70 transition-opacity">
+                <p className="font-poppins font-bold text-card text-text-heading group-hover:opacity-70 transition-opacity">
                   {app.name}
                 </p>
                 <p className="font-inter text-body-md text-text-muted">

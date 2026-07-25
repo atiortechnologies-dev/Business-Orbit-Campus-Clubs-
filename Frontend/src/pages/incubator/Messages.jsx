@@ -186,7 +186,7 @@ export default function ChatsPage() {
             `lg:`+ regardless of mobileView. */}
         <div className={`${mobileView === 'list' ? 'flex' : 'hidden'} lg:flex w-full lg:w-80 flex-col border-r border-border-subtle bg-surface-white flex-shrink-0 transition-colors duration-150 ease-linear`}>
           <div className="p-4 border-b border-border-subtle flex items-center justify-between bg-canvas-bg/50">
-            <h2 className="font-poppins font-bold text-headline-sm text-text-heading">
+            <h2 className="font-poppins font-bold text-card text-text-heading">
               Messages
             </h2>
             <ComingSoon
@@ -478,7 +478,7 @@ export default function ChatsPage() {
             <div className="w-20 h-20 rounded-xl bg-canvas-bg border border-border-subtle flex items-center justify-center mb-3 font-poppins font-bold text-text-heading text-2xl select-none">
               {activeDetails.avatar}
             </div>
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+            <h3 className="font-poppins font-bold text-card text-text-heading">
               {activeDetails.name}
             </h3>
             <p className="font-inter text-body-md text-text-muted mt-0.5">
