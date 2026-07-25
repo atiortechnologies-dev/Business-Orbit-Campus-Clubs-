@@ -554,6 +554,34 @@ const updateMVPSubmissionSchema = z.object({
   notes: z.string().max(1000, "Notes too long").optional(),
 });
 
+// incubation stage
+
+const submitIncubationSchema = z.object({
+  incubator_name: z
+    .string()
+    .min(3, "Incubator name required")
+    .max(200, "Name too long"),
+
+  cohort_name: z
+    .string()
+    .min(1, "Cohort name required")
+    .max(200, "Cohort name too long"),
+
+  joining_date: z.string().datetime("Invalid date format"),
+
+  start_date: z.string().datetime("Invalid date format"),
+
+  expected_completion_date: z.string().datetime("Invalid date format"),
+
+  program_type: z
+    .enum(["Pre-incubation", "Incubation", "Acceleration", "Scale-up"])
+    .refine((val) => val !== null, "Program type required"),
+
+  notes: z.string().max(1000, "Notes too long").optional().default(""),
+});
+
+const updateIncubationSchema = submitIncubationSchema.partial();
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -581,4 +609,6 @@ module.exports = {
   updateAssistanceRequestSchema,
   mvpSubmissionSchema,
   updateMVPSubmissionSchema,
+  submitIncubationSchema,
+  updateIncubationSchema,
 };

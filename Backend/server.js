@@ -24,6 +24,8 @@ const stage3AtiorRoutes = require("./routes/atior.routes");
 const stage3MVPRoutes = require("./routes/mvpSubmission.routes");
 const stage3ReviewRoutes = require("./routes/mvpReview.routes");
 
+const incubationRoutes = require("./routes/incubation.routes");
+
 const http = require("http");
 const { configureSocket } = require("./utils/socket");
 
@@ -85,6 +87,9 @@ app.use("/api/student", stage3ProductTypeRoutes);
 app.use("/api/student", stage3AtiorRoutes);
 app.use("/api/student", stage3MVPRoutes);
 app.use("/api/student", stage3ReviewRoutes);
+
+// incubation stage
+app.use("/api/student", incubationRoutes);
 
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);

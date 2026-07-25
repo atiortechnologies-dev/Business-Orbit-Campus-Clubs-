@@ -3,12 +3,6 @@ const { ObjectId } = mongoose.Schema.Types;
 
 const MVPReviewSchema = new mongoose.Schema(
   {
-    review_id: {
-      type: String,
-      unique: true,
-      default: () => `REVIEW-${Date.now()}`,
-    },
-
     submission_id: {
       type: ObjectId,
       ref: "MVPSubmission",
@@ -100,7 +94,6 @@ const MVPReviewSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-MVPReviewSchema.index({ submission_id: 1 });
 MVPReviewSchema.index({ startup_id: 1 });
 
 module.exports = mongoose.model("MVPReview", MVPReviewSchema);

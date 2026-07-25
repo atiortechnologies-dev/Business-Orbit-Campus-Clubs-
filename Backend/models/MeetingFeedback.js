@@ -44,7 +44,6 @@ const MeetingFeedbackSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-MeetingFeedbackSchema.index({ meeting_id: 1 });
 MeetingFeedbackSchema.index({ reviewer_id: 1 });
 MeetingFeedbackSchema.index({ student_id: 1 });
 
