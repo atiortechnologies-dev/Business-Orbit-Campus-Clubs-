@@ -1,6 +1,5 @@
 import React from "react";
 import { Plus, FolderOpen, Users, FileText } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const postings = [
   {
@@ -57,12 +56,11 @@ export default function RightPanel() {
               <div className="flex items-start justify-between gap-3">
                 <p className="font-semibold text-sm text-black">{p.title}</p>
                 <span
-                  className={cn(
-                    "text-[10px] font-bold px-2 py-0.5 rounded",
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded ${
                     p.status === "ACTIVE"
                       ? "bg-[#DEF7EC] text-emerald-700"
                       : "bg-[#E5E7EB] text-gray-600"
-                  )}
+                  }`}
                 >
                   {p.status}
                 </span>
