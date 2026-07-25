@@ -1,7 +1,9 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const Meeting = require("../models/Meeting");
+const Startup = require("../models/Startup");
 const StartupStage = require("../models/StartupStage");
 const StudentProfile = require("../models/StudentProfile");
+const User = require("../models/User");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 const getDashboard = asyncHandler(async (req, res) => {
@@ -66,4 +68,137 @@ const getDashboard = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { getDashboard };
+// GET /api/student/profile
+const getStudentProfile = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const user = await User.findById(userId)
+    .select("-password_hash -otp_code_hash")
+    .lean();
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+
+  // Get profile info
+  const profile = await StudentProfile.findOne({ user_id: userId }).lean();
+
+  // Get startup info
+  const startup = await Startup.findOne({ student_id: userId }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      user: {
+        id: user._id,
+        full_name: user.full_name,
+        email: user.email,
+      },
+      profile: profile || {
+        phone: "",
+        bio: "",
+        skills: [],
+        college: "",
+        degree: "",
+        graduation_year: null,
+        linkedin_url: "",
+        portfolio_url: "",
+        profile_photo: null,
+      },
+      startup: startup || {
+        startup_name: "My Startup",
+        tagline: "",
+        industry: "",
+        problem_statement: "",
+        current_stage: 3,
+      },
+    },
+  });
+});
+
+// PUT /api/student/profile
+const updateProfile = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const updateData = req.validatedData;
+
+  // Find or create profile
+  let profile = await StudentProfile.findOne({ user_id: userId });
+
+  if (!profile) {
+    return res.status(404).json({
+      success: false,
+      message: "Profile not found",
+    });
+  }
+
+  // Update fields
+  Object.assign(profile, updateData);
+  profile.updated_at = new Date();
+  await profile.save();
+
+  res.status(200).json({
+    success: true,
+    message: "Profile updated successfully",
+    data: profile,
+  });
+});
+
+// GET /api/student/startup
+const getStartup = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await Startup.findOne({ student_id: userId }).lean();
+
+  if (!startup) {
+    return res.status(404).json({
+      success: false,
+      message: "Startup not found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: startup,
+  });
+});
+
+// PUT /api/student/startup
+const updateStartup = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const updateData = req.validatedData;
+
+  const startup = await Startup.findOneAndUpdate(
+    { student_id: userId },
+    {
+      startup_name: updateData.startup_name,
+      tagline: updateData.tagline || "",
+      industry: updateData.industry || "",
+      problem_statement: updateData.problem_statement || "",
+    },
+    { new: true },
+  );
+
+  if (!startup) {
+    return res.status(404).json({
+      success: false,
+      message: "Startup not found",
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Startup updated successfully",
+    data: startup,
+  });
+});
+
+module.exports = {
+  getDashboard,
+  getStudentProfile,
+  updateProfile,
+  getStartup,
+  updateStartup,
+};
