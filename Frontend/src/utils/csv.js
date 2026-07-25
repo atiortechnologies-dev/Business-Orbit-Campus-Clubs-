@@ -7,11 +7,7 @@ function escapeCell(value) {
   return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
 }
 
-/**
- * @param {string} filename    Without extension — ".csv" is appended.
- * @param {Array<{key: string, label: string}>} columns
- * @param {Array<Object>} rows
- */
+// filename is passed without extension — ".csv" is appended below.
 export function downloadCsv(filename, columns, rows) {
   const header = columns.map((c) => escapeCell(c.label)).join(',');
   const lines = rows.map((row) => columns.map((c) => escapeCell(row[c.key])).join(','));

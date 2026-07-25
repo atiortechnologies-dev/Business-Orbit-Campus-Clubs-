@@ -80,7 +80,7 @@ export default function IncubatorShell({ children }) {
               <h2 className="font-poppins font-bold text-[18px] leading-[24px] text-text-heading whitespace-nowrap">
                 BOCC Incubator
               </h2>
-              <p className="font-inter text-[12px] leading-[16px] text-text-muted whitespace-nowrap">
+              <p className="font-inter text-caption text-text-muted whitespace-nowrap">
                 Incubation Management
               </p>
             </div>
@@ -93,7 +93,7 @@ export default function IncubatorShell({ children }) {
                     type="text"
                     disabled
                     placeholder="Search applications..."
-                    className="w-full bg-canvas-bg border border-border-subtle rounded-lg pl-10 pr-4 py-2 font-inter text-[14px] leading-[20px] focus:outline-none cursor-not-allowed"
+                    className="w-full bg-canvas-bg border border-border-subtle rounded-lg pl-10 pr-4 py-2 font-inter text-small focus:outline-none cursor-not-allowed"
                   />
                 </div>
               </ComingSoon>
