@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import PasswordStrengthMeter from '@/components/auth/PasswordStrengthMeter';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 function computeStrength(password) {
   if (!password) return 0;
@@ -34,6 +35,7 @@ function EyeToggle({ show, onToggle }) {
 }
 
 export default function ResetPasswordPage() {
+  useDocumentTitle('Reset Password — BOCC');
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

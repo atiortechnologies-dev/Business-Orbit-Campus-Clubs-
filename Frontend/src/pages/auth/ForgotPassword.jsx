@@ -5,6 +5,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -15,6 +16,7 @@ function validateEmail(value) {
 }
 
 export default function ForgotPasswordPage() {
+  useDocumentTitle('Forgot Password — BOCC');
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [touched, setTouched] = useState(false);
