@@ -1,5 +1,4 @@
 import React from "react";
-import { cn } from "@/lib/utils";
 
 const rows = [
   {
@@ -74,10 +73,7 @@ export default function ApplicantTable() {
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
                     <div
-                      className={cn(
-                        "w-9 h-9 rounded-full bg-gradient-to-br flex items-center justify-center text-white text-xs font-bold",
-                        avatarColors[i % avatarColors.length]
-                      )}
+                      className={`w-9 h-9 rounded-full bg-gradient-to-br flex items-center justify-center text-white text-xs font-bold ${avatarColors[i % avatarColors.length]}`}
                     >
                       {r.name.split(" ").map((n) => n[0]).join("")}
                     </div>
@@ -90,10 +86,7 @@ export default function ApplicantTable() {
                 <td className="px-5 py-4 text-gray-700">{r.position}</td>
                 <td className="px-5 py-4">
                   <span
-                    className={cn(
-                      "inline-flex px-2.5 py-1 rounded-md text-[11px] font-semibold",
-                      badgeStyles[r.status]
-                    )}
+                    className={`inline-flex px-2.5 py-1 rounded-md text-[11px] font-semibold ${badgeStyles[r.status]}`}
                   >
                     {r.status}
                   </span>
