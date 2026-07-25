@@ -15,6 +15,142 @@ lists the exact file/function to replace.
 
 ---
 
+## Public Landing Pages
+
+Six public marketing pages, `src/pages/landing/*.jsx` — no auth required,
+reachable before `/login`. Rebuilt from an intern's (Shivom's) original
+`framer-motion` implementation onto this app's existing design-token/
+component system and CSS-transition convention; see `CONTRIBUTING.md` §8
+for the animation-library decision this left deferred. All "photo" slots
+across all 6 pages use the `.placeholder-box` CSS utility — zero hotlinked
+or stock images anywhere in this section.
+
+### `/landing` — `src/pages/landing/Home.jsx`
+- **Real:** Navbar's 5 in-page anchors (About/Startup Stories/Community/FAQ/
+  Contact), Login/Explore, Roles section → real `/signup/<role>` for all 5
+  roles, FAQ accordion, CTA section's Register Now/Become a Partner,
+  Footer's Privacy Policy link.
+- **Stub:** LogoStrip's 6 partner-logo slots are empty placeholders
+  (deliberately genericized — the original hardcoded real institution names
+  like Stanford/MIT/Y Combinator, which falsely implied real partnerships).
+  Stories section's 3 testimonials (Alex Chen/PixelForge, Sarah Miller/
+  GreenLoop, James Rodrigues/KinetiStack) are draft placeholder copy, not
+  real customer quotes — kept as-is per the "working draft" call on this
+  integration pass, but not sourced from any real founder. Contact
+  section's email/address are static text, not a real `mailto:`/map link.
+- **Coming Soon:** Footer's Company/Resources columns (About Us, Careers,
+  Press, Events, Stories, Blog, Support — note "Contact" and "Stories" here
+  are `ComingSoon` even though real `#contact`/`#stories` anchors exist
+  elsewhere on this same page; the footer copies don't reuse them, worth
+  fixing if this file is touched again), Contact section's "Follow us",
+  Footer's Cookie Policy. Footer's "Terms of Service" points at
+  `/legal/privacy-policy` — same destination as "Privacy Policy," no
+  distinct terms page exists yet.
+
+### `/landing/student` — `src/pages/landing/Student.jsx`
+- **Real:** Header's scroll-reactive background + mobile menu, Login/Sign
+  Up, Hero's "Book Discovery Call" (routes to the real `/signup/student`
+  form, not an actual scheduling flow — label is aspirational), FAQ
+  accordion (same shared component/content as Home's), BottomCTA's "Apply
+  Now", Footer's "Explore by Role" cross-links to all 4 other role landing
+  pages, Footer's real `mailto:hello@bocc.co` (this page's Footer is
+  bespoke, distinct from the shared one — its Contact is a working link
+  where Home's is plain text).
+- **Stub:** Header's "Study"/"Mentors" nav labels both point at the same
+  `#journey` anchor, not distinct sections. SuccessStories' 3 testimonials
+  (Aisha K./Lumen, Marcus T./Cadence, Priya R./Strata) are draft placeholder
+  copy, same caveat as Home's Stories.
+- **Coming Soon:** StartupJourney's "Book 1:1 Consultation", Features' two
+  CTAs ("Meet the mentors"/"See investor network"), Partners' two CTAs,
+  BottomCTA's "View Events", Footer's Startup Guide/Investor Deck/Events.
+
+### `/landing/mentor` — `src/pages/landing/Mentor.jsx`
+- **Real:** Navbar's 4 in-page anchors, Hero's "View Ecosystem" anchor, FAQ
+  accordion (mentor-specific content), CTA section's "Apply Now" →
+  `/signup/mentor`.
+- **Stub:** Hero's "Apply to Mentor" is styled as the primary action but
+  only scrolls to the on-page CTA section (`#cta`) rather than going
+  straight to `/signup/mentor` — functionally fine (the real signup link is
+  one scroll away) but worth knowing if someone expects it to submit
+  directly. Hero's "1,700+ members" stat card is static text, not wired to
+  any counter. ImpactStories' 3 testimonials (Sarah Chen/Vertex Capital,
+  Marcus Reid/Nuvola Systems, Aisha Patel/ex-Google) are the most specific
+  placeholder-attribution instance across all 6 pages — named individuals,
+  named firms, presented with no draft/illustrative disclaimer. Kept as-is
+  per the working-draft call, but flagged clearly here since these read the
+  most like real people.
+- **Coming Soon:** none on this page beyond the shared Footer's usual items
+  (see Home's entry).
+
+### `/landing/investor` — `src/pages/landing/Investor.jsx`
+- **Real:** Navbar's 4 in-page anchors, Hero's "Join as an Investor" →
+  `/signup/investor`, Statistics section's count-up animation (genuine
+  `IntersectionObserver`-gated `requestAnimationFrame` count, fires once on
+  scroll into view — the animation mechanism is real even though the 4
+  target numbers it counts to are hardcoded constants), FAQ accordion
+  (investor-specific, 6 Q&A), CTA section's "Join as an Investor".
+- **Stub:** Hero's 3-stat row and Statistics' 4 target values are
+  hardcoded, not fetched. SuccessStories' 3 startup cards (EcoStream AI,
+  BioPulse Health, Nexus Logistics) carry specific fabricated financial/
+  traction metrics (revenue growth %, seed amount, MAU) under a "Featured
+  Success Stories" heading — the strongest placeholder-content case in this
+  pass, flagged the same way as Mentor's ImpactStories.
+- **Coming Soon:** Hero's "View Startup Directory", SuccessStories' "View
+  All Success Stories" and each card's "Investor Details →", CTA's "Contact
+  Investment Team".
+
+### `/landing/companies` — `src/pages/landing/Companies.jsx`
+- **Real:** Navbar's 4 in-page anchors, Hero's "Partner with BOCC" →
+  `/signup/company`, FAQ accordion (companies-specific, 5 Q&A), FinalCTA's
+  "Partner with BOCC" (same destination as Hero's).
+- **Stub:** Hero's 2-stat row is static text. CoInnovation's
+  `#startup-journey` section exists but isn't linked from this page's own
+  nav — reachable only by direct scroll or a manual anchor.
+- **Coming Soon:** Hero's "View Talent Pool", FinalCTA's "Talk to Our
+  Team".
+- No testimonial/success-story section on this page — the only one of the
+  6 with none, so no placeholder-attribution concern here.
+
+### `/landing/incubator` — `src/pages/landing/Incubator.jsx`
+- **Real:** Navbar's 4 in-page anchors (Why BOCC/Framework/Benefits/FAQ),
+  Hero's "Become a Partner" → `/signup/incubator`, Stats section (fixed
+  `bg-brand-black` panel, matches the pattern used elsewhere for
+  permanently-dark sections), FAQ accordion (incubator-specific, 5 Q&A),
+  FinalCTA's "Become a Partner" (same destination as Hero's).
+- **Stub:** Hero's 3-stat trust row and Stats section's 4 values are
+  hardcoded, not fetched. SuccessStories' 3 quotes are attributed
+  generically ("Director, University Incubator," "Head of Innovation, Tech
+  Campus," "Program Manager, Seed Hub") rather than to named individuals/
+  institutions — the one testimonial section across all 6 pages that avoids
+  the specific-fake-attribution issue by design.
+- **Coming Soon:** Hero's "View Partnership Deck", InstitutionalValue's
+  "Download Partnership Brochure", FinalCTA's "Book a Demo".
+- This page resolves a real structural bug, not just a rebuild: the
+  original commit put its landing components directly in
+  `src/components/incubator/`, the same folder as the real authenticated
+  `IncubatorShell.jsx` — now split into `components/landing/incubator/`
+  (marketing) vs. `components/incubator/` (just the real shell), matching
+  the folder-per-portal convention used everywhere else. Also: every one of
+  this page's original components imported a hook (`useScrollReveal`) that
+  never existed anywhere in the codebase — the page was fully broken
+  (blank/crashing) before this rebuild, independent of anything else
+  changed here.
+
+### Shared across all 6 (Navbar/Footer)
+- `src/components/landing/Navbar.jsx` and `Footer.jsx` are reused as-is by
+  Home, Mentor, Investor, Companies, and Incubator (each passing its own
+  `links` prop for the in-page anchors). Student alone has a bespoke
+  Header/Footer, built for its scroll-reactive nav behavior.
+- Footer's Company/Resources columns are unconditionally `ComingSoon` on
+  every page that uses the shared Footer; its "Terms of Service" resolves
+  to the same route as "Privacy Policy" everywhere it appears — no separate
+  terms page exists in `router.jsx` yet.
+- No page in this section has any `<form>`/`<input>` — every CTA is either
+  real navigation or `ComingSoon`, there's no lead-capture or contact form
+  anywhere yet.
+
+---
+
 ## Auth
 
 ### `/login` — `src/pages/auth/Login.jsx`
@@ -209,9 +345,11 @@ Five screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
   now opens the browser print dialog (`window.print()`) — same
   "PDF-via-print" pattern as `ApplicationReview.jsx`'s Print PDF, no PDF
   library needed.
-- **Coming Soon:** top nav (Clubs/Events/Partners/About), most footer
-  links — all genuinely blocked on marketing/content pages that don't
-  exist yet.
+- **Coming Soon:** top nav Clubs/Events/Partners, most footer links —
+  genuinely blocked on marketing/content pages that don't exist yet. Top
+  nav's About is now **real** (`PublicNav.jsx` → `/landing`), now that the
+  general landing page it points to actually exists — see "Public Landing
+  Pages" above.
 
 ---
 

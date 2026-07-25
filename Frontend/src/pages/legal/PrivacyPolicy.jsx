@@ -73,12 +73,8 @@ export default function PrivacyPolicyPage() {
 
       <PublicNav />
 
-      {/* ── Hero band ──────────────────────────────────────────────── */}
       <header className="bg-canvas-bg border-b border-divider-line">
-        {/* px-4 lg:px-10 = the same 16px mobile / 40px desktop values as
-            --spacing-margin-mobile/desktop, as real responsive Tailwind
-            classes instead of an unconditional inline style — the inline
-            version was always 40px, even on a 375px phone. */}
+        {/* px-4 lg:px-10 mirrors --spacing-margin-mobile/desktop as real responsive classes — the old unconditional inline style stayed 40px even on a 375px phone */}
         <div
           className="mx-auto py-8 px-4 lg:px-10"
           style={{ maxWidth: 'var(--spacing-container-max)' }}
@@ -90,22 +86,18 @@ export default function PrivacyPolicyPage() {
         </div>
       </header>
 
-      {/* ── Main 2-column layout ───────────────────────────────────── */}
       <main
         className="flex-grow mx-auto w-full py-8 px-4 lg:px-10"
         style={{ maxWidth: 'var(--spacing-container-max)' }}
       >
         <div className="grid grid-cols-12" style={{ gap: 'var(--spacing-gutter)' }}>
 
-          {/* ── Left sticky sub-nav ──────────────────────────────── */}
           <aside className="col-span-12 md:col-span-3">
             <div className="flex flex-col gap-4 py-6 sticky top-24">
-              {/* Header */}
               <div className="px-4 pb-4 border-b border-divider-line">
                 <div className="text-text-heading font-inter font-medium text-caption uppercase tracking-wider mb-1">Legal Center</div>
                 <div className="text-text-muted font-inter font-normal text-small">Last updated Oct 2023</div>
               </div>
-              {/* Nav links */}
               <nav className="flex flex-col gap-2">
                 {LEFT_NAV.map(({ icon: Icon, label, href, active, divider, comingSoon }) => {
                   if (comingSoon) {
@@ -143,11 +135,9 @@ export default function PrivacyPolicyPage() {
             </div>
           </aside>
 
-          {/* ── Right content card ───────────────────────────────── */}
           <div className="col-span-12 md:col-span-9">
             <article className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
 
-              {/* Effective date row */}
               <div className="flex justify-between items-center mb-8 border-b border-divider-line pb-2">
                 <span className="text-text-muted font-inter font-medium text-caption uppercase tracking-wider">
                   Effective October 24, 2023
@@ -158,7 +148,6 @@ export default function PrivacyPolicyPage() {
                 </div>
               </div>
 
-              {/* Legal sections */}
               <div className="space-y-8">
                 {SECTIONS.map((s) => (
                   <section key={s.id} id={s.id}>
@@ -185,7 +174,6 @@ export default function PrivacyPolicyPage() {
                 ))}
               </div>
 
-              {/* Action bar */}
               <div className="mt-8 pt-8 border-t border-divider-line flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex gap-4">
                   <Link to="/login">
@@ -215,7 +203,6 @@ export default function PrivacyPolicyPage() {
         </div>
       </main>
 
-      {/* ── Footer ────────────────────────────────────────────────── */}
       <footer className="w-full mt-auto bg-canvas-bg border-t border-divider-line">
         <div
           className="grid grid-cols-1 md:grid-cols-4 mx-auto py-8 px-4 lg:px-10"
@@ -224,16 +211,14 @@ export default function PrivacyPolicyPage() {
             gap: 'var(--spacing-gutter)',
           }}
         >
-          {/* BOCC blurb */}
           <div className="flex flex-col gap-2">
             <Logo variant="mark" size={20} />
             <p className="text-text-body font-inter font-normal text-small">
               Bridging the gap between academic life and the professional business orbit.
             </p>
           </div>
-          {/* Company */}
           <div className="flex flex-col gap-2">
-            <h4 className="text-text-heading font-inter font-semibold text-small mb-2">Company</h4>
+            <h4 className="text-text-heading font-poppins font-semibold text-small mb-2">Company</h4>
             <nav className="flex flex-col gap-2">
               {['About Us', 'Our Team', 'Careers'].map((l) => (
                 <ComingSoon key={l} label={l} position="top" inline>
@@ -244,9 +229,8 @@ export default function PrivacyPolicyPage() {
               ))}
             </nav>
           </div>
-          {/* Resources */}
           <div className="flex flex-col gap-2">
-            <h4 className="text-text-heading font-inter font-semibold text-small mb-2">Resources</h4>
+            <h4 className="text-text-heading font-poppins font-semibold text-small mb-2">Resources</h4>
             <nav className="flex flex-col gap-2">
               {['Documentation', 'Club Handbook', 'Partner Perks'].map((l) => (
                 <ComingSoon key={l} label={l} position="top" inline>
@@ -257,9 +241,8 @@ export default function PrivacyPolicyPage() {
               ))}
             </nav>
           </div>
-          {/* Legal */}
           <div className="flex flex-col gap-2">
-            <h4 className="text-text-heading font-inter font-semibold text-small mb-2">Legal</h4>
+            <h4 className="text-text-heading font-poppins font-semibold text-small mb-2">Legal</h4>
             <nav className="flex flex-col gap-2">
               <Link to="/legal/privacy-policy" className="text-text-heading font-semibold font-inter text-small">
                 Privacy Policy
@@ -275,7 +258,6 @@ export default function PrivacyPolicyPage() {
             </nav>
           </div>
         </div>
-        {/* Copyright bar */}
         <div
           className="mx-auto py-4 border-t border-divider-line text-center px-4 lg:px-10"
           style={{ maxWidth: 'var(--spacing-container-max)' }}

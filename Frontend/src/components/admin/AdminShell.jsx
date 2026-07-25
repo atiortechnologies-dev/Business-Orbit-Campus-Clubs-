@@ -27,13 +27,10 @@ const NAV_ITEMS = [
   { icon: History,         label: 'Audit Log',         href: '/admin/audit-log', real: true },
 ];
 
-/**
- * AdminShell — the Admin portal's page wrapper, same three-piece pattern as
- * DashboardShell/IncubatorShell: header + content slot + footer, with the
- * shared <Sidebar> for navigation. See those two files' own comments for
- * the reasoning behind the pattern — this is deliberately not a fourth
- * divergent implementation, just the third instance of the same one.
- */
+// Same three-piece pattern (header + content slot + footer, shared
+// <Sidebar>) as DashboardShell/IncubatorShell — see those files for the
+// reasoning; this is the third instance of one pattern, not a fourth
+// divergent one.
 export default function AdminShell({ children }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, onToggleCollapse] = useSidebarCollapsed();
@@ -68,11 +65,9 @@ export default function AdminShell({ children }) {
         </div>
       </Sidebar>
 
-      {/* ── Main content wrapper ─────────────────────────────────────── */}
-      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[264px]'} min-h-screen flex flex-col`}>
+      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[var(--spacing-sidebar-width)]'} min-h-screen flex flex-col`}>
         <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-4">
-            {/* Opens the Sidebar drawer below `lg`. */}
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
@@ -110,7 +105,7 @@ export default function AdminShell({ children }) {
               </ComingSoon>
               <ThemeToggle size={20} className="block" />
               <ComingSoon label="User" position="bottom" inline>
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-xs select-none">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
                   AR
                 </div>
               </ComingSoon>
@@ -118,7 +113,7 @@ export default function AdminShell({ children }) {
           </div>
         </header>
 
-        <div className="flex-1 p-6 md:p-8 max-w-[1440px] w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-[var(--spacing-container-max)] w-full mx-auto flex flex-col">
           {children}
         </div>
 

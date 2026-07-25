@@ -49,18 +49,7 @@ export default function MvpOverviewPage() {
         <div className="lg:col-span-7 bg-surface-white border border-border-subtle rounded-lg shadow-card p-6">
           <h3 className="font-poppins font-semibold text-body text-text-heading mb-1">Development Roadmap</h3>
           <p className="font-inter text-small text-text-muted mb-4">Visualizing your product architecture and core flow.</p>
-          {/* Custom illustration — "assembling blocks" motif, same geometric
-              line-art language as the rest of the app's illustrations
-              (Login's orbit, Dashboard's idea spark, the Startup Journey
-              path). Blocks converging into a whole fits "product
-              architecture" better than a literal tool icon.
-              This box is a FIXED brand-black surface (like the sidebar),
-              so every white here is the literal color "white", never the
-              theme-reactive surface-white token — that token flips dark in
-              dark mode and would go invisible against a background that
-              never inverts. See Sidebar.jsx's own comment for the same
-              rule, and Dashboard.jsx's "idea spark" SVG for a case where a
-              theme-reactive token IS correct (that container isn't fixed). */}
+          {/* "Assembling blocks" motif, same line-art language as the app's other illustrations. This box is a FIXED brand-black surface (like the sidebar) — every white here must be literal, not the theme-reactive surface-white token, or it'll invert against a background that never does. See Sidebar.jsx for the same rule. */}
           <svg
             viewBox="0 0 400 200"
             className="w-full h-48 rounded-lg"
@@ -114,7 +103,7 @@ export default function MvpOverviewPage() {
             <CheckCircle2 size={16} strokeWidth={2} className="text-text-body" />
             <p className="font-inter font-semibold text-caption text-text-muted uppercase tracking-wider">Key Deliverables</p>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
             {DELIVERABLES.map((d) => (
               <p key={d} className="font-inter text-small text-text-body">{d}</p>
             ))}

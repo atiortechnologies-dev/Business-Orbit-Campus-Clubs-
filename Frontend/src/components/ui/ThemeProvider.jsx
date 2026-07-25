@@ -7,8 +7,8 @@ export function ThemeProvider({ children }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-const stored = localStorage.getItem("theme");
-const initial = stored || "light";
+    const stored = localStorage.getItem('theme');
+    const initial = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     setTheme(initial);
     setMounted(true);
   }, []);

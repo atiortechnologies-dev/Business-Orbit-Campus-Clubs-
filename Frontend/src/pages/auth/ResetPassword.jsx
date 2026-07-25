@@ -1,21 +1,3 @@
-/**
- * @page ResetPasswordPage  /reset-password
- * Owns new/confirm password values, two independent eye
- * toggles, live strength computation, and confirm-match validation.
- *
- * Strength formula (1 point each):
- *   1. length >= 8
- *   2. contains uppercase letter
- *   3. contains lowercase letter OR digit
- *   4. contains symbol (non-alphanumeric)
- * → 0–4 integer passed to PasswordStrengthMeter as prop.
- *
- * Confirm password: validated on blur of the confirm field and on submit.
- * Both eye toggles are completely independent state variables.
- * No backend exists yet — a valid submit redirects straight to /login (see
- * the TODO in handleSubmit for what a real integration needs to do instead).
- */
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Lock, Shield, Eye, EyeOff } from 'lucide-react';
@@ -24,7 +6,6 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import PasswordStrengthMeter from '@/components/auth/PasswordStrengthMeter';
 
-/* ── Strength computation ───────────────────────────────── */
 function computeStrength(password) {
   if (!password) return 0;
   let score = 0;
@@ -35,7 +16,6 @@ function computeStrength(password) {
   return score;
 }
 
-/* ── Eye toggle button ──────────────────────────────────── */
 function EyeToggle({ show, onToggle }) {
   return (
     <button
@@ -53,7 +33,6 @@ function EyeToggle({ show, onToggle }) {
   );
 }
 
-/* ── Component ──────────────────────────────────────────── */
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState('');
@@ -118,43 +97,36 @@ export default function ResetPasswordPage() {
             role="img"
             aria-label="Illustration of a shield with a keyhole, representing a secured account"
           >
-            {/* Protective rings around the shield */}
             <circle cx="250" cy="105" r="85" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
             <circle cx="250" cy="105" r="65" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
 
-            {/* Shield */}
             <path
               d="M250 45 L300 63 L300 105 Q300 143 250 165 Q200 143 200 105 L200 63 Z"
               fill="var(--color-brand-black)"
             />
 
-            {/* Keyhole */}
             <circle cx="250" cy="93" r="13" fill="var(--color-accent-neon)" />
             <polygon points="242,102 258,102 251,130 249,130" fill="var(--color-accent-neon)" />
 
-            {/* Ambient dots */}
             <circle cx="110" cy="60" r="3" fill="var(--color-border-subtle)" />
             <circle cx="395" cy="150" r="3" fill="var(--color-border-subtle)" />
             <circle cx="120" cy="155" r="4" fill="var(--color-border-subtle)" />
           </svg>
 
-          {/* Heading + description */}
           <div className="flex flex-col gap-2 text-center">
-            <h1 className="text-[22px] leading-[28px] font-medium text-text-heading font-poppins">Reset Password</h1>
-            <p className="text-[16px] leading-[24px] font-normal text-text-body font-inter leading-relaxed">
+            <h1 className="text-card font-medium text-text-heading font-poppins">Reset Password</h1>
+            <p className="text-body font-normal text-text-body font-inter leading-relaxed">
               Secure your account by choosing a strong, unique password that you
               haven&apos;t used before.
             </p>
           </div>
 
-          {/* Form */}
           <form
             onSubmit={handleSubmit}
             className="flex flex-col gap-4"
             noValidate
             aria-label="Reset password form"
           >
-            {/* New Password + live strength meter + hint */}
             <div className="flex flex-col gap-2">
               <Input
                 id="new-password"
@@ -175,12 +147,11 @@ export default function ResetPasswordPage() {
               {/* Meter — receives computed strength as prop; animates via
                   transition-colors on each segment (PasswordStrengthMeter.jsx) */}
               <PasswordStrengthMeter strength={strength} />
-              <p className="text-[14px] leading-[20px] font-normal text-text-muted font-inter">
+              <p className="text-small font-normal text-text-muted font-inter">
                 Use uppercase letters, numbers, and symbols for maximum security.
               </p>
             </div>
 
-            {/* Confirm Password — independent eye toggle */}
             <Input
               id="confirm-password"
               label="Confirm Password"
@@ -205,17 +176,15 @@ export default function ResetPasswordPage() {
               }
             />
 
-            {/* Save */}
             <Button variant="ghost" fullWidth type="submit">
               Save New Password
             </Button>
           </form>
 
-          {/* Return to Login */}
           <p className="text-sm text-center">
             <Link
               to="/login"
-              className="text-[14px] leading-[20px] font-normal text-text-body hover:text-text-heading underline underline-offset-2 transition-all duration-150 ease-linear font-inter"
+              className="text-small font-normal text-text-body hover:text-text-heading underline underline-offset-2 transition-all duration-150 ease-linear font-inter"
             >
               Return to Login
             </Link>
