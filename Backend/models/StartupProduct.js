@@ -7,7 +7,7 @@ const StartupProductSchema = new mongoose.Schema(
       type: ObjectId,
       ref: "Startup",
       required: true,
-      unique: true,
+      // unique: true,
     },
     student_id: {
       type: ObjectId,

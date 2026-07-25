@@ -95,7 +95,6 @@ const MVPSubmissionSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-MVPSubmissionSchema.index({ startup_id: 1 });
 MVPSubmissionSchema.index({ student_id: 1 });
 MVPSubmissionSchema.index({ submission_status: 1 });
 
