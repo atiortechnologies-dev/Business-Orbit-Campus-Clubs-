@@ -11,7 +11,7 @@ export default function AuthLayout() {
       </main>
 
       <footer className="border-t border-divider-line bg-canvas-bg py-4 transition-all duration-150 ease-linear">
-        <div className="px-6 flex items-center justify-between text-[14px] leading-[20px] text-text-muted font-inter font-normal">
+        <div className="px-6 flex items-center justify-between text-small text-text-muted font-inter font-normal">
           <p>© 2024 Business Orbit Campus Clubs. All rights reserved.</p>
           <nav aria-label="Footer links" className="flex gap-6">
             <Link
