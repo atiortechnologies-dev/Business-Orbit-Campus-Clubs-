@@ -1,19 +1,5 @@
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
-/**
- * @component StatCard
- * @description
- * Metric tile — label, large value, optional icon and trend/subtext.
- * Introduced for the Admin portal's KPI rows (e.g. "Pending Reviews 42,
- * +12% from last week") but generic enough for any dashboard stat.
- *
- * @prop {string} label
- * @prop {string|number} value
- * @prop {ReactNode} [icon]           Small icon shown top-right of the label row.
- * @prop {string} [subtext]           Caption below the value (e.g. "Daily Target: 25").
- * @prop {'up'|'down'} [trendDirection]  Tints subtext + adds a matching arrow icon.
- * @prop {string} [className]
- */
 const TREND_ICON = { up: TrendingUp, down: TrendingDown };
 const TREND_COLOR = { up: 'text-success', down: 'text-error' };
 

@@ -1,19 +1,10 @@
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
 
-/**
- * @component Modal
- * @description
- * Centered dialog — backdrop, Escape-to-close, click-backdrop-to-close.
- * Same mechanics as Sidebar.jsx's mobile drawer backdrop, generalized into
- * a reusable component since the Admin portal's verification-decision
- * screen needs three of these (Approve / Reject / Request-more-docs).
- *
- * @prop {boolean} isOpen
- * @prop {function} onClose
- * @prop {string} [title]
- * @prop {ReactNode} children
- */
+// Centered dialog (backdrop, Escape-to-close, click-backdrop-to-close) —
+// same mechanics as Sidebar.jsx's mobile drawer, generalized here since
+// Admin's verification-decision screen needs three of these (Approve /
+// Reject / Request-more-docs).
 export default function Modal({ isOpen, onClose, title, children }) {
   useEffect(() => {
     if (!isOpen) return;

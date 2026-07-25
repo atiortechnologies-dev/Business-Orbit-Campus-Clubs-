@@ -47,12 +47,12 @@ import ReviewWorkspace from '@/pages/admin/ReviewWorkspace';
 import ReviewOutcome from '@/pages/admin/ReviewOutcome';
 import ScheduleMeeting from '@/pages/admin/ScheduleMeeting';
 import AuditLog from '@/pages/admin/AuditLog';
-import Student from "@/pages/Student";
-import Main from "@/pages/Main";
-import Mentor from "@/pages/Mentor";
-import Investor from "@/pages/Investor";
-import Companies from "@/pages/Companies";
-
+import LandingHome from '@/pages/landing/Home';
+import LandingStudent from '@/pages/landing/Student';
+import LandingMentor from '@/pages/landing/Mentor';
+import LandingInvestor from '@/pages/landing/Investor';
+import LandingCompanies from '@/pages/landing/Companies';
+import LandingIncubator from '@/pages/landing/Incubator';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -70,28 +70,12 @@ export const router = createBrowserRouter([
       { path: '/signup/incubator', element: <IncubatorSignup /> },
     ],
   },
-  {
-  path: "/landing/student", element: <Student />,},
-  {
-  path: "/landing",
-  element: <Main />,
-},
-{
-  path: "/landing/mentor",
-  element: <Mentor />,
-},
-{
-  path: "/landing/investor",
-  element: <Investor />,
-},
-{
-  path: "landing/incubator",
-  element: <Incubator />,
-},
-{
-  path: "landing/companies",
-  element: <Companies />,
-},
+  { path: '/landing', element: <LandingHome /> },
+  { path: '/landing/student', element: <LandingStudent /> },
+  { path: '/landing/mentor', element: <LandingMentor /> },
+  { path: '/landing/investor', element: <LandingInvestor /> },
+  { path: '/landing/incubator', element: <LandingIncubator /> },
+  { path: '/landing/companies', element: <LandingCompanies /> },
   { path: '/dashboard', element: <Dashboard /> },
   { path: '/build-startup/journey', element: <BuildStartupJourney /> },
   { path: '/notifications', element: <Notifications /> },

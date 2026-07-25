@@ -50,8 +50,7 @@ const INITIAL_NOTIFICATIONS = [
   },
 ];
 
-// Builds a minimal .ics file client-side and triggers a download — no
-// backend or calendar-API integration needed for a single manual event.
+// Builds a minimal .ics file client-side and triggers a download — no backend or calendar-API integration needed for a single manual event.
 function downloadIcs(notification) {
   const { title, body, meeting } = notification;
   const ics = [
@@ -105,8 +104,6 @@ export default function NotificationsPage() {
 
   return (
     <DashboardShell pageId="notif">
-
-      {/* ── Page header ───────────────────────────────────────────── */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
           <h1 className="text-text-heading font-poppins font-semibold text-page">
@@ -138,9 +135,7 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      {/* ── Search + filter tabs ──────────────────────────────────── */}
       <div className="flex flex-col md:flex-row gap-6 items-center mb-6 border-b border-divider-line pb-2">
-        {/* Search — filters the notifications already loaded on this page. */}
         <div className="relative w-full md:w-96 shrink-0 h-[44px]">
           <Search size={18} strokeWidth={2} className="text-text-muted absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -152,7 +147,6 @@ export default function NotificationsPage() {
           />
         </div>
 
-        {/* Filter tabs — every tab filters the real notifications array. */}
         <div className="flex items-center gap-1 overflow-x-auto w-full pb-1">
           {TABS.map((tab) => {
             const isActive = tab === activeTab;
@@ -174,7 +168,6 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      {/* ── Notification cards ─────────────────────────────────────── */}
       {filtered.length === 0 ? (
         <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card p-10 text-center flex flex-col items-center gap-3">
           <BellOff size={28} strokeWidth={2} className="text-text-muted" />
@@ -203,7 +196,7 @@ export default function NotificationsPage() {
 
                 <div className="flex-grow min-w-0">
                   <div className="flex justify-between items-start mb-1">
-                    <h3 className="text-text-heading font-inter font-semibold text-body">
+                    <h3 className="text-text-heading font-poppins font-semibold text-body">
                       {n.title}
                     </h3>
                     <div className="flex items-center gap-3 shrink-0 ml-4">
@@ -261,7 +254,6 @@ export default function NotificationsPage() {
         </div>
       )}
 
-      {/* ── Footer count ──────────────────────────────────────────── */}
       {notifications.length > 0 && (
         <div className="flex justify-between items-center py-4 border-t border-divider-line mt-8">
           <span className="text-text-muted font-inter font-normal text-small">

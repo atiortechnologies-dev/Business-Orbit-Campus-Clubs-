@@ -34,7 +34,6 @@ export default function ApplicationReview() {
 
   return (
     <IncubatorShell>
-      {/* Back to Queue Navigation */}
       <div className="mb-6 flex items-center justify-between">
         <Link
           to="/incubator/applications"
@@ -46,12 +45,10 @@ export default function ApplicationReview() {
       </div>
 
       <div className="grid grid-cols-12 gap-8">
-        {/* Left Column: Application Details */}
         <div className="col-span-12 lg:col-span-8 space-y-6">
-          {/* Header Info */}
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
-              <h1 className="font-poppins font-bold text-headline-lg text-text-heading mb-2">
+              <h1 className="font-poppins font-bold text-section text-text-heading mb-2">
                 NeuralPath AI
               </h1>
               <div className="flex flex-wrap items-center gap-2">
@@ -74,7 +71,6 @@ export default function ApplicationReview() {
             </button>
           </div>
 
-          {/* Overview Grid */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <h3 className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider mb-4">
               Application Overview
@@ -84,7 +80,7 @@ export default function ApplicationReview() {
                 <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                   Lead Founder
                 </span>
-                <span className="font-inter text-body-md font-semibold text-text-heading">
+                <span className="font-inter text-small font-semibold text-text-heading">
                   Elena Rodriguez
                 </span>
               </div>
@@ -92,7 +88,7 @@ export default function ApplicationReview() {
                 <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                   University/College
                 </span>
-                <span className="font-inter text-body-md font-semibold text-text-heading truncate">
+                <span className="font-inter text-small font-semibold text-text-heading truncate">
                   School of Engineering
                 </span>
               </div>
@@ -100,7 +96,7 @@ export default function ApplicationReview() {
                 <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                   Stage
                 </span>
-                <span className="font-inter text-body-md font-semibold text-text-heading">
+                <span className="font-inter text-small font-semibold text-text-heading">
                   Pre-Seed / Prototype
                 </span>
               </div>
@@ -108,19 +104,18 @@ export default function ApplicationReview() {
                 <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                   Industry
                 </span>
-                <span className="font-inter text-body-md font-semibold text-text-heading">
+                <span className="font-inter text-small font-semibold text-text-heading">
                   HealthTech / AI
                 </span>
               </div>
             </div>
           </section>
 
-          {/* Problem Statement */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-3">
+            <h3 className="font-poppins font-bold text-card text-text-heading mb-3">
               Problem Statement
             </h3>
-            <div className="font-inter text-body-lg text-text-body space-y-4">
+            <div className="font-inter text-body text-text-body space-y-4">
               <p>
                 Currently, diagnostic radiology experiences a 30% bottleneck due to high volumes of routine screening scans. Radiologists spend significant time on baseline assessments, leading to burnout and delayed results for critical cases.
               </p>
@@ -130,48 +125,45 @@ export default function ApplicationReview() {
             </div>
           </section>
 
-          {/* Solution Overview */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-3">
+            <h3 className="font-poppins font-bold text-card text-text-heading mb-3">
               Solution Overview
             </h3>
-            <div className="font-inter text-body-lg text-text-body">
+            <div className="font-inter text-body text-text-body">
               <p>
                 NeuralPath AI is a lightweight, edge-computing based diagnostic assistant designed for cost-effective integration. We provide a 'First-Pass' analysis layer that flags potential anomalies and organizes queue priority based on severity detected in real-time. Our proprietary model reduces initial scan review time by 45%.
               </p>
             </div>
           </section>
 
-          {/* Validation & MVP */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-4">
+            <h3 className="font-poppins font-bold text-card text-text-heading mb-4">
               Validation &amp; MVP
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
-                <span className="font-inter text-body-md text-text-body">
+                <span className="font-inter text-small text-text-body">
                   MVP successfully piloted at City General Hospital with 5,000 anonymized datasets.
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
-                <span className="font-inter text-body-md text-text-body">
+                <span className="font-inter text-small text-text-body">
                   92% accuracy in identifying stage-1 pulmonary nodules vs. 84% industry average.
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
-                <span className="font-inter text-body-md text-text-body">
+                <span className="font-inter text-small text-text-body">
                   Signed LOIs from 3 regional clinics for beta phase testing starting Q3 2024.
                 </span>
               </li>
             </ul>
           </section>
 
-          {/* Supporting Documents */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-4">
+            <h3 className="font-poppins font-bold text-card text-text-heading mb-4">
               Supporting Documents
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -216,15 +208,13 @@ export default function ApplicationReview() {
           </section>
         </div>
 
-        {/* Right Column: Reviewer Panel */}
         <div className="col-span-12 lg:col-span-4 space-y-6">
-          {/* Decision Panel */}
           <div className="bg-surface-white border-2 border-brand-black dark:border-border-subtle rounded-xl p-6 shadow-card flex flex-col gap-6 transition-colors duration-150 ease-linear">
             <div>
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading mb-1">
+              <h3 className="font-poppins font-bold text-card text-text-heading mb-1">
                 Reviewer Decision
               </h3>
-              <p className="font-inter text-body-md text-text-muted">
+              <p className="font-inter text-small text-text-muted">
                 Record your evaluation notes and final verdict below.
               </p>
             </div>
@@ -236,14 +226,13 @@ export default function ApplicationReview() {
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="w-full bg-canvas-bg border border-border-subtle rounded-lg p-3 font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all resize-none"
+                className="w-full bg-canvas-bg border border-border-subtle rounded-lg p-3 font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all resize-none"
                 placeholder="Add observations on team composition, market fit, or technical viability..."
                 rows={6}
               />
             </div>
 
             <div className="flex flex-col gap-3">
-              {/* Decision Option Buttons */}
               <button
                 type="button"
                 onClick={() => setSelectedDecision('approve')}
@@ -281,7 +270,6 @@ export default function ApplicationReview() {
               </button>
             </div>
 
-            {/* Save & Submit Decision Controls */}
             <div className="border-t border-divider-line pt-4 flex items-center justify-between">
               <button
                 type="button"
@@ -305,7 +293,6 @@ export default function ApplicationReview() {
               </button>
             </div>
 
-            {/* Success Notifications */}
             {draftSaved && (
               <div className="text-center font-inter text-small text-success mt-2 select-none animate-fade-in">
                 Draft saved
@@ -320,7 +307,6 @@ export default function ApplicationReview() {
             )}
           </div>
 
-          {/* Timeline Metadata */}
           <div className="bg-canvas-bg rounded-xl p-6 border border-border-subtle transition-colors duration-150 ease-linear">
             <h4 className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-widest mb-4">
               Application Timeline

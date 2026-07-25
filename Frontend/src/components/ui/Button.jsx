@@ -1,25 +1,3 @@
-/**
- * @component Button
- * @description
- * Reusable button with three visual variants and two sizes.
- *
- *  – primary: bg-action-bg/text-action-text — these are theme-aware tokens
- *    (dark canvas → light fill), not the fixed brand-black, so the button
- *    stays visible in both light and dark mode.
- *  – outline: subtle border, hover fills lightly.
- *  – focus-visible ring: ring-brand-black (all variants).
- *  – active:scale-[.98] for tactile press feedback.
- *
- * @param {object}   props
- * @param {React.ReactNode} props.children
- * @param {'primary'|'outline'|'ghost'} [props.variant='primary']
- * @param {'md'|'sm'}  [props.size='md']
- * @param {string}     [props.className]
- * @param {string}     [props.type='button']
- * @param {boolean}    [props.fullWidth=false]
- * @param {boolean}    [props.disabled=false]
- * @param {function}   [props.onClick]
- */
 export default function Button({
   children,
   variant = 'primary',

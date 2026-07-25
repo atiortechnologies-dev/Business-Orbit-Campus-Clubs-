@@ -99,7 +99,6 @@ export default function VerificationDetailPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left column */}
         <div className="lg:col-span-4 space-y-6">
           <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card text-center">
             <div className="relative w-20 h-20 mx-auto mb-4">
@@ -151,9 +150,8 @@ export default function VerificationDetailPage() {
           </section>
         </div>
 
-        {/* Middle column */}
         <div className="lg:col-span-5 space-y-6">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card">
               <p className="font-inter text-caption text-text-muted uppercase mb-1">Doc Completion</p>
               <p className="font-poppins font-semibold text-card text-text-heading">85%</p>
@@ -218,7 +216,6 @@ export default function VerificationDetailPage() {
           </section>
         </div>
 
-        {/* Right column */}
         <div className="lg:col-span-3 space-y-6">
           <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
             <h3 className="font-poppins font-semibold text-body text-text-heading mb-4">Audit Timeline</h3>
