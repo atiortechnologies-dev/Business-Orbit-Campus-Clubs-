@@ -53,6 +53,9 @@ import LandingMentor from '@/pages/landing/Mentor';
 import LandingInvestor from '@/pages/landing/Investor';
 import LandingCompanies from '@/pages/landing/Companies';
 import LandingIncubator from '@/pages/landing/Incubator';
+import InvestorPortal from '@/pages/investor/Investor';
+import IncomingPitchDecks from '@/pages/investor/IncomingPitchDecks';
+import PitchDeck from '@/pages/investor/PitchDeck';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -114,4 +117,7 @@ export const router = createBrowserRouter([
   { path: '/admin/reviews/outcome', element: <ReviewOutcome /> },
   { path: '/admin/reviews/schedule-meeting', element: <ScheduleMeeting /> },
   { path: '/admin/audit-log', element: <AuditLog /> },
+  { path: '/investor', element: <InvestorPortal /> },
+  { path: '/investor/pitch-decks', element: <IncomingPitchDecks /> },
+  { path: '/investor/pitch-decks/review', element: <PitchDeck /> },
 ]);
