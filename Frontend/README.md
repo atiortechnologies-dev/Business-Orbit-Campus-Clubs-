@@ -54,7 +54,6 @@ src/
     AuthLayout.jsx           Shared shell for Login, Forgot/Reset Password,
                                Role Selection, all Signup pages, and the
                                whole onboarding/verification flow
-    CompanyDashboardShell.jsx Company portal's shell (wraps DashboardShell)
   pages/
     auth/                    Login, ForgotPassword, ResetPassword,
                                RoleSelection, and a Signup page per role
@@ -85,10 +84,7 @@ src/
                                decks, single pitch-deck viewer)
     mentor/                  Mentor portal (dashboard, requests, chats,
                                meetings, profile)
-    company/                 Company portal (dashboard, my opportunities) —
-                               added by a different contributor; currently
-                               being brought up to this app's conventions,
-                               see INTEGRATION.md for exact status
+    company/                 Company portal (dashboard, my opportunities)
   components/
     ui/          Shared primitives (Button, Card, Input, Logo, ComingSoon,
                  ThemeToggle, ThemeProvider, Badge, StatCard, DataTable, Modal)
@@ -103,15 +99,14 @@ src/
     layout/      PublicNav (shared top nav), Sidebar (shared dashboard side
                  panel — used by every portal shell, mobile drawer + desktop
                  collapse built in)
-    dashboard/   DashboardShell — header/content shell for the Student
-                 portal, also reused by the Company portal
+    dashboard/   DashboardShell — header/content shell for the Student portal
     incubator/   IncubatorShell — header/content shell for the Incubator portal
     admin/       AdminShell — header/content shell for the Admin portal
     investor/    InvestorShell — header/content shell for the Investor portal
     mentor/      MentorShell — header/content shell for the Mentor portal
-    bocc/        Company portal's page-content components (dashboard stats,
-                 applicant table, etc.) — see INTEGRATION.md, this folder
-                 doesn't follow the rest of the app's conventions yet
+    company/     CompanyShell — header/content shell for the Company portal,
+                 plus its page-content components (StatsRow, ApplicantTable,
+                 RightPanel, OpportunitiesTable)
   hooks/
     useDocumentTitle.js     Sets document.title per route
     useSidebarCollapsed.js  Persists the sidebar's collapsed/expanded state
