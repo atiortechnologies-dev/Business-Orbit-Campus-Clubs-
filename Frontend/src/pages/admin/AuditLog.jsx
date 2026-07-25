@@ -153,7 +153,7 @@ export default function AuditLogPage() {
               <button type="button" disabled className="p-1.5 border border-border-subtle rounded text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
                 <ChevronLeft size={16} strokeWidth={2} />
               </button>
-              <span className="px-3 py-1 bg-brand-black text-white font-inter font-semibold text-small rounded">1</span>
+              <span className="px-3 py-1 bg-action-bg text-action-text font-inter font-semibold text-small rounded">1</span>
               <button type="button" disabled className="p-1.5 border border-border-subtle rounded text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
                 <ChevronRight size={16} strokeWidth={2} />
               </button>
