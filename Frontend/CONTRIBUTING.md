@@ -300,6 +300,25 @@ lines, don't take "theirs" or "mine."
   before clicking, or verify by dispatching the click via
   `javascript_tool` (`document.querySelector(...).click()`) — if that
   makes it work, the component was fine all along.
+- **The `computer` tool's `key` action for Enter/Return does not reliably
+  populate `KeyboardEvent.key`.** Verified directly: attaching a capturing
+  `keydown` listener and pressing "Return" via `computer` produced
+  `e.key === ''` (empty string), not `'Enter'` — so any `onKeyDown`
+  handler written the normal way (`if (e.key !== 'Enter') return;`, the
+  same pattern used by `TagInput.jsx`'s add-tag-on-Enter and
+  `Chats.jsx`'s send-on-Enter) will silently no-op when driven by this
+  tool, even though a real keyboard's Enter key works fine. Also: a prior
+  `form_input` call that sets a controlled input's value does not
+  reliably fire React's `onChange`, so `draft`/similar state can stay
+  stale even though the DOM's `.value` looks correct in a screenshot. To
+  verify an Enter-to-submit interaction actually works, don't trust a
+  `computer key: "Return"` press alone — either use `computer type` to
+  enter real per-character keystrokes (those fire real `input` events)
+  followed by the key press and confirm the *result*, or dispatch a
+  spec-correct event directly for verification purposes: `el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))`
+  after setting `.value` via the native setter. If that makes it work,
+  the component was fine all along — this is a tool-dispatch gap, not an
+  app bug.
 - **`lucide-react` does not export brand/logo icons like `Github`** — only
   generic UI icons (this version's git-related set is `GitFork`,
   `GitBranch`, `GitCommit`, etc., no literal GitHub mark). Importing a
@@ -426,3 +445,47 @@ to adopt it: add `framer-motion` back to `package.json`, and apply it
 consistently everywhere rather than only on the pages that happen to have
 had it first — the whole point of this note is to avoid exactly that kind
 of one-off inconsistency.
+
+## 9. Integrating a second intern's repo (Investor/Mentor portals + onboarding)
+
+The Investor portal, Mentor portal, and onboarding/verification flow (see
+`INTEGRATION.md`'s corresponding sections) were ported from a second
+intern's (Madhu's) separate repo — a different, older codebase (React 18,
+Tailwind v3 with a real `tailwind.config.js`, `react-router-dom` v6) rather
+than a branch of this one. Notes specific to that kind of integration,
+distinct from the Shivom landing-page pass documented above:
+
+- **A case-only import mismatch (`./MentorChats` vs. actual folder
+  `Mentorchats`) built and ran fine in the source repo on macOS but would
+  hard-fail on any case-sensitive filesystem (Linux CI, Vercel).** macOS's
+  default filesystem is case-insensitive, so `import from
+  './pages/MentorChats/MentorChats'` resolved against a real folder named
+  `Mentorchats` without complaint locally. If you're ever pulling in
+  another contributor's repo and it's macOS-only tested, don't trust a
+  clean local build as proof the imports are actually correct — grep for
+  import paths against real `ls` output of the target folders, or build
+  once on a case-sensitive filesystem/CI runner before trusting it.
+- **A source repo with role-specific near-duplicate pages (5 files sharing
+  ~80% identical chrome, differing only in field content) is a signal to
+  build one shared shell + thin per-role pages, not port 5 near-duplicate
+  files.** This codebase already had exactly this pattern solved once
+  (`RoleSignupForm.jsx` + 5 thin `*Signup.jsx` pages) — the CompleteProfile
+  step reused that same shape rather than reinventing it. Before porting a
+  batch of similar-looking source files 1:1, check whether an existing
+  shared-component pattern in *this* repo already covers the shape.
+- **Cross-checked persona names across a source repo's own files before
+  trusting any single one.** Madhu's source had 3 different names for the
+  Mentor's own identity across her 5 Mentor files (an internal
+  inconsistency in her repo, not intentional), one of which ("Alex
+  Rivera") collided with this app's real Admin persona. Consolidated to
+  one name (Priya Anand) used consistently across all 5 rebuilt Mentor
+  screens, and renamed the one incidental third-party data collision
+  found in seed data too. When porting authenticated-portal content from
+  an external source, grep the *whole* source folder for the persona name
+  before picking one, not just the first file you read — and check it
+  against this app's own existing personas (Alex Chen/Student, Sarah
+  Jenkins/Incubator, Alex Rivera/Admin) for collisions.
+- Same "genericize real institution names" rule as `CONTRIBUTING.md` §8's
+  LogoStrip note applied again here: the onboarding Welcome screen's
+  chapter card named a real institution ("UIET Chandigarh Chapter, Panjab
+  University") — genericized to a fictional "Riverside Tech Chapter."

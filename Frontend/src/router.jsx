@@ -13,6 +13,11 @@ import OnboardingWelcome from '@/pages/onboarding/Welcome';
 import VerifyEmail from '@/pages/onboarding/VerifyEmail';
 import VerificationProgress from '@/pages/onboarding/VerificationProgress';
 import ApplicationRejected from '@/pages/onboarding/ApplicationRejected';
+import CompleteProfileStudent from '@/pages/onboarding/complete-profile/Student';
+import CompleteProfileMentor from '@/pages/onboarding/complete-profile/Mentor';
+import CompleteProfileInvestor from '@/pages/onboarding/complete-profile/Investor';
+import CompleteProfileIncubator from '@/pages/onboarding/complete-profile/Incubator';
+import CompleteProfileCompany from '@/pages/onboarding/complete-profile/Company';
 import Dashboard from '@/pages/Dashboard';
 import BuildStartupJourney from '@/pages/BuildStartupJourney';
 import Notifications from '@/pages/Notifications';
@@ -84,6 +89,11 @@ export const router = createBrowserRouter([
       { path: '/onboarding/verify-email', element: <VerifyEmail /> },
       { path: '/onboarding/verification-progress', element: <VerificationProgress /> },
       { path: '/onboarding/application-rejected', element: <ApplicationRejected /> },
+      { path: '/onboarding/complete-profile/student', element: <CompleteProfileStudent /> },
+      { path: '/onboarding/complete-profile/mentor', element: <CompleteProfileMentor /> },
+      { path: '/onboarding/complete-profile/investor', element: <CompleteProfileInvestor /> },
+      { path: '/onboarding/complete-profile/incubator', element: <CompleteProfileIncubator /> },
+      { path: '/onboarding/complete-profile/company', element: <CompleteProfileCompany /> },
     ],
   },
   { path: '/landing', element: <LandingHome /> },
