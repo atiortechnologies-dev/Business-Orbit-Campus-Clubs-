@@ -35,7 +35,7 @@ export default function Hero() {
             </ComingSoon>
           </div>
 
-          <div className="mt-12 grid max-w-md grid-cols-2 gap-4">
+          <div className="mt-12 grid max-w-md grid-cols-1 sm:grid-cols-2 gap-4">
             {STATS.map((stat) => (
               <div key={stat.label} className="rounded-lg border-l-2 border-accent-neon bg-canvas-bg px-5 py-4">
                 <span className="font-poppins font-semibold text-2xl sm:text-3xl tracking-tight text-text-heading">{stat.value}</span>
