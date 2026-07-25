@@ -68,7 +68,7 @@ export default function VerificationProgressPage() {
               <div
                 className={`relative z-10 w-7 h-7 rounded-full flex items-center justify-center font-inter text-caption font-semibold ${
                   step.status === 'done'
-                    ? 'bg-brand-black text-white'
+                    ? 'bg-brand-black text-white dark:bg-white dark:text-brand-black'
                     : step.status === 'active'
                     ? 'bg-accent-neon text-brand-black'
                     : 'bg-canvas-bg border border-border-subtle text-text-muted'
