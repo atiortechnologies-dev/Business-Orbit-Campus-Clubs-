@@ -9,6 +9,10 @@ import CompanySignup from '@/pages/auth/CompanySignup';
 import InvestorSignup from '@/pages/auth/InvestorSignup';
 import MentorSignup from '@/pages/auth/MentorSignup';
 import IncubatorSignup from '@/pages/auth/IncubatorSignup';
+import OnboardingWelcome from '@/pages/onboarding/Welcome';
+import VerifyEmail from '@/pages/onboarding/VerifyEmail';
+import VerificationProgress from '@/pages/onboarding/VerificationProgress';
+import ApplicationRejected from '@/pages/onboarding/ApplicationRejected';
 import Dashboard from '@/pages/Dashboard';
 import BuildStartupJourney from '@/pages/BuildStartupJourney';
 import Notifications from '@/pages/Notifications';
@@ -76,6 +80,10 @@ export const router = createBrowserRouter([
       { path: '/signup/investor', element: <InvestorSignup /> },
       { path: '/signup/mentor', element: <MentorSignup /> },
       { path: '/signup/incubator', element: <IncubatorSignup /> },
+      { path: '/onboarding/welcome', element: <OnboardingWelcome /> },
+      { path: '/onboarding/verify-email', element: <VerifyEmail /> },
+      { path: '/onboarding/verification-progress', element: <VerificationProgress /> },
+      { path: '/onboarding/application-rejected', element: <ApplicationRejected /> },
     ],
   },
   { path: '/landing', element: <LandingHome /> },
