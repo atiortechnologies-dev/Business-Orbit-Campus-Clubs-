@@ -35,4 +35,21 @@ router.put(
 //   incubationController.uploadDocument
 // );
 
+// ========== SCREEN 2: REVIEW STATUS ( Verification Under Review ) ==========
+
+router.get(
+  "/incubation-verification/status",
+  incubationController.getVerificationStatus,
+);
+
+router.get(
+  "/incubation-verification/timeline",
+  incubationController.getVerificationTimeline,
+);
+
+router.get(
+  "/incubation-verification/documents",
+  incubationController.getVerificationDocuments,
+);
+
 module.exports = router;
