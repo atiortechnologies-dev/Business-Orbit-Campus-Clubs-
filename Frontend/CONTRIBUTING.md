@@ -60,6 +60,11 @@ src/
                                second pipeline, with ScheduleMeeting.jsx
                                branching off ReviewDetail), AuditLog.jsx
     legal/PrivacyPolicy.jsx
+    landing/                  Public marketing pages, no auth required —
+                               Home.jsx, Student.jsx, Mentor.jsx,
+                               Investor.jsx, Companies.jsx, Incubator.jsx —
+                               see INTEGRATION.md's "Public Landing Pages"
+                               section for what's real vs. stub on each
 
   components/
     ui/          Generic, reusable anywhere: Button, Card, Input, Logo,
@@ -72,6 +77,15 @@ src/
     dashboard/   DashboardShell — the Student portal's page wrapper
     incubator/   IncubatorShell — the Incubator portal's page wrapper
     admin/       AdminShell — the Admin portal's page wrapper
+    landing/     Public marketing-page sections — landing/{Navbar,Footer,
+                 FAQ,...}.jsx shared across pages, plus one subfolder per
+                 role (landing/student/, landing/mentor/, etc.) for
+                 page-specific sections. Kept fully separate from
+                 components/{dashboard,incubator,admin}/ even where a name
+                 collides — landing/incubator/ (marketing sections) and
+                 incubator/ (IncubatorShell, the real authenticated shell)
+                 are deliberately different folders; the original commit
+                 mixed them into one and it's not repeating that mistake.
 
   hooks/
     useDocumentTitle.js      Call this at the top of a page to set the tab title
@@ -90,8 +104,9 @@ public/
 1. **Create the file** under `src/pages/`, matching the existing
    organization: student-portal pages sit flat in `pages/`, Incubator pages
    go in `pages/incubator/`, auth pages in `pages/auth/`, public pages in
-   their own subfolder (see `pages/legal/`). PascalCase filename matching
-   the page's purpose (`Settings.jsx`, not `settings-page.jsx`).
+   their own subfolder (see `pages/legal/`, `pages/landing/`). PascalCase
+   filename matching the page's purpose (`Settings.jsx`, not
+   `settings-page.jsx`).
 2. **Wrap it in the right shell** — don't build your own header/sidebar:
    - Student portal page → wrap your content in `<DashboardShell>` (see
      `pages/Dashboard.jsx` for the pattern).
@@ -353,3 +368,61 @@ lines, don't take "theirs" or "mine."
   uses it, not just your own page — they're shared.
 - Run `npm run build` — it must complete with 0 errors before you consider
   the work finished, even though there's no CI enforcing this yet.
+
+## 8. Deferred: a motion/animation pattern worth a team decision
+
+The public landing pages (`pages/landing/*`) were originally built by Shivom
+with `framer-motion` — a staggered entrance animation on page load, plus
+scroll-triggered fades further down each page. Every other screen in this
+app does motion with plain CSS transitions (`transition-all duration-200`,
+the `animate-fade-in`/`animate-slide-in` utilities in `index.css`), so
+adding an animation *library* is a real, app-wide decision — not something
+to slip in through one feature. The landing pages were rebuilt on the CSS-
+transition convention to stay consistent with the rest of the app, and
+`framer-motion` was removed from `package.json` accordingly.
+
+The original pattern is preserved here rather than left buried in git
+history, in case the team wants to evaluate adopting it more broadly later:
+
+```jsx
+// Page-load stagger — wrap a section, then each direct child gets its own
+// entrance timing automatically via variants propagation.
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+};
+const itemVariants = {
+  hidden: { y: 28, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { type: 'spring', damping: 22, stiffness: 120 } },
+};
+
+<motion.div variants={containerVariants} initial="hidden" animate="visible">
+  <motion.h1 variants={itemVariants}>...</motion.h1>
+  <motion.p variants={itemVariants}>...</motion.p>
+</motion.div>
+
+// Scroll-triggered fade-in further down a long page — fires once, when the
+// element enters the viewport, instead of on initial mount.
+<motion.div
+  initial={{ opacity: 0 }}
+  whileInView={{ opacity: 1 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.5 }}
+>
+  ...
+</motion.div>
+```
+
+The full original implementation (before the rebuild) is preserved in git
+history on `main` at commit `1c74d81` — every file under
+`src/components/{student,mentor,investor,companies,landing}/` and the old
+`src/components/incubator/{Hero,FAQ,Footer,...}.jsx` at that commit shows
+the pattern applied across a whole page, not just the snippet above.
+`git show 1c74d81:Frontend/src/components/student/Hero.jsx` is a good
+starting point.
+
+**Not currently applied anywhere in the shipping app.** If the team decides
+to adopt it: add `framer-motion` back to `package.json`, and apply it
+consistently everywhere rather than only on the pages that happen to have
+had it first — the whole point of this note is to avoid exactly that kind
+of one-off inconsistency.
