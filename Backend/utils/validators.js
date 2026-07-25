@@ -380,6 +380,40 @@ const requestMeetingRescheduleSchema = z.object({
     .default(""),
 });
 
+// update profile schema
+const updateProfileSchema = z.object({
+  full_name: z
+    .string()
+    .max(100, "Name must be less than 100 characters")
+    .optional(),
+  phone: z.string().max(20, "Phone must be less than 20 characters").optional(),
+  bio: z.string().max(1000, "Bio must be less than 1000 characters").optional(),
+  skills: z.array(z.string()).optional(),
+  college: z.string().max(150, "College name too long").optional(),
+  degree: z.string().max(100, "Degree name too long").optional(),
+  graduation_year: z
+    .number()
+    .min(2000, "Graduation year must be 2000 or later")
+    .max(2050, "Graduation year must be before 2050")
+    .optional(),
+  linkedin_url: z.string().url("Invalid LinkedIn URL").optional().default(""),
+  portfolio_url: z.string().url("Invalid portfolio URL").optional().default(""),
+});
+
+const updateStartupSchema = z.object({
+  startup_name: z
+    .string()
+    .min(1, "Startup name required")
+    .max(150, "Startup name too long"),
+  tagline: z.string().max(200, "Tagline too long").optional().default(""),
+  industry: z.string().max(100, "Industry too long").optional().default(""),
+  problem_statement: z
+    .string()
+    .max(2000, "Problem statement too long")
+    .optional()
+    .default(""),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -400,4 +434,6 @@ module.exports = {
   submitValidationReportSchema,
   updateValidationReportSchema,
   requestMeetingRescheduleSchema,
+  updateProfileSchema,
+  updateStartupSchema,
 };
