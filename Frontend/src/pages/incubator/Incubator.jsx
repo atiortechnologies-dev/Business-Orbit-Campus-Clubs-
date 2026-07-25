@@ -128,7 +128,7 @@ export default function IncubatorDashboard() {
         {/* Left Column: Recent Activity */}
         <section className="col-span-12 lg:col-span-8 bg-surface-white border border-border-subtle rounded-xl shadow-card overflow-hidden transition-colors duration-150 ease-linear">
           <div className="p-6 border-b border-border-subtle flex justify-between items-center bg-canvas-bg/50">
-            <h4 className="font-poppins font-bold text-headline-sm text-text-heading">
+            <h4 className="font-poppins font-bold text-card text-text-heading">
               Recent Application Activity
             </h4>
             <Link
