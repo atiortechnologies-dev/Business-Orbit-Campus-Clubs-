@@ -52,4 +52,13 @@ router.get(
   incubationController.getVerificationDocuments,
 );
 
+// ========== SCREEN 3: VERIFICATION APPROVED ==========
+
+router.get(
+  "/incubation-verification/result",
+  incubationController.getVerificationResult,
+);
+
+router.get("/startup/progress", incubationController.getStartupProgress);
+
 module.exports = router;

@@ -1,5 +1,6 @@
 const asyncHandler = require("../middlewares/asyncHandler");
 const IncubationVerification = require("../models/IncubationVerification");
+const StartupStage = require("../models/StartupStage");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 //  ========== Incubation Verification Submission ==========
@@ -213,6 +214,88 @@ const getVerificationDocuments = asyncHandler(async (req, res) => {
   });
 });
 
+// ========== SCREEN 3: APPROVAL ==========
+
+// GET /api/student/incubation-verification/result
+const getVerificationResult = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const verification = await IncubationVerification.findOne({
+    startup_id: startup._id,
+  })
+    .populate("assigned_reviewer", "full_name email")
+    .lean();
+
+  if (!verification) {
+    return res.status(404).json({
+      success: false,
+      message: "No verification found",
+    });
+  }
+
+  if (verification.verification_status !== "Approved") {
+    return res.status(200).json({
+      success: true,
+      data: {
+        status: verification.verification_status,
+        message: "Verification not yet approved",
+      },
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      verification_id: verification.verification_id,
+      status: verification.verification_status,
+      incubator_name: verification.incubator_name,
+      cohort_name: verification.cohort_name,
+      program_type: verification.program_type,
+      joining_date: verification.joining_date,
+      expected_completion_date: verification.expected_completion_date,
+      approved_at: verification.reviewed_at,
+      approved_by: verification.assigned_reviewer,
+      reviewer_comments: verification.reviewer_comments,
+      next_action: "Stage 4 – Traction has been unlocked. You can now proceed.",
+    },
+  });
+});
+
+// GET /api/student/startup/progress
+const getStartupProgress = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  // Get all stages
+  const stages = await StartupStage.find({ startup_id: startup._id })
+    .sort({ stage_number: 1 })
+    .lean();
+
+  // Get verification status
+  const verification = await IncubationVerification.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      startup_id: startup._id,
+      startup_name: startup.startup_name,
+      current_stage: Math.max(...stages.map((s) => s.stage_number)),
+      incubation_verified: verification?.verification_status === "Approved",
+      stages: stages.map((s) => ({
+        stage_number: s.stage_number,
+        stage_name: s.stage_name,
+        status: s.status,
+        completion_percentage: s.completion_percentage || 0,
+      })),
+    },
+  });
+});
+
 module.exports = {
   submitIncubationVerification,
   getIncubationVerification,
@@ -220,4 +303,6 @@ module.exports = {
   getVerificationStatus,
   getVerificationTimeline,
   getVerificationDocuments,
+  getVerificationResult,
+  getStartupProgress,
 };
