@@ -61,4 +61,15 @@ router.get(
 
 router.get("/startup/progress", incubationController.getStartupProgress);
 
+// ========== SCREEN 4: STAGE 4 – TRACTION OVERVIEW ==========
+
+router.get("/stages/traction", incubationController.getStage4Overview);
+
+router.get(
+  "/stages/traction/checklist",
+  incubationController.getStage4Checklist,
+);
+
+router.post("/stages/traction/start", incubationController.startStage4);
+
 module.exports = router;
