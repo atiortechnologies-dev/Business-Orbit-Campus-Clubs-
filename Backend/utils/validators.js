@@ -425,6 +425,76 @@ const selectProductTypeSchema = z.object({
     .default(""),
 });
 
+const assistanceRequestSchema = z.object({
+  assistance_type: z
+    .enum([
+      "Full Development",
+      "Frontend Development",
+      "Backend Development",
+      "Mobile Development",
+      "Design",
+      "DevOps & Deployment",
+      "Database Design",
+      "API Integration",
+      "Other",
+    ])
+    .refine((val) => val !== null, "Assistance type is required"),
+
+  project_description: z
+    .string()
+    .min(10, "Description must be at least 10 characters")
+    .max(3000, "Description must be less than 3000 characters"),
+
+  technologies: z
+    .array(z.string().min(1))
+    .min(1, "At least one technology required")
+    .max(20, "Maximum 20 technologies allowed"),
+
+  timeline: z
+    .enum(["1-2 weeks", "3-4 weeks", "1-2 months", "2+ months"])
+    .refine((val) => val !== null, "Timeline is required"),
+
+  budget: z
+    .number()
+    .min(0, "Budget cannot be negative")
+    .optional()
+    .default(null),
+
+  additional_notes: z
+    .string()
+    .max(1000, "Notes too long")
+    .optional()
+    .default(""),
+});
+
+const updateAssistanceRequestSchema = z.object({
+  assistance_type: z
+    .enum([
+      "Full Development",
+      "Frontend Development",
+      "Backend Development",
+      "Mobile Development",
+      "Design",
+      "DevOps & Deployment",
+      "Database Design",
+      "API Integration",
+      "Other",
+    ])
+    .optional(),
+
+  project_description: z.string().min(10).max(3000).optional(),
+
+  technologies: z.array(z.string()).optional(),
+
+  timeline: z
+    .enum(["1-2 weeks", "3-4 weeks", "1-2 months", "2+ months"])
+    .optional(),
+
+  budget: z.number().min(0).optional(),
+
+  additional_notes: z.string().max(1000).optional(),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -448,4 +518,6 @@ module.exports = {
   updateProfileSchema,
   updateStartupSchema,
   selectProductTypeSchema,
+  assistanceRequestSchema,
+  updateAssistanceRequestSchema,
 };
