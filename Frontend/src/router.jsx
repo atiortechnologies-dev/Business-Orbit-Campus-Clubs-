@@ -53,6 +53,8 @@ import LandingMentor from '@/pages/landing/Mentor';
 import LandingInvestor from '@/pages/landing/Investor';
 import LandingCompanies from '@/pages/landing/Companies';
 import LandingIncubator from '@/pages/landing/Incubator';
+import CompanyDashboard from "@/pages/company/Dashboard";
+import CompanyMyOpportunities from "@/pages/company/MyOpportunities";
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -70,6 +72,8 @@ export const router = createBrowserRouter([
       { path: '/signup/incubator', element: <IncubatorSignup /> },
     ],
   },
+  { path: "/company/dashboard", element: <CompanyDashboard /> },
+{ path: "/company/my-opportunities", element: <CompanyMyOpportunities /> },
   { path: '/landing', element: <LandingHome /> },
   { path: '/landing/student', element: <LandingStudent /> },
   { path: '/landing/mentor', element: <LandingMentor /> },
