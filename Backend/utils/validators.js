@@ -500,58 +500,59 @@ const mvpSubmissionSchema = z
     title: z
       .string()
       .min(5, "Title must be at least 5 characters")
-      .max(200, "Title must be less than 200 characters"),
+      .max(200, "Title must be under 200 characters"),
 
     description: z
       .string()
       .min(20, "Description must be at least 20 characters")
-      .max(3000, "Description must be less than 3000 characters"),
+      .max(3000, "Description must be under 3000 characters"),
 
-    github_url: z.string().url("Invalid GitHub URL").optional().default(""),
+    github_url: urlOptional,
+    live_url: urlOptional,
+    figma_url: urlOptional,
+    documentation_url: urlOptional,
+    pitch_deck_url: urlOptional,
+    demo_video_url: urlOptional,
 
-    live_url: z.string().url("Invalid live URL").optional().default(""),
-
-    figma_url: z.string().url("Invalid Figma URL").optional().default(""),
-
-    documentation_url: z
-      .string()
-      .url("Invalid documentation URL")
-      .optional()
-      .default(""),
-
-    pitch_deck_url: z
-      .string()
-      .url("Invalid pitch deck URL")
-      .optional()
-      .default(""),
-
-    demo_video_url: z
-      .string()
-      .url("Invalid demo video URL")
-      .optional()
-      .default(""),
-
-    notes: z.string().max(1000, "Notes too long").optional().default(""),
+    notes: z.string().max(1000, "Notes too long").optional(),
   })
   .refine(
-    (data) => {
-      // At least one deliverable required
-      return !!(
+    (data) =>
+      !!(
         data.github_url ||
         data.live_url ||
         data.figma_url ||
         data.documentation_url ||
         data.pitch_deck_url ||
         data.demo_video_url
-      );
-    },
+      ),
     {
-      message:
-        "At least one deliverable (GitHub, Live URL, Figma, Documentation, Pitch Deck, or Demo Video) is required",
+      message: "At least one deliverable link is required",
     },
   );
 
-const updateMVPSubmissionSchema = mvpSubmissionSchema.partial();
+const updateMVPSubmissionSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(200, "Title must be under 200 characters")
+    .optional(),
+
+  description: z
+    .string()
+    .min(20, "Description must be at least 20 characters")
+    .max(3000, "Description must be under 3000 characters")
+    .optional(),
+
+  github_url: urlOptional,
+  live_url: urlOptional,
+  figma_url: urlOptional,
+  documentation_url: urlOptional,
+  pitch_deck_url: urlOptional,
+  demo_video_url: urlOptional,
+
+  notes: z.string().max(1000, "Notes too long").optional(),
+});
 
 module.exports = {
   registerSchema,
