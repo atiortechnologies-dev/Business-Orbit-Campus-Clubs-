@@ -206,7 +206,12 @@ export default function PitchDeckPage() {
               className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all resize-none"
             />
             <div className="flex items-center gap-3 mt-2">
-              {notesSaved && <span className="font-inter text-caption text-success">Saved</span>}
+              <span
+                className={`font-inter text-caption text-success transition-opacity duration-150 ${notesSaved ? 'opacity-100' : 'opacity-0'}`}
+                aria-live="polite"
+              >
+                Saved
+              </span>
               <button
                 type="button"
                 onClick={handleSaveNotes}
