@@ -11,7 +11,7 @@ const STEPS = [
 export default function Process() {
   return (
     <section id="roles" className="bg-canvas-bg py-20 lg:py-28" aria-labelledby="process-heading">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[var(--spacing-container-max)] px-6 lg:px-10">
         <SectionHeading
           eyebrow="The Process"
           title="How Your Partnership Works"

@@ -5,7 +5,7 @@ const POINTS = ['Sponsored Projects', 'University Research', 'Innovation Labs', 
 export default function CoInnovation() {
   return (
     <section id="startup-journey" className="bg-canvas-bg py-20 lg:py-28" aria-labelledby="coinno-heading">
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 lg:grid-cols-2 lg:gap-20 lg:px-10">
+      <div className="mx-auto grid max-w-[var(--spacing-container-max)] grid-cols-1 items-center gap-12 px-6 lg:grid-cols-2 lg:gap-20 lg:px-10">
         <div className="order-2 lg:order-1 aspect-[4/3] placeholder-box rounded-lg" />
 
         <div className="order-1 lg:order-2">

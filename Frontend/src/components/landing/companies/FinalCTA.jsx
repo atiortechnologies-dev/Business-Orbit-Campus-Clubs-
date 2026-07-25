@@ -5,7 +5,7 @@ import ComingSoon from '@/components/ui/ComingSoon';
 export default function FinalCTA() {
   return (
     <section className="pb-24 pt-8 lg:pb-32" aria-labelledby="cta-heading">
-      <div className="mx-auto max-w-[1440px] px-6 lg:px-10">
+      <div className="mx-auto max-w-[var(--spacing-container-max)] px-6 lg:px-10">
         <div className="relative overflow-hidden rounded-lg border border-border-subtle bg-canvas-bg px-6 py-16 text-center sm:px-12 lg:py-24">
           <div className="relative flex flex-col items-center">
             <span className="inline-flex h-14 w-14 items-center justify-center rounded-lg border border-border-subtle bg-surface-white text-text-heading shadow-card">

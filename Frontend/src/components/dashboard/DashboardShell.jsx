@@ -47,7 +47,7 @@ export default function DashboardShell({ pageId = 'pg', children }) {
           gets covered. */}
       <style>{`
         @media (min-width: 1024px) {
-          #${pageId}-main    { margin-left: ${collapsed ? '80px' : '264px'}; }
+          #${pageId}-main    { margin-left: ${collapsed ? '80px' : 'var(--spacing-sidebar-width)'}; }
           #${pageId}-header  { padding-left: var(--spacing-margin-desktop); padding-right: var(--spacing-margin-desktop); }
           #${pageId}-content { padding-left: var(--spacing-margin-desktop); padding-right: var(--spacing-margin-desktop); }
           #${pageId}-footer  { padding-left: var(--spacing-margin-desktop); padding-right: var(--spacing-margin-desktop); }

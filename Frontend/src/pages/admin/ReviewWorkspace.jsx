@@ -177,7 +177,7 @@ export default function ReviewWorkspacePage() {
       </div>
 
       {/* Sticky action footer */}
-      <div className="fixed bottom-0 right-0 left-0 lg:left-[264px] bg-surface-white border-t border-border-subtle py-4 px-6 md:px-10 flex items-center justify-between z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+      <div className="fixed bottom-0 right-0 left-0 lg:left-[var(--spacing-sidebar-width)] bg-surface-white border-t border-border-subtle py-4 px-6 md:px-10 flex items-center justify-between z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
         <span className="font-inter text-caption text-text-muted">
           {draftSaved ? 'Draft saved.' : 'Last autosave: 2 minutes ago'}
         </span>

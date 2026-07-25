@@ -5,7 +5,7 @@ const POINTS = ['Campus Hiring', 'Internship Programs', 'Startup Collaborations'
 export default function TalentPipeline() {
   return (
     <section id="talent" className="bg-surface-white py-20 lg:py-28" aria-labelledby="talent-heading">
-      <div className="mx-auto grid max-w-[1440px] grid-cols-1 items-center gap-12 px-6 lg:grid-cols-2 lg:gap-20 lg:px-10">
+      <div className="mx-auto grid max-w-[var(--spacing-container-max)] grid-cols-1 items-center gap-12 px-6 lg:grid-cols-2 lg:gap-20 lg:px-10">
         <div>
           <span className="inline-flex items-center gap-2 font-inter text-caption font-medium uppercase tracking-[0.18em] text-text-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-accent-neon" />
