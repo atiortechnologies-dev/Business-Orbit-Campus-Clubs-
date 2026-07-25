@@ -495,6 +495,64 @@ const updateAssistanceRequestSchema = z.object({
   additional_notes: z.string().max(1000).optional(),
 });
 
+const mvpSubmissionSchema = z
+  .object({
+    title: z
+      .string()
+      .min(5, "Title must be at least 5 characters")
+      .max(200, "Title must be less than 200 characters"),
+
+    description: z
+      .string()
+      .min(20, "Description must be at least 20 characters")
+      .max(3000, "Description must be less than 3000 characters"),
+
+    github_url: z.string().url("Invalid GitHub URL").optional().default(""),
+
+    live_url: z.string().url("Invalid live URL").optional().default(""),
+
+    figma_url: z.string().url("Invalid Figma URL").optional().default(""),
+
+    documentation_url: z
+      .string()
+      .url("Invalid documentation URL")
+      .optional()
+      .default(""),
+
+    pitch_deck_url: z
+      .string()
+      .url("Invalid pitch deck URL")
+      .optional()
+      .default(""),
+
+    demo_video_url: z
+      .string()
+      .url("Invalid demo video URL")
+      .optional()
+      .default(""),
+
+    notes: z.string().max(1000, "Notes too long").optional().default(""),
+  })
+  .refine(
+    (data) => {
+      // At least one deliverable required
+      return !!(
+        data.github_url ||
+        data.live_url ||
+        data.figma_url ||
+        data.documentation_url ||
+        data.pitch_deck_url ||
+        data.demo_video_url
+      );
+    },
+    {
+      message:
+        "At least one deliverable (GitHub, Live URL, Figma, Documentation, Pitch Deck, or Demo Video) is required",
+    },
+  );
+
+const updateMVPSubmissionSchema = mvpSubmissionSchema.partial();
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -520,4 +578,6 @@ module.exports = {
   selectProductTypeSchema,
   assistanceRequestSchema,
   updateAssistanceRequestSchema,
+  mvpSubmissionSchema,
+  updateMVPSubmissionSchema,
 };
