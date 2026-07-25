@@ -61,7 +61,12 @@ export default function CompleteProfileShell({
         <div className="flex flex-col gap-6">{children}</div>
 
         <div className="flex flex-col items-center gap-3 mt-8">
-          {saved && <span className="font-inter text-small text-success">Saved</span>}
+          <span
+            className={`font-inter text-small text-success transition-opacity duration-150 ${saved ? 'opacity-100' : 'opacity-0'}`}
+            aria-live="polite"
+          >
+            Saved
+          </span>
           <button
             type="button"
             onClick={onSave}

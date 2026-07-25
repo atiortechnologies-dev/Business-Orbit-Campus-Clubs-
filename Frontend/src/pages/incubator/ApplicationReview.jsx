@@ -301,11 +301,12 @@ export default function ApplicationReview() {
               </button>
             </div>
 
-            {draftSaved && (
-              <div className="text-center font-inter text-small text-success mt-2 select-none animate-fade-in">
-                Draft saved
-              </div>
-            )}
+            <div
+              className={`text-center font-inter text-small text-success mt-2 select-none transition-opacity duration-150 ${draftSaved ? 'opacity-100' : 'opacity-0'}`}
+              aria-live="polite"
+            >
+              Draft saved
+            </div>
 
             {decisionSubmitted && (
               <div className="p-3 bg-canvas-bg border border-border-subtle rounded-lg flex items-center gap-2 text-text-heading animate-fade-in">

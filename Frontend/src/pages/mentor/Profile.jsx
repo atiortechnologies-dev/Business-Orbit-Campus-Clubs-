@@ -229,7 +229,12 @@ export default function MentorProfilePage() {
           </div>
 
           <div className="flex items-center justify-end gap-3">
-            {saved && <span className="font-inter text-small text-success">Saved</span>}
+            <span
+              className={`font-inter text-small text-success transition-opacity duration-150 ${saved ? 'opacity-100' : 'opacity-0'}`}
+              aria-live="polite"
+            >
+              Saved
+            </span>
             <button type="button" className="border border-border-subtle text-text-heading font-inter font-medium text-small px-5 py-2.5 rounded-md hover:bg-canvas-bg transition-colors">
               Cancel
             </button>
