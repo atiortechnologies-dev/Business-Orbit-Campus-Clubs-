@@ -1,22 +1,3 @@
-/**
- * @component Badge
- * @description
- * Small status pill — tinted background + matching text color, using the
- * semantic status tokens (never a raw hex). Introduced for the Admin
- * portal's tables/detail views (statuses, priorities, verification flags)
- * but generic enough for any status label.
- *
- * Deliberately renders whatever case `children` is passed in rather than
- * forcing uppercase — the design guide asks for Title Case status text
- * ("Under Review", not "UNDER REVIEW"). Older screens built before this
- * component existed use their own inline uppercase badge markup; this
- * isn't a mandate to go back and change those, just the standard for new
- * screens from here on.
- *
- * @prop {'success'|'warning'|'error'|'info'|'neutral'|'brand'} [variant='neutral']
- * @prop {ReactNode} children
- * @prop {string} [className]
- */
 const VARIANTS = {
   success: 'bg-success/15 text-success',
   warning: 'bg-warning/15 text-warning',
@@ -26,6 +7,10 @@ const VARIANTS = {
   brand: 'bg-brand-black text-white',
 };
 
+// Renders whatever case `children` is passed in rather than forcing
+// uppercase — design guide wants Title Case ("Under Review", not "UNDER
+// REVIEW"). Pre-existing screens with their own inline uppercase badges
+// don't need retrofitting; this is just the standard going forward.
 export default function Badge({ variant = 'neutral', children, className = '' }) {
   return (
     <span
