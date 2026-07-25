@@ -9,6 +9,15 @@ import CompanySignup from '@/pages/auth/CompanySignup';
 import InvestorSignup from '@/pages/auth/InvestorSignup';
 import MentorSignup from '@/pages/auth/MentorSignup';
 import IncubatorSignup from '@/pages/auth/IncubatorSignup';
+import OnboardingWelcome from '@/pages/onboarding/Welcome';
+import VerifyEmail from '@/pages/onboarding/VerifyEmail';
+import VerificationProgress from '@/pages/onboarding/VerificationProgress';
+import ApplicationRejected from '@/pages/onboarding/ApplicationRejected';
+import CompleteProfileStudent from '@/pages/onboarding/complete-profile/Student';
+import CompleteProfileMentor from '@/pages/onboarding/complete-profile/Mentor';
+import CompleteProfileInvestor from '@/pages/onboarding/complete-profile/Investor';
+import CompleteProfileIncubator from '@/pages/onboarding/complete-profile/Incubator';
+import CompleteProfileCompany from '@/pages/onboarding/complete-profile/Company';
 import Dashboard from '@/pages/Dashboard';
 import BuildStartupJourney from '@/pages/BuildStartupJourney';
 import Notifications from '@/pages/Notifications';
@@ -53,8 +62,16 @@ import LandingMentor from '@/pages/landing/Mentor';
 import LandingInvestor from '@/pages/landing/Investor';
 import LandingCompanies from '@/pages/landing/Companies';
 import LandingIncubator from '@/pages/landing/Incubator';
-import CompanyDashboard from "@/pages/company/Dashboard";
-import CompanyMyOpportunities from "@/pages/company/MyOpportunities";
+import InvestorPortal from '@/pages/investor/Investor';
+import IncomingPitchDecks from '@/pages/investor/IncomingPitchDecks';
+import PitchDeck from '@/pages/investor/PitchDeck';
+import MentorPortal from '@/pages/mentor/Mentor';
+import MentorRequests from '@/pages/mentor/Requests';
+import MentorChats from '@/pages/mentor/Chats';
+import MentorMeetings from '@/pages/mentor/Meetings';
+import MentorProfile from '@/pages/mentor/Profile';
+import CompanyDashboard from '@/pages/company/Dashboard';
+import CompanyMyOpportunities from '@/pages/company/MyOpportunities';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -70,10 +87,19 @@ export const router = createBrowserRouter([
       { path: '/signup/investor', element: <InvestorSignup /> },
       { path: '/signup/mentor', element: <MentorSignup /> },
       { path: '/signup/incubator', element: <IncubatorSignup /> },
+      { path: '/onboarding/welcome', element: <OnboardingWelcome /> },
+      { path: '/onboarding/verify-email', element: <VerifyEmail /> },
+      { path: '/onboarding/verification-progress', element: <VerificationProgress /> },
+      { path: '/onboarding/application-rejected', element: <ApplicationRejected /> },
+      { path: '/onboarding/complete-profile/student', element: <CompleteProfileStudent /> },
+      { path: '/onboarding/complete-profile/mentor', element: <CompleteProfileMentor /> },
+      { path: '/onboarding/complete-profile/investor', element: <CompleteProfileInvestor /> },
+      { path: '/onboarding/complete-profile/incubator', element: <CompleteProfileIncubator /> },
+      { path: '/onboarding/complete-profile/company', element: <CompleteProfileCompany /> },
     ],
   },
-  { path: "/company/dashboard", element: <CompanyDashboard /> },
-{ path: "/company/my-opportunities", element: <CompanyMyOpportunities /> },
+  { path: '/company/dashboard', element: <CompanyDashboard /> },
+  { path: '/company/my-opportunities', element: <CompanyMyOpportunities /> },
   { path: '/landing', element: <LandingHome /> },
   { path: '/landing/student', element: <LandingStudent /> },
   { path: '/landing/mentor', element: <LandingMentor /> },
@@ -118,4 +144,12 @@ export const router = createBrowserRouter([
   { path: '/admin/reviews/outcome', element: <ReviewOutcome /> },
   { path: '/admin/reviews/schedule-meeting', element: <ScheduleMeeting /> },
   { path: '/admin/audit-log', element: <AuditLog /> },
+  { path: '/investor', element: <InvestorPortal /> },
+  { path: '/investor/pitch-decks', element: <IncomingPitchDecks /> },
+  { path: '/investor/pitch-decks/review', element: <PitchDeck /> },
+  { path: '/mentor', element: <MentorPortal /> },
+  { path: '/mentor/requests', element: <MentorRequests /> },
+  { path: '/mentor/chats', element: <MentorChats /> },
+  { path: '/mentor/meetings', element: <MentorMeetings /> },
+  { path: '/mentor/profile', element: <MentorProfile /> },
 ]);
