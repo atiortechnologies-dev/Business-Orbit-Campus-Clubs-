@@ -550,6 +550,195 @@ finished.)*
 
 ---
 
+## Investor Portal
+
+*(Ported from a second intern's — Madhu's — separate repo onto this app's
+shell/token/component system; see `CONTRIBUTING.md` §9 for the integration
+notes. Only one seeded pitch deck and one seeded submission set exist, same
+"honest single example" pattern as Incubator's `ApplicationReview.jsx`.)*
+
+### `/investor` — `src/pages/investor/Investor.jsx`
+- **Stub:** all 4 stat cards, the Recent Startup Submissions table, and the
+  Pitch Deck Alerts feed are hardcoded snapshots, not tied to any real data
+  source.
+- **Real:** "View Pitch Decks" → real navigation to `/investor/pitch-decks`.
+- **Coming Soon:** "Browse Startups," "Open Conversations" quick actions,
+  submissions table's "View All," alerts panel's "See all notifications" —
+  all genuinely blocked on a startup directory/messaging system that
+  doesn't exist yet.
+
+### `/investor/pitch-decks` — `src/pages/investor/IncomingPitchDecks.jsx`
+- **Real:** search genuinely filters the 6 seeded decks client-side (by
+  name, founder, or tag), grid/list view toggle.
+- **Stub:** filtering only operates on 6 hardcoded decks, not a real
+  dataset. Pagination controls are real (not `ComingSoon`-wrapped) but
+  honestly disabled, and the "Showing N of 6" count reflects the real
+  filtered/total counts — same honest-count convention used throughout
+  Admin/Incubator; don't reintroduce a fake total when wiring a real fetch.
+- **Coming Soon:** header "Filter" button, each card's quick-preview (eye
+  icon) — no preview modal exists yet.
+
+### `/investor/pitch-decks/review` — `src/pages/investor/PitchDeck.jsx`
+- **Real:** slide-list navigation (Previous/Next and direct slide-select,
+  8 real slide labels), Investor Notes textarea (typing works, not
+  persisted).
+- **Stub:** this viewer always shows the same seeded example (AeroFlow
+  Dynamics) regardless of which deck card was clicked from the incoming
+  list — there's only one seeded pitch deck in this app, not a real
+  multi-deck dataset. Same honest-stub pattern already used by Incubator's
+  `ApplicationReview.jsx`.
+- **Coming Soon:** "Start Conversation," "Request Pitch Meeting" — both
+  need a messaging/scheduling system that doesn't exist yet.
+
+---
+
+## Mentor Portal
+
+*(Ported from the same second intern's repo; persona consolidated to one
+consistent "Priya Anand, Senior Mentor" across all 5 screens — her source
+had 3 different names for the mentor's own identity across her 5 files,
+one of which collided with this app's real Admin persona, "Alex Rivera.")*
+
+### `/mentor` — `src/pages/mentor/Mentor.jsx`
+- **Real:** Accept/Decline on the Recent Mentorship Requests list removes
+  the request from local state immediately (shows a real empty state once
+  cleared).
+- **Stub:** all 4 stat cards, Upcoming Meetings, and Recent Conversations
+  are hardcoded snapshots, not tied to a real data source. Accept/Decline
+  doesn't persist anywhere — reload and the 3 seeded requests are back.
+- **Coming Soon:** none on this page — "Open Chats" and "View Requests"
+  both route to real built pages.
+
+### `/mentor/requests` — `src/pages/mentor/Requests.jsx`
+- **Real:** Newest First/Oldest First sort genuinely reverses the list
+  order. Accept/Decline removes a request from local state (shows a real
+  empty state once all 3 are cleared).
+- **Stub:** the 3 seeded requests are hardcoded; Accept/Decline doesn't
+  persist — reload and they're back. `// TODO(backend)` equivalent: wire
+  both actions to a real endpoint once one exists.
+- **Coming Soon:** header "Filter" button, each card's "View Profile" — no
+  mentor-facing student-profile page exists yet.
+
+### `/mentor/chats` — `src/pages/mentor/Chats.jsx`
+- **Real:** switching threads, thread search (filters by name), typing and
+  sending a message (Enter-to-send, appends to that thread's local state
+  immediately).
+- **Stub:** sent messages live only in React state — reload and they're
+  gone, the "other party" never receives anything, same category of stub
+  as Incubator's `Messages.jsx`. Only the Sarah Chen thread has real seeded
+  message history; the other 3 show a single static preview line.
+- **Coming Soon:** "Schedule Meeting" (thread header), Attach file, "Pitch
+  Deck"/"Financials" quick links in the student-context side panel — all
+  genuinely blocked on scheduling/file-upload infra that doesn't exist yet.
+
+### `/mentor/meetings` — `src/pages/mentor/Meetings.jsx`
+- **Real:** search genuinely filters the 2 seeded meetings (by student or
+  startup name), meeting-list selection, Mentor Notes textarea and Meeting
+  Outcome select, Save Notes shows a real transient confirmation (2s
+  auto-dismiss, same pattern as `incubator/Settings.jsx`'s Save Changes).
+- **Stub:** Save Notes persists nothing — reload and the notes/outcome are
+  gone; `// TODO(backend)` is at `handleSaveNotes`. The 2 seeded meetings
+  themselves are hardcoded.
+- **Coming Soon:** "Calendar View," "Schedule Meeting," each meeting card's
+  "Join Meeting," detail panel's "Profile"/"Chat" quick links, "Schedule
+  Follow-up" — all genuinely blocked on calendar/video-call infra or
+  cross-linking that doesn't exist yet.
+
+### `/mentor/profile` — `src/pages/mentor/Profile.jsx`
+- **Real:** every field is a controlled input, Areas of Expertise chip
+  add/remove (Enter to add, click × to remove — same pattern as Student
+  Settings' Skills chips), Ideal Startup Stages checkboxes, Meeting
+  Preference select, Change Photo is a real file picker with instant local
+  preview (`URL.createObjectURL`, never uploaded), Save Changes shows a
+  real transient confirmation (2s auto-dismiss).
+- **Stub:** Save Changes persists nothing — reload and every edit is gone;
+  `// TODO(backend)` is at `handleSaveChanges`. Profile Completion (88%) is
+  a hardcoded constant, not derived from which fields are actually filled.
+- **Coming Soon:** "Preview Public Profile," all 4 Account Settings rows
+  (Change Password, Notification Settings, Privacy & Security, Deactivate
+  Account) — genuinely blocked on auth/account infra that doesn't exist
+  yet, unlike Student Settings' equivalent flows which have a real backing
+  `Modal` (there's no reason to duplicate that work here without a shared
+  account-settings component to reuse first).
+
+---
+
+## Onboarding & Verification Flow
+
+*(Ported from the same second intern's repo — the pre-dashboard steps
+between signup and a working portal. Nested under the existing
+`AuthLayout` since these are pre-auth screens structurally identical in
+kind to Login/ForgotPassword, not a new bespoke shell.)*
+
+### `/onboarding/welcome` — `src/pages/onboarding/Welcome.jsx`
+- **Real:** "Continue to Email Verification" → real navigation to
+  `/onboarding/verify-email`. "Back" → real navigation to `/role-selection`.
+- **Stub:** the chapter stats (524 members, 12 active startups, etc.) and
+  "STATUS: ACTIVE" badge are hardcoded, not tied to a real chapter record.
+- **Coming Soon:** "Request Chapter Change" — needs a real chapter-directory/
+  request flow that doesn't exist yet.
+- The chapter name was genericized from the source's real institution
+  ("UIET Chandigarh Chapter, Panjab University") to a fictional "Riverside
+  Tech Chapter" — same category of fix as the landing pages' LogoStrip
+  issue in `CONTRIBUTING.md` §8; never imply a real institutional
+  partnership from placeholder content.
+
+### `/onboarding/verify-email` — `src/pages/onboarding/VerifyEmail.jsx`
+- **Real:** 6-digit OTP input (auto-advance/backspace-to-previous-box),
+  Resend Code cooldown timer, Verify button genuinely gated on all 6 digits
+  being filled.
+- **Stub:** no code is ever actually sent or checked — any complete 6-digit
+  code proceeds to `/onboarding/verification-progress`. `// TODO(backend)`
+  is at `handleVerify`, noting it should branch to
+  `/onboarding/application-rejected` only on a real failure response.
+  **Fixed a real bug during this integration**: the source version
+  hardcoded the Verify button to always link to `/application-rejected`
+  regardless of what was entered — every user, even with a correct code,
+  was routed to a rejection screen. Rewired to the honest default (proceed
+  to the next real step) since there's no backend yet to determine
+  success/failure.
+
+### `/onboarding/verification-progress` — `src/pages/onboarding/VerificationProgress.jsx`
+- **Real:** "Return to Home" → real navigation to `/login`.
+- **Stub:** the 5-step progress tracker (fixed at "Review" as the active
+  step), 80% progress bar, and "24–48 business hours" estimate are all
+  hardcoded, not tied to any real review-queue state.
+- **Coming Soon:** "Contact Support" — no support-ticket flow exists yet.
+
+### `/onboarding/application-rejected` — `src/pages/onboarding/ApplicationRejected.jsx`
+- **Real:** "Back to Dashboard" → real navigation to `/login`.
+- **Stub:** the "Reason for review" text is a hardcoded generic message,
+  not tied to any real rejection reason.
+- **Coming Soon:** "Contact Support" — same as above.
+
+### `/onboarding/complete-profile/{student,mentor,investor,incubator,company}`
+— `src/pages/onboarding/complete-profile/*.jsx`, shared chrome in
+`src/components/onboarding/CompleteProfileShell.jsx`
+- **Real:** every field is a controlled input; photo/logo upload is a real
+  file picker with instant local preview (`URL.createObjectURL`, never
+  uploaded); tag fields (Skills, Areas of Expertise, Industry Focus, etc.)
+  support real add-on-Enter/remove-on-click via the shared `TagInput`;
+  checkbox-pill and radio-pill fields (Startup Interests, Investment Stage,
+  Mentoring Mode, etc.) are real toggles via shared `CheckboxPills`/
+  `RadioPills`; Save & Finish shows a real transient "Saved" confirmation.
+- **Stub:** Save & Finish persists nothing — reload and every edit is gone.
+  Each page's `handleSave` has a `// TODO(backend)` describing the exact
+  `PATCH` payload shape for that role.
+- **Coming Soon:** "Skip for now" — intentionally left unwired; skipping
+  a required onboarding step needs a product decision on what "skipped"
+  means for verification status, not just a client-side no-op.
+- Architectural note: the source repo had 5 separate hand-rolled page
+  files (plus a 6th, superseded draft of the Student variant) sharing
+  ~80% identical chrome. Rebuilt as **one** shared shell +
+  small reusable field components (`TagInput`, `CheckboxPills`,
+  `RadioPills`, `SelectField`, `TextAreaField`) + 5 thin per-role pages
+  that just supply field content — mirroring the exact pattern
+  `RoleSignupForm.jsx` already established in this codebase for the 5
+  signup pages. Wiring real persistence means changing each page's
+  `handleSave`, not the shared shell.
+
+---
+
 ## Cross-cutting
 
 - **Dark mode** is fully real and complete — no backend dependency, nothing
