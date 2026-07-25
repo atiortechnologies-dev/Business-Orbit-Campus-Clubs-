@@ -1,22 +1,3 @@
-/**
- * @page RoleSelectionPage  /role-selection
- * Owns the selected role state.
- *
- * Single-select implementation: native <input type="radio"> elements
- * inside <label> wrappers, hidden via sr-only. Native radio group
- * semantics provide:
- *   – Tab: focuses the selected radio (or first if none selected)
- *   – Arrow keys: move between radio options (native browser behaviour)
- *   – Space: selects the focused radio
- *   – aria-checked is implicit via the checked attribute
- *
- * Focus ring: `focus-within:` on the <label> surfaces the hidden radio's
- * focus state as a visible ring around the card.
- *
- * Continue: disabled until a role is selected, then navigates to that
- * role's /signup/<role> page — every role now has a real signup form.
- */
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -75,7 +56,6 @@ export default function RoleSelectionPage() {
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 bg-canvas-bg">
       <div className="w-full max-w-4xl flex flex-col items-center gap-8">
 
-        {/* Step indicator */}
         <div className="flex flex-col items-center gap-2.5">
           <div className="flex items-center gap-1.5" aria-hidden="true">
             {Array.from({ length: 5 }, (_, i) => (
@@ -83,16 +63,15 @@ export default function RoleSelectionPage() {
             ))}
           </div>
           <nav aria-label="Registration progress">
-            <p className="text-[12px] leading-[16px] font-medium uppercase tracking-widest text-text-muted font-inter">
+            <p className="text-caption font-medium uppercase tracking-widest text-text-muted font-inter">
               Step 1 of 4 — Select Your Role
             </p>
           </nav>
         </div>
 
-        {/* Heading + description */}
         <div className="flex flex-col items-center gap-3 text-center">
-          <h1 className="text-[32px] leading-[40px] font-semibold text-text-heading font-poppins">Choose Your Role</h1>
-          <p className="text-[16px] leading-[24px] font-normal text-text-body max-w-lg leading-relaxed font-inter">
+          <h1 className="text-section font-semibold text-text-heading font-poppins">Choose Your Role</h1>
+          <p className="text-body font-normal text-text-body max-w-lg leading-relaxed font-inter">
             Select the persona that best describes your participation in the
             Business Orbit Campus Clubs network.
           </p>
@@ -135,7 +114,6 @@ export default function RoleSelectionPage() {
           </div>
         </fieldset>
 
-        {/* Continue — disabled until a role is selected */}
         <div className="flex flex-col items-center gap-3">
           <Button
             variant="ghost"
@@ -149,8 +127,7 @@ export default function RoleSelectionPage() {
           </Button>
         </div>
 
-        {/* Bottom nav row */}
-        <p className="text-[14px] leading-[20px] font-normal text-text-muted text-center font-inter">
+        <p className="text-small font-normal text-text-muted text-center font-inter">
           Already have an account?{' '}
           <Link
             to="/login"

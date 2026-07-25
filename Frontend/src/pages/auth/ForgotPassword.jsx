@@ -1,14 +1,3 @@
-/**
- * @page ForgotPasswordPage  /forgot-password
- * Owns email value, validation, and the submitted/confirmation
- * state swap. Valid submit swaps the form inside the Card for a confirmation
- * view (client state only — no backend exists yet, so no email is actually
- * sent).
- *
- * The Card outer shell, Back to Login link, and brand caption remain visible
- * during both states. Only the Card content swaps.
- */
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, Mail, ArrowRight, CheckCircle } from 'lucide-react';
@@ -53,20 +42,17 @@ export default function ForgotPasswordPage() {
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-10 bg-canvas-bg">
       <div className="w-full max-w-sm flex flex-col gap-4">
 
-        {/* Back to Login — above card, always visible */}
         <Link
           to="/login"
-          className="inline-flex items-center gap-1 text-[14px] leading-[20px] font-normal text-text-body hover:text-text-heading transition-all duration-150 ease-linear self-start font-inter"
+          className="inline-flex items-center gap-1 text-small font-normal text-text-body hover:text-text-heading transition-all duration-150 ease-linear self-start font-inter"
           aria-label="Return to login"
         >
           <ChevronLeft size={14} strokeWidth={2} aria-hidden="true" />
           Back to Login
         </Link>
 
-        {/* ── Card ───────────────────────────────────────── */}
         <Card className="p-8 flex flex-col gap-6">
           {submitted ? (
-            /* ── Confirmation view (swaps in after valid submit) ── */
             <div className="flex flex-col items-center gap-5 text-center animate-slide-in">
               <div className="w-14 h-14 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center">
                 <CheckCircle
@@ -77,8 +63,8 @@ export default function ForgotPasswordPage() {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <h2 className="text-[22px] leading-[28px] font-medium text-text-heading font-poppins">Check your inbox</h2>
-                <p className="text-[16px] leading-[24px] font-normal text-text-body font-inter leading-relaxed">
+                <h2 className="text-card font-medium text-text-heading font-poppins">Check your inbox</h2>
+                <p className="text-body font-normal text-text-body font-inter leading-relaxed">
                   If{' '}
                   <span className="text-text-heading font-medium">{email}</span>{' '}
                   is registered, you&apos;ll receive a reset link shortly.
@@ -86,13 +72,12 @@ export default function ForgotPasswordPage() {
               </div>
               <Link
                 to="/login"
-                className="text-[14px] leading-[20px] font-normal text-text-body hover:underline transition-all duration-150 ease-linear font-inter"
+                className="text-small font-normal text-text-body hover:underline transition-all duration-150 ease-linear font-inter"
               >
                 Back to Login
               </Link>
             </div>
           ) : (
-            /* ── Form view ─────────────────────────────────── */
             <>
               {/* Custom illustration — "recovery request" motif: an email
                   being sent out, with the key to your account riding along
@@ -110,12 +95,10 @@ export default function ForgotPasswordPage() {
                 role="img"
                 aria-label="Illustration of an email being sent with an account recovery key"
               >
-                {/* Motion trail — envelope "in flight" */}
                 <circle cx="120" cy="70" r="3" fill="var(--color-border-subtle)" />
                 <circle cx="145" cy="85" r="4" fill="var(--color-border-subtle)" />
                 <circle cx="170" cy="98" r="5" fill="var(--color-border-subtle)" />
 
-                {/* Envelope body */}
                 <rect x="185" y="55" width="150" height="100" rx="10" fill="var(--color-brand-black)" />
                 <line x1="185" y1="65" x2="260" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
                 <line x1="335" y1="65" x2="260" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
@@ -130,21 +113,18 @@ export default function ForgotPasswordPage() {
                 <rect x="420" y="119" width="7" height="13" fill="var(--color-accent-neon)" />
                 <rect x="433" y="119" width="7" height="9" fill="var(--color-accent-neon)" />
 
-                {/* Ambient dots */}
                 <circle cx="80" cy="150" r="3" fill="var(--color-border-subtle)" />
                 <circle cx="440" cy="60" r="3" fill="var(--color-border-subtle)" />
               </svg>
 
-              {/* Heading + description */}
               <div className="flex flex-col gap-2 text-center">
-                <h1 className="text-[22px] leading-[28px] font-medium text-text-heading font-poppins">Forgot Password?</h1>
-                <p className="text-[16px] leading-[24px] font-normal text-text-body font-inter leading-relaxed">
+                <h1 className="text-card font-medium text-text-heading font-poppins">Forgot Password?</h1>
+                <p className="text-body font-normal text-text-body font-inter leading-relaxed">
                   No worries! Enter the email address associated with your BOCC account
                   and we&apos;ll send you a link to reset your password.
                 </p>
               </div>
 
-              {/* Form */}
               <form
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-4"
@@ -169,8 +149,7 @@ export default function ForgotPasswordPage() {
                 </Button>
               </form>
 
-              {/* Login reminder */}
-              <p className="text-[14px] leading-[20px] font-normal text-center text-text-muted font-inter">
+              <p className="text-small font-normal text-center text-text-muted font-inter">
                 Remember your password?{' '}
                 <Link
                   to="/login"
@@ -180,11 +159,9 @@ export default function ForgotPasswordPage() {
                 </Link>
               </p>
 
-              {/* Divider */}
               <div className="h-px bg-divider-line" role="separator" />
 
-              {/* Secondary links */}
-              <div className="flex items-center justify-center gap-3 text-[14px] leading-[20px] font-normal font-inter text-text-muted">
+              <div className="flex items-center justify-center gap-3 text-small font-normal font-inter text-text-muted">
                 <Link
                   to="/role-selection"
                   className="text-text-body hover:underline transition-all duration-150 ease-linear"
@@ -202,8 +179,7 @@ export default function ForgotPasswordPage() {
           )}
         </Card>
 
-        {/* Below-card brand tagline */}
-        <p className="text-center text-[12px] leading-[16px] font-medium uppercase tracking-[0.2em] text-text-muted font-inter mt-4">
+        <p className="text-center text-caption font-medium uppercase tracking-[0.2em] text-text-muted font-inter mt-4">
           Business Orbit Campus Clubs
         </p>
 
