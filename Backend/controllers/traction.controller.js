@@ -4,6 +4,7 @@ const ProductSubmission = require("../models/ProductSubmission");
 const StartupStage = require("../models/StartupStage");
 const TractionMetrics = require("../models/TractionMetrics");
 const TractionReview = require("../models/TractionReview");
+const TractionReviewMeeting = require("../models/TractionReviewMeeting");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // ========= SCREEN 1: STAGE INITIALIZATION =========
@@ -457,6 +458,87 @@ const getReviewComments = asyncHandler(async (req, res) => {
   });
 });
 
+// ========= SCREEN 6: REVIEW MEETING =========
+const getReviewMeeting = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const meeting = await TractionReviewMeeting.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!meeting) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No meeting scheduled" });
+  }
+
+  res.status(200).json({ success: true, data: meeting });
+});
+
+const getReviewMeetingDetails = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const meeting = await TractionReviewMeeting.findOne({
+    startup_id: startup._id,
+  })
+    .populate("reviewer_id", "full_name email")
+    .lean();
+
+  if (!meeting) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No meeting found" });
+  }
+
+  res.status(200).json({ success: true, data: meeting });
+});
+
+const getMeetingJoinLink = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const meeting = await TractionReviewMeeting.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!meeting) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No meeting found" });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      meeting_link: meeting.meeting_link,
+      meeting_date: meeting.meeting_date,
+    },
+  });
+});
+
+const confirmAttendance = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const meeting = await TractionReviewMeeting.findOneAndUpdate(
+    { startup_id: startup._id },
+    { attendance_status: "Attended" },
+    { new: true },
+  );
+
+  if (!meeting) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No meeting found" });
+  }
+
+  res
+    .status(200)
+    .json({ success: true, message: "Attendance confirmed", data: meeting });
+});
+
 module.exports = {
   getStage4Overview,
   getStage4Progress,
@@ -479,4 +561,8 @@ module.exports = {
   getReviewStatus,
   getReviewTimeline,
   getReviewComments,
+  getReviewMeeting,
+  getReviewMeetingDetails,
+  getMeetingJoinLink,
+  confirmAttendance,
 };
