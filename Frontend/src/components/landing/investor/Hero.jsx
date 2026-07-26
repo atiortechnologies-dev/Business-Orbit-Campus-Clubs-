@@ -10,7 +10,7 @@ const STATS = [
 
 export default function Hero() {
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-16 pb-24 md:pt-20 md:pb-28">
+    <section className="mx-auto max-w-7xl px-6 pt-28 pb-24 md:pt-32 md:pb-28">
       <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16 items-start">
         <div className="max-w-xl">
           <span className="inline-flex items-center rounded-full border border-border-subtle px-3 py-1 font-inter text-caption font-medium text-text-muted">
