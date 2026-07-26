@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UploadCloud, Info, Link2, GitFork, ChevronRight } from 'lucide-react';
+import { UploadCloud, Info, Link2, GitFork, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
@@ -139,7 +139,8 @@ export default function MvpSubmissionPage() {
               <p className="font-inter font-semibold text-caption text-text-muted uppercase tracking-wider">Submission Preview</p>
               <span className="bg-warning/10 text-warning font-poppins font-semibold text-caption px-2.5 py-0.5 rounded-full">Draft</span>
             </div>
-            <div className="h-28 rounded-lg placeholder-box flex items-center justify-center mb-4">
+            <div className="h-28 rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex flex-col items-center justify-center gap-1.5 mb-4">
+              <ImageIcon size={20} strokeWidth={1.5} className="text-text-muted" />
               <p className="font-inter text-caption text-text-muted">No visual attached</p>
             </div>
             <h4 className="font-poppins font-semibold text-body text-text-heading">
