@@ -57,6 +57,11 @@ const TractionProductSubmission = lazy(() => import('@/pages/journey/traction/Tr
 const TractionReview = lazy(() => import('@/pages/journey/traction/TractionReview'));
 const TractionReviewMeeting = lazy(() => import('@/pages/journey/traction/TractionReviewMeeting'));
 const TractionApproved = lazy(() => import('@/pages/journey/traction/TractionApproved'));
+const LaunchStage = lazy(() => import('@/pages/journey/launch/LaunchStage'));
+const LaunchSubmission = lazy(() => import('@/pages/journey/launch/LaunchSubmission'));
+const FinalPitchDeckUpload = lazy(() => import('@/pages/journey/launch/FinalPitchDeckUpload'));
+const LaunchProofUpload = lazy(() => import('@/pages/journey/launch/LaunchProofUpload'));
+const LaunchVerificationReview = lazy(() => import('@/pages/journey/launch/LaunchVerificationReview'));
 const AdminDashboard = lazy(() => import('@/pages/admin/Admin'));
 const VerificationQueue = lazy(() => import('@/pages/admin/VerificationQueue'));
 const VerificationDetail = lazy(() => import('@/pages/admin/VerificationDetail'));
@@ -175,6 +180,11 @@ export const router = createBrowserRouter([
   { path: '/build-startup/journey/traction/review', element: withSuspense(TractionReview) },
   { path: '/build-startup/journey/traction/review-meeting', element: withSuspense(TractionReviewMeeting) },
   { path: '/build-startup/journey/traction/approved', element: withSuspense(TractionApproved) },
+  { path: '/build-startup/journey/launch', element: withSuspense(LaunchStage) },
+  { path: '/build-startup/journey/launch/submission', element: withSuspense(LaunchSubmission) },
+  { path: '/build-startup/journey/launch/pitch-deck', element: withSuspense(FinalPitchDeckUpload) },
+  { path: '/build-startup/journey/launch/proof-upload', element: withSuspense(LaunchProofUpload) },
+  { path: '/build-startup/journey/launch/verification', element: withSuspense(LaunchVerificationReview) },
   { path: '/admin', element: withSuspense(AdminDashboard) },
   { path: '/admin/verification', element: withSuspense(VerificationQueue) },
   { path: '/admin/verification/detail', element: withSuspense(VerificationDetail) },
