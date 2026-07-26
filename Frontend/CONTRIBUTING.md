@@ -77,7 +77,17 @@ src/
                                (one pipeline), ReviewQueue.jsx → ReviewDetail.jsx
                                → ReviewWorkspace.jsx → ReviewOutcome.jsx (a
                                second pipeline, with ScheduleMeeting.jsx
-                               branching off ReviewDetail), AuditLog.jsx
+                               branching off ReviewDetail), AuditLog.jsx,
+                               AnnouncementsDashboard.jsx → CreateAnnouncement.jsx
+                               → PreviewAnnouncement.jsx → AnnouncementPublished.jsx
+                               (a third pipeline), ChapterManagement.jsx →
+                               ChapterDetail.jsx (one page, 4 internal tabs —
+                               not 4 routes), OpportunityApprovalQueue.jsx →
+                               OpportunityReview.jsx (a fourth pipeline,
+                               mirrors the Verification one's Modal-based
+                               3-decision pattern), AdminSettings.jsx —
+                               nav is the 8-item set every wireframe in this
+                               batch specced (see AdminShell.jsx below)
     legal/PrivacyPolicy.jsx
     landing/                  Public marketing pages, no auth required —
                                Home.jsx, Student.jsx, Mentor.jsx,
