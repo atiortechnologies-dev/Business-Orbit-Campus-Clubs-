@@ -50,6 +50,13 @@ const MvpSubmissionSuccess = lazy(() => import('@/pages/journey/mvp/SubmissionSu
 const IncubationProofSubmission = lazy(() => import('@/pages/journey/mvp/IncubationProofSubmission'));
 const IncubationVerificationReview = lazy(() => import('@/pages/journey/mvp/IncubationVerificationReview'));
 const IncubationVerificationApproved = lazy(() => import('@/pages/journey/mvp/IncubationVerificationApproved'));
+const TractionStage = lazy(() => import('@/pages/journey/traction/TractionStage'));
+const UserAcquisitionTracker = lazy(() => import('@/pages/journey/traction/UserAcquisitionTracker'));
+const CustomerFeedbackUpload = lazy(() => import('@/pages/journey/traction/CustomerFeedbackUpload'));
+const TractionProductSubmission = lazy(() => import('@/pages/journey/traction/TractionProductSubmission'));
+const TractionReview = lazy(() => import('@/pages/journey/traction/TractionReview'));
+const TractionReviewMeeting = lazy(() => import('@/pages/journey/traction/TractionReviewMeeting'));
+const TractionApproved = lazy(() => import('@/pages/journey/traction/TractionApproved'));
 const AdminDashboard = lazy(() => import('@/pages/admin/Admin'));
 const VerificationQueue = lazy(() => import('@/pages/admin/VerificationQueue'));
 const VerificationDetail = lazy(() => import('@/pages/admin/VerificationDetail'));
@@ -161,6 +168,13 @@ export const router = createBrowserRouter([
   { path: '/build-startup/journey/mvp/incubation-proof', element: withSuspense(IncubationProofSubmission) },
   { path: '/build-startup/journey/mvp/incubation-verification', element: withSuspense(IncubationVerificationReview) },
   { path: '/build-startup/journey/mvp/incubation-approved', element: withSuspense(IncubationVerificationApproved) },
+  { path: '/build-startup/journey/traction', element: withSuspense(TractionStage) },
+  { path: '/build-startup/journey/traction/acquisition-tracker', element: withSuspense(UserAcquisitionTracker) },
+  { path: '/build-startup/journey/traction/feedback-upload', element: withSuspense(CustomerFeedbackUpload) },
+  { path: '/build-startup/journey/traction/product-submission', element: withSuspense(TractionProductSubmission) },
+  { path: '/build-startup/journey/traction/review', element: withSuspense(TractionReview) },
+  { path: '/build-startup/journey/traction/review-meeting', element: withSuspense(TractionReviewMeeting) },
+  { path: '/build-startup/journey/traction/approved', element: withSuspense(TractionApproved) },
   { path: '/admin', element: withSuspense(AdminDashboard) },
   { path: '/admin/verification', element: withSuspense(VerificationQueue) },
   { path: '/admin/verification/detail', element: withSuspense(VerificationDetail) },
