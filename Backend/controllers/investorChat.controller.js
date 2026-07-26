@@ -185,3 +185,112 @@ exports.getStartupMessages = asyncHandler(async (req, res) => {
   const messages = await InvestorMessage.find({ chat_id: chatRoom._id }).sort({ created_at: 1 });
   res.status(200).json({ success: true, data: messages });
 });
+
+// ==========================================
+// PRD Specific Endpoints
+// ==========================================
+
+/**
+ * @desc    Get all active conversations for the investor
+ * @route   GET /api/investor/conversations
+ */
+exports.getConversations = asyncHandler(async (req, res) => {
+  const investorId = req.user._id;
+
+  const chatRooms = await InvestorChatRoom.find({ investor_id: investorId })
+    .populate("startup_id", "startup_name logo industry")
+    .populate("founder_id", "full_name profile_photo")
+    .sort({ updated_at: -1 });
+
+  res.status(200).json({ success: true, data: chatRooms });
+});
+
+/**
+ * @desc    Get a specific conversation
+ * @route   GET /api/investor/conversations/:conversationId
+ */
+exports.getConversationById = asyncHandler(async (req, res) => {
+  const { conversationId } = req.params;
+  const investorId = req.user._id;
+
+  const chatRoom = await InvestorChatRoom.findOne({ _id: conversationId, investor_id: investorId })
+    .populate("startup_id", "startup_name logo industry")
+    .populate("founder_id", "full_name profile_photo");
+
+  if (!chatRoom) {
+    return res.status(404).json({ success: false, message: "Conversation not found" });
+  }
+
+  res.status(200).json({ success: true, data: chatRoom });
+});
+
+/**
+ * @desc    Get messages for a specific conversation
+ * @route   GET /api/investor/conversations/:conversationId/messages
+ */
+exports.getConversationMessages = asyncHandler(async (req, res) => {
+  const { conversationId } = req.params;
+  const investorId = req.user._id;
+
+  const chatRoom = await InvestorChatRoom.findOne({ _id: conversationId, investor_id: investorId });
+  if (!chatRoom) {
+    return res.status(404).json({ success: false, message: "Conversation not found" });
+  }
+
+  const messages = await InvestorMessage.find({ chat_id: chatRoom._id }).sort({ created_at: 1 });
+  res.status(200).json({ success: true, data: messages });
+});
+
+/**
+ * @desc    Send message in a conversation
+ * @route   POST /api/investor/conversations/:conversationId/messages
+ */
+exports.sendConversationMessage = asyncHandler(async (req, res) => {
+  const { conversationId } = req.params;
+  const { message, attachment_url } = req.body;
+  const investorId = req.user._id;
+
+  if (!message) {
+    return res.status(400).json({ success: false, message: "message is required" });
+  }
+
+  const chatRoom = await InvestorChatRoom.findOne({ _id: conversationId, investor_id: investorId });
+  if (!chatRoom) {
+    return res.status(404).json({ success: false, message: "Conversation not found" });
+  }
+
+  const newMessage = await InvestorMessage.create({
+    chat_id: chatRoom._id,
+    sender_id: investorId,
+    receiver_id: chatRoom.founder_id,
+    message,
+    attachment_url: attachment_url || ""
+  });
+  
+  // Update the chatroom updated_at
+  chatRoom.updated_at = new Date();
+  await chatRoom.save();
+
+  res.status(201).json({ success: true, data: newMessage });
+});
+
+/**
+ * @desc    Mark all messages in a conversation as read
+ * @route   PUT /api/investor/conversations/:conversationId/read
+ */
+exports.markConversationRead = asyncHandler(async (req, res) => {
+  const { conversationId } = req.params;
+  const investorId = req.user._id;
+  
+  const chatRoom = await InvestorChatRoom.findOne({ _id: conversationId, investor_id: investorId });
+  if (!chatRoom) {
+    return res.status(404).json({ success: false, message: "Conversation not found" });
+  }
+  
+  await InvestorMessage.updateMany(
+    { chat_id: conversationId, receiver_id: investorId, is_read: false },
+    { $set: { is_read: true } }
+  );
+  
+  res.status(200).json({ success: true, message: "Messages marked as read" });
+});

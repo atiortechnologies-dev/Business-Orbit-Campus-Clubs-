@@ -197,6 +197,7 @@ const investorCompleteFields = z.object({
   investor_type: z.enum(["Angel", "VC", "Corporate"], {
     error: "Investor type must be Angel, VC, or Corporate",
   }),
+  designation: z.string().trim().min(1, "Designation is required").optional(),
   investment_sectors: toArray,
   preferred_startup_stages: toArray,
   investment_range: z.string().trim().optional().or(z.literal("")),

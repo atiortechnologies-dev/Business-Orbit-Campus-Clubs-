@@ -20,6 +20,12 @@ const investorMessageSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    receiver_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     message: {
       type: String,
       trim: true,
