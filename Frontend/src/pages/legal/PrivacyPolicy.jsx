@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import ComingSoon from '@/components/ui/ComingSoon';
 import Logo from '@/components/ui/Logo';
 import PublicNav from '@/components/layout/PublicNav';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const LEFT_NAV = [
   { icon: Scale,      label: 'Terms of Service', href: '#introduction', active: true  },
@@ -68,6 +69,7 @@ const SECTIONS = [
 ];
 
 export default function PrivacyPolicyPage() {
+  useDocumentTitle('Privacy Policy — BOCC');
   return (
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen flex flex-col">
 

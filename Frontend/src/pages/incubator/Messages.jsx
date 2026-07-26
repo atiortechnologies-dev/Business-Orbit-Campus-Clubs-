@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const EMOJI = ['😀', '😂', '👍', '🙌', '🎉', '🔥', '❤️', '🚀', '👀', '💡', '✅', '🙏'];
 
@@ -86,6 +87,7 @@ const SEEDED_MESSAGES_ACME = [
 ];
 
 export default function ChatsPage() {
+  useDocumentTitle('Messages — BOCC Incubator Portal');
   const [activeConv, setActiveConv] = useState('acme');
   const [inputText, setInputText] = useState('');
   // Below `lg` both panels can't fit side by side; without this, mobile stacked them full-height, forcing a scroll past the whole list to reach the thread.

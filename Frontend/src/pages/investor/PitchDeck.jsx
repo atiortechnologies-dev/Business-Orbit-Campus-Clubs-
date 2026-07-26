@@ -44,8 +44,20 @@ export default function PitchDeckPage() {
   useDocumentTitle('AeroFlow Dynamics — Pitch Deck — BOCC');
   const [currentSlide, setCurrentSlide] = useState(4);
   const [investorNotes, setInvestorNotes] = useState('');
+  const [notesSaved, setNotesSaved] = useState(false);
 
   const activeSlide = SLIDES.find((s) => s.id === currentSlide);
+
+  const canSaveNotes = investorNotes.trim().length > 0;
+
+  const handleSaveNotes = () => {
+    if (!canSaveNotes) return;
+    // TODO(backend): PATCH these due-diligence notes against this deck
+    // ({ dealId, investorNotes }) once there's a real multi-deck dataset
+    // for them to belong to.
+    setNotesSaved(true);
+    setTimeout(() => setNotesSaved(false), 2000);
+  };
 
   return (
     <InvestorShell>
@@ -98,7 +110,7 @@ export default function PitchDeckPage() {
             </h1>
           </div>
 
-          <div className="placeholder-box aspect-video rounded-lg border border-border-subtle flex flex-col items-center justify-center gap-2 mb-4">
+          <div className="aspect-video rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex flex-col items-center justify-center gap-2 mb-4">
             <BarChart3 size={32} strokeWidth={1.5} className="text-text-muted" />
             <p className="font-inter text-small text-text-muted">Visualizing $2B market projection</p>
           </div>
@@ -141,7 +153,7 @@ export default function PitchDeckPage() {
         <div className="lg:col-span-3 bg-surface-white border border-border-subtle rounded-lg shadow-card p-6 flex flex-col gap-6">
           <div>
             <div className="flex items-start justify-between mb-2">
-              <div className="w-10 h-10 rounded-md placeholder-box shrink-0" />
+              <div className="w-10 h-10 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-xs select-none shrink-0">A</div>
               <Badge variant="success">Series A</Badge>
             </div>
             <h2 className="font-poppins font-semibold text-card text-text-heading">AeroFlow Dynamics</h2>
@@ -196,6 +208,22 @@ export default function PitchDeckPage() {
               rows={4}
               className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all resize-none"
             />
+            <div className="flex items-center gap-3 mt-2">
+              <span
+                className={`font-inter text-caption text-success transition-opacity duration-150 ${notesSaved ? 'opacity-100' : 'opacity-0'}`}
+                aria-live="polite"
+              >
+                Saved
+              </span>
+              <button
+                type="button"
+                onClick={handleSaveNotes}
+                disabled={!canSaveNotes}
+                className="font-poppins font-semibold text-caption text-text-heading hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline"
+              >
+                Save Notes
+              </button>
+            </div>
           </div>
 
           <ComingSoon label="Request Pitch Meeting" position="top" inline={false} className="flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small px-4 py-2.5 rounded-md">

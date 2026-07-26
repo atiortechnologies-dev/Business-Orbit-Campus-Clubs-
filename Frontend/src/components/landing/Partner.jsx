@@ -1,4 +1,5 @@
 import { Check, Cpu } from 'lucide-react';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const FEATURES = [
   'Cloud & Backend Engineering',
@@ -28,7 +29,7 @@ export default function Partner() {
               ))}
             </div>
           </div>
-          <div className="aspect-[4/3] placeholder-box rounded-lg" />
+          <PlaceholderGraphic icon={Cpu} label="Atior Technologies" className="aspect-[4/3] rounded-lg" />
         </div>
       </div>
     </section>

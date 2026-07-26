@@ -13,6 +13,7 @@ import {
   Upload,
   FolderPlus,
   Calendar,
+  Map,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdminShell from '@/components/admin/AdminShell';
@@ -89,6 +90,9 @@ export default function AdminDashboardPage() {
   const funnel = FUNNEL_VIEWS[funnelView];
   const funnelMax = funnel[0].value;
 
+  // TODO(backend): PATCH this critical action as acknowledged server-side
+  // (e.g. { actionId: id, status: 'dismissed' }) so it doesn't reappear
+  // for this admin on next load — the local removal below is optimistic.
   const dismissAction = (id) => setCriticalActions((prev) => prev.filter((a) => a.id !== id));
 
   return (
@@ -124,7 +128,10 @@ export default function AdminDashboardPage() {
             ))}
           </div>
           <ComingSoon label="Demographic Map" position="top">
-            <div className="w-full h-32 placeholder-box rounded-lg" />
+            <div className="w-full h-32 rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex flex-col items-center justify-center gap-1.5">
+              <Map size={20} strokeWidth={2} className="text-text-muted" />
+              <span className="font-inter text-caption text-text-muted">Demographic Map</span>
+            </div>
           </ComingSoon>
         </section>
 

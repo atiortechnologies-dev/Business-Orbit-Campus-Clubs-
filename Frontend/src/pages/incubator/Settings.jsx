@@ -16,6 +16,7 @@ import {
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import Modal from '@/components/ui/Modal';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const DEFAULT_FORM_STATE = {
   incubatorName: 'BOCC Incubator',
@@ -43,6 +44,7 @@ const INITIAL_WORKING_DAYS = {
 };
 
 export default function SettingsPage() {
+  useDocumentTitle('Settings — BOCC Incubator Portal');
   const [form, setForm] = useState(DEFAULT_FORM_STATE);
   const [industries, setIndustries] = useState(INITIAL_INDUSTRIES);
   const [workingDays, setWorkingDays] = useState(INITIAL_WORKING_DAYS);
@@ -79,7 +81,10 @@ export default function SettingsPage() {
     setEmailNotifications(true);
   };
 
+  const canSave = form.incubatorName.trim().length > 0;
+
   const handleSave = () => {
+    if (!canSave) return;
     // TODO(backend): PATCH the incubator profile with `form`, `industries`,
     // `workingDays`, and `emailNotifications`.
     setSaveSuccess(true);
@@ -615,7 +620,8 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={handleSave}
-            className="px-6 py-2.5 bg-action-bg text-action-text rounded-lg font-poppins font-semibold text-small hover:opacity-90 active:scale-[0.98] transition-all flex items-center gap-1.5"
+            disabled={!canSave}
+            className="px-6 py-2.5 bg-action-bg text-action-text rounded-lg font-poppins font-semibold text-small hover:opacity-90 active:scale-[0.98] transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span>Save Changes</span>
           </button>

@@ -96,7 +96,7 @@ export default function Sidebar({
           </div>
         ) : null}
         <div className={collapsed ? 'lg:hidden' : ''}>
-          <Logo variant="stacked" sidebar force="dark" priority />
+          <Logo variant="horizontal" sidebar force="dark" priority />
         </div>
       </div>
 

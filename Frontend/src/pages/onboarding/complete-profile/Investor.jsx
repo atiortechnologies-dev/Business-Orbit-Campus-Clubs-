@@ -45,6 +45,7 @@ export default function CompleteProfileInvestor() {
       onPhotoChange={handlePhotoChange}
       onSave={handleSave}
       saved={saved}
+      canSave={bio.trim().length > 0}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input id="firm" label="Investment Firm / Organization" value={firm} onChange={(e) => setFirm(e.target.value)} placeholder="e.g. Orbit Capital" />

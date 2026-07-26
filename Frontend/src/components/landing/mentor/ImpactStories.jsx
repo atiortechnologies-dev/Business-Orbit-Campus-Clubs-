@@ -1,4 +1,5 @@
-import { Quote } from 'lucide-react';
+import { Quote, User } from 'lucide-react';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const TESTIMONIALS = [
   { quote: 'Mentoring through Atior connected me with a founder who is now raising Series A. The caliber of talent here is unmatched.', name: 'Sarah Chen', role: 'Partner at Vertex Capital' },
@@ -22,7 +23,7 @@ export default function ImpactStories() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t) => (
             <div key={t.name} className="group h-full bg-surface-white border border-border-subtle rounded-lg overflow-hidden hover:-translate-y-1 hover:shadow-card transition-all duration-300">
-              <div className="aspect-square placeholder-box" />
+              <PlaceholderGraphic icon={User} iconSize={22} className="aspect-square" />
               <div className="p-6">
                 <Quote size={24} strokeWidth={2} className="text-accent-neon mb-4" />
                 <p className="font-inter text-small text-text-heading leading-relaxed mb-6">{t.quote}</p>

@@ -61,7 +61,10 @@ export default function MentorMeetingsPage() {
     return MEETINGS.filter((m) => m.name.toLowerCase().includes(q) || m.startup.toLowerCase().includes(q));
   }, [searchQuery]);
 
+  const canSaveNotes = mentorNotes.trim().length > 0;
+
   const handleSaveNotes = () => {
+    if (!canSaveNotes) return;
     // TODO(backend): persist mentorNotes/outcome for this meeting.
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -195,8 +198,18 @@ export default function MentorMeetingsPage() {
             </select>
 
             <div className="flex items-center gap-3">
-              {saved && <span className="font-inter text-small text-success">Saved</span>}
-              <button type="button" onClick={handleSaveNotes} className="bg-action-bg text-action-text font-poppins font-semibold text-small px-5 py-2.5 rounded-md hover:opacity-90 transition-all">
+              <span
+                className={`font-inter text-small text-success transition-opacity duration-150 ${saved ? 'opacity-100' : 'opacity-0'}`}
+                aria-live="polite"
+              >
+                Saved
+              </span>
+              <button
+                type="button"
+                onClick={handleSaveNotes}
+                disabled={!canSaveNotes}
+                className="bg-action-bg text-action-text font-poppins font-semibold text-small px-5 py-2.5 rounded-md hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 Save Notes
               </button>
               <ComingSoon label="Schedule Follow-up" position="top" inline className="border border-border-subtle text-text-heading font-inter font-medium text-small px-5 py-2.5 rounded-md">

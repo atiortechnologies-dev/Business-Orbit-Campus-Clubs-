@@ -4,10 +4,14 @@ Frontend for **BOCC (Business Orbit Campus Clubs)** — a platform that guides
 college students from a startup idea to a working business over ~12 months,
 through 5 gated stages reviewed by mentors, incubators, and investors.
 
-This repository covers the **Student**, **Incubator**, and **Admin**
-portals. It is a frontend-only build — see [`INTEGRATION.md`](./INTEGRATION.md)
-for exactly what still needs a real backend before this is a working
-product, not just a working UI.
+This repository is the shared frontend for every role: public landing
+pages, auth + onboarding/verification, and the **Student**, **Incubator**,
+**Admin**, **Investor**, **Mentor**, and **Company** portals. It is a
+frontend-only build — see [`INTEGRATION.md`](./INTEGRATION.md) for
+exactly what still needs a real backend before this is a working product,
+not just a working UI. A `Backend/` directory alongside this one has
+started scaffolding real endpoints (auth registration, per-role profile
+models) — nothing in this frontend calls them yet.
 
 ## Tech Stack
 
@@ -47,11 +51,19 @@ src/
   router.jsx                Route table (all routes, incl. the auth layout group)
   index.css                 All design tokens (light + dark mode)
   layouts/
-    AuthLayout.jsx           Shared shell for Login, Forgot/Reset Password, Role Selection
+    AuthLayout.jsx           Shared shell for Login, Forgot/Reset Password,
+                               Role Selection, all Signup pages, and the
+                               whole onboarding/verification flow
   pages/
     auth/                    Login, ForgotPassword, ResetPassword,
                                RoleSelection, and a Signup page per role
                                (Student/Company/Investor/Mentor/Incubator)
+    onboarding/              Post-signup flow: Welcome, VerifyEmail,
+                               VerificationProgress, ApplicationRejected,
+                               plus complete-profile/ (one page per role,
+                               all backed by one shared shell component)
+    landing/                 Public marketing pages: Home + one per role
+                               (Student/Mentor/Investor/Companies/Incubator)
     Dashboard.jsx             Student dashboard
     Notifications.jsx         Student notifications
     Settings.jsx               Student account settings
@@ -68,19 +80,39 @@ src/
                                startup-review pipeline (queue → detail →
                                evaluation workspace → outcome, plus a
                                meeting-scheduler branch), and an audit log
+    investor/                Investor portal (dashboard, incoming pitch
+                               decks, single pitch-deck viewer)
+    mentor/                  Mentor portal (dashboard, requests, chats,
+                               meetings, profile)
+    company/                 Company portal (dashboard, my opportunities)
   components/
     ui/          Shared primitives (Button, Card, Input, Logo, ComingSoon,
                  ThemeToggle, ThemeProvider, Badge, StatCard, DataTable, Modal)
-    auth/        Auth-specific components (RoleCard, PasswordStrengthMeter)
+    auth/        Auth-specific components (RoleCard, PasswordStrengthMeter,
+                 RoleSignupForm — the one shared component behind all 5
+                 signup pages)
+    onboarding/  CompleteProfileShell + shared field components (TagInput,
+                 CheckboxPills, RadioPills, SelectField, TextAreaField)
+                 behind the 5 complete-profile pages
+    landing/     Shared Navbar/Footer plus one subfolder per landing page
+                 (student/, mentor/, investor/, companies/, incubator/)
     layout/      PublicNav (shared top nav), Sidebar (shared dashboard side
-                 panel — used by all three portals, mobile drawer + desktop
+                 panel — used by every portal shell, mobile drawer + desktop
                  collapse built in)
     dashboard/   DashboardShell — header/content shell for the Student portal
     incubator/   IncubatorShell — header/content shell for the Incubator portal
     admin/       AdminShell — header/content shell for the Admin portal
+    investor/    InvestorShell — header/content shell for the Investor portal
+    mentor/      MentorShell — header/content shell for the Mentor portal
+    company/     CompanyShell — header/content shell for the Company portal,
+                 plus its page-content components (StatsRow, ApplicantTable,
+                 RightPanel, OpportunitiesTable)
   hooks/
     useDocumentTitle.js     Sets document.title per route
     useSidebarCollapsed.js  Persists the sidebar's collapsed/expanded state
+  utils/
+    csv.js                  Turns local table state into a real downloadable
+                             .csv — shared by every "Export CSV" action
 
 public/
   logos/       Brand logo assets (light/dark × mark/horizontal/stacked variants)
@@ -106,13 +138,22 @@ tooltip, `aria-disabled`) instead of a dead link or a fake page — see
 | Route | Portal |
 |---|---|
 | `/login`, `/forgot-password`, `/reset-password`, `/role-selection`, `/signup/{student\|company\|investor\|mentor\|incubator}` | Auth |
+| `/onboarding/welcome`, `/onboarding/verify-email`, `/onboarding/verification-progress`, `/onboarding/application-rejected`, `/onboarding/complete-profile/{student\|mentor\|investor\|incubator\|company}` | Onboarding / verification |
+| `/landing`, `/landing/{student\|mentor\|investor\|incubator\|companies}` | Public landing |
 | `/dashboard`, `/notifications`, `/settings`, `/build-startup/journey` | Student |
 | `/build-startup/journey/ideation` (+ `/submit`, `/confirmation`, `/review-meeting`, `/review-result`, `/resources`) | Student — Ideation stage |
 | `/build-startup/journey/validation` (+ `/survey-tracker`, `/evidence-upload`, `/report-submission`, `/confirmation`, `/review-meeting`, `/review-result`) | Student — Validation stage |
 | `/build-startup/journey/mvp` (+ `/choose-product-type`, `/submit`, `/success`, `/incubation-proof`) | Student — MVP stage |
 | `/incubator`, `/incubator/applications`, `/incubator/applications/review`, `/incubator/messages`, `/incubator/settings` | Incubator |
 | `/admin`, `/admin/verification(/detail\|/decision)`, `/admin/reviews(/detail\|/workspace\|/outcome\|/schedule-meeting)`, `/admin/audit-log` | Admin |
+| `/investor`, `/investor/pitch-decks`, `/investor/pitch-decks/review` | Investor |
+| `/mentor`, `/mentor/requests`, `/mentor/chats`, `/mentor/meetings`, `/mentor/profile` | Mentor |
+| `/company/dashboard`, `/company/my-opportunities` | Company |
 | `/legal/privacy-policy` | Public |
+
+73 routes total. `src/router.jsx` is the single source of truth — if this
+table and that file ever disagree, the file wins; update this table to
+match.
 
 ## Before Deploying / Integrating
 

@@ -1,5 +1,6 @@
-import { Check, Download } from 'lucide-react';
+import { Check, Download, Handshake } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const BENEFITS = [
   'Standardized startup evaluation framework',
@@ -15,14 +16,18 @@ export default function InstitutionalValue() {
     <section id="institutional" className="py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         <div className="relative order-2 lg:order-1">
-          <div className="relative rounded-lg overflow-hidden border border-border-subtle shadow-card placeholder-box aspect-[4/3]">
+          <PlaceholderGraphic
+            icon={Handshake}
+            label="Partnership Overview"
+            className="rounded-lg overflow-hidden shadow-card aspect-[4/3]"
+          >
             <div className="absolute bottom-4 left-4 bg-surface-white/90 backdrop-blur rounded-md px-4 py-3 shadow-card border border-border-subtle">
               <div className="font-inter text-caption text-text-muted">Funding Readiness</div>
               <div className="font-poppins font-bold text-2xl text-text-heading">
                 92<span className="text-accent-neon">%</span>
               </div>
             </div>
-          </div>
+          </PlaceholderGraphic>
         </div>
 
         <div className="order-1 lg:order-2">

@@ -15,6 +15,79 @@ lists the exact file/function to replace.
 
 ---
 
+## API Surface (quick reference for backend integration)
+
+Every screen-by-screen section below has its own `TODO(backend)` markers
+at the exact call site. This section rolls all ~35 of them up into one
+endpoint-oriented list, so a backend engineer doesn't have to walk every
+file to reconstruct what's needed. Grouped by resource, not by screen.
+
+**Already real, in `Backend/`** (see `Backend/routes/authRoute.js`):
+- `POST /api/auth/register` — implemented, validated by
+  `Backend/utils/validators.js`'s `registerSchema`. **Not wired up from
+  this frontend yet** — see `components/auth/RoleSignupForm.jsx`'s
+  `TODO(backend)` for the exact field-name mismatches per role (3 of the
+  5 signup forms are missing fields the schema requires outright, not
+  just naming differences — Investor, Incubator, and Company signups
+  need new fields added before this endpoint can register those roles).
+- `GET /api/auth/check-email` — implemented, unused by this frontend.
+
+**Auth — not yet built on the backend:**
+- `POST /api/auth/login` (`pages/auth/Login.jsx`)
+- `POST /api/auth/forgot-password` (`pages/auth/ForgotPassword.jsx`)
+- `POST /api/auth/reset-password` (`pages/auth/ResetPassword.jsx`)
+
+**Profile / settings (PATCH, one per role + Student's own settings):**
+- Student: `pages/Settings.jsx` (profile, password, delete account)
+- Onboarding complete-profile, one per role: `pages/onboarding/complete-profile/{Student,Mentor,Investor,Incubator,Company}.jsx`
+- Incubator: `pages/incubator/Settings.jsx`
+- Mentor: `pages/mentor/Profile.jsx`
+
+**Student journey submissions (one POST per gated stage):**
+- Ideation: `pages/journey/ideation/IdeaSubmission.jsx`
+- Validation: `pages/journey/validation/{SurveyTracker,EvidenceUpload,ReportSubmission}.jsx`
+- MVP: `pages/journey/mvp/{ChooseProductType,MvpSubmission,IncubationProofSubmission}.jsx`
+
+**Incubator review pipeline:**
+- `pages/incubator/ApplicationReview.jsx` — save draft, submit decision
+- `pages/incubator/Messages.jsx` — send message / attachment
+
+**Admin — two review pipelines + one dashboard action:**
+- Verification: `pages/admin/{VerificationDetail,VerificationDecision}.jsx`
+- Startup review: `pages/admin/{ReviewWorkspace,ReviewOutcome,ScheduleMeeting}.jsx`
+- `pages/admin/Admin.jsx` — dismiss a Critical Action
+
+**Investor:**
+- `pages/investor/PitchDeck.jsx` — save due-diligence notes
+
+**Mentor:**
+- `pages/mentor/{Mentor,Requests}.jsx` — accept/decline a mentorship request
+- `pages/mentor/Meetings.jsx` — save session notes/outcome
+- `pages/mentor/Chats.jsx` — send message
+
+**Shared:**
+- `components/layout/Sidebar.jsx` — every portal's sidebar footer shows a
+  hardcoded name/initials/role; needs real authenticated-user data once
+  a session exists, one place for all six portal shells.
+
+**Known frontend gap — dead "Save Draft" controls (not a backend TODO):**
+Found during a pass auditing every save/submit button for false-success
+states (most of that pass just added missing validation gating — see the
+per-screen sections below). These 5 "Save Draft" buttons have no `onClick`
+at all, not just a missing backend call — clicking them does nothing:
+`pages/journey/ideation/IdeaSubmission.jsx`,
+`pages/journey/mvp/MvpSubmission.jsx`,
+`pages/journey/validation/EvidenceUpload.jsx`,
+`pages/journey/validation/SurveyTracker.jsx`,
+`pages/journey/mvp/IncubationProofSubmission.jsx`. Left unwired
+deliberately here — giving them real behavior is new scope (a draft-save
+flow), not a fix for the false-success problem this pass targeted.
+
+No env vars, API base URL, or auth/session provider are configured in
+this frontend yet — see Cross-cutting at the bottom of this file.
+
+---
+
 ## Public Landing Pages
 
 Six public marketing pages, `src/pages/landing/*.jsx` — no auth required,
@@ -22,8 +95,11 @@ reachable before `/login`. Rebuilt from an intern's (Shivom's) original
 `framer-motion` implementation onto this app's existing design-token/
 component system and CSS-transition convention; see `CONTRIBUTING.md` §8
 for the animation-library decision this left deferred. All "photo" slots
-across all 6 pages use the `.placeholder-box` CSS utility — zero hotlinked
-or stock images anywhere in this section.
+across all 6 pages use the shared `components/ui/PlaceholderGraphic.jsx`
+component (dashed border, a contextual lucide icon, short caption) —
+zero hotlinked or stock images anywhere in this section. This replaced
+the old flat `.placeholder-box` diagonal-hatch style, which has been
+removed from `index.css` now that nothing references it.
 
 ### `/landing` — `src/pages/landing/Home.jsx`
 - **Real:** Navbar's 5 in-page anchors (About/Startup Stories/Community/FAQ/
@@ -382,8 +458,11 @@ Five screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
 ### `/incubator/applications/review` — `src/pages/incubator/ApplicationReview.jsx`
 - **Real:** Reviewer Notes textarea (typing works, not persisted),
   Approve/Request Revisions/Reject single-select, Save Draft and Submit
-  Decision both show real transient confirmation UI. Print PDF now calls
-  `window.print()` — a real action, not a stub.
+  Decision both show real transient confirmation UI — and both are now
+  correctly gated (Save Draft requires non-empty notes, Submit Decision
+  requires a selected outcome), so neither can report success against an
+  empty review. Print PDF now calls `window.print()` — a real action, not
+  a stub.
 - **Stub:** none of the above persists anywhere — reload the page and it's
   gone. Submit Decision needs a real `POST` once there's somewhere for a
   decision to go.
@@ -503,13 +582,17 @@ finished.)*
   never uploaded anywhere.
 
 ### `/admin/reviews/workspace` — `ReviewWorkspace.jsx`
-- **Real:** Evaluation Checklist (5 real checkboxes), Reviewer Notes
-  textarea (typing works), Metrics Scorecard's 4 sliders with a **live
-  consensus score** recalculated via `useMemo` as you drag, Decision
-  Summary's 3 exclusive toggle buttons, Save Draft (real 2s transient
-  confirmation, same honest pattern as `incubator/Settings.jsx` — not a
-  fake network delay, the state change is instant, only the confirmation
-  banner auto-dismisses after 2s).
+- **Real:** Evaluation Checklist (5 real checkboxes), the "Core Strengths"
+  Reviewer Notes textarea is wired to state and gates Save Draft (empty
+  notes → button stays disabled, matching `ApplicationReview.jsx`'s
+  Submit Decision pattern) — "Required Improvements" and "Internal Admin
+  Comments" remain uncontrolled (typing works, not read anywhere) since
+  they're not required for a draft to mean something. Metrics Scorecard's
+  4 sliders with a **live consensus score** recalculated via `useMemo` as
+  you drag, Decision Summary's 3 exclusive toggle buttons, Save Draft
+  (real 2s transient confirmation, same honest pattern as
+  `incubator/Settings.jsx` — not a fake network delay, the state change
+  is instant, only the confirmation banner auto-dismisses after 2s).
 - **Stub:** nothing in the checklist/notes/scorecard/decision persists —
   reload and it's gone. Submit Review → real navigation to
   `/admin/reviews/outcome`, but doesn't actually submit anything anywhere.
@@ -660,6 +743,47 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")*
   yet, unlike Student Settings' equivalent flows which have a real backing
   `Modal` (there's no reason to duplicate that work here without a shared
   account-settings component to reuse first).
+
+---
+
+## Company Portal
+
+*(Originally added by a different contributor directly to `main`, outside
+the usual branch/PR process this doc otherwise assumes. Fully remediated
+— rebuilt on the same shell/token/component conventions as every other
+portal. `components/company/CompanyShell.jsx` is the fifth instance of
+the shared three-piece shell pattern (Dashboard/Incubator/Admin/
+Investor/Mentor before it); the old `layouts/CompanyDashboardShell.jsx`
+and `components/bocc/*` are gone.)*
+
+### `/company/dashboard` — `src/pages/company/Dashboard.jsx`
+- **Stub:** all 4 stat cards, the Recent Applicant Activity table, and
+  the Latest Postings list are hardcoded snapshots — same as every other
+  portal's dashboard at this stage.
+- **Real:** "Manage Opportunities" and "SEE ALL JOB POSTS" → real
+  navigation to `/company/my-opportunities`.
+- **Coming Soon:** "Post New Opportunity," "View Applicants," "View all"
+  (applicant activity) — all genuinely blocked on screens that don't
+  exist yet (a create-opportunity form, an applicants directory).
+
+### `/company/my-opportunities` — `src/pages/company/MyOpportunities.jsx`
+- **Real:** search genuinely filters the 4 seeded opportunities
+  client-side (by title or ref), using the shared `DataTable` component
+  (desktop grid → stacked mobile cards, same as every other table in the
+  app).
+- **Stub:** filtering only operates on 4 hardcoded rows. Pagination is
+  real (not `ComingSoon`-wrapped) but honestly disabled, and "Showing N
+  of 4" reflects the real filtered/total counts — same honest-count
+  convention as Admin/Investor's tables.
+- **Coming Soon:** "New Opportunity," each row's Actions (kebab) menu —
+  both blocked on screens that don't exist yet.
+
+### Shell — `components/company/CompanyShell.jsx`
+Sidebar nav: Dashboard and My Opportunities are real; Post Opportunity,
+Applicants, Profile, and Settings are `real: false` (render as
+`ComingSoon` automatically via the shared `Sidebar.jsx`) since none of
+those screens exist yet. Header search and notifications are
+`ComingSoon`, matching every other portal shell's header.
 
 ---
 

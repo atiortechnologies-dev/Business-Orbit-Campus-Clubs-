@@ -11,8 +11,10 @@ import {
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function ApplicationReview() {
+  useDocumentTitle('Application Review — BOCC Incubator Portal');
   const [notes, setNotes] = useState('');
   const [selectedDecision, setSelectedDecision] = useState(null); // 'approve' | 'revisions' | 'reject'
   const [draftSaved, setDraftSaved] = useState(false);
@@ -273,8 +275,12 @@ export default function ApplicationReview() {
             <div className="border-t border-divider-line pt-4 flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => setDraftSaved(true)}
-                className="text-text-muted hover:text-text-heading font-poppins font-semibold text-small transition-colors focus:outline-none"
+                disabled={!notes.trim()}
+                // TODO(backend): PATCH this review as a draft ({ applicationId,
+                // reviewerNotes, decision: selectedDecision }) so it survives
+                // a reload; currently only held in local state.
+                onClick={() => notes.trim() && setDraftSaved(true)}
+                className="text-text-muted hover:text-text-heading font-poppins font-semibold text-small transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save Draft
               </button>
@@ -282,6 +288,9 @@ export default function ApplicationReview() {
               <button
                 type="button"
                 disabled={!selectedDecision}
+                // TODO(backend): POST the final decision ({ applicationId,
+                // decision: selectedDecision, reviewerNotes }) once there's
+                // somewhere for a decision to go — see INTEGRATION.md.
                 onClick={() => setDecisionSubmitted(true)}
                 className={`px-5 py-2.5 rounded-md font-poppins font-semibold text-small transition-all ${
                   selectedDecision
@@ -293,11 +302,12 @@ export default function ApplicationReview() {
               </button>
             </div>
 
-            {draftSaved && (
-              <div className="text-center font-inter text-small text-success mt-2 select-none animate-fade-in">
-                Draft saved
-              </div>
-            )}
+            <div
+              className={`text-center font-inter text-small text-success mt-2 select-none transition-opacity duration-150 ${draftSaved ? 'opacity-100' : 'opacity-0'}`}
+              aria-live="polite"
+            >
+              Draft saved
+            </div>
 
             {decisionSubmitted && (
               <div className="p-3 bg-canvas-bg border border-border-subtle rounded-lg flex items-center gap-2 text-text-heading animate-fade-in">

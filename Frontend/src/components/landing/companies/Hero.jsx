@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Building2, Users } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const STATS = [
   { value: '500+', label: 'Partnered Colleges' },
@@ -10,7 +11,7 @@ const STATS = [
 export default function Hero() {
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-heading">
-      <div className="relative mx-auto grid max-w-[var(--spacing-container-max)] grid-cols-1 items-center gap-12 px-6 py-16 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:py-24">
+      <div className="relative mx-auto grid max-w-[var(--spacing-container-max)] grid-cols-1 items-center gap-12 px-6 pt-28 pb-16 lg:grid-cols-2 lg:gap-16 lg:px-10 lg:pt-32 lg:pb-24">
         <div className="flex flex-col">
           <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border-subtle bg-surface-white px-3.5 py-1.5 font-inter text-caption font-medium text-text-muted">
             <span className="h-1.5 w-1.5 rounded-full bg-accent-neon" />
@@ -46,7 +47,7 @@ export default function Hero() {
         </div>
 
         <div className="relative">
-          <div className="aspect-[4/5] placeholder-box rounded-lg" />
+          <PlaceholderGraphic icon={Building2} label="Campus Partnerships" className="aspect-[4/5] rounded-lg" />
 
           <div className="absolute -left-4 top-8 hidden rounded-lg border border-border-subtle bg-surface-white/90 px-4 py-3 shadow-card backdrop-blur-sm lg:flex lg:items-center lg:gap-2.5">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-brand-black text-white">

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, FileText } from 'lucide-react';
+import { ArrowRight, FileText, LineChart } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const TRUST_ROW = [
   { value: '500+', label: 'Student Startups' },
@@ -55,7 +56,11 @@ export default function Hero() {
         </div>
 
         <div className="relative">
-          <div className="relative rounded-lg overflow-hidden border border-border-subtle shadow-card placeholder-box aspect-[4/3]">
+          <PlaceholderGraphic
+            icon={LineChart}
+            label="Incubator Pipeline"
+            className="rounded-lg overflow-hidden shadow-card aspect-[4/3]"
+          >
             <div className="absolute top-4 left-4 bg-surface-white/90 backdrop-blur rounded-md px-3 py-2 shadow-card border border-border-subtle flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-accent-neon" />
               <span className="font-inter text-caption font-medium text-text-heading">Live incubator pipeline</span>
@@ -69,7 +74,7 @@ export default function Hero() {
                 <span className="font-inter text-caption font-bold text-text-heading">78%</span>
               </div>
             </div>
-          </div>
+          </PlaceholderGraphic>
           <div className="absolute -inset-4 -z-10 rounded-full border border-accent-neon/20" />
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LineChart } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const STATS = [
   { value: '500+', label: 'Pre-Vetted Student Startups' },
@@ -10,7 +11,7 @@ const STATS = [
 
 export default function Hero() {
   return (
-    <section className="mx-auto max-w-7xl px-6 pt-16 pb-24 md:pt-20 md:pb-28">
+    <section className="mx-auto max-w-7xl px-6 pt-28 pb-24 md:pt-32 md:pb-28">
       <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16 items-start">
         <div className="max-w-xl">
           <span className="inline-flex items-center rounded-full border border-border-subtle px-3 py-1 font-inter text-caption font-medium text-text-muted">
@@ -50,7 +51,7 @@ export default function Hero() {
         </div>
 
         <div className="relative">
-          <div className="aspect-[4/3] placeholder-box rounded-lg" />
+          <PlaceholderGraphic icon={LineChart} label="Investment Dashboard" className="aspect-[4/3] rounded-lg" />
         </div>
       </div>
     </section>
