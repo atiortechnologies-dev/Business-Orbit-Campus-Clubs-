@@ -582,6 +582,28 @@ const submitIncubationSchema = z.object({
 
 const updateIncubationSchema = submitIncubationSchema.partial();
 
+const submitMetricsSchema = z.object({
+  total_users: z.number().min(0, "Total users cannot be negative"),
+  active_users: z.number().min(0, "Active users cannot be negative"),
+  monthly_growth_rate: z.number().min(0).max(100),
+  conversion_rate: z.number().min(0).max(100),
+  retention_rate: z.number().min(0).max(100),
+  revenue: z.number().min(0).optional().default(0),
+  acquisition_channels: z
+    .object({
+      organic: z.number().min(0).optional().default(0),
+      social_media: z.number().min(0).optional().default(0),
+      referrals: z.number().min(0).optional().default(0),
+      paid_marketing: z.number().min(0).optional().default(0),
+      events: z.number().min(0).optional().default(0),
+      other: z.number().min(0).optional().default(0),
+    })
+    .optional(),
+  notes: z.string().max(2000).optional().default(""),
+});
+
+const updateMetricsSchema = submitMetricsSchema.partial();
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -611,4 +633,6 @@ module.exports = {
   updateMVPSubmissionSchema,
   submitIncubationSchema,
   updateIncubationSchema,
+  submitMetricsSchema,
+  updateMetricsSchema,
 };
