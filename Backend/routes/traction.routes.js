@@ -88,4 +88,20 @@ router.get("/traction/review/status", tractionController.getReviewStatus);
 router.get("/traction/review/timeline", tractionController.getReviewTimeline);
 router.get("/traction/review/comments", tractionController.getReviewComments);
 
+// SCREEN 6: TRACTION REVIEW MEETING
+
+router.get("/traction/review-meeting", tractionController.getReviewMeeting);
+router.get(
+  "/traction/review-meeting/details",
+  tractionController.getReviewMeetingDetails,
+);
+router.get(
+  "/traction/review-meeting/join-link",
+  tractionController.getMeetingJoinLink,
+);
+router.post(
+  "/traction/review-meeting/confirm-attendance",
+  tractionController.confirmAttendance,
+);
+
 module.exports = router;
