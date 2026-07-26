@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Building2 } from 'lucide-react';
 import CompleteProfileShell from '@/components/onboarding/CompleteProfileShell';
 import TextAreaField from '@/components/onboarding/TextAreaField';
 import TagInput from '@/components/onboarding/TagInput';
@@ -44,6 +45,7 @@ export default function CompleteProfileCompany() {
       title="Complete Company Profile"
       subtitle="Finish setting up your company presence in the Business Orbit ecosystem."
       photoLabel="Company Logo"
+      photoIcon={Building2}
       photoPreview={logoPreview}
       onPhotoChange={handleLogoChange}
       onSave={handleSave}

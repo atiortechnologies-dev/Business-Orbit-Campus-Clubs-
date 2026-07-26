@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Camera, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Camera, ChevronRight, CheckCircle2, User } from 'lucide-react';
 import MentorShell from '@/components/mentor/MentorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -77,8 +77,12 @@ export default function MentorProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-4 bg-surface-white border border-border-subtle rounded-xl shadow-card p-6 h-fit">
           <div className="flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-full bg-canvas-bg border border-border-subtle overflow-hidden mb-3">
-              {photoPreview && <img src={photoPreview} alt="" className="w-full h-full object-cover" />}
+            <div className="w-20 h-20 rounded-full bg-canvas-bg border border-border-subtle overflow-hidden mb-3 flex items-center justify-center text-text-muted">
+              {photoPreview ? (
+                <img src={photoPreview} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <User size={28} strokeWidth={1.5} />
+              )}
             </div>
             <p className="font-poppins font-semibold text-card text-text-heading">{fullName}</p>
             <p className="font-inter text-small text-text-muted">{jobTitle}</p>
