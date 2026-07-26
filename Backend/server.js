@@ -15,6 +15,9 @@ const resourceRoutes = require("./routes/resource.routes");
 const submissionRoutes = require("./routes/submission.routes");
 const meetingRoutes = require("./routes/meeting.routes");
 const reviewRoutes = require("./routes/review.routes");
+const incubatorDiscoveryRoutes = require("./routes/incubatorDiscovery.routes");
+const incubationApplicationRoutes = require("./routes/incubationApplication.routes");
+const studentIncubationRoutes = require("./routes/studentIncubation.routes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const { createProfileRouter } = require("./routes/profile.routes");
 const {
@@ -53,7 +56,11 @@ const studentRoutes = require("./routes/student.routes");
 const companyRoutes = require("./routes/company.routes");
 const investorRoutes = require("./routes/investor.routes");
 const chatRoutes = require("./routes/chat.routes");
-const { requireAuth, authorizeRoles } = require("./middlewares/requireAuth");
+const {
+  requireAuth,
+  authorizeRoles,
+  requireActiveAccount,
+} = require("./middlewares/requireAuth");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
@@ -75,11 +82,37 @@ app.use("/api/review", reviewRoutes);
 
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/mentor", requireAuth, authorizeRoles("mentor"), mentorRoutes);
-app.use("/api/student", requireAuth, authorizeRoles("student"), studentRoutes);
+app.use(
+  "/api/mentor",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("mentor"),
+  mentorRoutes,
+);
+app.use(
+  "/api/student",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentRoutes,
+);
 app.use("/api/company", companyRoutes);
 app.use("/api/investor", investorRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/incubators", incubatorDiscoveryRoutes);
+app.use(
+  "/api/incubation",
+  requireAuth,
+  requireActiveAccount,
+  incubationApplicationRoutes,
+);
+app.use(
+  "/api/student/incubation",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentIncubationRoutes,
+);
 
 // Error handling
 app.use(notFound);

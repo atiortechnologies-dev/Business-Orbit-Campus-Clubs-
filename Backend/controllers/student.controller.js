@@ -15,7 +15,7 @@ const MentorReview = require("../models/MentorReview");
 const MentorMeeting = require("../models/MentorMeeting");
 
 // Utility to escape string for use in a MongoDB $regex
-const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /**
  * @desc    Submit a mentorship request to a mentor (Creates a MentorRequest)
@@ -25,7 +25,13 @@ const escapeRegex = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 exports.requestMentor = asyncHandler(async (req, res, next) => {
   const mentorId = req.params.mentorId || req.body.mentorId;
   const studentId = req.user._id;
-  const { problem_statement, help_required, preferred_meeting_mode, preferred_time, additional_notes } = req.body;
+  const {
+    problem_statement,
+    help_required,
+    preferred_meeting_mode,
+    preferred_time,
+    additional_notes,
+  } = req.body;
 
   if (!mentorId) {
     return res.status(400).json({
@@ -162,15 +168,18 @@ exports.listMentors = asyncHandler(async (req, res, next) => {
   const startIndex = (page - 1) * limit;
 
   // Find all active mentor users first to apply proper DB-level pagination
-  const activeMentorUsers = await User.find({ role: "mentor", account_status: "active" }).select("_id");
+  const activeMentorUsers = await User.find({
+    role: "mentor",
+    account_status: "active",
+  }).select("_id");
   const activeMentorIds = activeMentorUsers.map((u) => u._id);
-  
-  const query = { 
-    profile_status: "completed", 
+
+  const query = {
+    profile_status: "completed",
     is_visible: true,
-    user_id: { $in: activeMentorIds }
+    user_id: { $in: activeMentorIds },
   };
-  
+
   const total = await MentorProfile.countDocuments(query);
   const mentors = await MentorProfile.find(query)
     .populate("user_id", "full_name email")
@@ -202,23 +211,26 @@ exports.searchMentors = asyncHandler(async (req, res, next) => {
   const startIndex = (page - 1) * limit;
 
   // Find all active mentor users first to apply proper DB-level pagination
-  const activeMentorUsers = await User.find({ role: "mentor", account_status: "active" }).select("_id");
+  const activeMentorUsers = await User.find({
+    role: "mentor",
+    account_status: "active",
+  }).select("_id");
   const activeMentorIds = activeMentorUsers.map((u) => u._id);
 
-  let query = { 
-    profile_status: "completed", 
+  let query = {
+    profile_status: "completed",
     is_visible: true,
-    user_id: { $in: activeMentorIds }
+    user_id: { $in: activeMentorIds },
   };
 
   if (expertise) {
     query.expertise = { $regex: escapeRegex(expertise), $options: "i" };
   }
-  
+
   if (industry) {
     query.mentoring_domains = { $in: [new RegExp(escapeRegex(industry), "i")] };
   }
-  
+
   if (availability) {
     query.availability = { $regex: escapeRegex(availability), $options: "i" };
   }
@@ -254,11 +266,18 @@ exports.getMentorProfileStudentView = asyncHandler(async (req, res, next) => {
   const mentorId = req.params.id;
 
   // mentorId could be User._id
-  const profile = await MentorProfile.findOne({ user_id: mentorId, profile_status: "completed" })
-    .populate("user_id", "full_name email");
+  const profile = await MentorProfile.findOne({
+    user_id: mentorId,
+    profile_status: "completed",
+  }).populate("user_id", "full_name email");
 
   if (!profile || !profile.user_id) {
-    return res.status(404).json({ success: false, message: "Mentor not found or profile incomplete." });
+    return res
+      .status(404)
+      .json({
+        success: false,
+        message: "Mentor not found or profile incomplete.",
+      });
   }
 
   res.status(200).json({
@@ -317,7 +336,8 @@ exports.submitMentorReview = asyncHandler(async (req, res, next) => {
   if (!hasCompletedMeeting) {
     return res.status(403).json({
       success: false,
-      message: "You can only review mentors you have had a completed session with.",
+      message:
+        "You can only review mentors you have had a completed session with.",
     });
   }
 
@@ -329,20 +349,20 @@ exports.submitMentorReview = asyncHandler(async (req, res, next) => {
     await MentorReview.findOneAndUpdate(
       { mentor_id: mentorId, student_id: studentId },
       { rating, review_text },
-      { returnDocument: 'after', upsert: true, session }
+      { returnDocument: "after", upsert: true, session },
     );
 
     // 2. Recalculate average rating for mentor
     const aggResult = await MentorReview.aggregate([
       { $match: { mentor_id: new mongoose.Types.ObjectId(mentorId) } },
-      { $group: { _id: "$mentor_id", avgRating: { $avg: "$rating" } } }
+      { $group: { _id: "$mentor_id", avgRating: { $avg: "$rating" } } },
     ]).session(session);
 
     let newAvg = rating;
     if (aggResult.length > 0) {
       newAvg = aggResult[0].avgRating;
     }
-    
+
     // Round to 1 decimal place
     newAvg = Math.round(newAvg * 10) / 10;
 
@@ -350,7 +370,7 @@ exports.submitMentorReview = asyncHandler(async (req, res, next) => {
     await MentorProfile.findOneAndUpdate(
       { user_id: mentorId },
       { rating: newAvg },
-      { session, returnDocument: 'after' }
+      { session, returnDocument: "after" },
     );
 
     await session.commitTransaction();
@@ -375,10 +395,14 @@ exports.submitMentorReview = asyncHandler(async (req, res, next) => {
 exports.getMentorAvailability = asyncHandler(async (req, res, next) => {
   const mentorId = req.params.id;
 
-  const profile = await MentorProfile.findOne({ user_id: mentorId }).select("availability");
-  
+  const profile = await MentorProfile.findOne({ user_id: mentorId }).select(
+    "availability",
+  );
+
   if (!profile) {
-    return res.status(404).json({ success: false, message: "Mentor not found." });
+    return res
+      .status(404)
+      .json({ success: false, message: "Mentor not found." });
   }
 
   res.status(200).json({

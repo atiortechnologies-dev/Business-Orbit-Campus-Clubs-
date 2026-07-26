@@ -73,12 +73,14 @@ describe("Chat Message Transactions", () => {
       .send({ message: "Hello from transaction test" });
 
     expect(res.statusCode).toEqual(201);
-    
+
     const message = await Message.findOne({ chat_id: chatRoom._id });
     expect(message).not.toBeNull();
     expect(message.message).toBe("Hello from transaction test");
 
-    const notification = await Notification.findOne({ recipient_id: mentorUser._id });
+    const notification = await Notification.findOne({
+      recipient_id: mentorUser._id,
+    });
     expect(notification).not.toBeNull();
     expect(notification.title).toBe("New Chat Message");
   });
@@ -97,10 +99,15 @@ describe("Chat Message Transactions", () => {
     expect(res.statusCode).toEqual(500);
 
     // Verify rollback
-    const message = await Message.findOne({ chat_id: chatRoom._id, message: "This message should be rolled back" });
+    const message = await Message.findOne({
+      chat_id: chatRoom._id,
+      message: "This message should be rolled back",
+    });
     expect(message).toBeNull(); // Must be fully rolled back
 
-    const notification = await Notification.findOne({ recipient_id: mentorUser._id });
+    const notification = await Notification.findOne({
+      recipient_id: mentorUser._id,
+    });
     expect(notification).toBeNull();
 
     Notification.create.mockRestore();

@@ -25,6 +25,11 @@ const investorMessageSchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
+    attachment_url: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     is_read: {
       type: Boolean,
       default: false,

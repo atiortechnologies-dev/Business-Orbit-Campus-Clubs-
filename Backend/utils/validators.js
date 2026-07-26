@@ -233,6 +233,7 @@ const submitIdeaSchema = z.object({
     .trim()
     .min(1, "Description is required")
     .max(5000, "Description must be under 5000 characters"),
+  attachment_url: urlOptional,
 });
 
 const saveDraftSchema = z.object({
@@ -246,6 +247,7 @@ const saveDraftSchema = z.object({
     .trim()
     .max(5000, "Description must be under 5000 characters")
     .optional(),
+  attachment_url: urlOptional,
 });
 
 //* Mentor Requests
@@ -263,10 +265,7 @@ const requestMentorSchema = z.object({
       error: "Mode must be online, in-person, or any",
     })
     .default("online"),
-  preferred_time: z
-    .string()
-    .trim()
-    .min(1, "Preferred time is required"),
+  preferred_time: z.string().trim().min(1, "Preferred time is required"),
   additional_notes: z
     .string()
     .trim()
@@ -276,7 +275,11 @@ const requestMentorSchema = z.object({
 
 const mentorReviewSchema = z.object({
   rating: z.number().min(1).max(5, "Rating must be between 1 and 5"),
-  review_text: z.string().trim().max(500, "Review cannot exceed 500 characters").optional()
+  review_text: z
+    .string()
+    .trim()
+    .max(500, "Review cannot exceed 500 characters")
+    .optional(),
 });
 
 module.exports = {

@@ -65,7 +65,7 @@ exports.scheduleMeeting = asyncHandler(async (req, res) => {
           status: MEETING_STATUS.SCHEDULED,
         },
       ],
-      { session }
+      { session },
     );
 
     // Send notification to student
@@ -78,7 +78,7 @@ exports.scheduleMeeting = asyncHandler(async (req, res) => {
           type: "info",
         },
       ],
-      { session }
+      { session },
     );
 
     await session.commitTransaction();
@@ -256,7 +256,7 @@ exports.completeMeeting = asyncHandler(async (req, res) => {
     await MentorMeeting.updateOne(
       { _id: meeting._id },
       { $set: { status: MEETING_STATUS.COMPLETED } },
-      { session }
+      { session },
     );
     meeting.status = MEETING_STATUS.COMPLETED;
 
@@ -270,7 +270,7 @@ exports.completeMeeting = asyncHandler(async (req, res) => {
           description: `Session completed for startup ${meeting.startup_id}`,
         },
       ],
-      { session }
+      { session },
     );
 
     await session.commitTransaction();

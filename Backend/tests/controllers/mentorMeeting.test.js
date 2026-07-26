@@ -60,11 +60,11 @@ describe("Mentor Meeting Controller", () => {
         if (err) console.error("NEXT ERROR:", err);
       });
       await scheduleMeeting(req, res, next);
-      
+
       if (next.mock.calls.length > 0) {
         throw next.mock.calls[0][0];
       }
-      
+
       expect(res.status).toHaveBeenCalledWith(201);
 
       const meeting = await MentorMeeting.findOne({ mentor_id: mentorId });
@@ -100,14 +100,16 @@ describe("Mentor Meeting Controller", () => {
         },
       };
       const res = mockResponse();
-      
+
       const next = jest.fn();
 
       // Mock Notification.create to throw an error
-      jest.spyOn(Notification, "create").mockRejectedValueOnce(new Error("DB Error"));
+      jest
+        .spyOn(Notification, "create")
+        .mockRejectedValueOnce(new Error("DB Error"));
 
       await scheduleMeeting(req, res, next);
-      
+
       expect(next).toHaveBeenCalledWith(expect.any(Error));
 
       const meeting = await MentorMeeting.findOne({ mentor_id: mentorId });
@@ -184,7 +186,9 @@ describe("Mentor Meeting Controller", () => {
       const res = mockResponse();
       const next = jest.fn();
 
-      jest.spyOn(ActivityLog, "create").mockRejectedValueOnce(new Error("DB Error"));
+      jest
+        .spyOn(ActivityLog, "create")
+        .mockRejectedValueOnce(new Error("DB Error"));
 
       await completeMeeting(req, res, next);
 

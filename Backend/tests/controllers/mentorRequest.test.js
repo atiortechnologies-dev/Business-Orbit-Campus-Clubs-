@@ -214,7 +214,7 @@ describe("Mentor Request Controller", () => {
         if (err) console.error("NEXT ERROR:", err);
       });
       await viewStudentProfile(req, res, next);
-      
+
       expect(res.status).toHaveBeenCalledWith(403);
       expect(res.json.mock.calls[0][0]).toEqual({
         message: "Not authorized to view this student's profile.",

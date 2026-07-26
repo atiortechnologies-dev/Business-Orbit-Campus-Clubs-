@@ -191,7 +191,9 @@ describe("Investor Discovery Controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json.mock.calls[0][0].data.length).toBe(1);
-      expect(res.json.mock.calls[0][0].data[0].startup_id.startup_name).toBe("Test Startup");
+      expect(res.json.mock.calls[0][0].data[0].startup_id.startup_name).toBe(
+        "Test Startup",
+      );
     });
   });
 
@@ -251,7 +253,7 @@ describe("Investor Discovery Controller", () => {
         title: "Test",
         message: "Test msg",
         type: "watchlist",
-        related_id: item._id
+        related_id: item._id,
       });
 
       const req = { params: { id: item._id }, user: { _id: investorId } };
@@ -266,7 +268,7 @@ describe("Investor Discovery Controller", () => {
       expect(remaining).toBe(0);
 
       const remainingNotif = await Notification.countDocuments({
-        related_id: item._id
+        related_id: item._id,
       });
       expect(remainingNotif).toBe(0);
     });

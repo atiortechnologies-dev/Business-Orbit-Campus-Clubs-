@@ -127,7 +127,9 @@ describe("Student Mentor Reviews Controller", () => {
       expect(review.rating).toBe(5);
 
       // Verify mentor profile is updated
-      const updatedProfile = await MentorProfile.findOne({ user_id: mentorUser._id });
+      const updatedProfile = await MentorProfile.findOne({
+        user_id: mentorUser._id,
+      });
       expect(updatedProfile.rating).toBe(5);
     });
 
@@ -154,7 +156,7 @@ describe("Student Mentor Reviews Controller", () => {
         meeting_link: "http://zoom.us",
         status: "completed",
       });
-      
+
       await MentorMeeting.create({
         mentor_id: mentorUser._id,
         student_id: studentUser2._id,
@@ -179,7 +181,9 @@ describe("Student Mentor Reviews Controller", () => {
         .send({ rating: 3 });
 
       // Average should be 4
-      const updatedProfile = await MentorProfile.findOne({ user_id: mentorUser._id });
+      const updatedProfile = await MentorProfile.findOne({
+        user_id: mentorUser._id,
+      });
       expect(updatedProfile.rating).toBe(4);
     });
   });

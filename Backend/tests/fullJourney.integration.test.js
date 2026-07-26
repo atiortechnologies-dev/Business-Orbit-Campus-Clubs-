@@ -227,7 +227,13 @@ describe("Full Lifecycle Integration Journey", () => {
 
       const res = await request(app).post("/api/auth/login").send(payload);
 
-      if (res.status !== 200) console.error("TEST T.1 FAILED. STATUS:", res.status, "BODY:", res.body);
+      if (res.status !== 200)
+        console.error(
+          "TEST T.1 FAILED. STATUS:",
+          res.status,
+          "BODY:",
+          res.body,
+        );
       expect(res.status).toBe(200);
       mentorJwt = res.body.data.accessToken;
     });

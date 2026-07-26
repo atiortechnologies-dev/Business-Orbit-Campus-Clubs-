@@ -65,8 +65,7 @@ const configureSocket = (server) => {
       });
     });
 
-    socket.on("disconnect", () => {
-    });
+    socket.on("disconnect", () => {});
   });
 
   return io;

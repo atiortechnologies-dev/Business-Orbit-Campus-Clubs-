@@ -105,7 +105,7 @@ exports.getHydratedChatRooms = async (userId, role, limit = null) => {
       lastMessageTime: "$lastMessage.created_at",
       onlineStatus: "offline",
       unreadCount: "$unreadCount",
-    }
+    },
   });
 
   return ChatRoom.aggregate(pipeline);

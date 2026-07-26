@@ -65,6 +65,7 @@ const register = asyncHandler(async (req, res) => {
   session.startTransaction();
 
   let user;
+  let verification;
   try {
     user = new User({
       full_name,
@@ -101,6 +102,14 @@ const register = asyncHandler(async (req, res) => {
       });
     }
 
+    const otp = generateOTP();
+    verification = new EmailVerification({
+      userId: user._id,
+      otp,
+      expiresAt: Date.now() + 15 * 60 * 1000,
+    });
+    await verification.save({ session });
+
     await session.commitTransaction();
     session.endSession();
   } catch (transactionError) {
@@ -109,13 +118,8 @@ const register = asyncHandler(async (req, res) => {
     throw transactionError;
   }
 
-  const otp = generateOTP();
-  const verification = new EmailVerification({
-    userId: user._id,
-    otp,
-    expiresAt: Date.now() + 15 * 60 * 1000,
-  });
-  await verification.save();
+  // Retrieve the generated OTP from the verification object for sending email
+  const otp = verification.otp;
 
   try {
     await sendOTPEmail(user.email, otp);
