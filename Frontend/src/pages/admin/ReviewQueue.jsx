@@ -30,7 +30,9 @@ export default function ReviewQueuePage() {
       mobileLabel: false,
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 placeholder-box rounded-md shrink-0" />
+          <div className="w-9 h-9 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-xs select-none shrink-0">
+            {row.name.charAt(0)}
+          </div>
           <div className="min-w-0">
             <p className="font-poppins font-semibold text-small text-text-heading truncate">{row.name}</p>
             <p className="font-inter text-caption text-text-muted truncate">{row.founder}</p>

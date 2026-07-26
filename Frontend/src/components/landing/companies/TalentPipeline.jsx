@@ -1,4 +1,5 @@
-import { Check } from 'lucide-react';
+import { Check, Users } from 'lucide-react';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const POINTS = ['Campus Hiring', 'Internship Programs', 'Startup Collaborations', 'Student Clubs'];
 
@@ -30,7 +31,7 @@ export default function TalentPipeline() {
           </ul>
         </div>
 
-        <div className="aspect-[4/3] placeholder-box rounded-lg" />
+        <PlaceholderGraphic icon={Users} label="Talent Pipeline" className="aspect-[4/3] rounded-lg" />
       </div>
     </section>
   );

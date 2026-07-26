@@ -40,6 +40,7 @@ export default function CompleteProfileStudent() {
       onPhotoChange={handlePhotoChange}
       onSave={handleSave}
       saved={saved}
+      canSave={bio.trim().length > 0}
     >
       <TextAreaField
         id="bio"

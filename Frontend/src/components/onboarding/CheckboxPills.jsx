@@ -13,7 +13,7 @@ export default function CheckboxPills({ label, options, selected, onToggle }) {
               aria-pressed={active}
               className={`font-inter text-caption font-semibold px-3 py-1.5 rounded-full border transition-all ${
                 active
-                  ? 'bg-brand-black text-white border-brand-black'
+                  ? 'bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black dark:border-white'
                   : 'bg-surface-white text-text-body border-border-subtle hover:border-text-muted'
               }`}
             >

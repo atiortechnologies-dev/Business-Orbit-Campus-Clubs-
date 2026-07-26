@@ -32,7 +32,10 @@ export default function EvidenceUploadPage() {
     addFiles(e.dataTransfer.files);
   };
 
+  const canContinue = files.length > 0;
+
   const handleContinue = () => {
+    if (!canContinue) return;
     // TODO(backend): upload `files` + `description` to the validation-evidence endpoint.
     navigate('/build-startup/journey/validation/report-submission');
   };
@@ -158,7 +161,8 @@ export default function EvidenceUploadPage() {
           <button
             type="button"
             onClick={handleContinue}
-            className="inline-flex items-center gap-2 bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+            disabled={!canContinue}
+            className="inline-flex items-center gap-2 bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
             <ArrowRight size={16} strokeWidth={2} />

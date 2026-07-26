@@ -11,6 +11,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Logo from '@/components/ui/Logo';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -27,6 +28,7 @@ function validateField(name, value) {
 }
 
 export default function LoginPage() {
+  useDocumentTitle('Login — BOCC');
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -148,7 +150,7 @@ export default function LoginPage() {
         aria-labelledby="login-heading"
       >
         <Link
-          to="/login"
+          to="/landing"
           className="inline-flex items-center gap-1 text-small text-text-muted hover:text-text-heading transition-all duration-150 ease-linear self-start font-inter"
           aria-label="Back to home page"
         >

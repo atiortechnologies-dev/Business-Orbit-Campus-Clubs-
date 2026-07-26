@@ -7,6 +7,11 @@ import {
   CircleHelp,
   LifeBuoy,
   Check,
+  Rocket,
+  User,
+  TrendingUp,
+  Building2,
+  Briefcase,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DashboardShell from '@/components/dashboard/DashboardShell';
@@ -170,7 +175,9 @@ export default function DashboardPage() {
               to="/build-startup/journey"
               className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col items-center text-center space-y-4 hover:border-brand-black transition-colors cursor-pointer group active:scale-[0.98]"
             >
-              <div className="w-12 h-12 placeholder-box rounded-lg group-hover:scale-105 transition-transform" />
+              <div className="w-12 h-12 rounded-lg bg-canvas-bg border border-border-subtle flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Rocket size={20} strokeWidth={1.75} className="text-text-heading" />
+              </div>
               <div className="space-y-1">
                 <h5 className="font-poppins font-medium text-card text-text-heading">
                   Build Startup
@@ -190,7 +197,9 @@ export default function DashboardPage() {
               to="/settings"
               className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col items-center text-center space-y-4 hover:border-brand-black transition-colors cursor-pointer group active:scale-[0.98]"
             >
-              <div className="w-12 h-12 placeholder-box rounded-lg group-hover:scale-105 transition-transform" />
+              <div className="w-12 h-12 rounded-lg bg-canvas-bg border border-border-subtle flex items-center justify-center group-hover:scale-105 transition-transform">
+                <User size={20} strokeWidth={1.75} className="text-text-heading" />
+              </div>
               <div className="space-y-1">
                 <h5 className="font-poppins font-medium text-card text-text-heading">
                   Profile
@@ -206,15 +215,17 @@ export default function DashboardPage() {
 
             {/* These are entire directory/marketplace features with no screens built yet, not just an unwired link, so they stay stubbed until those exist */}
             {[
-              { title: 'Investors',      sub: 'Connect with funders.',  cta: 'Browse' },
-              { title: 'Incubators',     sub: 'Supportive ecosystems.', cta: 'Explore' },
-              { title: 'Freelancing',    sub: 'Monetize your skills.',  cta: 'Find Work' },
-            ].map(({ title, sub, cta }) => (
+              { title: 'Investors',      sub: 'Connect with funders.',  cta: 'Browse',    icon: TrendingUp },
+              { title: 'Incubators',     sub: 'Supportive ecosystems.', cta: 'Explore',   icon: Building2 },
+              { title: 'Freelancing',    sub: 'Monetize your skills.',  cta: 'Find Work', icon: Briefcase },
+            ].map(({ title, sub, cta, icon: Icon }) => (
               <ComingSoon key={title} label={title} position="top">
                 <div
                   className="w-full bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col items-center text-center space-y-4 hover:border-border-subtle transition-colors cursor-not-allowed group"
                 >
-                  <div className="w-12 h-12 placeholder-box rounded-lg" />
+                  <div className="w-12 h-12 rounded-lg bg-canvas-bg border border-border-subtle flex items-center justify-center">
+                    <Icon size={20} strokeWidth={1.75} className="text-text-muted" />
+                  </div>
                   <div className="space-y-1">
                     <h5 className="font-poppins font-medium text-card text-text-muted">
                       {title}

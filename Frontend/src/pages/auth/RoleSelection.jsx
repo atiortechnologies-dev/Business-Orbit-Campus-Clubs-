@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import RoleCard from '@/components/auth/RoleCard';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const ROLES = [
   {
@@ -45,6 +46,7 @@ const ROLES = [
 ];
 
 export default function RoleSelectionPage() {
+  useDocumentTitle('Choose Your Role — BOCC');
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
 
@@ -137,7 +139,7 @@ export default function RoleSelectionPage() {
           </Link>
           {' '}·{' '}
           <Link
-            to="/login"
+            to="/landing"
             className="text-text-body hover:text-text-heading transition-all duration-150 ease-linear"
           >
             Back to Home

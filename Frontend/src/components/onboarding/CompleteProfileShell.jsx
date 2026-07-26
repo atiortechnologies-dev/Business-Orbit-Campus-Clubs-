@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Camera } from 'lucide-react';
+import { Camera, User } from 'lucide-react';
 
 // Shared shell for all 5 role variants of the post-signup "complete your
 // profile" step (Student/Mentor/Investor/Incubator/Company) — adapted from
@@ -11,10 +11,12 @@ export default function CompleteProfileShell({
   title,
   subtitle,
   photoLabel = 'Profile Photo',
+  photoIcon: PhotoIcon = User,
   photoPreview,
   onPhotoChange,
   onSave,
   saved,
+  canSave = true,
   children,
 }) {
   const photoInputRef = useRef(null);
@@ -48,7 +50,9 @@ export default function CompleteProfileShell({
             {photoPreview ? (
               <img src={photoPreview} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-text-muted font-poppins font-semibold text-card">?</div>
+              <div className="w-full h-full flex items-center justify-center text-text-muted">
+                <PhotoIcon size={28} strokeWidth={1.5} />
+              </div>
             )}
             <span className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-brand-black flex items-center justify-center border-2 border-surface-white">
               <Camera size={12} strokeWidth={2} className="text-white" />
@@ -61,11 +65,17 @@ export default function CompleteProfileShell({
         <div className="flex flex-col gap-6">{children}</div>
 
         <div className="flex flex-col items-center gap-3 mt-8">
-          {saved && <span className="font-inter text-small text-success">Saved</span>}
+          <span
+            className={`font-inter text-small text-success transition-opacity duration-150 ${saved ? 'opacity-100' : 'opacity-0'}`}
+            aria-live="polite"
+          >
+            Saved
+          </span>
           <button
             type="button"
             onClick={onSave}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small px-8 py-3 rounded-md hover:opacity-90 transition-all"
+            disabled={!canSave}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small px-8 py-3 rounded-md hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save &amp; Finish
           </button>

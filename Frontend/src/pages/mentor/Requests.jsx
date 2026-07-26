@@ -42,6 +42,10 @@ export default function MentorRequestsPage() {
   const [requests, setRequests] = useState(INITIAL_REQUESTS);
   const [newestFirst, setNewestFirst] = useState(true);
 
+  // TODO(backend): POST the accept/decline decision for this mentorship
+  // request ({ requestId: id, decision: 'accepted' | 'declined' }); keep
+  // the optimistic local removal on success, surface an error and leave
+  // the request in place on failure.
   const handleAccept = (id) => setRequests((prev) => prev.filter((r) => r.id !== id));
   const handleDecline = (id) => setRequests((prev) => prev.filter((r) => r.id !== id));
   const sortedRequests = newestFirst ? requests : [...requests].reverse();

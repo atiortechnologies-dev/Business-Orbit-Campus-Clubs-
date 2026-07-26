@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import Logo from '@/components/ui/Logo';
@@ -18,11 +18,28 @@ const HOME_LINKS = [
   { label: 'Contact', href: '#contact' },
 ];
 
+// Fixed + scroll-reactive (transparent at the top of the page, glass once
+// scrolled) — matches Student's bespoke Header.jsx, so every landing page
+// behaves the same way rather than Student being the odd one out. Being
+// `fixed` (not `sticky`) is what lets the hero show through while
+// transparent; each page's Hero component carries its own top padding to
+// clear this header's height, the same way Student's Hero already does.
 export default function Navbar({ links = HOME_LINKS }) {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-canvas-bg/80 backdrop-blur-md border-b border-border-subtle">
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
+        scrolled ? 'bg-canvas-bg/80 backdrop-blur-md border-b border-border-subtle' : 'bg-transparent'
+      }`}
+    >
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-5 lg:px-10 h-16">
         <Link to="/landing">
           <Logo variant="horizontal" size={26} priority />

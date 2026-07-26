@@ -25,7 +25,7 @@ const ORBIT_NODES = [
 export default function Hero() {
   return (
     <section id="about" className="relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-5 lg:px-10 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 pt-28 pb-16 lg:pt-32 lg:pb-24 grid lg:grid-cols-2 gap-12 items-center">
         <div>
           <h1 className="font-poppins font-bold text-4xl sm:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-text-heading">
             Turn Ideas into Successful <span className="block">Startups</span>

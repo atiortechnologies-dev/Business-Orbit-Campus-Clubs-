@@ -1,4 +1,5 @@
-import { ArrowRight, Users } from 'lucide-react';
+import { ArrowRight, Users, Handshake } from 'lucide-react';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const STATS = [
   { value: '500+', label: 'Expert Mentors' },
@@ -44,7 +45,7 @@ export default function Hero() {
           </div>
 
           <div className="relative">
-            <div className="aspect-[4/3] placeholder-box rounded-lg" />
+            <PlaceholderGraphic icon={Handshake} label="Mentor Network" className="aspect-[4/3] rounded-lg" />
             <div className="absolute -bottom-6 -left-6 bg-surface-white border border-border-subtle rounded-lg p-5 shadow-card hidden sm:block">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-canvas-bg flex items-center justify-center">

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const STATS = [
   {
@@ -72,6 +73,7 @@ const RECENTLY_INCUBATED = [
 ];
 
 export default function IncubatorDashboard() {
+  useDocumentTitle('Incubator Dashboard — BOCC');
   return (
     <IncubatorShell>
       <section className="mb-8">

@@ -1,9 +1,10 @@
 # Contributing to BOCC-Shared-App
 
 This is the shared frontend for **every** BOCC role (Student, Incubator,
-Auth) — one Vite + React app, not one project per role. Read this before
-adding a new screen, especially if someone else might be building a
-different screen of the *same* portal at the same time as you.
+Admin, Investor, Mentor, Company, plus Auth/Onboarding and public
+Landing) — one Vite + React app, not one project per role. Read this
+before adding a new screen, especially if someone else might be building
+a different screen of the *same* portal at the same time as you.
 
 ## 1. Where things live
 
@@ -20,7 +21,8 @@ src/
 
   layouts/
     AuthLayout.jsx           Wraps /login, /forgot-password,
-                              /reset-password, /role-selection, /signup/*
+                              /reset-password, /role-selection, /signup/*,
+                              and every /onboarding/* route
 
   pages/                     One file per screen. This is almost always
                               where YOUR new work goes.
@@ -65,18 +67,45 @@ src/
                                Investor.jsx, Companies.jsx, Incubator.jsx —
                                see INTEGRATION.md's "Public Landing Pages"
                                section for what's real vs. stub on each
+    onboarding/               Post-signup flow, wrapped in AuthLayout:
+                               Welcome.jsx → VerifyEmail.jsx →
+                               VerificationProgress.jsx (or
+                               ApplicationRejected.jsx), then
+                               complete-profile/{Student,Mentor,Investor,
+                               Incubator,Company}.jsx — 5 thin pages behind
+                               components/onboarding/CompleteProfileShell.jsx
+    investor/                 Investor.jsx (dashboard), IncomingPitchDecks.jsx,
+                               PitchDeck.jsx
+    mentor/                   Mentor.jsx (dashboard), Requests.jsx, Chats.jsx,
+                               Meetings.jsx, Profile.jsx
+    company/                  Dashboard.jsx, MyOpportunities.jsx — originally
+                               added by a different contributor directly to
+                               main; fully remediated onto this file's
+                               conventions, see components/company/ below
 
   components/
     ui/          Generic, reusable anywhere: Button, Card, Input, Logo,
                  ComingSoon, ThemeToggle, ThemeProvider, Badge, StatCard,
                  DataTable, Modal
     layout/      PublicNav (shared top nav for all public/auth pages),
-                 Sidebar (shared side panel for Student + Incubator + Admin)
+                 Sidebar (shared side panel — used by every authenticated
+                 portal's shell: Student, Incubator, Admin, Investor,
+                 Mentor, Company)
     auth/        RoleCard, PasswordStrengthMeter, RoleSignupForm (shared
                  shell behind all 5 /signup/<role> pages — see §3)
+    onboarding/  CompleteProfileShell (shared shell behind all 5
+                 complete-profile/<role> pages, same pattern as
+                 RoleSignupForm above) + shared field components: TagInput,
+                 CheckboxPills, RadioPills, SelectField, TextAreaField
     dashboard/   DashboardShell — the Student portal's page wrapper
     incubator/   IncubatorShell — the Incubator portal's page wrapper
     admin/       AdminShell — the Admin portal's page wrapper
+    investor/    InvestorShell — the Investor portal's page wrapper
+    mentor/      MentorShell — the Mentor portal's page wrapper
+    company/     CompanyShell (the fifth instance of the same shell
+                 pattern) — the Company portal's page wrapper, plus its
+                 page-content components (ApplicantTable, RightPanel,
+                 StatsRow, OpportunitiesTable)
     landing/     Public marketing-page sections — landing/{Navbar,Footer,
                  FAQ,...}.jsx shared across pages, plus one subfolder per
                  role (landing/student/, landing/mentor/, etc.) for
@@ -91,7 +120,12 @@ src/
     useDocumentTitle.js      Call this at the top of a page to set the tab title
     useSidebarCollapsed.js   Backs the desktop sidebar's collapse/expand
                               toggle; localStorage-persisted, shared by all
-                              three shells so the state survives navigation
+                              portal shells so the state survives navigation
+
+  utils/
+    csv.js                   downloadCsv(filename, columns, rows) — turns
+                              local table state into a real .csv download,
+                              shared by every "Export CSV" action
 
 public/
   logos/       Brand logo PNGs — don't add new logo assets without checking
@@ -140,11 +174,12 @@ Before writing a new component, check `components/ui/` and
 | Light/dark toggle | `components/ui/ThemeToggle.jsx` |
 | Reading/toggling theme | `useTheme()` from `components/ui/ThemeProvider.jsx` |
 | Top nav on a public/auth page | `components/layout/PublicNav.jsx` — already wired into `AuthLayout`, only import it directly if you're building a new *public* page outside that layout |
-| Dashboard side panel | `components/layout/Sidebar.jsx` — already wired into all three shells, you should never need to import this directly |
+| Dashboard side panel | `components/layout/Sidebar.jsx` — already wired into all six portal shells (Dashboard/Incubator/Admin/Investor/Mentor/Company), you should never need to import this directly |
 | A status/category pill | `components/ui/Badge.jsx` — `variant="success\|warning\|error\|info\|neutral\|brand"`, Title Case content (not uppercase — the component doesn't force a case, older screens' own inline badges predate this and are uppercase, don't "fix" them to match unless you're already touching that file) |
 | A metric tile (label + big number + trend) | `components/ui/StatCard.jsx` |
 | A dense list/queue with columns | `components/ui/DataTable.jsx` — desktop grid, auto-collapses to stacked cards below `md`. Read the component's own doc comment before adding a 6+ column table; see the gotcha in §6 about column count vs. container width |
 | A confirmation/decision dialog | `components/ui/Modal.jsx` — Escape-to-close, backdrop-click-to-close, already wired for `role="dialog"` |
+| A "media coming soon" image slot (hero shots, partner photos, testimonial headshots — anything standing in for real photography, not an app state) | `components/ui/PlaceholderGraphic.jsx` — dashed border + a contextual lucide icon + short caption, accepts `children` for any overlay badge layered on top. Don't reach for a bare dashed `<div>` or invent a second placeholder style; this is also what replaced the old `.placeholder-box` CSS class, which no longer exists |
 | A role-specific signup form | `components/auth/RoleSignupForm.jsx` — owns password/confirm/strength/terms/submit for all 5 `/signup/<role>` pages; a new page just passes `fields` (its own field list) + copy, see `pages/auth/StudentSignup.jsx` for the ~25-line pattern. Don't build a 6th copy of the password/terms handling by hand |
 
 The design guide (ask whoever's tracking `Frontend/Working/` for the

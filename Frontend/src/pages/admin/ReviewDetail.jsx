@@ -217,7 +217,7 @@ export default function ReviewDetailPage() {
               <button
                 type="button"
                 onClick={() => navigate('/admin/reviews/workspace')}
-                className="w-full py-2.5 bg-brand-black text-white rounded-md font-poppins font-semibold text-small hover:opacity-90 transition-opacity"
+                className="w-full py-2.5 bg-action-bg text-action-text rounded-md font-poppins font-semibold text-small hover:opacity-90 transition-opacity"
               >
                 Begin Evaluation
               </button>

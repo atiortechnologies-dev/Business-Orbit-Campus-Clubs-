@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Camera, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Camera, ChevronRight, CheckCircle2, User } from 'lucide-react';
 import MentorShell from '@/components/mentor/MentorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -58,7 +58,10 @@ export default function MentorProfilePage() {
     setPhotoPreview(URL.createObjectURL(file));
   };
 
+  const canSave = fullName.trim().length > 0;
+
   const handleSaveChanges = () => {
+    if (!canSave) return;
     // TODO(backend): persist the full profile form to the mentor's record.
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -74,8 +77,12 @@ export default function MentorProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-4 bg-surface-white border border-border-subtle rounded-xl shadow-card p-6 h-fit">
           <div className="flex flex-col items-center text-center">
-            <div className="w-20 h-20 rounded-full bg-canvas-bg border border-border-subtle overflow-hidden mb-3">
-              {photoPreview && <img src={photoPreview} alt="" className="w-full h-full object-cover" />}
+            <div className="w-20 h-20 rounded-full bg-canvas-bg border border-border-subtle overflow-hidden mb-3 flex items-center justify-center text-text-muted">
+              {photoPreview ? (
+                <img src={photoPreview} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <User size={28} strokeWidth={1.5} />
+              )}
             </div>
             <p className="font-poppins font-semibold text-card text-text-heading">{fullName}</p>
             <p className="font-inter text-small text-text-muted">{jobTitle}</p>
@@ -229,11 +236,21 @@ export default function MentorProfilePage() {
           </div>
 
           <div className="flex items-center justify-end gap-3">
-            {saved && <span className="font-inter text-small text-success">Saved</span>}
+            <span
+              className={`font-inter text-small text-success transition-opacity duration-150 ${saved ? 'opacity-100' : 'opacity-0'}`}
+              aria-live="polite"
+            >
+              Saved
+            </span>
             <button type="button" className="border border-border-subtle text-text-heading font-inter font-medium text-small px-5 py-2.5 rounded-md hover:bg-canvas-bg transition-colors">
               Cancel
             </button>
-            <button type="button" onClick={handleSaveChanges} className="bg-action-bg text-action-text font-poppins font-semibold text-small px-5 py-2.5 rounded-md hover:opacity-90 transition-all">
+            <button
+              type="button"
+              onClick={handleSaveChanges}
+              disabled={!canSave}
+              className="bg-action-bg text-action-text font-poppins font-semibold text-small px-5 py-2.5 rounded-md hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Save Changes
             </button>
           </div>
