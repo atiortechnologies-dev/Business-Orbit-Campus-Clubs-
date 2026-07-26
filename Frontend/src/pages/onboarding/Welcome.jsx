@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowLeft, Users, Rocket, GraduationCap, CalendarDays } from 'lucide-react';
+import { Sparkles, ArrowLeft, Users, Rocket, GraduationCap, CalendarDays, Clock3 } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
@@ -29,7 +29,8 @@ export default function OnboardingWelcomePage() {
               opportunities.
             </p>
           </div>
-          <div className="placeholder-box aspect-square rounded-lg border border-border-subtle flex items-center justify-center">
+          <div className="aspect-square rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex flex-col items-center justify-center gap-2">
+            <Clock3 size={24} strokeWidth={2} className="text-text-muted" />
             <span className="font-inter text-small text-text-muted">Awaiting Verification</span>
           </div>
         </section>

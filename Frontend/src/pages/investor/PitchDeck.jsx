@@ -110,7 +110,7 @@ export default function PitchDeckPage() {
             </h1>
           </div>
 
-          <div className="placeholder-box aspect-video rounded-lg border border-border-subtle flex flex-col items-center justify-center gap-2 mb-4">
+          <div className="aspect-video rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex flex-col items-center justify-center gap-2 mb-4">
             <BarChart3 size={32} strokeWidth={1.5} className="text-text-muted" />
             <p className="font-inter text-small text-text-muted">Visualizing $2B market projection</p>
           </div>

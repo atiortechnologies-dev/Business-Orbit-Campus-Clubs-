@@ -19,7 +19,7 @@ export default function CompanyDashboardPage() {
             Here is a snapshot of your current hiring pipeline and activity.
           </p>
         </div>
-        <div className="w-full lg:w-64 h-32 placeholder-box rounded-xl flex items-center justify-center shrink-0">
+        <div className="w-full lg:w-64 h-32 rounded-xl border-2 border-dashed border-border-subtle bg-canvas-bg flex items-center justify-center shrink-0">
           <ImageIcon size={32} strokeWidth={2} className="text-text-muted" />
         </div>
       </div>

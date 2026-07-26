@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronRight, Lock, Send } from 'lucide-react';
+import { ChevronRight, Lock, Send, FileText } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import Badge from '@/components/ui/Badge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -180,7 +180,9 @@ export default function ReviewWorkspacePage() {
 
           <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card">
             <p className="font-inter font-medium text-caption text-text-muted uppercase tracking-wider mb-2">Submission Preview</p>
-            <div className="placeholder-box rounded-md h-32" />
+            <div className="rounded-md h-32 border-2 border-dashed border-border-subtle bg-canvas-bg flex items-center justify-center">
+              <FileText size={28} strokeWidth={1.5} className="text-text-muted" />
+            </div>
             <p className="font-inter text-caption text-text-muted mt-2 text-center">Architecture.pdf</p>
           </div>
         </div>
