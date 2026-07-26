@@ -62,6 +62,7 @@ const LaunchSubmission = lazy(() => import('@/pages/journey/launch/LaunchSubmiss
 const FinalPitchDeckUpload = lazy(() => import('@/pages/journey/launch/FinalPitchDeckUpload'));
 const LaunchProofUpload = lazy(() => import('@/pages/journey/launch/LaunchProofUpload'));
 const LaunchVerificationReview = lazy(() => import('@/pages/journey/launch/LaunchVerificationReview'));
+const JourneyComplete = lazy(() => import('@/pages/journey/JourneyComplete'));
 const AdminDashboard = lazy(() => import('@/pages/admin/Admin'));
 const VerificationQueue = lazy(() => import('@/pages/admin/VerificationQueue'));
 const VerificationDetail = lazy(() => import('@/pages/admin/VerificationDetail'));
@@ -185,6 +186,7 @@ export const router = createBrowserRouter([
   { path: '/build-startup/journey/launch/pitch-deck', element: withSuspense(FinalPitchDeckUpload) },
   { path: '/build-startup/journey/launch/proof-upload', element: withSuspense(LaunchProofUpload) },
   { path: '/build-startup/journey/launch/verification', element: withSuspense(LaunchVerificationReview) },
+  { path: '/build-startup/journey/complete', element: withSuspense(JourneyComplete) },
   { path: '/admin', element: withSuspense(AdminDashboard) },
   { path: '/admin/verification', element: withSuspense(VerificationQueue) },
   { path: '/admin/verification/detail', element: withSuspense(VerificationDetail) },
