@@ -106,12 +106,22 @@ app.use(
   requireActiveAccount,
   incubationApplicationRoutes,
 );
+const studentInvestorRoutes = require("./routes/studentInvestor.routes");
+
 app.use(
   "/api/student/incubation",
   requireAuth,
   requireActiveAccount,
   authorizeRoles("student"),
   studentIncubationRoutes,
+);
+
+app.use(
+  "/api/student/investors",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentInvestorRoutes,
 );
 
 // Error handling
