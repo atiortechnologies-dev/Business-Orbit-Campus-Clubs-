@@ -2,10 +2,12 @@ const express = require("express");
 const router = express.Router();
 const { requireRole, protect } = require("../middlewares/authMiddleware");
 const tractionController = require("../controllers/traction.controller");
-const validateRequest = require("../middlewares/validateRequest");
+const { validateRequest } = require("../middlewares/validateRequest");
 const {
   submitMetricsSchema,
   updateMetricsSchema,
+  submitFeedbackSchema,
+  updateFeedbackSchema,
 } = require("../utils/validators");
 
 // All validation requires student role and authentication
@@ -32,5 +34,27 @@ router.put(
   tractionController.updateMetrics,
 );
 router.delete("/traction/metrics/:metricId", tractionController.deleteMetrics);
+
+// SCREEN 3: CUSTOMER FEEDBACK
+
+router.post(
+  "/traction/feedback",
+  validateRequest(submitFeedbackSchema),
+  tractionController.submitFeedback,
+);
+router.get("/traction/feedback", tractionController.getFeedback);
+router.get(
+  "/traction/feedback/:feedbackId",
+  tractionController.getFeedbackById,
+);
+router.put(
+  "/traction/feedback/:feedbackId",
+  validateRequest(updateFeedbackSchema),
+  tractionController.updateFeedback,
+);
+router.delete(
+  "/traction/feedback/:feedbackId",
+  tractionController.deleteFeedback,
+);
 
 module.exports = router;
