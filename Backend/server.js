@@ -107,6 +107,8 @@ app.use(
   incubationApplicationRoutes,
 );
 const studentInvestorRoutes = require("./routes/studentInvestor.routes");
+const studentPitchRoutes = require("./routes/studentPitch.routes");
+const investorPitchRoutes = require("./routes/investorPitch.routes");
 
 app.use(
   "/api/student/incubation",
@@ -122,6 +124,22 @@ app.use(
   requireActiveAccount,
   authorizeRoles("student"),
   studentInvestorRoutes,
+);
+
+app.use(
+  "/api/student/pitches",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentPitchRoutes,
+);
+
+app.use(
+  "/api/investor/direct-pitches",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("investor"),
+  investorPitchRoutes,
 );
 
 // Error handling
