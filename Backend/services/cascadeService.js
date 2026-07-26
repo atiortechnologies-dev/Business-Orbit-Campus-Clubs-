@@ -43,6 +43,8 @@ const InvestorWatchlist = require("../models/InvestorWatchlist");
 const InvestorNote = require("../models/InvestorNote");
 const InvestorChatRoom = require("../models/InvestorChatRoom");
 const InvestorMessage = require("../models/InvestorMessage");
+const PitchSubmission = require("../models/PitchSubmission");
+const PitchDocument = require("../models/PitchDocument");
 
 const IncubationApplication = require("../models/IncubationApplication");
 const ApplicationDocument = require("../models/ApplicationDocument");
@@ -105,6 +107,17 @@ const deleteStartupDependencies = async (startupId, session = null) => {
   if (pitchIds.length > 0) {
     await PitchView.deleteMany({ pitch_id: { $in: pitchIds } }, opts);
     await StartupPitch.deleteMany({ _id: { $in: pitchIds } }, opts);
+  }
+
+  const pitchSubmissions = await PitchSubmission.find(
+    { startup_id: startupId },
+    null,
+    opts,
+  );
+  const pitchSubmissionIds = pitchSubmissions.map((p) => p._id);
+  if (pitchSubmissionIds.length > 0) {
+    await PitchDocument.deleteMany({ submission_id: { $in: pitchSubmissionIds } }, opts);
+    await PitchSubmission.deleteMany({ _id: { $in: pitchSubmissionIds } }, opts);
   }
 
   // 6. Delete Incubation Ecosystem Relations (by Startup)
@@ -245,6 +258,17 @@ const deleteUserDependencies = async (userId, session = null) => {
   await InvestorWatchlist.deleteMany({ investor_id: userId }, opts);
   await InvestorNote.deleteMany({ investor_id: userId }, opts);
   await PitchView.deleteMany({ investor_id: userId }, opts);
+
+  const pitchSubmissions = await PitchSubmission.find(
+    { investor_id: userId },
+    null,
+    opts,
+  );
+  const pitchSubmissionIds = pitchSubmissions.map((p) => p._id);
+  if (pitchSubmissionIds.length > 0) {
+    await PitchDocument.deleteMany({ submission_id: { $in: pitchSubmissionIds } }, opts);
+    await PitchSubmission.deleteMany({ _id: { $in: pitchSubmissionIds } }, opts);
+  }
 
   // 8. Delete Investor/Founder Chat Rooms
   const invChatRooms = await InvestorChatRoom.find(

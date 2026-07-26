@@ -28,16 +28,15 @@ const startupSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
-    // name: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
-    // stage: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
+    // PRD Investor Journey fields
+    logo: { type: String, default: "" },
+    industry: { type: String, trim: true, default: "" },
+    stage: { type: String, trim: true, default: "" },
+    chapter: { type: String, trim: true, default: "" },
+    description: { type: String, trim: true, default: "" },
+    funding_status: { type: String, trim: true, default: "" },
+    visibility: { type: Boolean, default: false }, // if true, visible to investors
+
     category: {
       type: String,
       // required: true,

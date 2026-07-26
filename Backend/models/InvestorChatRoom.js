@@ -18,6 +18,12 @@ const investorChatRoomSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    founder_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );

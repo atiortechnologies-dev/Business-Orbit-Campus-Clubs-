@@ -13,6 +13,7 @@ const Meeting = require("../models/Meeting"); // Reusing for startup meetings
 const InvestorChatRoom = require("../models/InvestorChatRoom");
 const InvestorMessage = require("../models/InvestorMessage");
 const Notification = require("../models/Notification");
+const ActivityLog = require("../models/ActivityLog");
 const mongoose = require("mongoose");
 
 /**
@@ -317,17 +318,17 @@ exports.addToWatchlist = asyncHandler(async (req, res) => {
 
 /**
  * @desc    Remove from watchlist
- * @route   DELETE /api/investor/watchlist/:id
+ * @route   DELETE /api/investor/watchlist/:startupId
  */
 exports.removeFromWatchlist = asyncHandler(async (req, res) => {
-  const { id } = req.params;
+  const { startupId } = req.params;
 
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
     const item = await InvestorWatchlist.findOneAndDelete({
-      _id: id,
+      startup_id: startupId,
       investor_id: req.user._id,
     }).session(session);
 
@@ -508,4 +509,143 @@ exports.startConversation = asyncHandler(async (req, res) => {
   } finally {
     session.endSession();
   }
+});
+
+/**
+ * @desc    Get all visible startups
+ * @route   GET /api/investor/startups
+ */
+exports.getStartups = asyncHandler(async (req, res) => {
+  const startups = await Startup.find({ visibility: true })
+    .populate("student_id", "full_name email")
+    .sort({ created_at: -1 });
+  res.status(200).json({ success: true, data: startups });
+});
+
+/**
+ * @desc    Get a specific startup
+ * @route   GET /api/investor/startups/:startupId
+ */
+exports.getStartupById = asyncHandler(async (req, res) => {
+  const { startupId } = req.params;
+  const startup = await Startup.findById(startupId).populate("student_id", "full_name email");
+  if (!startup || !startup.visibility) {
+    return res.status(404).json({ success: false, message: "Startup not found or not visible" });
+  }
+  res.status(200).json({ success: true, data: startup });
+});
+
+/**
+ * @desc    Search startups by keyword
+ * @route   GET /api/investor/startups/search
+ */
+exports.searchStartups = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  const startups = await Startup.find({
+    visibility: true,
+    $text: { $search: q }
+  }).populate("student_id", "full_name email");
+  res.status(200).json({ success: true, data: startups });
+});
+
+/**
+ * @desc    Filter startups
+ * @route   POST /api/investor/startups/filter
+ */
+exports.filterStartups = asyncHandler(async (req, res) => {
+  const { industry, stage, chapter, funding_status } = req.body;
+  const query = { visibility: true };
+  if (industry) query.industry = industry;
+  if (stage) query.stage = stage;
+  if (chapter) query.chapter = chapter;
+  if (funding_status) query.funding_status = funding_status;
+  
+  const startups = await Startup.find(query).populate("student_id", "full_name email");
+  res.status(200).json({ success: true, data: startups });
+});
+
+/**
+ * @desc    Get startup profile
+ * @route   GET /api/investor/startups/:startupId/profile
+ */
+exports.getStartupProfile = asyncHandler(async (req, res) => {
+  // Can be expanded to include founder profile details, metrics, etc.
+  exports.getStartupById(req, res); 
+});
+
+/**
+ * @desc    Get startup pitch deck
+ * @route   GET /api/investor/startups/:startupId/pitch-deck
+ */
+exports.getStartupPitchDeck = asyncHandler(async (req, res) => {
+  const { startupId } = req.params;
+  const startup = await Startup.findById(startupId);
+  if (!startup || !startup.visibility) {
+    return res.status(404).json({ success: false, message: "Startup not found" });
+  }
+  res.status(200).json({ success: true, data: { pitch_deck: startup.pitch_deck } });
+});
+
+/**
+ * @desc    Get entire watchlist
+ * @route   GET /api/investor/watchlist
+ */
+exports.getWatchlist = asyncHandler(async (req, res) => {
+  const watchlist = await InvestorWatchlist.find({ investor_id: req.user._id })
+    .populate("startup_id")
+    .sort({ added_at: -1 });
+  res.status(200).json({ success: true, data: watchlist });
+});
+
+/**
+ * @desc    Get watchlist statistics
+ * @route   GET /api/investor/watchlist/statistics
+ */
+exports.getWatchlistStatistics = asyncHandler(async (req, res) => {
+  const count = await InvestorWatchlist.countDocuments({ investor_id: req.user._id });
+  // Could add more stats like industry breakdown here
+  res.status(200).json({ success: true, data: { count } });
+});
+
+// ==========================================
+// Notifications & Activity Logs
+// ==========================================
+
+/**
+ * @desc    Get all notifications for investor
+ * @route   GET /api/investor/notifications
+ */
+exports.getNotifications = asyncHandler(async (req, res) => {
+  const notifications = await Notification.find({ recipient_id: req.user._id })
+    .sort({ created_at: -1 })
+    .limit(50);
+  res.status(200).json({ success: true, data: notifications });
+});
+
+/**
+ * @desc    Mark a notification as read
+ * @route   PUT /api/investor/notifications/:notificationId/read
+ */
+exports.markNotificationRead = asyncHandler(async (req, res) => {
+  const { notificationId } = req.params;
+  const notification = await Notification.findOneAndUpdate(
+    { _id: notificationId, recipient_id: req.user._id },
+    { is_read: true },
+    { new: true }
+  );
+  if (!notification) {
+    return res.status(404).json({ success: false, message: "Notification not found" });
+  }
+  res.status(200).json({ success: true, data: notification });
+});
+
+/**
+ * @desc    Get activity logs for investor
+ * @route   GET /api/investor/activity-logs
+ */
+exports.getActivityLogs = asyncHandler(async (req, res) => {
+  const logs = await ActivityLog.find({ user_id: req.user._id })
+    .sort({ created_at: -1 })
+    .limit(50);
+  res.status(200).json({ success: true, data: logs });
 });

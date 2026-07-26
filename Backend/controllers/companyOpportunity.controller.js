@@ -112,12 +112,24 @@ exports.deleteOpportunity = asyncHandler(async (req, res) => {
     });
   }
 
-  await cascadeService.deleteOpportunityDependencies(opportunity._id);
+  const mongoose = require("mongoose");
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  res.status(200).json({
-    success: true,
-    message: "Opportunity deleted successfully",
-  });
+  try {
+    await cascadeService.deleteOpportunityDependencies(opportunity._id, session);
+    await session.commitTransaction();
+
+    res.status(200).json({
+      success: true,
+      message: "Opportunity deleted successfully",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 });
 
 /**

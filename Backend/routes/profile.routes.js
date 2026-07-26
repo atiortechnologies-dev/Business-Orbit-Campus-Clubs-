@@ -11,6 +11,9 @@ const {
   createProfile,
   updateProfile,
   skipProfile,
+  changePassword,
+  updateNotificationPreferences,
+  uploadPhoto,
 } = require("../controllers/profile.controller");
 
 /**
@@ -32,8 +35,14 @@ const createProfileRouter = (role) => {
   // PUT api/{role}/profile ( updateProfile )
   router.put("/", updateProfile);
 
-  //   router.post("/photo", uploadPhoto);
-  //   router.delete("/photo", deletePhoto);
+  // POST api/{role}/profile/upload-photo
+  router.post("/upload-photo", uploadPhoto);
+  
+  // PUT api/{role}/profile/change-password
+  router.put("/change-password", changePassword);
+  
+  // PUT api/{role}/profile/notification-preferences
+  router.put("/notification-preferences", updateNotificationPreferences);
 
   // POST api/{role}/profile/skip
   router.post("/skip", skipProfile);

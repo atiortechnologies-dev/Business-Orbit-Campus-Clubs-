@@ -17,9 +17,18 @@ const investorProfileSchema = new mongoose.Schema(
 
     //^ Fields captured at Registration
     organization: { type: String, required: true, trim: true }, // Organization / Fund name
+    designation: { type: String, trim: true, default: "" }, // PRD requirement
     investment_focus: { type: String, required: true, trim: true },
     investment_stage: { type: String, required: true, trim: true },
-    profile_url: { type: String, trim: true, default: "" },
+    profile_url: { type: String, trim: true, default: "" }, // website
+    
+    //^ Notification Preferences (PRD requirement)
+    notification_preferences: {
+      email_notifications: { type: Boolean, default: true },
+      message_notifications: { type: Boolean, default: true },
+      startup_updates: { type: Boolean, default: true },
+      opportunity_notifications: { type: Boolean, default: true }
+    },
 
     //^ Fields captured at onboarding
     profile_photo: { type: String, default: "" },
