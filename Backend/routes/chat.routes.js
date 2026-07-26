@@ -61,8 +61,26 @@ router.post(
 // @desc    Upload an attachment
 router.post("/upload/:chatId", upload.single("file"), uploadAttachment);
 
+const investorChatController = require("../controllers/investorChat.controller");
+
 // @route   PATCH /api/chat/read/:chatId
 // @desc    Mark messages as read
 router.patch("/read/:chatId", markMessagesRead);
+
+// ==========================================
+// INVESTOR & STARTUP CHATS
+// ==========================================
+
+// Student -> Investor
+router.post("/investors/:investorId", authorizeRoles("student"), investorChatController.startInvestorChat);
+router.get("/investors", authorizeRoles("student"), investorChatController.getInvestorChats);
+router.post("/investors/:investorId/messages", authorizeRoles("student"), investorChatController.sendInvestorMessage);
+router.get("/investors/:investorId/messages", authorizeRoles("student"), investorChatController.getInvestorMessages);
+
+// Investor -> Startup
+router.post("/startups/:startupId", authorizeRoles("investor"), investorChatController.startStartupChat);
+router.get("/startups", authorizeRoles("investor"), investorChatController.getStartupChats);
+router.post("/startups/:startupId/messages", authorizeRoles("investor"), investorChatController.sendStartupMessage);
+router.get("/startups/:startupId/messages", authorizeRoles("investor"), investorChatController.getStartupMessages);
 
 module.exports = router;
