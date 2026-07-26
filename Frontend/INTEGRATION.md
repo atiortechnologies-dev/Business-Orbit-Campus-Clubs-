@@ -47,6 +47,8 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 - Ideation: `pages/journey/ideation/IdeaSubmission.jsx`
 - Validation: `pages/journey/validation/{SurveyTracker,EvidenceUpload,ReportSubmission}.jsx`
 - MVP: `pages/journey/mvp/{ChooseProductType,MvpSubmission,IncubationProofSubmission}.jsx`
+- Traction: `pages/journey/traction/{UserAcquisitionTracker,CustomerFeedbackUpload,TractionProductSubmission}.jsx`
+- Launch: `pages/journey/launch/{LaunchSubmission,FinalPitchDeckUpload,LaunchProofUpload}.jsx`
 
 **Incubator review pipeline:**
 - `pages/incubator/ApplicationReview.jsx` — save draft, submit decision
@@ -369,8 +371,9 @@ Seven screens: `ValidationOverview` → `SurveyTracker` → `EvidenceUpload` →
   there's no backend to send them to yet.
 
 ### Startup Journey — MVP Stage — `src/pages/journey/mvp/*.jsx`
-Five screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
-`SubmissionSuccess` → `IncubationProofSubmission`.
+Seven screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
+`SubmissionSuccess` → `IncubationProofSubmission` → `IncubationVerificationReview`
+→ `IncubationVerificationApproved`.
 - `MvpOverview`'s Development Roadmap illustration placeholder is now a
   custom inline SVG — an "assembling blocks" motif on a fixed-black
   surface. See `CONTRIBUTING.md` §6 for a real dark-mode token bug this
@@ -381,21 +384,101 @@ Five screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
   (title/description reflect as you type — this is the one place in the
   app with a real-time preview, worth knowing about if you're building
   something similar elsewhere), `MvpSubmission`'s checklist,
-  `IncubationProofSubmission`'s real drag-and-drop file state and inline
-  "Submitted for verification" banner (no navigation away, matching the
-  honest-stub pattern used in Admin's `ReviewOutcome.jsx`).
+  `IncubationProofSubmission`'s real drag-and-drop file state.
 - **Stub:** every submit/save button has a `// TODO(backend)` — most
   notably `MvpSubmission`'s Submit MVP and `IncubationProofSubmission`'s
-  Submit for Verification. `SubmissionSuccess`'s submission ID and dates
-  are hardcoded placeholders.
+  Submit for Verification, which now navigates on to
+  `IncubationVerificationReview` instead of just flipping an inline
+  "Submitted" banner with nowhere to go — that follow-up screen didn't
+  exist yet when the inline-banner version was built.
+  `SubmissionSuccess`'s submission ID and dates are hardcoded placeholders.
 - **Coming Soon:** `MvpSubmission`'s document-upload dropzone action.
   `SubmissionSuccess`'s Add to Calendar is now **real** — generates a
   `.ics` file client-side, same pattern as `Notifications.jsx`.
+- `IncubationVerificationReview` and `IncubationVerificationApproved` are
+  read-only status screens (review stepper + documents table; approval
+  summary + feedback) — all sample data, nothing tied to a real reviewer
+  decision. `IncubationVerificationApproved`'s "Start Traction Stage" CTA
+  is a real link now, since Traction exists to link to — it was a
+  `ComingSoon` wrapper in the source file, built before that stage did.
 - Note: `IncubationProofSubmission` was deliberately renamed from the
   source wireframe's "Incubation Verification" — it's a student
   self-service upload (proof of incubator acceptance), unrelated to and
   not overlapping with Admin's identity-verification pipeline below,
   which the original name would have implied.
+
+### Startup Journey — Traction Stage — `src/pages/journey/traction/*.jsx`
+Seven screens: `TractionStage` → `UserAcquisitionTracker` →
+`CustomerFeedbackUpload` → `TractionProductSubmission` → `TractionReview` →
+`TractionReviewMeeting` → `TractionApproved`.
+- **Real:** `UserAcquisitionTracker`'s and `CustomerFeedbackUpload`'s full
+  controlled form state; `TractionProductSubmission`'s Submit is genuinely
+  gated on the product URL and release notes both being filled in (the
+  source file let it submit with an empty form).
+- **Stub:** every submit/save button has a `// TODO(backend)` —
+  `UserAcquisitionTracker`'s Save Draft, `TractionProductSubmission`'s
+  Submit. `CustomerFeedbackUpload`'s Save Feedback navigates straight to
+  Product Submission without a backend call. `TractionReview`,
+  `TractionReviewMeeting`, and `TractionApproved` are read-only
+  status/summary screens — nothing to submit, all sample data.
+- **Coming Soon:** `UserAcquisitionTracker`'s Upload Testimonials and View
+  All, `CustomerFeedbackUpload`'s Upload Evidence dropzone, `TractionReview`'s
+  View Submission, `TractionReviewMeeting`'s Send a Message.
+- Brought in from the same source batch as MVP (a second intern's screens,
+  written slightly ahead of a couple of token/route changes already made
+  elsewhere in this app) — fixed 6 breadcrumb links that pointed at a bare
+  `/journey/traction` instead of `/build-startup/journey/traction`, a
+  handful of leftover `text-headline-md` classes (mapped to `text-card`,
+  same fix as the MVP section above), and the last of the old
+  `.placeholder-box` spots (stage visual, product snapshot, reviewer
+  avatar, achievement badge, launch-stage teaser) — now initials or
+  `PlaceholderGraphic`, matching the rest of the app.
+- `TractionProductSubmission` replaces the source batch's
+  `Updatedproductsubmission.jsx`, which was the same screen with the same
+  fields but no real navigation wired in — kept the one that worked.
+
+### Startup Journey — Launch Stage — `src/pages/journey/launch/*.jsx`
+Five screens: `LaunchStage` → `LaunchSubmission` → `FinalPitchDeckUpload` →
+`LaunchProofUpload` → `LaunchVerificationReview`.
+- **Real:** `LaunchSubmission`'s and `LaunchProofUpload`'s full controlled
+  form state across every section (general info, links, descriptions,
+  social proof). `LaunchStage`'s overview now has the same icon-tile
+  header every other stage overview has (`text-accent-neon` icon in a
+  `bg-brand-black` tile) — the source file was missing it.
+- **Stub:** every submit/save button has a `// TODO(backend)` —
+  `LaunchSubmission`'s Submit/Save Draft, `LaunchProofUpload`'s
+  Submit/Save Draft. `LaunchVerificationReview` is a read-only
+  pending-status screen, all sample data.
+- **Coming Soon:** `FinalPitchDeckUpload`'s 4 upload dropzones and Cancel
+  Upload, `LaunchProofUpload`'s 6 evidence-upload dropzones,
+  `LaunchVerificationReview`'s per-file View/Download, View Submission Full
+  Details, Contact Admin, and View FAQ.
+- `FinalPitchDeckUpload`'s Continue used to route back to the Traction
+  stage instead of forward — fixed to
+  `/build-startup/journey/launch/proof-upload`. Folded Launch Proof Upload
+  into the required pre-launch gate as a third step on `LaunchStage`'s
+  overview (Submission → Pitch Deck → Proof Upload) rather than leaving it
+  as an unlisted fourth screen only reachable by direct link.
+- Same source batch as Traction — fixed one leftover `text-headline-md`
+  (mapped to `text-card`) and `LaunchStage`'s own header, which said
+  "Stage 4" even though every other Launch screen's own breadcrumb already
+  said "Stage 5."
+
+### Startup Journey — Complete — `src/pages/journey/JourneyComplete.jsx`
+The graduation screen after all 5 stages: journey stats, 4 achievement
+badges, 4 "next opportunity" cards (Alumni/Investors/Mentor/Showcase), and
+a certificate CTA — all sample data, nothing tied to a real record of
+progress.
+- **Real:** the Return to Dashboard link.
+- **Coming Soon:** all 4 opportunity-card CTAs, View Certificate.
+- Fixed 2 leftover `text-headline-md` occurrences (the 100%/A+ stats),
+  missed on the first pass over this file and caught during the final
+  verification sweep.
+- Reachable directly at `/build-startup/journey/complete`; not linked to
+  from `LaunchVerificationReview`, since that screen shows a pending
+  review and no screen in this batch shows Launch actually being
+  approved — linking forward from there would fake a state that hasn't
+  happened.
 
 ### `/settings` — `src/pages/Settings.jsx`
 - **Real:** every field is a controlled input, Skills & Interests add/remove
