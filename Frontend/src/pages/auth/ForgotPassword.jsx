@@ -87,36 +87,47 @@ export default function ForgotPasswordPage() {
                   this is about what's actually happening on THIS screen —
                   requesting access back via email) and from ResetPassword's
                   shield motif (that's the "secured" end state, this is the
-                  "request in flight" moment). The envelope has its own
-                  fixed brand-black fill (like the Sidebar), so the flap
-                  lines drawn on it are literal white, not the reactive
-                  border-subtle token — see CONTRIBUTING.md §6. */}
+                  "request in flight" moment). Composition is centered on
+                  x=250 (envelope+key together span ~122-378) — an earlier
+                  version had the whole group drifted right of center with
+                  no counterweight on the left. The envelope keeps its fixed
+                  brand-black fill (like the Sidebar) for the flap lines to
+                  read as literal white against, but that fill is close in
+                  luminance to the dark-mode card surface, so on its own the
+                  envelope nearly vanished in dark mode — unlike Login's
+                  orbit or ResetPassword's shield, which both have a neon
+                  element sitting directly on the dark shape to anchor the
+                  eye. Added the same fix here: a neon seal at the flap's
+                  center point, plus a border-subtle outline so the
+                  envelope's edge reads regardless of fill-to-background
+                  contrast. */}
               <svg
                 viewBox="0 0 500 200"
                 className="w-full aspect-[5/2] rounded-lg"
                 role="img"
                 aria-label="Illustration of an email being sent with an account recovery key"
               >
-                <circle cx="120" cy="70" r="3" fill="var(--color-border-subtle)" />
-                <circle cx="145" cy="85" r="4" fill="var(--color-border-subtle)" />
-                <circle cx="170" cy="98" r="5" fill="var(--color-border-subtle)" />
+                <circle cx="40" cy="55" r="3" fill="var(--color-border-subtle)" />
+                <circle cx="65" cy="70" r="4" fill="var(--color-border-subtle)" />
+                <circle cx="90" cy="85" r="5" fill="var(--color-border-subtle)" />
 
-                <rect x="185" y="55" width="150" height="100" rx="10" fill="var(--color-brand-black)" />
-                <line x1="185" y1="65" x2="260" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="335" y1="65" x2="260" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                <rect x="122" y="55" width="150" height="100" rx="10" fill="var(--color-brand-black)" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+                <line x1="122" y1="65" x2="197" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="272" y1="65" x2="197" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                <circle cx="197" cy="115" r="6" fill="var(--color-accent-neon)" />
 
                 {/* Key — the reset link/access riding along with the email.
                     Ring + horizontal shaft + perpendicular teeth, not a
                     ring-plus-diagonal-line (that reads as a magnifying
                     glass, not a key — first draft of this shape made
                     exactly that mistake). */}
-                <circle cx="375" cy="115" r="15" fill="none" stroke="var(--color-accent-neon)" strokeWidth="5" />
-                <rect x="389" y="111" width="52" height="8" fill="var(--color-accent-neon)" />
-                <rect x="420" y="119" width="7" height="13" fill="var(--color-accent-neon)" />
-                <rect x="433" y="119" width="7" height="9" fill="var(--color-accent-neon)" />
+                <circle cx="312" cy="115" r="15" fill="none" stroke="var(--color-accent-neon)" strokeWidth="5" />
+                <rect x="326" y="111" width="52" height="8" fill="var(--color-accent-neon)" />
+                <rect x="357" y="119" width="7" height="13" fill="var(--color-accent-neon)" />
+                <rect x="370" y="119" width="7" height="9" fill="var(--color-accent-neon)" />
 
-                <circle cx="80" cy="150" r="3" fill="var(--color-border-subtle)" />
-                <circle cx="440" cy="60" r="3" fill="var(--color-border-subtle)" />
+                <circle cx="50" cy="160" r="3" fill="var(--color-border-subtle)" />
+                <circle cx="460" cy="50" r="3" fill="var(--color-border-subtle)" />
               </svg>
 
               <div className="flex flex-col gap-2 text-center">
