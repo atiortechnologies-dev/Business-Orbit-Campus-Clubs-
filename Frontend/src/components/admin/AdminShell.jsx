@@ -2,15 +2,17 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Megaphone,
   ShieldCheck,
   Rocket,
-  BarChart3,
+  Lightbulb,
+  Building2,
   History,
+  Settings,
   Plus,
   HelpCircle,
   Search,
   Bell,
-  Settings,
   Menu,
 } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
@@ -20,11 +22,14 @@ import Sidebar from '@/components/layout/Sidebar';
 import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
 
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: 'Dashboard',         href: '/admin', real: true },
-  { icon: ShieldCheck,     label: 'User Verification', href: '/admin/verification', real: true },
-  { icon: Rocket,          label: 'Startup Reviews',   href: '/admin/reviews', real: true },
-  { icon: BarChart3,       label: 'Analytics',         href: '#', real: false },
-  { icon: History,         label: 'Audit Log',         href: '/admin/audit-log', real: true },
+  { icon: LayoutDashboard, label: 'Dashboard',     href: '/admin', real: true },
+  { icon: Megaphone,       label: 'Announcements', href: '/admin/announcements', real: true },
+  { icon: ShieldCheck,     label: 'Users',         href: '/admin/verification', real: true },
+  { icon: Rocket,          label: 'Startups',      href: '/admin/reviews', real: true },
+  { icon: Lightbulb,       label: 'Opportunities', href: '/admin/opportunities', real: true },
+  { icon: Building2,       label: 'Chapters',      href: '/admin/chapters', real: true },
+  { icon: History,         label: 'Audit Log',     href: '/admin/audit-log', real: true },
+  { icon: Settings,        label: 'Settings',      href: '/admin/settings', real: true },
 ];
 
 // Same three-piece pattern (header + content slot + footer, shared
@@ -98,11 +103,9 @@ export default function AdminShell({ children }) {
                   <Bell size={20} strokeWidth={2} />
                 </span>
               </ComingSoon>
-              <ComingSoon label="Settings" position="bottom" inline>
-                <span className="block p-2 rounded-full transition-colors hover:bg-canvas-bg">
-                  <Settings size={20} strokeWidth={2} />
-                </span>
-              </ComingSoon>
+              <Link to="/admin/settings" className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted">
+                <Settings size={20} strokeWidth={2} />
+              </Link>
               <ThemeToggle size={20} className="block" />
               <ComingSoon label="User" position="bottom" inline>
                 <div className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
