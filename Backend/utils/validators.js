@@ -604,6 +604,43 @@ const submitMetricsSchema = z.object({
 
 const updateMetricsSchema = submitMetricsSchema.partial();
 
+// Customer feedback validation
+const submitFeedbackSchema = z.object({
+  customer_name: z.string().max(100).optional().default("Anonymous"),
+  customer_type: z
+    .enum([
+      "Early Adopter",
+      "Regular User",
+      "Beta Tester",
+      "Enterprise",
+      "Other",
+    ])
+    .refine((val) => val !== null, "Customer type required"),
+  feedback_source: z
+    .enum([
+      "Direct Interview",
+      "Survey",
+      "Email",
+      "Social Media",
+      "Support Ticket",
+      "Other",
+    ])
+    .refine((val) => val !== null, "Feedback source required"),
+  rating: z
+    .number()
+    .min(1)
+    .max(5)
+    .refine((val) => val !== null, "Rating required"),
+  feedback_summary: z
+    .string()
+    .min(10, "Feedback too short")
+    .max(2000, "Feedback too long"),
+  improvement_notes: z.string().max(1000).optional().default(""),
+  is_important: z.boolean().optional().default(false),
+});
+
+const updateFeedbackSchema = submitFeedbackSchema.partial();
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -635,4 +672,6 @@ module.exports = {
   updateIncubationSchema,
   submitMetricsSchema,
   updateMetricsSchema,
+  submitFeedbackSchema,
+  updateFeedbackSchema,
 };

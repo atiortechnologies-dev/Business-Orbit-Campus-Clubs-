@@ -193,6 +193,104 @@ const deleteMetrics = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "Metrics deleted" });
 });
 
+// ========= SCREEN 3: CUSTOMER FEEDBACK =========
+
+const submitFeedback = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const feedbackData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const feedback = new CustomerFeedback({
+    startup_id: startup._id,
+    student_id: userId,
+    ...feedbackData,
+  });
+
+  await feedback.save();
+
+  res.status(201).json({
+    success: true,
+    message: "Feedback submitted",
+    data: { feedback_id: feedback.feedback_id },
+  });
+});
+
+const getFeedback = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const feedback = await CustomerFeedback.find({
+    startup_id: startup._id,
+  }).lean();
+
+  const stats = {
+    total: feedback.length,
+    average_rating: feedback.length
+      ? (
+          feedback.reduce((sum, f) => sum + f.rating, 0) / feedback.length
+        ).toFixed(2)
+      : 0,
+    important_count: feedback.filter((f) => f.is_important).length,
+  };
+
+  res.status(200).json({ success: true, data: feedback, stats });
+});
+
+const getFeedbackById = asyncHandler(async (req, res) => {
+  const { feedbackId } = req.params;
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const feedback = await CustomerFeedback.findOne({
+    feedback_id: feedbackId,
+    startup_id: startup._id,
+  }).lean();
+
+  if (!feedback) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Feedback not found" });
+  }
+
+  res.status(200).json({ success: true, data: feedback });
+});
+
+const updateFeedback = asyncHandler(async (req, res) => {
+  const { feedbackId } = req.params;
+  const { id: userId } = req.user;
+  const updateData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const feedback = await CustomerFeedback.findOneAndUpdate(
+    { feedback_id: feedbackId, startup_id: startup._id },
+    updateData,
+    { new: true },
+  );
+
+  if (!feedback) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Feedback not found" });
+  }
+
+  res
+    .status(200)
+    .json({ success: true, message: "Feedback updated", data: feedback });
+});
+
+const deleteFeedback = asyncHandler(async (req, res) => {
+  const { feedbackId } = req.params;
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  await CustomerFeedback.deleteOne({
+    feedback_id: feedbackId,
+    startup_id: startup._id,
+  });
+
+  res.status(200).json({ success: true, message: "Feedback deleted" });
+});
+
 module.exports = {
   getStage4Overview,
   getStage4Progress,
@@ -202,4 +300,9 @@ module.exports = {
   getMetrics,
   updateMetrics,
   deleteMetrics,
+  submitFeedback,
+  getFeedback,
+  getFeedbackById,
+  updateFeedback,
+  deleteFeedback,
 };
