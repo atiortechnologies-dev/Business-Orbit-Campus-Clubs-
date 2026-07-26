@@ -108,9 +108,98 @@ const getStage4Checklist = asyncHandler(async (req, res) => {
   });
 });
 
+// ========= SCREEN 2: USER ACQUISITION TRACKER =========
+
+const submitMetrics = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const metricsData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  let metrics = await TractionMetrics.findOne({ startup_id: startup._id });
+
+  if (!metrics) {
+    metrics = new TractionMetrics({
+      startup_id: startup._id,
+      student_id: userId,
+      ...metricsData,
+      status: "Submitted",
+      submitted_at: new Date(),
+    });
+  } else {
+    Object.assign(metrics, metricsData);
+    metrics.status = "Submitted";
+    metrics.submitted_at = new Date();
+  }
+
+  await metrics.save();
+
+  res.status(201).json({
+    success: true,
+    message: "Metrics submitted successfully",
+    data: { metric_id: metrics.metric_id },
+  });
+});
+
+const getMetrics = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const metrics = await TractionMetrics.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!metrics) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No metrics found" });
+  }
+
+  res.status(200).json({ success: true, data: metrics });
+});
+
+const updateMetrics = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { metricId } = req.params;
+  const updateData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const metrics = await TractionMetrics.findOneAndUpdate(
+    { metric_id: metricId, startup_id: startup._id },
+    updateData,
+    { new: true },
+  );
+
+  if (!metrics) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Metrics not found" });
+  }
+
+  res
+    .status(200)
+    .json({ success: true, message: "Metrics updated", data: metrics });
+});
+
+const deleteMetrics = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { metricId } = req.params;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  await TractionMetrics.deleteOne({
+    metric_id: metricId,
+    startup_id: startup._id,
+  });
+
+  res.status(200).json({ success: true, message: "Metrics deleted" });
+});
+
 module.exports = {
   getStage4Overview,
   getStage4Progress,
   startStage4,
   getStage4Checklist,
+  submitMetrics,
+  getMetrics,
+  updateMetrics,
+  deleteMetrics,
 };
