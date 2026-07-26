@@ -31,8 +31,14 @@ export default function MvpSubmissionPage() {
   const toggleChecklist = (key) => setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
   const updateField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
+  const canSubmit =
+    form.mvpTitle.trim().length > 0 &&
+    form.description.trim().length > 0 &&
+    form.liveDemoUrl.trim().length > 0;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     // TODO(backend): POST the MVP submission (form + checklist state) for technical review.
     navigate('/build-startup/journey/mvp/success');
   };
@@ -178,7 +184,8 @@ export default function MvpSubmissionPage() {
             </button>
             <button
               type="submit"
-              className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+              disabled={!canSubmit}
+              className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Submit MVP
             </button>

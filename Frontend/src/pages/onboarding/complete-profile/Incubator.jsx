@@ -48,6 +48,7 @@ export default function CompleteProfileIncubator() {
       onPhotoChange={handleLogoChange}
       onSave={handleSave}
       saved={saved}
+      canSave={bio.trim().length > 0}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input id="incubatorName" label="Incubator Name" value={incubatorName} onChange={(e) => setIncubatorName(e.target.value)} placeholder="Orbit Tech Labs" />

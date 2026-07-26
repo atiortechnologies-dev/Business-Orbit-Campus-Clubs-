@@ -58,7 +58,10 @@ export default function MentorProfilePage() {
     setPhotoPreview(URL.createObjectURL(file));
   };
 
+  const canSave = fullName.trim().length > 0;
+
   const handleSaveChanges = () => {
+    if (!canSave) return;
     // TODO(backend): persist the full profile form to the mentor's record.
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
@@ -238,7 +241,12 @@ export default function MentorProfilePage() {
             <button type="button" className="border border-border-subtle text-text-heading font-inter font-medium text-small px-5 py-2.5 rounded-md hover:bg-canvas-bg transition-colors">
               Cancel
             </button>
-            <button type="button" onClick={handleSaveChanges} className="bg-action-bg text-action-text font-poppins font-semibold text-small px-5 py-2.5 rounded-md hover:opacity-90 transition-all">
+            <button
+              type="button"
+              onClick={handleSaveChanges}
+              disabled={!canSave}
+              className="bg-action-bg text-action-text font-poppins font-semibold text-small px-5 py-2.5 rounded-md hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               Save Changes
             </button>
           </div>

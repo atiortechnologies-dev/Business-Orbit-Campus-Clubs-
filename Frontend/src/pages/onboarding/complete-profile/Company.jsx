@@ -48,6 +48,7 @@ export default function CompleteProfileCompany() {
       onPhotoChange={handleLogoChange}
       onSave={handleSave}
       saved={saved}
+      canSave={bio.trim().length > 0}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input id="companyName" label="Company Name" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="e.g. Orbit Tech Solutions" />

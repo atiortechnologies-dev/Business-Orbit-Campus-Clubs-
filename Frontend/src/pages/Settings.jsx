@@ -83,7 +83,10 @@ export default function SettingsPage() {
 
   const removeSkill = (skill) => setSkills((prev) => prev.filter((s) => s !== skill));
 
+  const canSave = form.fullName.trim().length > 0;
+
   const handleSave = () => {
+    if (!canSave) return;
     // TODO(backend): PATCH the student profile with `form` and `skills`.
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2000);
@@ -313,7 +316,8 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={handleSave}
-              className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+              disabled={!canSave}
+              className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Save Changes
             </button>

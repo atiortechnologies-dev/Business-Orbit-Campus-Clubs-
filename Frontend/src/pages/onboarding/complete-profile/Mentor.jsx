@@ -52,6 +52,7 @@ export default function CompleteProfileMentor() {
       onPhotoChange={handlePhotoChange}
       onSave={handleSave}
       saved={saved}
+      canSave={bio.trim().length > 0}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Input id="company" label="Current Company" value={company} onChange={(e) => setCompany(e.target.value)} placeholder="e.g. Google, McKinsey, Stripe" />

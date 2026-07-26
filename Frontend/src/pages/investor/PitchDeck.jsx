@@ -48,7 +48,10 @@ export default function PitchDeckPage() {
 
   const activeSlide = SLIDES.find((s) => s.id === currentSlide);
 
+  const canSaveNotes = investorNotes.trim().length > 0;
+
   const handleSaveNotes = () => {
+    if (!canSaveNotes) return;
     // TODO(backend): PATCH these due-diligence notes against this deck
     // ({ dealId, investorNotes }) once there's a real multi-deck dataset
     // for them to belong to.
@@ -215,7 +218,8 @@ export default function PitchDeckPage() {
               <button
                 type="button"
                 onClick={handleSaveNotes}
-                className="font-poppins font-semibold text-caption text-text-heading hover:underline"
+                disabled={!canSaveNotes}
+                className="font-poppins font-semibold text-caption text-text-heading hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline"
               >
                 Save Notes
               </button>
