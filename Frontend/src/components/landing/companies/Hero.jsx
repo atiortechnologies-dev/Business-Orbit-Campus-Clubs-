@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Building2, Users } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const STATS = [
   { value: '500+', label: 'Partnered Colleges' },
@@ -46,7 +47,7 @@ export default function Hero() {
         </div>
 
         <div className="relative">
-          <div className="aspect-[4/5] placeholder-box rounded-lg" />
+          <PlaceholderGraphic icon={Building2} label="Campus Partnerships" className="aspect-[4/5] rounded-lg" />
 
           <div className="absolute -left-4 top-8 hidden rounded-lg border border-border-subtle bg-surface-white/90 px-4 py-3 shadow-card backdrop-blur-sm lg:flex lg:items-center lg:gap-2.5">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-brand-black text-white">

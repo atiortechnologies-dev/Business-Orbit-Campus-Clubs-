@@ -1,4 +1,5 @@
-import { Check } from 'lucide-react';
+import { Check, FlaskConical } from 'lucide-react';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const POINTS = ['Sponsored Projects', 'University Research', 'Innovation Labs', 'Product Validation', 'Prototype Development'];
 
@@ -6,7 +7,7 @@ export default function CoInnovation() {
   return (
     <section id="startup-journey" className="bg-canvas-bg py-20 lg:py-28" aria-labelledby="coinno-heading">
       <div className="mx-auto grid max-w-[var(--spacing-container-max)] grid-cols-1 items-center gap-12 px-6 lg:grid-cols-2 lg:gap-20 lg:px-10">
-        <div className="order-2 lg:order-1 aspect-[4/3] placeholder-box rounded-lg" />
+        <PlaceholderGraphic icon={FlaskConical} label="R&D Collaboration" className="order-2 lg:order-1 aspect-[4/3] rounded-lg" />
 
         <div className="order-1 lg:order-2">
           <span className="inline-flex items-center gap-2 font-inter text-caption font-medium uppercase tracking-[0.18em] text-text-muted">

@@ -1,4 +1,5 @@
-import { GraduationCap, Compass, Rocket } from 'lucide-react';
+import { GraduationCap, Compass, Rocket, Users } from 'lucide-react';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const ITEMS = [
   { icon: GraduationCap, title: 'University Hub', desc: 'Connect with top universities and student innovators across campuses worldwide.' },
@@ -10,7 +11,7 @@ export default function Fostering() {
   return (
     <section className="py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-5 lg:px-10 grid lg:grid-cols-2 gap-10 items-center">
-        <div className="aspect-[4/3] placeholder-box rounded-lg" />
+        <PlaceholderGraphic icon={Users} label="Our Community" className="aspect-[4/3] rounded-lg" />
 
         <div>
           <p className="font-inter text-caption uppercase tracking-widest text-text-muted mb-3">About Us</p>
