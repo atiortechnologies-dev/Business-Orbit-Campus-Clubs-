@@ -382,6 +382,81 @@ const deleteDocument = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "Document deleted" });
 });
 
+// ========= SCREEN 5: TRACTION REVIEW =========
+const getReview = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const review = await TractionReview.findOne({ startup_id: startup._id })
+    .populate("reviewer_id", "full_name email")
+    .lean();
+
+  if (!review) {
+    return res.status(404).json({ success: false, message: "No review found" });
+  }
+
+  res.status(200).json({ success: true, data: review });
+});
+
+const getReviewStatus = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const review = await TractionReview.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      status: review?.review_status || "Pending",
+      score: review?.score,
+      reviewer_notes: review?.review_notes,
+    },
+  });
+});
+
+const getReviewTimeline = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const review = await TractionReview.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      submitted: review?.created_at,
+      under_review:
+        review?.review_status === "Under Review" ? new Date() : null,
+      completed: review?.updated_at,
+    },
+  });
+});
+
+const getReviewComments = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const review = await TractionReview.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!review) {
+    return res.status(404).json({ success: false, message: "No review found" });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      review_notes: review.review_notes,
+      strengths: review.strengths,
+      improvement_areas: review.improvement_areas,
+    },
+  });
+});
+
 module.exports = {
   getStage4Overview,
   getStage4Progress,
@@ -400,4 +475,8 @@ module.exports = {
   getProductSubmission,
   updateProductSubmission,
   deleteDocument,
+  getReview,
+  getReviewStatus,
+  getReviewTimeline,
+  getReviewComments,
 };
