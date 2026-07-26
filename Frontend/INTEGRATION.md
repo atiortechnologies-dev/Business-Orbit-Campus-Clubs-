@@ -70,6 +70,19 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
   hardcoded name/initials/role; needs real authenticated-user data once
   a session exists, one place for all six portal shells.
 
+**Known frontend gap — dead "Save Draft" controls (not a backend TODO):**
+Found during a pass auditing every save/submit button for false-success
+states (most of that pass just added missing validation gating — see the
+per-screen sections below). These 5 "Save Draft" buttons have no `onClick`
+at all, not just a missing backend call — clicking them does nothing:
+`pages/journey/ideation/IdeaSubmission.jsx`,
+`pages/journey/mvp/MvpSubmission.jsx`,
+`pages/journey/validation/EvidenceUpload.jsx`,
+`pages/journey/validation/SurveyTracker.jsx`,
+`pages/journey/mvp/IncubationProofSubmission.jsx`. Left unwired
+deliberately here — giving them real behavior is new scope (a draft-save
+flow), not a fix for the false-success problem this pass targeted.
+
 No env vars, API base URL, or auth/session provider are configured in
 this frontend yet — see Cross-cutting at the bottom of this file.
 
@@ -82,8 +95,11 @@ reachable before `/login`. Rebuilt from an intern's (Shivom's) original
 `framer-motion` implementation onto this app's existing design-token/
 component system and CSS-transition convention; see `CONTRIBUTING.md` §8
 for the animation-library decision this left deferred. All "photo" slots
-across all 6 pages use the `.placeholder-box` CSS utility — zero hotlinked
-or stock images anywhere in this section.
+across all 6 pages use the shared `components/ui/PlaceholderGraphic.jsx`
+component (dashed border, a contextual lucide icon, short caption) —
+zero hotlinked or stock images anywhere in this section. This replaced
+the old flat `.placeholder-box` diagonal-hatch style, which has been
+removed from `index.css` now that nothing references it.
 
 ### `/landing` — `src/pages/landing/Home.jsx`
 - **Real:** Navbar's 5 in-page anchors (About/Startup Stories/Community/FAQ/
@@ -442,8 +458,11 @@ Five screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
 ### `/incubator/applications/review` — `src/pages/incubator/ApplicationReview.jsx`
 - **Real:** Reviewer Notes textarea (typing works, not persisted),
   Approve/Request Revisions/Reject single-select, Save Draft and Submit
-  Decision both show real transient confirmation UI. Print PDF now calls
-  `window.print()` — a real action, not a stub.
+  Decision both show real transient confirmation UI — and both are now
+  correctly gated (Save Draft requires non-empty notes, Submit Decision
+  requires a selected outcome), so neither can report success against an
+  empty review. Print PDF now calls `window.print()` — a real action, not
+  a stub.
 - **Stub:** none of the above persists anywhere — reload the page and it's
   gone. Submit Decision needs a real `POST` once there's somewhere for a
   decision to go.
@@ -563,13 +582,17 @@ finished.)*
   never uploaded anywhere.
 
 ### `/admin/reviews/workspace` — `ReviewWorkspace.jsx`
-- **Real:** Evaluation Checklist (5 real checkboxes), Reviewer Notes
-  textarea (typing works), Metrics Scorecard's 4 sliders with a **live
-  consensus score** recalculated via `useMemo` as you drag, Decision
-  Summary's 3 exclusive toggle buttons, Save Draft (real 2s transient
-  confirmation, same honest pattern as `incubator/Settings.jsx` — not a
-  fake network delay, the state change is instant, only the confirmation
-  banner auto-dismisses after 2s).
+- **Real:** Evaluation Checklist (5 real checkboxes), the "Core Strengths"
+  Reviewer Notes textarea is wired to state and gates Save Draft (empty
+  notes → button stays disabled, matching `ApplicationReview.jsx`'s
+  Submit Decision pattern) — "Required Improvements" and "Internal Admin
+  Comments" remain uncontrolled (typing works, not read anywhere) since
+  they're not required for a draft to mean something. Metrics Scorecard's
+  4 sliders with a **live consensus score** recalculated via `useMemo` as
+  you drag, Decision Summary's 3 exclusive toggle buttons, Save Draft
+  (real 2s transient confirmation, same honest pattern as
+  `incubator/Settings.jsx` — not a fake network delay, the state change
+  is instant, only the confirmation banner auto-dismisses after 2s).
 - **Stub:** nothing in the checklist/notes/scorecard/decision persists —
   reload and it's gone. Submit Review → real navigation to
   `/admin/reviews/outcome`, but doesn't actually submit anything anywhere.

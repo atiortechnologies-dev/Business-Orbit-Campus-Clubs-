@@ -174,11 +174,12 @@ Before writing a new component, check `components/ui/` and
 | Light/dark toggle | `components/ui/ThemeToggle.jsx` |
 | Reading/toggling theme | `useTheme()` from `components/ui/ThemeProvider.jsx` |
 | Top nav on a public/auth page | `components/layout/PublicNav.jsx` — already wired into `AuthLayout`, only import it directly if you're building a new *public* page outside that layout |
-| Dashboard side panel | `components/layout/Sidebar.jsx` — already wired into all three shells, you should never need to import this directly |
+| Dashboard side panel | `components/layout/Sidebar.jsx` — already wired into all six portal shells (Dashboard/Incubator/Admin/Investor/Mentor/Company), you should never need to import this directly |
 | A status/category pill | `components/ui/Badge.jsx` — `variant="success\|warning\|error\|info\|neutral\|brand"`, Title Case content (not uppercase — the component doesn't force a case, older screens' own inline badges predate this and are uppercase, don't "fix" them to match unless you're already touching that file) |
 | A metric tile (label + big number + trend) | `components/ui/StatCard.jsx` |
 | A dense list/queue with columns | `components/ui/DataTable.jsx` — desktop grid, auto-collapses to stacked cards below `md`. Read the component's own doc comment before adding a 6+ column table; see the gotcha in §6 about column count vs. container width |
 | A confirmation/decision dialog | `components/ui/Modal.jsx` — Escape-to-close, backdrop-click-to-close, already wired for `role="dialog"` |
+| A "media coming soon" image slot (hero shots, partner photos, testimonial headshots — anything standing in for real photography, not an app state) | `components/ui/PlaceholderGraphic.jsx` — dashed border + a contextual lucide icon + short caption, accepts `children` for any overlay badge layered on top. Don't reach for a bare dashed `<div>` or invent a second placeholder style; this is also what replaced the old `.placeholder-box` CSS class, which no longer exists |
 | A role-specific signup form | `components/auth/RoleSignupForm.jsx` — owns password/confirm/strength/terms/submit for all 5 `/signup/<role>` pages; a new page just passes `fields` (its own field list) + copy, see `pages/auth/StudentSignup.jsx` for the ~25-line pattern. Don't build a 6th copy of the password/terms handling by hand |
 
 The design guide (ask whoever's tracking `Frontend/Working/` for the
