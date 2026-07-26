@@ -275,11 +275,12 @@ export default function ApplicationReview() {
             <div className="border-t border-divider-line pt-4 flex items-center justify-between">
               <button
                 type="button"
+                disabled={!notes.trim()}
                 // TODO(backend): PATCH this review as a draft ({ applicationId,
                 // reviewerNotes, decision: selectedDecision }) so it survives
                 // a reload; currently only held in local state.
-                onClick={() => setDraftSaved(true)}
-                className="text-text-muted hover:text-text-heading font-poppins font-semibold text-small transition-colors focus:outline-none"
+                onClick={() => notes.trim() && setDraftSaved(true)}
+                className="text-text-muted hover:text-text-heading font-poppins font-semibold text-small transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save Draft
               </button>

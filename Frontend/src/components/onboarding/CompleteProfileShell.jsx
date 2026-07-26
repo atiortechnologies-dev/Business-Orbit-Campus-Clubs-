@@ -15,6 +15,7 @@ export default function CompleteProfileShell({
   onPhotoChange,
   onSave,
   saved,
+  canSave = true,
   children,
 }) {
   const photoInputRef = useRef(null);
@@ -70,7 +71,8 @@ export default function CompleteProfileShell({
           <button
             type="button"
             onClick={onSave}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small px-8 py-3 rounded-md hover:opacity-90 transition-all"
+            disabled={!canSave}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small px-8 py-3 rounded-md hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save &amp; Finish
           </button>

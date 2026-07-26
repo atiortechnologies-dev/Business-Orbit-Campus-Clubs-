@@ -30,8 +30,11 @@ export default function IncubationProofSubmissionPage() {
     if (fileList[0]) setFile({ name: fileList[0].name, size: fileList[0].size });
   };
 
+  const canSubmit = form.incubatorName.trim().length > 0 && !!file;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     // TODO(backend): POST incubation-proof details + document to the verification endpoint.
     setSubmitted(true);
   };
@@ -164,7 +167,8 @@ export default function IncubationProofSubmissionPage() {
         <div className="lg:col-span-12 flex items-center gap-3 pt-6 border-t border-divider-line">
           <button
             type="submit"
-            className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+            disabled={!canSubmit}
+            className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Submit for Verification
           </button>

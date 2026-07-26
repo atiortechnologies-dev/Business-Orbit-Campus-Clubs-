@@ -33,6 +33,7 @@ export default function ReviewWorkspacePage() {
   const [checklist, setChecklist] = useState(INITIAL_CHECKLIST);
   const [metrics, setMetrics] = useState(INITIAL_METRICS);
   const [decision, setDecision] = useState(null);
+  const [strengths, setStrengths] = useState('');
   const [draftSaved, setDraftSaved] = useState(false);
 
   const completedCount = checklist.filter((c) => c.done).length;
@@ -49,7 +50,10 @@ export default function ReviewWorkspacePage() {
     setMetrics((prev) => prev.map((m) => (m.id === id ? { ...m, value: Number(value) } : m)));
   }
 
+  const canSaveDraft = strengths.trim().length > 0;
+
   function handleSaveDraft() {
+    if (!canSaveDraft) return;
     // TODO(backend): POST the current checklist/metrics/notes as a draft.
     setDraftSaved(true);
     setTimeout(() => setDraftSaved(false), 2000);
@@ -101,7 +105,13 @@ export default function ReviewWorkspacePage() {
             <h3 className="font-poppins font-semibold text-body text-text-heading">Reviewer Notes</h3>
             <div>
               <label className="font-inter font-medium text-caption text-text-muted uppercase tracking-wider block mb-1">Core Strengths</label>
-              <textarea rows={3} className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body resize-none focus:outline-none focus:ring-1 focus:ring-brand-black" placeholder="What's working well..." />
+              <textarea
+                rows={3}
+                value={strengths}
+                onChange={(e) => setStrengths(e.target.value)}
+                className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body resize-none focus:outline-none focus:ring-1 focus:ring-brand-black"
+                placeholder="What's working well..."
+              />
             </div>
             <div>
               <label className="font-inter font-medium text-caption text-text-muted uppercase tracking-wider block mb-1">Required Improvements</label>
@@ -185,7 +195,8 @@ export default function ReviewWorkspacePage() {
           <button
             type="button"
             onClick={handleSaveDraft}
-            className="px-5 py-2.5 border border-border-subtle rounded-md font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
+            disabled={!canSaveDraft}
+            className="px-5 py-2.5 border border-border-subtle rounded-md font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save Draft
           </button>
