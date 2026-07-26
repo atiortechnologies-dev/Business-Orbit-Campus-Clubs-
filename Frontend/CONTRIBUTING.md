@@ -36,7 +36,12 @@ src/
     Notifications.jsx
     BuildStartupJourney.jsx   5-stage overview; Ideation/Validation/MVP
                                circles link into journey/ below once that
-                               stage's review-result unlocks it
+                               stage's review-result unlocks it. All 5
+                               stages now have real screens under journey/
+                               below, but this file's own STAGES array still
+                               hardcodes every stage but Ideation as locked
+                               regardless of build status — unchanged here,
+                               see INTEGRATION.md's Traction/Launch entries
     Settings.jsx               Student account settings
     journey/                  Sub-flows for BuildStartupJourney's stages,
                                one folder per stage, only Student-facing
@@ -52,7 +57,19 @@ src/
                                ReviewResult
       mvp/                     MvpOverview → ChooseProductType →
                                MvpSubmission → SubmissionSuccess →
-                               IncubationProofSubmission
+                               IncubationProofSubmission →
+                               IncubationVerificationReview →
+                               IncubationVerificationApproved
+      traction/                TractionStage → UserAcquisitionTracker →
+                               CustomerFeedbackUpload →
+                               TractionProductSubmission → TractionReview →
+                               TractionReviewMeeting → TractionApproved
+      launch/                  LaunchStage → LaunchSubmission →
+                               FinalPitchDeckUpload → LaunchProofUpload →
+                               LaunchVerificationReview
+      JourneyComplete.jsx      Graduation screen after all 5 stages, sits
+                               directly in journey/ (not its own subfolder,
+                               nothing else in the flow follows it)
     incubator/                Incubator.jsx, Applications.jsx,
                                ApplicationReview.jsx, Messages.jsx, Settings.jsx
     admin/                    Admin.jsx (dashboard), VerificationQueue.jsx →
