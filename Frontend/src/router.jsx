@@ -48,6 +48,8 @@ const ChooseProductType = lazy(() => import('@/pages/journey/mvp/ChooseProductTy
 const MvpSubmission = lazy(() => import('@/pages/journey/mvp/MvpSubmission'));
 const MvpSubmissionSuccess = lazy(() => import('@/pages/journey/mvp/SubmissionSuccess'));
 const IncubationProofSubmission = lazy(() => import('@/pages/journey/mvp/IncubationProofSubmission'));
+const IncubationVerificationReview = lazy(() => import('@/pages/journey/mvp/IncubationVerificationReview'));
+const IncubationVerificationApproved = lazy(() => import('@/pages/journey/mvp/IncubationVerificationApproved'));
 const AdminDashboard = lazy(() => import('@/pages/admin/Admin'));
 const VerificationQueue = lazy(() => import('@/pages/admin/VerificationQueue'));
 const VerificationDetail = lazy(() => import('@/pages/admin/VerificationDetail'));
@@ -157,6 +159,8 @@ export const router = createBrowserRouter([
   { path: '/build-startup/journey/mvp/submit', element: withSuspense(MvpSubmission) },
   { path: '/build-startup/journey/mvp/success', element: withSuspense(MvpSubmissionSuccess) },
   { path: '/build-startup/journey/mvp/incubation-proof', element: withSuspense(IncubationProofSubmission) },
+  { path: '/build-startup/journey/mvp/incubation-verification', element: withSuspense(IncubationVerificationReview) },
+  { path: '/build-startup/journey/mvp/incubation-approved', element: withSuspense(IncubationVerificationApproved) },
   { path: '/admin', element: withSuspense(AdminDashboard) },
   { path: '/admin/verification', element: withSuspense(VerificationQueue) },
   { path: '/admin/verification/detail', element: withSuspense(VerificationDetail) },

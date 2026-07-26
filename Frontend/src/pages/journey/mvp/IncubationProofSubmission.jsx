@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UploadCloud, File, Trash2, CheckCircle2, ChevronRight, Clock } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -10,6 +10,7 @@ const STEPS = ['Upload proof', 'Admin review', 'Status updated', 'Stage 4 unlock
 
 export default function IncubationProofSubmissionPage() {
   useDocumentTitle('Incubation Proof Submission — BOCC');
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -22,7 +23,6 @@ export default function IncubationProofSubmissionPage() {
     notes: '',
   });
   const [file, setFile] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
 
   const updateField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
@@ -36,7 +36,7 @@ export default function IncubationProofSubmissionPage() {
     e.preventDefault();
     if (!canSubmit) return;
     // TODO(backend): POST incubation-proof details + document to the verification endpoint.
-    setSubmitted(true);
+    navigate('/build-startup/journey/mvp/incubation-verification');
   };
 
   return (
@@ -54,13 +54,6 @@ export default function IncubationProofSubmissionPage() {
         Upload your incubation acceptance proof to verify your startup's incubation status.
         Once verified, you'll unlock the next stage of your startup journey.
       </p>
-
-      {submitted && (
-        <div className="mb-6 flex items-center gap-2 rounded-lg border bg-success/10 border-success/30 text-success px-4 py-3 font-inter text-small">
-          <CheckCircle2 size={16} strokeWidth={2} />
-          Submitted for verification — the admin team will review within 2–3 business days.
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
