@@ -1,3 +1,6 @@
+import { Building2 } from 'lucide-react';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
+
 // Generic placeholder logo slots, not named real institutions — the
 // original version listed specific real universities/VCs (Stanford, MIT,
 // Y Combinator, Sequoia...) as if they were confirmed partners, which is a
@@ -11,7 +14,7 @@ export default function LogoStrip({ title = 'Trusted by leading institutions' })
         <p className="text-center font-inter text-caption uppercase tracking-widest text-text-muted mb-8">{title}</p>
         <div className="flex flex-wrap items-center justify-around gap-x-10 gap-y-6">
           {SLOTS.map((_, i) => (
-            <div key={i} className="w-24 h-8 placeholder-box rounded-md" />
+            <PlaceholderGraphic key={i} icon={Building2} iconSize={14} className="w-24 h-8 rounded-md" />
           ))}
         </div>
       </div>

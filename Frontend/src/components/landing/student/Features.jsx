@@ -1,4 +1,6 @@
+import { Users, Handshake } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const FEATURES = [
   {
@@ -6,6 +8,7 @@ const FEATURES = [
     title: 'Personalized Mentorship',
     desc: "Get matched with mentors who've built and scaled companies in your space. Weekly 1:1 sessions, async support, and honest feedback that moves you forward.",
     cta: 'Meet the mentors',
+    icon: Users,
   },
   {
     eyebrow: 'Feature 02',
@@ -13,6 +16,7 @@ const FEATURES = [
     desc: 'Skip the cold outreach. We connect you with a curated network of angel investors and VCs actively backing campus founders — with prep, decks, and warm intros handled.',
     cta: 'See investor network',
     reverse: true,
+    icon: Handshake,
   },
 ];
 
@@ -30,7 +34,7 @@ export default function Features() {
                 {f.cta}
               </ComingSoon>
             </div>
-            <div className="aspect-[4/3] w-full placeholder-box rounded-lg" />
+            <PlaceholderGraphic icon={f.icon} label={f.title} className="aspect-[4/3] w-full rounded-lg" />
           </div>
         ))}
       </div>

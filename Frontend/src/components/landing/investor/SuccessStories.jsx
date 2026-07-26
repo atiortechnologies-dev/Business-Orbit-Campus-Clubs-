@@ -1,5 +1,6 @@
 import { TrendingUp, Users, Award } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const STORIES = [
   { badge: 'SaaS / FinTech', name: 'EcoStream AI', metric: '150% YoY Revenue', stage: 'Traction', icon: TrendingUp },
@@ -22,7 +23,7 @@ export default function SuccessStories() {
       <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
         {STORIES.map((s) => (
           <article key={s.name} className="overflow-hidden rounded-lg border border-border-subtle bg-surface-white hover:-translate-y-1 hover:shadow-card transition-all">
-            <div className="aspect-[4/3] placeholder-box" />
+            <PlaceholderGraphic icon={s.icon} label={s.stage} className="aspect-[4/3]" />
             <div className="p-5">
               <div className="flex items-center justify-between">
                 <span className="inline-flex rounded-md bg-canvas-bg px-2 py-1 font-inter text-[11px] font-medium text-text-heading">{s.badge}</span>

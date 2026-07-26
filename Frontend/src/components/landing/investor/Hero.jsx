@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, LineChart } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const STATS = [
   { value: '500+', label: 'Pre-Vetted Student Startups' },
@@ -50,7 +51,7 @@ export default function Hero() {
         </div>
 
         <div className="relative">
-          <div className="aspect-[4/3] placeholder-box rounded-lg" />
+          <PlaceholderGraphic icon={LineChart} label="Investment Dashboard" className="aspect-[4/3] rounded-lg" />
         </div>
       </div>
     </section>

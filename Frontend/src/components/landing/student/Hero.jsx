@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, LayoutDashboard } from 'lucide-react';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const STATS = [
   { value: '5000+', label: 'Students' },
@@ -48,12 +49,16 @@ export default function Hero() {
           </div>
 
           <div className="lg:pl-8">
-            <div className="relative overflow-hidden rounded-lg aspect-[4/5] lg:aspect-[5/6] w-full placeholder-box">
+            <PlaceholderGraphic
+              icon={LayoutDashboard}
+              label="Product Preview"
+              className="overflow-hidden rounded-lg aspect-[4/5] lg:aspect-[5/6] w-full"
+            >
               <div className="absolute bottom-4 left-4 right-4 bg-surface-white/90 backdrop-blur-sm rounded-md px-5 py-4 flex items-center gap-3">
                 <div className="w-2.5 h-2.5 rounded-full bg-accent-neon" />
                 <span className="font-poppins font-semibold text-small text-text-heading">Business Orbit Campus Clubs — BOCC</span>
               </div>
-            </div>
+            </PlaceholderGraphic>
           </div>
         </div>
       </div>
