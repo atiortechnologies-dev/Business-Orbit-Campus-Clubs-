@@ -641,6 +641,24 @@ const submitFeedbackSchema = z.object({
 
 const updateFeedbackSchema = submitFeedbackSchema.partial();
 
+const submitProductSchema = z.object({
+  product_version: z
+    .string()
+    .min(1, "Version required")
+    .max(50, "Version too long"),
+  update_summary: z
+    .string()
+    .min(20, "Summary too short")
+    .max(2000, "Summary too long"),
+  demo_url: z.string().url("Invalid demo URL").optional(),
+  repository_url: z.string().url("Invalid repository URL").optional(),
+  product_url: z.string().url("Invalid product URL").optional(),
+  presentation_url: z.string().url("Invalid product URL").optional(),
+  demo_video_url: z.string().url("Invalid product URL").optional(),
+});
+
+const updateProductSchema = submitProductSchema.partial();
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -674,4 +692,6 @@ module.exports = {
   updateMetricsSchema,
   submitFeedbackSchema,
   updateFeedbackSchema,
+  submitProductSchema,
+  updateProductSchema,
 };

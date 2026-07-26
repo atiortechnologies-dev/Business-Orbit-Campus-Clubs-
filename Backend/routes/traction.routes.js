@@ -8,6 +8,8 @@ const {
   updateMetricsSchema,
   submitFeedbackSchema,
   updateFeedbackSchema,
+  submitProductSchema,
+  updateProductSchema,
 } = require("../utils/validators");
 
 // All validation requires student role and authentication
@@ -55,6 +57,28 @@ router.put(
 router.delete(
   "/traction/feedback/:feedbackId",
   tractionController.deleteFeedback,
+);
+
+// SCREEN 4: UPDATED PRODUCT SUBMISSION
+
+router.post(
+  "/traction/submission",
+  validateRequest(submitProductSchema),
+  tractionController.submitProduct,
+);
+router.get("/traction/submission", tractionController.getProductSubmission);
+router.put(
+  "/traction/submission/:submissionId",
+  validateRequest(updateProductSchema),
+  tractionController.updateProductSubmission,
+);
+// router.post(
+//   "/traction/submission/upload-document",
+//   tractionController.uploadDocument,
+// );
+router.delete(
+  "/traction/submission/document/:documentId",
+  tractionController.deleteDocument,
 );
 
 module.exports = router;
