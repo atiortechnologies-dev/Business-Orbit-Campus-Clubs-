@@ -36,7 +36,7 @@ import MvpOverview from '@/pages/journey/mvp/MvpOverview';
 import ChooseProductType from '@/pages/journey/mvp/ChooseProductType';
 import MvpSubmission from '@/pages/journey/mvp/MvpSubmission';
 import MvpSubmissionSuccess from '@/pages/journey/mvp/SubmissionSuccess';
-import IncubationProofSubmission from '@/pages/journey/mvp/IncubationProofSubmission';
+import MvpIncubationProofSubmission from '@/pages/journey/mvp/MvpIncubationProofSubmission';
 import AdminDashboard from '@/pages/admin/Admin';
 import VerificationQueue from '@/pages/admin/VerificationQueue';
 import VerificationDetail from '@/pages/admin/VerificationDetail';
@@ -47,6 +47,22 @@ import ReviewWorkspace from '@/pages/admin/ReviewWorkspace';
 import ReviewOutcome from '@/pages/admin/ReviewOutcome';
 import ScheduleMeeting from '@/pages/admin/ScheduleMeeting';
 import AuditLog from '@/pages/admin/AuditLog';
+import TractionStage from '@/pages/journey/traction/TractionStage';
+import UserAcquisitionTracker from '@/pages/journey/traction/UserAcquisitionTracker';
+import CustomerFeedbackUpload from '@/pages/journey/traction/CustomerFeedbackUpload';
+import TractionProductSubmission from '@/pages/journey/traction/TractionProductSubmission';
+import TractionReview from '@/pages/journey/traction/TractionReview';
+import TractionReviewMeeting from '@/pages/journey/traction/TractionReviewMeeting';
+import TractionApproved from '@/pages/journey/traction/TractionApproved';
+import IncubationVerificationReview from '@/pages/journey/mvp/IncubationVerificationReview';
+import IncubationVerificationApproved from '@/pages/journey/mvp/IncubationVerificationApproved';
+import LaunchStage from '@/pages/journey/launch/LaunchStage';
+import LaunchSubmission from '@/pages/journey/launch/LaunchSubmission';
+import FinalPitchDeckUpload from '@/pages/journey/launch/FinalPitchDeckUpload';
+import LaunchProofUpload from '@/pages/journey/launch/LaunchProofUpload';
+import LaunchVerificationReview from '@/pages/journey/launch/LaunchVerificationReview';
+import JourneyComplete from '@/pages/journey/JourneyComplete';
+import CertificateAlumni from '@/pages/journey/CertificateAlumni';
 
 export const router = createBrowserRouter([
   { path: '/', element: <Navigate to="/login" replace /> },
@@ -91,7 +107,7 @@ export const router = createBrowserRouter([
   { path: '/build-startup/journey/mvp/choose-product-type', element: <ChooseProductType /> },
   { path: '/build-startup/journey/mvp/submit', element: <MvpSubmission /> },
   { path: '/build-startup/journey/mvp/success', element: <MvpSubmissionSuccess /> },
-  { path: '/build-startup/journey/mvp/incubation-proof', element: <IncubationProofSubmission /> },
+  { path: '/build-startup/journey/mvp/incubation-proof', element: <MvpIncubationProofSubmission /> },
   { path: '/admin', element: <AdminDashboard /> },
   { path: '/admin/verification', element: <VerificationQueue /> },
   { path: '/admin/verification/detail', element: <VerificationDetail /> },
@@ -102,4 +118,20 @@ export const router = createBrowserRouter([
   { path: '/admin/reviews/outcome', element: <ReviewOutcome /> },
   { path: '/admin/reviews/schedule-meeting', element: <ScheduleMeeting /> },
   { path: '/admin/audit-log', element: <AuditLog /> },
+  { path: "/build-startup/journey/traction", element: <TractionStage /> },
+  { path: "/build-startup/journey/traction/acquisition-tracker", element: <UserAcquisitionTracker /> },
+  { path: "/build-startup/journey/traction/feedback-upload", element: <CustomerFeedbackUpload /> },
+  { path: "/build-startup/journey/traction/product-submission", element: <TractionProductSubmission /> },
+  { path: "/build-startup/journey/traction/review", element: <TractionReview /> },
+  { path: "/build-startup/journey/traction/review-meeting", element: <TractionReviewMeeting /> },
+  { path: "/build-startup/journey/traction/approved", element: <TractionApproved /> },
+  { path: "/build-startup/journey/mvp/incubation-verification", element: <IncubationVerificationReview /> },
+  { path: "/build-startup/journey/mvp/incubation-verification/approved", element: <IncubationVerificationApproved /> },
+  { path: "/build-startup/journey/launch", element: <LaunchStage /> },
+  { path: "/build-startup/journey/launch/submission", element: <LaunchSubmission /> },
+  { path: "/build-startup/journey/launch/pitch-deck", element: <FinalPitchDeckUpload /> },
+  { path: "/build-startup/journey/launch/proof-upload", element: <LaunchProofUpload /> },
+  { path: "/build-startup/journey/launch/verification", element: <LaunchVerificationReview /> },
+  { path: "/build-startup/journey/complete", element: <JourneyComplete /> },
+  { path: "/build-startup/journey/certificate", element: <CertificateAlumni /> },
 ]);
