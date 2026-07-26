@@ -153,7 +153,7 @@ export default function PitchDeckPage() {
         <div className="lg:col-span-3 bg-surface-white border border-border-subtle rounded-lg shadow-card p-6 flex flex-col gap-6">
           <div>
             <div className="flex items-start justify-between mb-2">
-              <div className="w-10 h-10 rounded-md placeholder-box shrink-0" />
+              <div className="w-10 h-10 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-xs select-none shrink-0">A</div>
               <Badge variant="success">Series A</Badge>
             </div>
             <h2 className="font-poppins font-semibold text-card text-text-heading">AeroFlow Dynamics</h2>
