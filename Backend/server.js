@@ -18,6 +18,12 @@ const {
   chapterStatsRouter,
 } = require("./routes/chapter.routes");
 
+const publicRoutes = require("./routes/public.routes");
+const adminRoutes = require("./routes/admin.routes");
+const mentorRoutes = require("./routes/mentor.routes");
+const studentRoutes = require("./routes/student.routes");
+const { requireAuth, authorizeRoles } = require("./middlewares/requireAuth");
+
 const stage3StageRoutes = require("./routes/stage3.routes");
 const stage3ProductTypeRoutes = require("./routes/productType.routes");
 const stage3AtiorRoutes = require("./routes/atior.routes");
@@ -25,6 +31,8 @@ const stage3MVPRoutes = require("./routes/mvpSubmission.routes");
 const stage3ReviewRoutes = require("./routes/mvpReview.routes");
 
 const incubationRoutes = require("./routes/incubation.routes");
+
+const tractionRoutes = require("./routes/traction.routes");
 
 const http = require("http");
 const { configureSocket } = require("./utils/socket");
@@ -50,12 +58,6 @@ app.get("/", (req, res) => {
 app.get("/api/health", (req, res) => {
   res.status(200).json({ success: true, message: "Server is healthy" });
 });
-
-const publicRoutes = require("./routes/public.routes");
-const adminRoutes = require("./routes/admin.routes");
-const mentorRoutes = require("./routes/mentor.routes");
-const studentRoutes = require("./routes/student.routes");
-const { requireAuth, authorizeRoles } = require("./middlewares/requireAuth");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
@@ -90,6 +92,9 @@ app.use("/api/student", stage3ReviewRoutes);
 
 // incubation stage
 app.use("/api/student", incubationRoutes);
+
+// traction stage
+app.use("/api/student", tractionRoutes);
 
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
