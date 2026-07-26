@@ -81,6 +81,7 @@ const ChapterManagement = lazy(() => import('@/pages/admin/ChapterManagement'));
 const ChapterDetail = lazy(() => import('@/pages/admin/ChapterDetail'));
 const OpportunityApprovalQueue = lazy(() => import('@/pages/admin/OpportunityApprovalQueue'));
 const OpportunityReview = lazy(() => import('@/pages/admin/OpportunityReview'));
+const AdminSettings = lazy(() => import('@/pages/admin/AdminSettings'));
 const LandingHome = lazy(() => import('@/pages/landing/Home'));
 const LandingStudent = lazy(() => import('@/pages/landing/Student'));
 const LandingMentor = lazy(() => import('@/pages/landing/Mentor'));
@@ -213,6 +214,7 @@ export const router = createBrowserRouter([
   { path: '/admin/chapters/detail', element: withSuspense(ChapterDetail) },
   { path: '/admin/opportunities', element: withSuspense(OpportunityApprovalQueue) },
   { path: '/admin/opportunities/review', element: withSuspense(OpportunityReview) },
+  { path: '/admin/settings', element: withSuspense(AdminSettings) },
   { path: '/investor', element: withSuspense(InvestorPortal) },
   { path: '/investor/pitch-decks', element: withSuspense(IncomingPitchDecks) },
   { path: '/investor/pitch-decks/review', element: withSuspense(PitchDeck) },
