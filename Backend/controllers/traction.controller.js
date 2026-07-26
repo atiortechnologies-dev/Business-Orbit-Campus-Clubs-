@@ -539,6 +539,70 @@ const confirmAttendance = asyncHandler(async (req, res) => {
     .json({ success: true, message: "Attendance confirmed", data: meeting });
 });
 
+// ========= SCREEN 7: TRACTION APPROVAL =========
+
+const getTractionResult = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const review = await TractionReview.findOne({ startup_id: startup._id })
+    .populate("reviewer_id", "full_name email")
+    .lean();
+
+  if (!review || review.review_status !== "Approved") {
+    return res.status(200).json({
+      success: true,
+      data: { status: review?.review_status || "Pending", approved: false },
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: {
+      status: review.review_status,
+      approved: true,
+      score: review.score,
+      strengths: review.strengths,
+      improvement_areas: review.improvement_areas,
+      reviewer: review.reviewer_id,
+    },
+  });
+});
+
+const getTractionApproval = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const review = await TractionReview.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      approval_status: review?.review_status || "Pending",
+      approved_at: review?.updated_at,
+      next_stage: "Stage 5 Unlocked",
+    },
+  });
+});
+
+const getStagesProgress = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const stages = await StartupStage.find({ startup_id: startup._id }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: stages.map((s) => ({
+      stage_number: s.stage_number,
+      status: s.status,
+      completion_percentage: s.completion_percentage || 0,
+    })),
+  });
+});
+
 module.exports = {
   getStage4Overview,
   getStage4Progress,
@@ -565,4 +629,7 @@ module.exports = {
   getReviewMeetingDetails,
   getMeetingJoinLink,
   confirmAttendance,
+  getTractionResult,
+  getTractionApproval,
+  getStagesProgress,
 };
