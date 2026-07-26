@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Camera } from 'lucide-react';
+import { Camera, User } from 'lucide-react';
 
 // Shared shell for all 5 role variants of the post-signup "complete your
 // profile" step (Student/Mentor/Investor/Incubator/Company) — adapted from
@@ -11,6 +11,7 @@ export default function CompleteProfileShell({
   title,
   subtitle,
   photoLabel = 'Profile Photo',
+  photoIcon: PhotoIcon = User,
   photoPreview,
   onPhotoChange,
   onSave,
@@ -49,7 +50,9 @@ export default function CompleteProfileShell({
             {photoPreview ? (
               <img src={photoPreview} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-text-muted font-poppins font-semibold text-card">?</div>
+              <div className="w-full h-full flex items-center justify-center text-text-muted">
+                <PhotoIcon size={28} strokeWidth={1.5} />
+              </div>
             )}
             <span className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-brand-black flex items-center justify-center border-2 border-surface-white">
               <Camera size={12} strokeWidth={2} className="text-white" />
