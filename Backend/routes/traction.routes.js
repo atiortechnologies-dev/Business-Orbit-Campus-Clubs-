@@ -104,4 +104,10 @@ router.post(
   tractionController.confirmAttendance,
 );
 
+// SCREEN 7: TRACTION APPROVAL & STAGE 5 UNLOCK
+
+router.get("/traction/result", tractionController.getTractionResult);
+router.get("/traction/approval", tractionController.getTractionApproval);
+router.get("/stages/progress", tractionController.getStagesProgress);
+
 module.exports = router;
