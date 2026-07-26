@@ -18,7 +18,7 @@
         "success": true,
         "message": "Registration successful. Please verify your email.",
         "data": {
-          "userId": "6a634d8174f60d9afcf9767a",
+          "userId": "6a6526b99d0212c087eaf5ac",
           "role": "student",
           "account_status": "pending_verification",
           "email_verified": false,
@@ -98,10 +98,10 @@
         "success": true,
         "message": "Email verified successfully",
         "data": {
-          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNjM0ZDg1NzRmNjBkOWFmY2Y5NzY3ZCIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJqYW5lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg0ODkyODA2LCJleHAiOjE3ODU0OTc2MDYsImlzcyI6ImJjb2MtYmFja2VuZCJ9.mBpwgnaAUKQgRu80laV0SJql55nREu5Q2JLx7OdWkac",
-          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNjM0ZDg1NzRmNjBkOWFmY2Y5NzY3ZCIsInJvbGUiOiJzdHVkZW50IiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODQ4OTI4MDYsImV4cCI6MTc4NzQ4NDgwNiwiaXNzIjoiYmNvYy1iYWNrZW5kIn0.Jv0lD0XjB0Cr8YbjZ04s3bXiGITNRJ8Sxf-lCaeRChw",
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNjUyNmM2OWQwMjEyYzA4N2VhZjVhZiIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJqYW5lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg1MDEzOTU5LCJleHAiOjE3ODU2MTg3NTksImlzcyI6ImJjb2MtYmFja2VuZCJ9.mTqIstoLbFRbTUczG6iYJGjY1bsTH0fb2iRFJnu7KvA",
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNjUyNmM2OWQwMjEyYzA4N2VhZjVhZiIsInJvbGUiOiJzdHVkZW50IiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODUwMTM5NTksImV4cCI6MTc4NzYwNTk1OSwiaXNzIjoiYmNvYy1iYWNrZW5kIn0.sxiJ6RBcPovTClrdc_5bUf4-AMMy4SIx1920nn9z2pg",
           "user": {
-            "id": "6a634d8574f60d9afcf9767d",
+            "id": "6a6526c69d0212c087eaf5af",
             "email": "jane@example.com",
             "role": "student",
             "account_status": "active",
@@ -186,9 +186,9 @@
           "question": "What is Business Orbit?",
           "answer": "A club",
           "pageType": "Student",
-          "_id": "6a634d9074f60d9afcf97686",
-          "createdAt": "2026-07-24T11:33:36.731Z",
-          "updatedAt": "2026-07-24T11:33:36.731Z",
+          "_id": "6a6526e19d0212c087eaf5b8",
+          "createdAt": "2026-07-25T21:13:05.548Z",
+          "updatedAt": "2026-07-25T21:13:05.548Z",
           "__v": 0
         }
       }
@@ -236,9 +236,9 @@
           "contactPerson": "Mr. Test",
           "email": "test@corp.com",
           "message": "I want to partner with Business Orbit",
-          "_id": "6a634d9574f60d9afcf97688",
-          "createdAt": "2026-07-24T11:33:41.004Z",
-          "updatedAt": "2026-07-24T11:33:41.004Z",
+          "_id": "6a6526ea9d0212c087eaf5ba",
+          "createdAt": "2026-07-25T21:13:14.422Z",
+          "updatedAt": "2026-07-25T21:13:14.422Z",
           "__v": 0
         }
       }

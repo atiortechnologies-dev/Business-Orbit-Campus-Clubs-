@@ -68,6 +68,34 @@ describe("Submission Controller", () => {
       expect(draft.title).toBe("My Draft");
       expect(draft.status).toBe("draft");
     });
+
+    it("should successfully save a draft with an attachment_url", async () => {
+      const startup = await Startup.create({
+        student_id: userId,
+        startup_name: "My Startup",
+      });
+      await StartupStage.create({
+        startup_id: startup._id,
+        stage_number: 1,
+        stage_name: "Ideation",
+        status: "active",
+      });
+
+      const res = await request(app)
+        .put("/api/startup/save-draft")
+        .set("Authorization", `Bearer ${userJwt}`)
+        .send({
+          title: "My Draft with Attachment",
+          description: "Draft Desc",
+          attachment_url: "https://example.com/pitch.pdf",
+        });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+
+      const draft = await StageSubmission.findOne({ startup_id: startup._id });
+      expect(draft.attachment_url).toBe("https://example.com/pitch.pdf");
+    });
   });
 
   describe("submitIdea", () => {
@@ -101,6 +129,36 @@ describe("Submission Controller", () => {
       const updatedStage = await StartupStage.findById(stage._id);
       expect(updatedStage.status).toBe("submitted");
     });
+
+    it("should successfully submit an idea with an attachment_url", async () => {
+      const startup = await Startup.create({
+        student_id: userId,
+        startup_name: "My Startup",
+      });
+      await StartupStage.create({
+        startup_id: startup._id,
+        stage_number: 1,
+        stage_name: "Ideation",
+        status: "active",
+      });
+
+      const res = await request(app)
+        .post("/api/startup/submit")
+        .set("Authorization", `Bearer ${userJwt}`)
+        .send({
+          title: "Idea with Attachment",
+          description: "Desc with attachment",
+          attachment_url: "https://example.com/deck.pdf",
+        });
+
+      expect(res.statusCode).toBe(201);
+      expect(res.body.success).toBe(true);
+
+      const submission = await StageSubmission.findById(
+        res.body.data.submissionId,
+      );
+      expect(submission.attachment_url).toBe("https://example.com/deck.pdf");
+    });
   });
 
   describe("getSubmissionStatus", () => {
@@ -121,6 +179,7 @@ describe("Submission Controller", () => {
         stage_id: stage._id,
         title: "Test",
         description: "Test Desc",
+        attachment_url: "https://example.com/doc.pdf",
         status: "pending_review",
       });
 
@@ -131,6 +190,9 @@ describe("Submission Controller", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.currentStatus).toBe("pending_review");
+      expect(res.body.data.title).toBe("Test");
+      expect(res.body.data.description).toBe("Test Desc");
+      expect(res.body.data.attachment_url).toBe("https://example.com/doc.pdf");
     });
   });
 });

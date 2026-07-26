@@ -44,6 +44,13 @@ const InvestorNote = require("../models/InvestorNote");
 const InvestorChatRoom = require("../models/InvestorChatRoom");
 const InvestorMessage = require("../models/InvestorMessage");
 
+const IncubationApplication = require("../models/IncubationApplication");
+const ApplicationDocument = require("../models/ApplicationDocument");
+const ApplicationTimeline = require("../models/ApplicationTimeline");
+const IncubationAdmission = require("../models/IncubationAdmission");
+const AdmissionDocument = require("../models/AdmissionDocument");
+const IncubationUpdate = require("../models/IncubationUpdate");
+
 const mongoose = require("mongoose");
 
 const deleteStartupDependencies = async (startupId, session = null) => {
@@ -62,11 +69,18 @@ const deleteStartupDependencies = async (startupId, session = null) => {
   // 3. Delete Mentor Relations
   await MentorRequest.deleteMany({ startup_id: startupId }, opts);
   await MentorAssignment.deleteMany({ startup_id: startupId }, opts);
-  
-  const mentorMeetings = await MentorMeeting.find({ startup_id: startupId }, null, opts);
+
+  const mentorMeetings = await MentorMeeting.find(
+    { startup_id: startupId },
+    null,
+    opts,
+  );
   const mentorMeetingIds = mentorMeetings.map((m) => m._id);
   if (mentorMeetingIds.length > 0) {
-    await MeetingNotes.deleteMany({ meeting_id: { $in: mentorMeetingIds } }, opts);
+    await MeetingNotes.deleteMany(
+      { meeting_id: { $in: mentorMeetingIds } },
+      opts,
+    );
     await MentorMeeting.deleteMany({ _id: { $in: mentorMeetingIds } }, opts);
   }
 
@@ -82,11 +96,65 @@ const deleteStartupDependencies = async (startupId, session = null) => {
   await InvestorWatchlist.deleteMany({ startup_id: startupId }, opts);
   await InvestorNote.deleteMany({ startup_id: startupId }, opts);
 
-  const pitches = await StartupPitch.find({ startup_id: startupId }, null, opts);
+  const pitches = await StartupPitch.find(
+    { startup_id: startupId },
+    null,
+    opts,
+  );
   const pitchIds = pitches.map((p) => p._id);
   if (pitchIds.length > 0) {
     await PitchView.deleteMany({ pitch_id: { $in: pitchIds } }, opts);
     await StartupPitch.deleteMany({ _id: { $in: pitchIds } }, opts);
+  }
+
+  // 6. Delete Incubation Ecosystem Relations (by Startup)
+  const incApps = await IncubationApplication.find(
+    { startup_id: startupId },
+    null,
+    opts,
+  );
+  const incAppIds = incApps.map((a) => a._id);
+  if (incAppIds.length > 0) {
+    const appAdmissions = await IncubationAdmission.find(
+      { application_id: { $in: incAppIds } },
+      null,
+      opts,
+    );
+    const appAdmIds = appAdmissions.map((a) => a._id);
+    if (appAdmIds.length > 0) {
+      await AdmissionDocument.deleteMany(
+        { admission_id: { $in: appAdmIds } },
+        opts,
+      );
+      await IncubationAdmission.deleteMany({ _id: { $in: appAdmIds } }, opts);
+    }
+    await ApplicationDocument.deleteMany(
+      { application_id: { $in: incAppIds } },
+      opts,
+    );
+    await ApplicationTimeline.deleteMany(
+      { application_id: { $in: incAppIds } },
+      opts,
+    );
+    await IncubationUpdate.deleteMany(
+      { application_id: { $in: incAppIds } },
+      opts,
+    );
+    await IncubationApplication.deleteMany({ _id: { $in: incAppIds } }, opts);
+  }
+
+  const incAdmissions = await IncubationAdmission.find(
+    { startup_id: startupId },
+    null,
+    opts,
+  );
+  const incAdmIds = incAdmissions.map((a) => a._id);
+  if (incAdmIds.length > 0) {
+    await AdmissionDocument.deleteMany(
+      { admission_id: { $in: incAdmIds } },
+      opts,
+    );
+    await IncubationAdmission.deleteMany({ _id: { $in: incAdmIds } }, opts);
   }
 };
 
@@ -94,6 +162,13 @@ const deleteUserDependencies = async (userId, session = null) => {
   if (!userId) return;
 
   const opts = session ? { session } : {};
+
+  const incProfiles = await IncubatorProfile.find(
+    { user_id: userId },
+    null,
+    opts,
+  );
+  const incProfileIds = incProfiles.map((p) => p._id);
 
   // 1. Delete Profiles
   await StudentProfile.deleteMany({ user_id: userId }, opts);
@@ -109,33 +184,53 @@ const deleteUserDependencies = async (userId, session = null) => {
   await Notification.deleteMany({ recipient_id: userId }, opts);
 
   // 3. Delete Mentor Relations (as mentor or student)
-  await MentorRequest.deleteMany({
-    $or: [{ mentor_id: userId }, { student_id: userId }],
-  }, opts);
-  await MentorAssignment.deleteMany({
-    $or: [{ mentor_id: userId }, { student_id: userId }],
-  }, opts);
-  
-  const mentorMeetings = await MentorMeeting.find({
-    $or: [{ mentor_id: userId }, { student_id: userId }],
-  }, null, opts);
+  await MentorRequest.deleteMany(
+    {
+      $or: [{ mentor_id: userId }, { student_id: userId }],
+    },
+    opts,
+  );
+  await MentorAssignment.deleteMany(
+    {
+      $or: [{ mentor_id: userId }, { student_id: userId }],
+    },
+    opts,
+  );
+
+  const mentorMeetings = await MentorMeeting.find(
+    {
+      $or: [{ mentor_id: userId }, { student_id: userId }],
+    },
+    null,
+    opts,
+  );
   const mentorMeetingIds = mentorMeetings.map((m) => m._id);
   if (mentorMeetingIds.length > 0) {
-    await MeetingNotes.deleteMany({ meeting_id: { $in: mentorMeetingIds } }, opts);
+    await MeetingNotes.deleteMany(
+      { meeting_id: { $in: mentorMeetingIds } },
+      opts,
+    );
     await MentorMeeting.deleteMany({ _id: { $in: mentorMeetingIds } }, opts);
   }
 
-  await MentorReview.deleteMany({
-    $or: [{ mentor_id: userId }, { student_id: userId }],
-  }, opts);
+  await MentorReview.deleteMany(
+    {
+      $or: [{ mentor_id: userId }, { student_id: userId }],
+    },
+    opts,
+  );
 
   // 4. Delete Chapter Change Requests
   await ChapterChangeRequest.deleteMany({ student_id: userId }, opts);
 
   // 5. Delete ChatRooms & Messages where user is participant
-  const chatRooms = await ChatRoom.find({
-    $or: [{ mentor_id: userId }, { student_id: userId }],
-  }, null, opts);
+  const chatRooms = await ChatRoom.find(
+    {
+      $or: [{ mentor_id: userId }, { student_id: userId }],
+    },
+    null,
+    opts,
+  );
   const chatRoomIds = chatRooms.map((c) => c._id);
   if (chatRoomIds.length > 0) {
     await Message.deleteMany({ chat_id: { $in: chatRoomIds } }, opts);
@@ -152,46 +247,83 @@ const deleteUserDependencies = async (userId, session = null) => {
   await PitchView.deleteMany({ investor_id: userId }, opts);
 
   // 8. Delete Investor/Founder Chat Rooms
-  const invChatRooms = await InvestorChatRoom.find({
-    $or: [{ investor_id: userId }, { founder_id: userId }],
-  }, null, opts);
+  const invChatRooms = await InvestorChatRoom.find(
+    {
+      $or: [{ investor_id: userId }, { founder_id: userId }],
+    },
+    null,
+    opts,
+  );
   const invChatRoomIds = invChatRooms.map((c) => c._id);
   if (invChatRoomIds.length > 0) {
-    await InvestorMessage.deleteMany({ chat_id: { $in: invChatRoomIds } }, opts);
+    await InvestorMessage.deleteMany(
+      { chat_id: { $in: invChatRoomIds } },
+      opts,
+    );
     await InvestorChatRoom.deleteMany({ _id: { $in: invChatRoomIds } }, opts);
   }
 
   // 9. Delete Company Ecosystem (Opportunities & deeply nested Applications)
-  const opportunities = await Opportunity.find({ company_id: userId }, null, opts);
+  const opportunities = await Opportunity.find(
+    { company_id: userId },
+    null,
+    opts,
+  );
   const oppIds = opportunities.map((o) => o._id);
   if (oppIds.length > 0) {
-    const oppApplications = await Application.find({
-      opportunity_id: { $in: oppIds },
-    }, null, opts);
+    const oppApplications = await Application.find(
+      {
+        opportunity_id: { $in: oppIds },
+      },
+      null,
+      opts,
+    );
     const oppAppIds = oppApplications.map((a) => a._id);
 
     if (oppAppIds.length > 0) {
-      await ApplicantStatus.deleteMany({ application_id: { $in: oppAppIds } }, opts);
-      await ApplicationInterview.deleteMany({
-        application_id: { $in: oppAppIds },
-      }, opts);
-      await RecruiterNote.deleteMany({ application_id: { $in: oppAppIds } }, opts);
+      await ApplicantStatus.deleteMany(
+        { application_id: { $in: oppAppIds } },
+        opts,
+      );
+      await ApplicationInterview.deleteMany(
+        {
+          application_id: { $in: oppAppIds },
+        },
+        opts,
+      );
+      await RecruiterNote.deleteMany(
+        { application_id: { $in: oppAppIds } },
+        opts,
+      );
       await Application.deleteMany({ _id: { $in: oppAppIds } }, opts);
     }
     await Opportunity.deleteMany({ _id: { $in: oppIds } }, opts);
   }
 
   // 10. Delete Student Ecosystem (Applications & deeply nested statuses)
-  const studentApplications = await Application.find({ student_id: userId }, null, opts);
+  const studentApplications = await Application.find(
+    { student_id: userId },
+    null,
+    opts,
+  );
   const studentAppIds = studentApplications.map((a) => a._id);
   if (studentAppIds.length > 0) {
-    await ApplicantStatus.deleteMany({
-      application_id: { $in: studentAppIds },
-    }, opts);
-    await ApplicationInterview.deleteMany({
-      application_id: { $in: studentAppIds },
-    }, opts);
-    await RecruiterNote.deleteMany({ application_id: { $in: studentAppIds } }, opts);
+    await ApplicantStatus.deleteMany(
+      {
+        application_id: { $in: studentAppIds },
+      },
+      opts,
+    );
+    await ApplicationInterview.deleteMany(
+      {
+        application_id: { $in: studentAppIds },
+      },
+      opts,
+    );
+    await RecruiterNote.deleteMany(
+      { application_id: { $in: studentAppIds } },
+      opts,
+    );
     await Application.deleteMany({ _id: { $in: studentAppIds } }, opts);
   }
 
@@ -205,9 +337,109 @@ const deleteUserDependencies = async (userId, session = null) => {
     await deleteStartupDependencies(startup._id, session);
     await Startup.deleteOne({ _id: startup._id }, opts);
   }
+
+  // 13. Delete Incubation Ecosystem (Applications, Admissions, Updates where User is Student or Incubator)
+  const incApps = await IncubationApplication.find(
+    {
+      $or: [{ student_id: userId }, { incubator_id: { $in: incProfileIds } }],
+    },
+    null,
+    opts,
+  );
+  const incAppIds = incApps.map((a) => a._id);
+  if (incAppIds.length > 0) {
+    const appAdmissions = await IncubationAdmission.find(
+      { application_id: { $in: incAppIds } },
+      null,
+      opts,
+    );
+    const appAdmIds = appAdmissions.map((a) => a._id);
+    if (appAdmIds.length > 0) {
+      await AdmissionDocument.deleteMany(
+        { admission_id: { $in: appAdmIds } },
+        opts,
+      );
+      await IncubationAdmission.deleteMany({ _id: { $in: appAdmIds } }, opts);
+    }
+    await ApplicationDocument.deleteMany(
+      { application_id: { $in: incAppIds } },
+      opts,
+    );
+    await ApplicationTimeline.deleteMany(
+      { application_id: { $in: incAppIds } },
+      opts,
+    );
+    await IncubationUpdate.deleteMany(
+      { application_id: { $in: incAppIds } },
+      opts,
+    );
+    await IncubationApplication.deleteMany({ _id: { $in: incAppIds } }, opts);
+  }
+
+  const incAdmissions = await IncubationAdmission.find(
+    {
+      $or: [{ student_id: userId }, { incubator_id: { $in: incProfileIds } }],
+    },
+    null,
+    opts,
+  );
+  const incAdmIds = incAdmissions.map((a) => a._id);
+  if (incAdmIds.length > 0) {
+    await AdmissionDocument.deleteMany(
+      { admission_id: { $in: incAdmIds } },
+      opts,
+    );
+    await IncubationAdmission.deleteMany({ _id: { $in: incAdmIds } }, opts);
+  }
+
+  await IncubationUpdate.deleteMany(
+    { incubator_id: { $in: incProfileIds } },
+    opts,
+  );
+  await IncubationAdmission.updateMany(
+    { assigned_mentor: userId },
+    { $unset: { assigned_mentor: "" } },
+    opts,
+  );
+  await ApplicationTimeline.updateMany(
+    { updated_by: userId },
+    { $unset: { updated_by: "" } },
+    opts,
+  );
+};
+
+/**
+ * Cascade delete an Opportunity and its dependent Applications and sub-documents.
+ */
+const deleteOpportunityDependencies = async (opportunityId, session = null) => {
+  const opts = session ? { session } : {};
+  const oppApplications = await Application.find(
+    { opportunity_id: opportunityId },
+    null,
+    opts,
+  );
+  const oppAppIds = oppApplications.map((a) => a._id);
+
+  if (oppAppIds.length > 0) {
+    await ApplicantStatus.deleteMany(
+      { application_id: { $in: oppAppIds } },
+      opts,
+    );
+    await ApplicationInterview.deleteMany(
+      { application_id: { $in: oppAppIds } },
+      opts,
+    );
+    await RecruiterNote.deleteMany(
+      { application_id: { $in: oppAppIds } },
+      opts,
+    );
+    await Application.deleteMany({ _id: { $in: oppAppIds } }, opts);
+  }
+  await Opportunity.deleteOne({ _id: opportunityId }, opts);
 };
 
 module.exports = {
   deleteUserDependencies,
   deleteStartupDependencies,
+  deleteOpportunityDependencies,
 };

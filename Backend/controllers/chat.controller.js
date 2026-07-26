@@ -47,7 +47,9 @@ const verifyChatAccess = async (userId, role, chatRoom) => {
   });
 
   if (!assignment) {
-    const error = new Error("Unauthorized: Mentorship assignment is no longer active.");
+    const error = new Error(
+      "Unauthorized: Mentorship assignment is no longer active.",
+    );
     error.statusCode = 403;
     throw error;
   }
@@ -86,10 +88,14 @@ exports.searchChats = asyncHandler(async (req, res) => {
   let startups = [];
 
   if (role === "mentor") {
-    users = await User.find({ $text: { $search: q }, role: "student" }).select("_id");
+    users = await User.find({ $text: { $search: q }, role: "student" }).select(
+      "_id",
+    );
     startups = await Startup.find({ $text: { $search: q } }).select("_id");
   } else if (role === "student") {
-    users = await User.find({ $text: { $search: q }, role: "mentor" }).select("_id");
+    users = await User.find({ $text: { $search: q }, role: "mentor" }).select(
+      "_id",
+    );
     // Startups search might not apply directly for student searching mentors, but let's keep it robust
   }
 
@@ -101,10 +107,11 @@ exports.searchChats = asyncHandler(async (req, res) => {
   }
 
   // 2. Fetch ChatRooms matching the user and any of the found match IDs
-  const matchObj = role === "mentor" ? { mentor_id: userId } : { student_id: userId };
+  const matchObj =
+    role === "mentor" ? { mentor_id: userId } : { student_id: userId };
   const targetField = role === "mentor" ? "student_id" : "mentor_id";
-  
-  const searchOr = [ { [targetField]: { $in: userIds } } ];
+
+  const searchOr = [{ [targetField]: { $in: userIds } }];
   if (startupIds.length > 0) {
     searchOr.push({ startup_id: { $in: startupIds } });
   }
@@ -123,7 +130,10 @@ exports.searchChats = asyncHandler(async (req, res) => {
     studentId: room.student_id?._id,
     mentorId: room.mentor_id?._id,
     startupId: room.startup_id?._id,
-    participantName: role === "mentor" ? room.student_id?.full_name : room.mentor_id?.full_name,
+    participantName:
+      role === "mentor"
+        ? room.student_id?.full_name
+        : room.mentor_id?.full_name,
     startupName: room.startup_id?.startup_name,
   }));
 
@@ -142,9 +152,7 @@ exports.getChatMessages = asyncHandler(async (req, res) => {
 
   const chatRoom = await ChatRoom.findOne({ _id: chatId });
   if (!chatRoom) {
-    return res
-      .status(404)
-      .json({ message: "Chat room not found." });
+    return res.status(404).json({ message: "Chat room not found." });
   }
 
   await verifyChatAccess(userId, role, chatRoom);
@@ -176,14 +184,15 @@ exports.sendMessage = asyncHandler(async (req, res) => {
   if (message.length > 20000) {
     return res
       .status(400)
-      .json({ message: "Message is too long. Maximum allowed length is 20000 characters." });
+      .json({
+        message:
+          "Message is too long. Maximum allowed length is 20000 characters.",
+      });
   }
 
   const chatRoom = await ChatRoom.findOne({ _id: chatId });
   if (!chatRoom) {
-    return res
-      .status(404)
-      .json({ message: "Chat room not found." });
+    return res.status(404).json({ message: "Chat room not found." });
   }
 
   await verifyChatAccess(userId, role, chatRoom);
@@ -192,19 +201,32 @@ exports.sendMessage = asyncHandler(async (req, res) => {
   session.startTransaction();
 
   try {
-    const [newMessage] = await Message.create([{
-      chat_id: chatId,
-      sender_id: userId,
-      message: message.trim(),
-    }], { session });
+    const [newMessage] = await Message.create(
+      [
+        {
+          chat_id: chatId,
+          sender_id: userId,
+          message: message.trim(),
+        },
+      ],
+      { session },
+    );
 
-    const recipientId = chatRoom.mentor_id.toString() === userId.toString() ? chatRoom.student_id : chatRoom.mentor_id;
-    await Notification.create([{
-      recipient_id: recipientId,
-      title: "New Chat Message",
-      message: `You have received a new message from ${req.user.full_name || "a user"}.`,
-      type: "info",
-    }], { session });
+    const recipientId =
+      chatRoom.mentor_id.toString() === userId.toString()
+        ? chatRoom.student_id
+        : chatRoom.mentor_id;
+    await Notification.create(
+      [
+        {
+          recipient_id: recipientId,
+          title: "New Chat Message",
+          message: `You have received a new message from ${req.user.full_name || "a user"}.`,
+          type: "info",
+        },
+      ],
+      { session },
+    );
 
     await session.commitTransaction();
     res.status(201).json(newMessage);
@@ -232,9 +254,7 @@ exports.uploadAttachment = asyncHandler(async (req, res) => {
 
   const chatRoom = await ChatRoom.findOne({ _id: chatId });
   if (!chatRoom) {
-    return res
-      .status(404)
-      .json({ message: "Chat room not found." });
+    return res.status(404).json({ message: "Chat room not found." });
   }
 
   await verifyChatAccess(userId, role, chatRoom);
@@ -246,21 +266,34 @@ exports.uploadAttachment = asyncHandler(async (req, res) => {
   session.startTransaction();
 
   try {
-    const [newMessage] = await Message.create([{
-      chat_id: chatId,
-      sender_id: userId,
-      message: req.body.message || "",
-      attachment_url: attachmentUrl,
-      message_type: "file",
-    }], { session });
+    const [newMessage] = await Message.create(
+      [
+        {
+          chat_id: chatId,
+          sender_id: userId,
+          message: req.body.message || "",
+          attachment_url: attachmentUrl,
+          message_type: "file",
+        },
+      ],
+      { session },
+    );
 
-    const recipientId = chatRoom.mentor_id.toString() === userId.toString() ? chatRoom.student_id : chatRoom.mentor_id;
-    await Notification.create([{
-      recipient_id: recipientId,
-      title: "New File Received",
-      message: `You have received a new file attachment from ${req.user.full_name || "a user"}.`,
-      type: "info",
-    }], { session });
+    const recipientId =
+      chatRoom.mentor_id.toString() === userId.toString()
+        ? chatRoom.student_id
+        : chatRoom.mentor_id;
+    await Notification.create(
+      [
+        {
+          recipient_id: recipientId,
+          title: "New File Received",
+          message: `You have received a new file attachment from ${req.user.full_name || "a user"}.`,
+          type: "info",
+        },
+      ],
+      { session },
+    );
 
     await session.commitTransaction();
     res.status(201).json(newMessage);
@@ -284,9 +317,7 @@ exports.markMessagesRead = asyncHandler(async (req, res) => {
 
   const chatRoom = await ChatRoom.findOne({ _id: chatId });
   if (!chatRoom) {
-    return res
-      .status(404)
-      .json({ message: "Chat room not found." });
+    return res.status(404).json({ message: "Chat room not found." });
   }
 
   await verifyChatAccess(userId, role, chatRoom);

@@ -61,7 +61,7 @@ describe("Admin Transactional User Deletion", () => {
       mentor_id: mentorId,
       startup_id: startup._id,
       meeting_title: "Initial Pitch",
-      date: new Date().toISOString().split('T')[0],
+      date: new Date().toISOString().split("T")[0],
       time: "10:00 AM",
       platform: "zoom",
       meeting_link: "https://zoom.us/j/123",
@@ -103,9 +103,11 @@ describe("Admin Transactional User Deletion", () => {
 
   it("should rollback completely if cascade deletion fails", async () => {
     // Spy on cascadeService and mock it to throw an error
-    jest.spyOn(cascadeService, "deleteUserDependencies").mockImplementationOnce(() => {
-      throw new Error("Simulated database failure");
-    });
+    jest
+      .spyOn(cascadeService, "deleteUserDependencies")
+      .mockImplementationOnce(() => {
+        throw new Error("Simulated database failure");
+      });
 
     const res = await request(app)
       .delete(`/api/admin/users/${studentUser._id}`)

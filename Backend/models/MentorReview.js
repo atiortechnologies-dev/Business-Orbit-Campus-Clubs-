@@ -33,7 +33,7 @@ const mentorReviewSchema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
 // A student can only have one active review per mentor

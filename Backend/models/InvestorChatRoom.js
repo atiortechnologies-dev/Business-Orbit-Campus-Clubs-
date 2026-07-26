@@ -12,9 +12,9 @@ const investorChatRoomSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
-    founder_id: {
+    startup_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Startup",
       required: true,
       index: true,
     },
@@ -22,9 +22,9 @@ const investorChatRoomSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-// Ensure only one chat room per investor-founder combo
+// Ensure only one chat room per investor-startup combo
 investorChatRoomSchema.index(
-  { investor_id: 1, founder_id: 1 },
+  { investor_id: 1, startup_id: 1 },
   { unique: true },
 );
 

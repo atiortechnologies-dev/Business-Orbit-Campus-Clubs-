@@ -39,6 +39,18 @@ const incubatorProfileSchema = new mongoose.Schema(
       default: "incomplete",
     },
     profile_completed_at: { type: Date, default: null },
+
+    //^ Discovery module fields (PRD alignment)
+    description: { type: String, trim: true, default: "" },
+    industry_focus: { type: [String], default: [] },
+    supported_stages: {
+      type: [String],
+      default: ["Stage 1", "Stage 2", "Stage 3", "Stage 4", "Stage 5"],
+    },
+    application_deadline: { type: Date, default: null },
+    location: { type: String, trim: true, default: "" },
+    logo: { type: String, trim: true, default: "" },
+    is_approved: { type: Boolean, default: true },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );

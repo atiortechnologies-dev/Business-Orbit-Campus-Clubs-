@@ -36,11 +36,19 @@ const investorProfileSchema = new mongoose.Schema(
     investment_sectors: { type: [String], default: [] },
     preferred_startup_stages: { type: [String], default: [] },
     investment_range: { type: String, trim: true, default: "" },
+    funding_range: { type: String, trim: true, default: "" },
+    location: { type: String, trim: true, default: "" },
+    portfolio_details: { type: String, trim: true, default: "" },
 
     profile_status: {
       type: String,
       enum: ["incomplete", "completed"],
       default: "incomplete",
+    },
+    account_status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
     },
     profile_completed_at: { type: Date, default: null },
   },

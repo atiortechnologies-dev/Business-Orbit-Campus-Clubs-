@@ -100,7 +100,8 @@ const seedRequests = async () => {
       mentor_id: mentor._id,
       student_id: student2._id,
       startup_id: startup2._id,
-      problem_statement: "We have an MVP but need help structuring our pitch deck.",
+      problem_statement:
+        "We have an MVP but need help structuring our pitch deck.",
       help_required: "Need help structuring pitch deck for investors.",
       preferred_meeting_mode: "online",
       preferred_time: "Weekdays evening",

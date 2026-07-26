@@ -6,12 +6,43 @@
 const express = require("express");
 const router = express.Router();
 const companyApplicationController = require("../controllers/companyApplication.controller");
-const { requireAuth, authorizeRoles } = require("../middlewares/requireAuth");
+const companyOpportunityController = require("../controllers/companyOpportunity.controller");
+const {
+  requireAuth,
+  authorizeRoles,
+  requireActiveAccount,
+} = require("../middlewares/requireAuth");
+const { validateRequest } = require("../middlewares/validateRequest");
+const {
+  createOpportunitySchema,
+  updateOpportunitySchema,
+} = require("../middlewares/validators/companyValidators");
 
-// All routes require authentication and company role
-router.use(requireAuth, authorizeRoles("company"));
+// All routes require authentication, active account, and company role
+router.use(requireAuth, requireActiveAccount, authorizeRoles("company"));
 
-// Opportunities
+// Opportunities CRUD
+router.post(
+  "/opportunities",
+  validateRequest(createOpportunitySchema),
+  companyOpportunityController.createOpportunity,
+);
+router.get("/opportunities", companyOpportunityController.getMyOpportunities);
+router.get(
+  "/opportunities/:id",
+  companyOpportunityController.getOpportunityById,
+);
+router.put(
+  "/opportunities/:id",
+  validateRequest(updateOpportunitySchema),
+  companyOpportunityController.updateOpportunity,
+);
+router.delete(
+  "/opportunities/:id",
+  companyOpportunityController.deleteOpportunity,
+);
+
+// Opportunity Applicants
 router.get(
   "/opportunities/:id/applicants",
   companyApplicationController.getApplicants,

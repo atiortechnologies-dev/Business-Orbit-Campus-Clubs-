@@ -7,9 +7,16 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 
-const { requireAuth, authorizeRoles } = require("../middlewares/requireAuth");
+const {
+  requireAuth,
+  authorizeRoles,
+  requireActiveAccount,
+} = require("../middlewares/requireAuth");
 const { validateRequest } = require("../middlewares/validateRequest");
-const { searchChatsQuerySchema, sendMessageSchema } = require("../middlewares/validators/mentorValidators");
+const {
+  searchChatsQuerySchema,
+  sendMessageSchema,
+} = require("../middlewares/validators/mentorValidators");
 
 const {
   getChatRooms,
@@ -23,8 +30,8 @@ const {
 // Setup Multer for file uploads (mock basic config)
 const upload = multer({ dest: "assets/uploads/" });
 
-// Apply authentication middleware to all routes in this module
-router.use(requireAuth);
+// Apply authentication and active account middleware to all routes in this module
+router.use(requireAuth, requireActiveAccount);
 
 // @route   GET /api/chat/conversations
 // @desc    Get all chat rooms for the user
@@ -35,7 +42,7 @@ router.get("/conversations", getChatRooms);
 router.get(
   "/conversations/search",
   validateRequest(searchChatsQuerySchema, "query"),
-  searchChats
+  searchChats,
 );
 
 // @route   GET /api/chat/messages/:chatId
@@ -47,16 +54,12 @@ router.get("/messages/:chatId", getChatMessages);
 router.post(
   "/send/:chatId",
   validateRequest(sendMessageSchema, "body"),
-  sendMessage
+  sendMessage,
 );
 
 // @route   POST /api/chat/upload/:chatId
 // @desc    Upload an attachment
-router.post(
-  "/upload/:chatId",
-  upload.single("file"),
-  uploadAttachment
-);
+router.post("/upload/:chatId", upload.single("file"), uploadAttachment);
 
 // @route   PATCH /api/chat/read/:chatId
 // @desc    Mark messages as read

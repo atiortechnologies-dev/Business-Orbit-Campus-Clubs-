@@ -21,7 +21,11 @@ const getActiveStage = async (startupId) => {
  */
 const submitIdea = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
-  const { title, description } = req.validatedData;
+  const {
+    title,
+    description,
+    attachment_url: reqAttachmentUrl,
+  } = req.validatedData;
 
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
   const activeStage = await getActiveStage(startup._id);
@@ -56,7 +60,10 @@ const submitIdea = asyncHandler(async (req, res) => {
       status: "draft",
     }).session(session);
 
-    const attachment_url = submission?.attachment_url || "";
+    const attachment_url =
+      reqAttachmentUrl !== undefined
+        ? reqAttachmentUrl
+        : submission?.attachment_url || "";
 
     if (submission) {
       submission.title = title;
@@ -110,7 +117,11 @@ const submitIdea = asyncHandler(async (req, res) => {
  */
 const saveDraft = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
-  const { title, description } = req.validatedData;
+  const {
+    title,
+    description,
+    attachment_url: reqAttachmentUrl,
+  } = req.validatedData;
 
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
   const activeStage = await getActiveStage(startup._id);
@@ -139,12 +150,15 @@ const saveDraft = asyncHandler(async (req, res) => {
     stage_id: activeStage._id,
     status: "draft",
   });
-  const attachment_url = draft?.attachment_url || "";
+  const attachment_url =
+    reqAttachmentUrl !== undefined
+      ? reqAttachmentUrl
+      : draft?.attachment_url || "";
 
   if (draft) {
     if (title !== undefined) draft.title = title;
     if (description !== undefined) draft.description = description;
-    if (attachment_url !== undefined) draft.attachment_url = attachment_url;
+    if (reqAttachmentUrl !== undefined) draft.attachment_url = reqAttachmentUrl;
   } else {
     draft = new StageSubmission({
       startup_id: startup._id,
@@ -203,6 +217,9 @@ const getSubmissionStatus = asyncHandler(async (req, res) => {
     success: true,
     data: {
       submissionId: submission._id,
+      title: submission.title,
+      description: submission.description,
+      attachment_url: submission.attachment_url,
       submissionDate: submission.submitted_at,
       currentStatus: submission.status,
       expectedReviewTimelineDays: 7, // temporary

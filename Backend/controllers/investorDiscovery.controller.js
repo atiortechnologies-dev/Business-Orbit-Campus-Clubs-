@@ -340,7 +340,7 @@ exports.removeFromWatchlist = asyncHandler(async (req, res) => {
     if (Notification) {
       await Notification.deleteMany(
         { related_id: item._id, type: "watchlist" },
-        { session }
+        { session },
       );
     }
 

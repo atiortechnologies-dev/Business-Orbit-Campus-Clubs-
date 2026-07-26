@@ -30,8 +30,11 @@ beforeAll(async () => {
 
   await mongoose.connect(uri);
 
-  if (mongoose.connection.readyState !== 0) {
-    await mongoose.connection.dropDatabase();
+  if (mongoose.connection.readyState !== 0 && mongoose.connection.db) {
+    const collections = await mongoose.connection.db.collections();
+    for (const collection of collections) {
+      await collection.deleteMany({});
+    }
   }
 
   // Ensure all indexes are built before tests run to prevent WriteConflicts during transactions

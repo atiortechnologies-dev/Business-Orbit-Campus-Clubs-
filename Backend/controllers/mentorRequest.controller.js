@@ -290,12 +290,14 @@ exports.declineRequest = asyncHandler(async (req, res) => {
     }).session(session);
 
     if (!request) {
+      await session.abortTransaction();
       return res
         .status(404)
         .json({ message: "Request not found or unauthorized." });
     }
 
     if (request.status !== REQUEST_STATUS.PENDING) {
+      await session.abortTransaction();
       return res
         .status(400)
         .json({ message: "Only pending requests can be declined." });
