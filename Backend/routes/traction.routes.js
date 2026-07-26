@@ -81,4 +81,11 @@ router.delete(
   tractionController.deleteDocument,
 );
 
+// SCREEN 5: TRACTION REVIEW
+
+router.get("/traction/review", tractionController.getReview);
+router.get("/traction/review/status", tractionController.getReviewStatus);
+router.get("/traction/review/timeline", tractionController.getReviewTimeline);
+router.get("/traction/review/comments", tractionController.getReviewComments);
+
 module.exports = router;
