@@ -94,7 +94,9 @@ export default function IncomingPitchDecksPage() {
           >
             <div className={viewMode === 'list' ? 'flex-1 min-w-0' : ''}>
               <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-md placeholder-box shrink-0" />
+                <div className="w-10 h-10 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-xs select-none shrink-0">
+                  {deck.name.charAt(0)}
+                </div>
                 <div className="text-right">
                   <Badge variant={STAGE_VARIANT[deck.stage] || 'neutral'}>{deck.stage}</Badge>
                   <p className="font-inter text-caption text-text-muted mt-1">Submitted {deck.submitted}</p>
