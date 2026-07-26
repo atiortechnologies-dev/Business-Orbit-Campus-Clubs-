@@ -291,6 +291,97 @@ const deleteFeedback = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "Feedback deleted" });
 });
 
+// ========= SCREEN 4: PRODUCT SUBMISSION =========
+const submitProduct = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const productData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  let submission = await ProductSubmission.findOne({ startup_id: startup._id });
+
+  if (!submission) {
+    submission = new ProductSubmission({
+      startup_id: startup._id,
+      student_id: userId,
+      ...productData,
+      submission_status: "Submitted",
+      submitted_at: new Date(),
+    });
+  } else {
+    Object.assign(submission, productData);
+    submission.submission_status = "Submitted";
+    submission.submitted_at = new Date();
+  }
+
+  await submission.save();
+
+  res.status(201).json({
+    success: true,
+    message: "Product submitted",
+    data: { submission_id: submission.submission_id },
+  });
+});
+
+const getProductSubmission = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const submission = await ProductSubmission.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!submission) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No submission found" });
+  }
+
+  res.status(200).json({ success: true, data: submission });
+});
+
+const updateProductSubmission = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { submissionId } = req.params;
+  const updateData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const submission = await ProductSubmission.findOneAndUpdate(
+    {
+      submission_id: submissionId,
+      startup_id: startup._id,
+      submission_status: "Draft",
+    },
+    updateData,
+    { new: true },
+  );
+
+  if (!submission) {
+    return res.status(404).json({
+      success: false,
+      message: "Submission not found or cannot be updated",
+    });
+  }
+
+  res
+    .status(200)
+    .json({ success: true, message: "Submission updated", data: submission });
+});
+
+// upload document route leaved for now
+
+const deleteDocument = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { documentId } = req.params;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  await ProductSubmission.updateOne(
+    { startup_id: startup._id },
+    { $pull: { documents: { file_id: documentId } } },
+  );
+
+  res.status(200).json({ success: true, message: "Document deleted" });
+});
+
 module.exports = {
   getStage4Overview,
   getStage4Progress,
@@ -305,4 +396,8 @@ module.exports = {
   getFeedbackById,
   updateFeedback,
   deleteFeedback,
+  submitProduct,
+  getProductSubmission,
+  updateProductSubmission,
+  deleteDocument,
 };
