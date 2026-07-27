@@ -63,6 +63,16 @@ const FinalPitchDeckUpload = lazy(() => import('@/pages/journey/launch/FinalPitc
 const LaunchProofUpload = lazy(() => import('@/pages/journey/launch/LaunchProofUpload'));
 const LaunchVerificationReview = lazy(() => import('@/pages/journey/launch/LaunchVerificationReview'));
 const JourneyComplete = lazy(() => import('@/pages/journey/JourneyComplete'));
+const DiscoverIncubators = lazy(() => import('@/pages/incubators/DiscoverIncubators'));
+const IncubatorProfile = lazy(() => import('@/pages/incubators/IncubatorProfile'));
+const IncubatorApplicationForm = lazy(() => import('@/pages/incubators/IncubatorApplicationForm'));
+const IncubationConfirmed = lazy(() => import('@/pages/incubators/IncubationConfirmed'));
+const MyIncubation = lazy(() => import('@/pages/incubators/MyIncubation'));
+const FreelancingOpportunities = lazy(() => import('@/pages/freelancing/FreelancingOpportunities'));
+const OpportunityDetail = lazy(() => import('@/pages/freelancing/OpportunityDetail'));
+const FreelancingApplicationForm = lazy(() => import('@/pages/freelancing/FreelancingApplicationForm'));
+const ApplyConfirmation = lazy(() => import('@/pages/freelancing/ApplyConfirmation'));
+const MyApplications = lazy(() => import('@/pages/freelancing/MyApplications'));
 const AdminDashboard = lazy(() => import('@/pages/admin/Admin'));
 const VerificationQueue = lazy(() => import('@/pages/admin/VerificationQueue'));
 const VerificationDetail = lazy(() => import('@/pages/admin/VerificationDetail'));
@@ -98,6 +108,12 @@ const MentorMeetings = lazy(() => import('@/pages/mentor/Meetings'));
 const MentorProfile = lazy(() => import('@/pages/mentor/Profile'));
 const CompanyDashboard = lazy(() => import('@/pages/company/Dashboard'));
 const CompanyMyOpportunities = lazy(() => import('@/pages/company/MyOpportunities'));
+const PostOpportunityStep1 = lazy(() => import('@/pages/company/PostOpportunityStep1'));
+const PostOpportunityStep2 = lazy(() => import('@/pages/company/PostOpportunityStep2'));
+const PostOpportunityStep3 = lazy(() => import('@/pages/company/PostOpportunityStep3'));
+const PostOpportunityStep4 = lazy(() => import('@/pages/company/PostOpportunityStep4'));
+const ApplicantsList = lazy(() => import('@/pages/company/ApplicantsList'));
+const ApplicantDetail = lazy(() => import('@/pages/company/ApplicantDetail'));
 
 // Every page is loaded on demand (one chunk per route) instead of all
 // ~70 screens bundling into a single 900KB+ file — npm run build's own
@@ -147,6 +163,12 @@ export const router = createBrowserRouter([
   },
   { path: '/company/dashboard', element: withSuspense(CompanyDashboard) },
   { path: '/company/my-opportunities', element: withSuspense(CompanyMyOpportunities) },
+  { path: '/company/post-opportunity/step-1', element: withSuspense(PostOpportunityStep1) },
+  { path: '/company/post-opportunity/step-2', element: withSuspense(PostOpportunityStep2) },
+  { path: '/company/post-opportunity/step-3', element: withSuspense(PostOpportunityStep3) },
+  { path: '/company/post-opportunity/step-4', element: withSuspense(PostOpportunityStep4) },
+  { path: '/company/applicants', element: withSuspense(ApplicantsList) },
+  { path: '/company/applicants/detail', element: withSuspense(ApplicantDetail) },
   { path: '/landing', element: withSuspense(LandingHome) },
   { path: '/landing/student', element: withSuspense(LandingStudent) },
   { path: '/landing/mentor', element: withSuspense(LandingMentor) },
@@ -196,6 +218,16 @@ export const router = createBrowserRouter([
   { path: '/build-startup/journey/launch/proof-upload', element: withSuspense(LaunchProofUpload) },
   { path: '/build-startup/journey/launch/verification', element: withSuspense(LaunchVerificationReview) },
   { path: '/build-startup/journey/complete', element: withSuspense(JourneyComplete) },
+  { path: '/incubators', element: withSuspense(DiscoverIncubators) },
+  { path: '/incubators/profile', element: withSuspense(IncubatorProfile) },
+  { path: '/incubators/apply', element: withSuspense(IncubatorApplicationForm) },
+  { path: '/incubators/confirmed', element: withSuspense(IncubationConfirmed) },
+  { path: '/incubators/tracker', element: withSuspense(MyIncubation) },
+  { path: '/freelancing', element: withSuspense(FreelancingOpportunities) },
+  { path: '/freelancing/opportunity', element: withSuspense(OpportunityDetail) },
+  { path: '/freelancing/apply', element: withSuspense(FreelancingApplicationForm) },
+  { path: '/freelancing/applied', element: withSuspense(ApplyConfirmation) },
+  { path: '/freelancing/applications', element: withSuspense(MyApplications) },
   { path: '/admin', element: withSuspense(AdminDashboard) },
   { path: '/admin/verification', element: withSuspense(VerificationQueue) },
   { path: '/admin/verification/detail', element: withSuspense(VerificationDetail) },
