@@ -95,6 +95,9 @@ src/
                                Investor role's own portal below):
                                InvestorDirectory.jsx → InvestorProfile.jsx
                                → SendPitchDeck.jsx → InvestorConversation.jsx
+    support/                   HelpCenter.jsx → RaiseSupportTicket.jsx →
+                               SupportDashboard.jsx (/support/tickets) →
+                               TicketDetail.jsx
     incubator/                 Incubator.jsx, Applications.jsx,
                                ApplicationReview.jsx, Messages.jsx, Settings.jsx
     admin/                    Admin.jsx (dashboard), VerificationQueue.jsx →

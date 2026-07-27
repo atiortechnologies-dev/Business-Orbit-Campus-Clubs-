@@ -98,6 +98,12 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
   (`POST /api/investors/:id/pitches`)
 - `pages/mentors/ChatConversation.jsx`, `pages/investors/InvestorConversation.jsx` — send message (real-time chat service)
 
+**Student — Support Center:**
+- `pages/support/RaiseSupportTicket.jsx` — create ticket
+  (`POST /api/support/tickets`)
+- `pages/support/TicketDetail.jsx` — post reply
+  (`POST /api/support/tickets/:id/replies`)
+
 **Company — Post Opportunity & Applicants:**
 - `pages/company/PostOpportunityStep{1..4}.jsx` — save draft, publish
   (`POST /api/opportunities`)
@@ -623,6 +629,40 @@ arrow. **Real:** the 2 threads with a matching built conversation screen
 **Coming Soon:** the other 2 listed threads (Elena Rodriguez, Sarah
 Chen) — shown for inbox realism but wrapped honestly since no
 conversation screen exists for them.
+
+### Support Center — `src/pages/support/*.jsx`
+*(Fills the last `real: false` stub in the Student sidebar — "Help".)*
+- **Real:** `RaiseSupportTicket.jsx` gates Submit Ticket on Subject +
+  Description (same `canSubmit` pattern as every gated form here);
+  submitting navigates to `SupportDashboard.jsx` (`/support/tickets`).
+  `SupportDashboard.jsx`'s Open/In Progress/Resolved/Closed tabs are
+  genuine client-side filters with real counts (`.filter().length`),
+  same pattern as `freelancing/MyApplications.jsx`'s tabs, using the
+  shared `DataTable` component like every other list screen in the app.
+  `TicketDetail.jsx`'s "Send Reply" is real controlled state — typing
+  and sending appends the reply to the visible thread (not persisted),
+  same real-send pattern as `mentor/Chats.jsx` and this batch's
+  `ChatConversation.jsx`/`InvestorConversation.jsx`. The FAQ accordion
+  on `HelpCenter.jsx` is real open/close state.
+- **Stub:** the 5 listed tickets and every FAQ/article/update on
+  `HelpCenter.jsx` are hardcoded. `// TODO(backend)` at
+  `RaiseSupportTicket.jsx`'s `handleSubmit`: `POST /api/support/tickets`;
+  at `TicketDetail.jsx`'s `handleSendReply`: `POST
+  /api/support/tickets/:id/replies`.
+- **Coming Soon:** Help Center's 8 category cards and 5 resource "View
+  Resource" buttons, Contact Support, file-attachment upload zones (both
+  screens), the ticket list's kebab Actions menu, Export Conversation,
+  Close Ticket, Related Articles.
+- Originally written by a third contributor (Satish) directly against
+  this repo's own conventions — unlike the other batches, no stack
+  translation was needed. Fixed on integration: the ticket list's
+  hand-rolled `<table>` now uses the shared `DataTable` component; 3
+  `placeholder-box` avatars (a class removed from this repo earlier)
+  now use the initial-letter avatar pattern; the image-attachment
+  placeholder now uses `PlaceholderGraphic`; `TicketDetail.jsx`'s two
+  message authors had `mine` backwards (the student's own messages were
+  rendering as the agent's) — swapped so the student's messages align
+  right, matching every other chat screen's convention.
 
 ---
 
