@@ -13,17 +13,38 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const navItems = [
-  { label: 'Dashboard', icon: LayoutDashboard, path: '/' },
-  { label: 'Build Startup', icon: Rocket, path: '/build-startup' },
-  { label: 'Mentors', icon: Users, path: '/mentors' },
-  { label: 'Investors', icon: TrendingUp, path: '/investors' },
-  { label: 'Incubators', icon: Building2, path: '/incubators' },
-  { label: 'Freelancing', icon: Briefcase, path: '/freelancing' }
+const studentNavItems = [
+  { label: "Dashboard", icon: LayoutDashboard, path: "/" },
+  { label: "Build Startup", icon: Rocket, path: "/build-startup" },
+  { label: "Mentors", icon: Users, path: "/mentors" },
+  { label: "Investors", icon: TrendingUp, path: "/investors" },
+  { label: "Incubators", icon: Building2, path: "/incubators" },
+  { label: "Freelancing", icon: Briefcase, path: "/freelancing" }
+];
+
+const companyNavItems = [
+  { label: "Dashboard", icon: LayoutDashboard, path: "/company/dashboard" },
+  { label: "Post Opportunity", icon: Rocket, path: "/company/post-opportunity" },
+  { label: "My Opportunities", icon: Briefcase, path: "/company/my-opportunities" },
+  { label: "Applicants", icon: Users, path: "/company/applicants" },
+  { label: "Company Profile", icon: Building2, path: "/company/profile" },
+  { label: "Settings", icon: UserCircle, path: "/company/settings" }
 ];
 
 export default function Sidebar({ open, onClose }) {
-  const location = useLocation();
+const isCompany = location.pathname.startsWith("/company");
+
+const navItems = isCompany
+  ? companyNavItems
+  : studentNavItems;
+
+const workspaceTitle = isCompany
+  ? "Company Workspace"
+  : "Student Workspace";
+
+const BrandIcon = isCompany
+  ? Building2
+  : GraduationCap;
 
   return (
     <>
