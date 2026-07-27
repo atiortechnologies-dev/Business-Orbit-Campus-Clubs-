@@ -29,7 +29,7 @@ const NAV_ITEMS = [
   { icon: Building2,       label: 'Incubators',     href: '/incubators', real: true },
   { icon: Briefcase,       label: 'Freelancing',    href: '/freelancing', real: true },
   { icon: User,            label: 'Profile',        href: '/settings', real: true },
-  { icon: HelpCircle,      label: 'Help',           href: '#', real: false },
+  { icon: HelpCircle,      label: 'Help',           href: '/support', real: true },
 ];
 
 export default function DashboardShell({ pageId = 'pg', children }) {
