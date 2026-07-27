@@ -29,7 +29,7 @@ export default function ChatConversationPage() {
         <div className="flex-1 flex flex-col min-w-0">
           <div className="flex items-center justify-between px-6 py-4 border-b border-border-subtle">
             <div className="flex items-center gap-3">
-              <Link to="/mentors" className="p-1 -ml-1 text-text-muted hover:text-text-heading transition-colors">
+              <Link to="/mentors/messages" className="p-1 -ml-1 text-text-muted hover:text-text-heading transition-colors">
                 <ArrowLeft size={18} strokeWidth={2} />
               </Link>
               <div className="w-10 h-10 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-small text-text-muted shrink-0">SJ</div>
