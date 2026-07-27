@@ -18,7 +18,7 @@ lists the exact file/function to replace.
 ## API Surface (quick reference for backend integration)
 
 Every screen-by-screen section below has its own `TODO(backend)` markers
-at the exact call site. This section rolls all ~35 of them up into one
+at the exact call site. This section rolls all ~40 of them up into one
 endpoint-oriented list, so a backend engineer doesn't have to walk every
 file to reconstruct what's needed. Grouped by resource, not by screen.
 
@@ -58,6 +58,26 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 - Verification: `pages/admin/{VerificationDetail,VerificationDecision}.jsx`
 - Startup review: `pages/admin/{ReviewWorkspace,ReviewOutcome,ScheduleMeeting}.jsx`
 - `pages/admin/Admin.jsx` — dismiss a Critical Action
+
+**Admin — Announcements (list → create → preview → publish):**
+- `pages/admin/CreateAnnouncement.jsx` — save as draft
+- `pages/admin/PreviewAnnouncement.jsx` — save draft; publish (create or
+  update the record, then fan out notifications per selected audience)
+
+**Admin — Chapters:**
+- `pages/admin/{ChapterManagement,ChapterDetail}.jsx` — read-only for now,
+  no save/submit action exists yet (every mutating action on
+  `ChapterDetail.jsx` — Edit, Assign Lead, Verify, Approve Funding — is
+  still `ComingSoon`, not stubbed, since none of them have a defined
+  operation yet)
+
+**Admin — Opportunity moderation:**
+- `pages/admin/OpportunityReview.jsx` — Approve / Reject / Request
+  Changes decision, plus reviewer notes
+
+**Admin — Settings:**
+- `pages/admin/AdminSettings.jsx` — save profile, platform config, and
+  notification preferences in one call
 
 **Investor:**
 - `pages/investor/PitchDeck.jsx` — save due-diligence notes
@@ -714,6 +734,138 @@ finished.)*
   previous hardcoded "12,482 logs" — don't reintroduce a fake total when
   wiring a real paginated fetch, size the copy to what's actually loaded.
 
+### Admin nav — `components/admin/AdminShell.jsx`
+Completed to the 8-item nav every wireframe in the batch below already
+specced (the original `unified_admin_dashboard` wireframe `Admin.jsx`
+itself was built from included this same nav, just never fully wired up):
+Dashboard, **Announcements**, Users (relabeled from "User Verification" —
+same route, `/admin/verification`), Startups (relabeled from "Startup
+Reviews" — same route, `/admin/reviews`), **Opportunities**, **Chapters**,
+Audit Log, **Settings**. The dead `Analytics` stub (linked to `#`, no
+page behind it) is gone. The header's gear icon now links to
+`/admin/settings` for real instead of showing a `ComingSoon` tooltip.
+
+### `/admin/announcements` — `AnnouncementsDashboard.jsx`
+- **Real:** Status/Audience/Priority filters genuinely filter the table
+  client-side.
+- **Stub:** the 3 listed announcements and the sidebar stats (Total Views
+  Today, Published/Scheduled/Draft counts, System Logs feed) are
+  hardcoded, not fetched. `// TODO(backend)`: a real version needs
+  `GET /api/admin/announcements` with the same filter params.
+- **Coming Soon:** Archived, Drafts, and every row-level action (Edit,
+  Preview, Archive) — there's no persisted announcement store yet for
+  any of these to act on.
+
+### `/admin/announcements/create` — `CreateAnnouncement.jsx`
+- **Real:** the entire form (title, summary, body with live character
+  count, audience checkboxes, priority radios, publish-now/schedule radio
+  with conditional date/time fields) is a genuine controlled form, not a
+  static mock. The Publishing Checklist sidebar reflects real form state.
+  "Preview" is real — gated on title + summary + body + at least one
+  audience group, then hands the whole draft to the Preview screen via
+  router state (`navigate(path, { state: { draft } })`).
+- **Stub:** "Save as Draft" — `// TODO(backend)`:
+  `POST /api/admin/announcements { ...draft, status: 'draft' }`.
+- Audience options intentionally exclude "Coordinators" (present in the
+  source wireframe) — not one of this app's 6 actual roles.
+
+### `/admin/announcements/preview` — `PreviewAnnouncement.jsx`
+- **Real:** renders whatever was actually typed on the Create screen (via
+  router state), not static sample copy — falls back to sample content
+  only if the route is opened directly with no draft in hand. "Publish
+  Announcement" is real — carries the draft forward and navigates to the
+  Published confirmation. "Back to Edit" is a real link back to Create.
+- **Stub:** "Save Draft" — `// TODO(backend)`:
+  `PATCH /api/admin/announcements/:id { status: 'draft' }`. "Publish
+  Announcement" itself — `// TODO(backend)`:
+  `PATCH /api/admin/announcements/:id { status: 'published', publishedAt }`
+  (or `POST` if the draft was never saved), then fan out notifications to
+  every selected audience group.
+
+### `/admin/announcements/published` — `AnnouncementPublished.jsx`
+- **Real:** shows the actual published title/audience carried over from
+  Preview (falls back to sample copy if reached directly). "Create New
+  Announcement" and "Return to Dashboard" are real links.
+- **Stub:** Estimated Reach, Delivery Reliability, and the Broadcast
+  Manifest's other stats are hardcoded — no real audience size to compute
+  from yet.
+- **Coming Soon:** View/Edit/Duplicate Announcement — nothing persisted
+  yet for any of these to act on.
+
+### `/admin/chapters` — `ChapterManagement.jsx`
+- **Real:** State/Status filters genuinely filter the table client-side.
+  Row "View" (the people icon) → real navigation to `/admin/chapters/detail`.
+- **Stub:** the 5 listed chapters, the 4 stat cards, and the Chapter
+  Growth Distribution chart are hardcoded. `// TODO(backend)`: a real
+  version needs `GET /api/admin/chapters`.
+- **Coming Soon:** Create New Chapter, row-level Edit/Archive, Export,
+  Generate Report.
+
+### `/admin/chapters/detail` — `ChapterDetail.jsx`
+- One chapter (Stanford Alpha), one internal Overview/Students/Startups/
+  Events tab switch (`useState`, not 4 separate routes) — the source
+  wireframes shipped 4 independently-Stitch-regenerated "chapter detail"
+  files that disagreed with each other on the chapter's own name, lead,
+  and even sidebar icon; merged into one consistent chapter across all 4
+  tabs instead of reproducing that inconsistency as 4 real pages.
+- **Real:** tab switching; the "View Students" quick action switches the
+  tab directly (no navigation needed, it's the same page).
+- **Stub:** every stat, table row, and the Chapter Health score (94%) on
+  all 4 tabs are hardcoded. `// TODO(backend)`:
+  `GET /api/admin/chapters/:id` (profile + overview) and
+  `GET /api/admin/chapters/:id/{students,startups,events}` per tab.
+- **Coming Soon:** Edit Chapter, Assign Lead, Export Data, Verify
+  Chapter, Approve Funding, Create Event, and the "View Queue" funding
+  shortcut.
+
+### `/admin/opportunities` — `OpportunityApprovalQueue.jsx`
+- **Real:** Company/Type/Status filters genuinely filter the table
+  client-side. Row "View Details" → real navigation to
+  `/admin/opportunities/review`.
+- **Stub:** the 4 listed opportunities and the 4 stat cards (Pending/
+  Approved/Rejected/Drafts) are hardcoded. `// TODO(backend)`:
+  `GET /api/admin/opportunities` with the same filter params.
+- **Coming Soon:** Export List, Bulk Approve, and row-level Approve/Reject
+  icons — deliberately not wired even as a shortcut, since a real decision
+  needs the full opportunity in view (same reasoning as
+  `VerificationQueue.jsx` not deciding from a queue row either).
+
+### `/admin/opportunities/review` — `OpportunityReview.jsx`
+- **Real:** Approve/Reject/Request Changes each open a real `Modal`
+  (mirrors `VerificationDecision.jsx`'s 3-decision pattern exactly);
+  confirming any of the three navigates back to the queue. Internal Notes
+  textarea is a real controlled field (not persisted).
+- **Stub:** none of the 3 decisions persist anywhere — `// TODO(backend)`
+  at `confirmDecision`: `PATCH /api/admin/opportunities/:id { decision,
+  reviewerNotes }`, then notify the posting company of the outcome. The
+  company profile, opportunity detail, and Revision History are
+  hardcoded.
+- **Coming Soon:** Message Startup.
+- This screen introduces the only decision state (`Pending Approval`)
+  that didn't already exist somewhere in this app before — see the
+  Company Portal section below for the matching edit to
+  `OpportunitiesTable.jsx`.
+
+### `/admin/settings` — `AdminSettings.jsx`
+- **Real:** every field in Administrator Profile, Platform Configuration
+  (including its 4 functional toggles), Admin Notifications' 8 per-event
+  toggles plus the In-App/Email header checkboxes, and the Two-Factor
+  Authentication switch are genuine controlled state. "Save Changes"
+  updates local state and shows a real "Changes saved" confirmation
+  (auto-dismisses after 3s — same instant-update-then-auto-dismiss
+  pattern as `ReviewWorkspace.jsx`'s Save Draft, not a fake network
+  delay). `// TODO(backend)` at `handleSaveChanges`:
+  `PATCH /api/admin/settings { profile, platform, notifications }`.
+- **Stub:** System Information, Storage Usage, and Recent Login Activity
+  are hardcoded snapshots, not fetched.
+- **Coming Soon:** Upload Avatar, Change Password, View Login History,
+  Sign Out of All Devices, Download System Logs, Export Config, Backup
+  Settings.
+- This is a system-configuration page, not a personal-profile page —
+  deliberately not reusing Student/Incubator `Settings.jsx`'s Personal
+  Info/Education/Skills layout, since the two screens answer different
+  questions for different audiences.
+
 ---
 
 ## Investor Portal
@@ -860,6 +1012,14 @@ and `components/bocc/*` are gone.)*
   convention as Admin/Investor's tables.
 - **Coming Soon:** "New Opportunity," each row's Actions (kebab) menu —
   both blocked on screens that don't exist yet.
+- One of the 4 seeded rows (`Regional Operations Director`) uses a
+  `Pending Approval` status alongside the existing Active/Draft/Closed —
+  added when Admin's opportunity moderation queue was built (see Admin
+  Portal section below), so a posted opportunity has somewhere to sit
+  while that queue is reviewing it. Nothing actually connects the two
+  screens live — same as every other queue/portal pair in this app —
+  this was just the one place a status genuinely had nowhere to point to
+  before.
 
 ### Shell — `components/company/CompanyShell.jsx`
 Sidebar nav: Dashboard and My Opportunities are real; Post Opportunity,

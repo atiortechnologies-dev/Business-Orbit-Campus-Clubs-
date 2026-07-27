@@ -73,6 +73,15 @@ const ReviewWorkspace = lazy(() => import('@/pages/admin/ReviewWorkspace'));
 const ReviewOutcome = lazy(() => import('@/pages/admin/ReviewOutcome'));
 const ScheduleMeeting = lazy(() => import('@/pages/admin/ScheduleMeeting'));
 const AuditLog = lazy(() => import('@/pages/admin/AuditLog'));
+const AnnouncementsDashboard = lazy(() => import('@/pages/admin/AnnouncementsDashboard'));
+const CreateAnnouncement = lazy(() => import('@/pages/admin/CreateAnnouncement'));
+const PreviewAnnouncement = lazy(() => import('@/pages/admin/PreviewAnnouncement'));
+const AnnouncementPublished = lazy(() => import('@/pages/admin/AnnouncementPublished'));
+const ChapterManagement = lazy(() => import('@/pages/admin/ChapterManagement'));
+const ChapterDetail = lazy(() => import('@/pages/admin/ChapterDetail'));
+const OpportunityApprovalQueue = lazy(() => import('@/pages/admin/OpportunityApprovalQueue'));
+const OpportunityReview = lazy(() => import('@/pages/admin/OpportunityReview'));
+const AdminSettings = lazy(() => import('@/pages/admin/AdminSettings'));
 const LandingHome = lazy(() => import('@/pages/landing/Home'));
 const LandingStudent = lazy(() => import('@/pages/landing/Student'));
 const LandingMentor = lazy(() => import('@/pages/landing/Mentor'));
@@ -197,6 +206,15 @@ export const router = createBrowserRouter([
   { path: '/admin/reviews/outcome', element: withSuspense(ReviewOutcome) },
   { path: '/admin/reviews/schedule-meeting', element: withSuspense(ScheduleMeeting) },
   { path: '/admin/audit-log', element: withSuspense(AuditLog) },
+  { path: '/admin/announcements', element: withSuspense(AnnouncementsDashboard) },
+  { path: '/admin/announcements/create', element: withSuspense(CreateAnnouncement) },
+  { path: '/admin/announcements/preview', element: withSuspense(PreviewAnnouncement) },
+  { path: '/admin/announcements/published', element: withSuspense(AnnouncementPublished) },
+  { path: '/admin/chapters', element: withSuspense(ChapterManagement) },
+  { path: '/admin/chapters/detail', element: withSuspense(ChapterDetail) },
+  { path: '/admin/opportunities', element: withSuspense(OpportunityApprovalQueue) },
+  { path: '/admin/opportunities/review', element: withSuspense(OpportunityReview) },
+  { path: '/admin/settings', element: withSuspense(AdminSettings) },
   { path: '/investor', element: withSuspense(InvestorPortal) },
   { path: '/investor/pitch-decks', element: withSuspense(IncomingPitchDecks) },
   { path: '/investor/pitch-decks/review', element: withSuspense(PitchDeck) },
