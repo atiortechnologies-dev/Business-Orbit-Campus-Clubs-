@@ -6,12 +6,16 @@ import ComingSoon from '@/components/ui/ComingSoon';
 
 const OPPORTUNITIES = [
   { id: 1, title: 'Senior Systems Architect', ref: 'ARCH-2024-001', type: 'Full-time', postedDate: 'Oct 12, 2023', applicants: 48, status: 'Active' },
-  { id: 2, title: 'Regional Operations Director', ref: 'OPS-2024-012', type: 'Contract', postedDate: 'Not Published', applicants: 0, status: 'Draft' },
+  { id: 2, title: 'Regional Operations Director', ref: 'OPS-2024-012', type: 'Contract', postedDate: 'Not Published', applicants: 0, status: 'Pending Approval' },
   { id: 3, title: 'Lead Frontend Developer', ref: 'TECH-2023-455', type: 'Internal', postedDate: 'Aug 24, 2023', applicants: 12, status: 'Closed' },
   { id: 4, title: 'Market Research Analyst', ref: 'MKT-2024-089', type: 'Contract', postedDate: 'Nov 05, 2023', applicants: 23, status: 'Active' },
 ];
 
-const STATUS_VARIANT = { Active: 'success', Draft: 'neutral', Closed: 'neutral' };
+// Pending Approval reflects Admin's opportunity moderation queue (see
+// admin/OpportunityApprovalQueue.jsx) — a posted opportunity sits here
+// until an admin reviewer approves or rejects it, same as everywhere
+// else in this app nothing is actually wired between the two screens.
+const STATUS_VARIANT = { Active: 'success', 'Pending Approval': 'warning', Draft: 'neutral', Closed: 'neutral' };
 
 const COLUMNS = [
   {
