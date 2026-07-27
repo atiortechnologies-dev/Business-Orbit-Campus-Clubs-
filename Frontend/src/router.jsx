@@ -68,6 +68,11 @@ const IncubatorProfile = lazy(() => import('@/pages/incubators/IncubatorProfile'
 const IncubatorApplicationForm = lazy(() => import('@/pages/incubators/IncubatorApplicationForm'));
 const IncubationConfirmed = lazy(() => import('@/pages/incubators/IncubationConfirmed'));
 const MyIncubation = lazy(() => import('@/pages/incubators/MyIncubation'));
+const FreelancingOpportunities = lazy(() => import('@/pages/freelancing/FreelancingOpportunities'));
+const OpportunityDetail = lazy(() => import('@/pages/freelancing/OpportunityDetail'));
+const FreelancingApplicationForm = lazy(() => import('@/pages/freelancing/FreelancingApplicationForm'));
+const ApplyConfirmation = lazy(() => import('@/pages/freelancing/ApplyConfirmation'));
+const MyApplications = lazy(() => import('@/pages/freelancing/MyApplications'));
 const AdminDashboard = lazy(() => import('@/pages/admin/Admin'));
 const VerificationQueue = lazy(() => import('@/pages/admin/VerificationQueue'));
 const VerificationDetail = lazy(() => import('@/pages/admin/VerificationDetail'));
@@ -206,6 +211,11 @@ export const router = createBrowserRouter([
   { path: '/incubators/apply', element: withSuspense(IncubatorApplicationForm) },
   { path: '/incubators/confirmed', element: withSuspense(IncubationConfirmed) },
   { path: '/incubators/tracker', element: withSuspense(MyIncubation) },
+  { path: '/freelancing', element: withSuspense(FreelancingOpportunities) },
+  { path: '/freelancing/opportunity', element: withSuspense(OpportunityDetail) },
+  { path: '/freelancing/apply', element: withSuspense(FreelancingApplicationForm) },
+  { path: '/freelancing/applied', element: withSuspense(ApplyConfirmation) },
+  { path: '/freelancing/applications', element: withSuspense(MyApplications) },
   { path: '/admin', element: withSuspense(AdminDashboard) },
   { path: '/admin/verification', element: withSuspense(VerificationQueue) },
   { path: '/admin/verification/detail', element: withSuspense(VerificationDetail) },
