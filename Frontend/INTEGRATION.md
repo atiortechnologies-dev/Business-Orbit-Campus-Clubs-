@@ -1311,3 +1311,16 @@ kind to Login/ForgotPassword, not a new bespoke shell.)*
   page files individually.
 - No environment variables are read anywhere yet (see `.env.example`).
 - No API base URL, auth provider, or database of any kind is wired in.
+- **`npm audit`** currently reports 2 high-severity advisories on
+  `react-router`/`react-router-dom` ("RSC Mode CSRF Bypass Allows Action
+  Execution Before 400 Response"). Checked whether this app is actually
+  exposed: the advisory is specific to React Router's RSC (React Server
+  Components) mode with server `action`/`loader` functions — this app
+  uses plain `createBrowserRouter` with no `action`/`loader`/RSC usage
+  anywhere (`src/router.jsx`), and there's no backend for a CSRF-bypassed
+  action to reach in the first place, so the vulnerable code path isn't
+  exercised. `npm audit fix --force` would downgrade
+  `react-router-dom` to `7.11.0` (a breaking change) to resolve an
+  advisory that doesn't apply to how this app uses the library — not
+  applied. Worth re-checking `npm audit` once this app adopts
+  loaders/actions or gets a real backend to call.
