@@ -53,6 +53,7 @@ const publicRoutes = require("./routes/public.routes");
 const adminRoutes = require("./routes/admin.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const studentRoutes = require("./routes/student.routes");
+const studentFreelancingRoutes = require("./routes/studentFreelancing.routes");
 const companyRoutes = require("./routes/company.routes");
 const investorRoutes = require("./routes/investor.routes");
 const chatRoutes = require("./routes/chat.routes");
@@ -95,6 +96,13 @@ app.use(
   requireActiveAccount,
   authorizeRoles("student"),
   studentRoutes,
+);
+app.use(
+  "/api/student/freelancing",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentFreelancingRoutes,
 );
 app.use("/api/company", companyRoutes);
 app.use("/api/investor", investorRoutes);

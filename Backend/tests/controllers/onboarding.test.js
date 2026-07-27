@@ -5,7 +5,7 @@ const User = require("../../models/User");
 const { generateToken } = require("../../utils/token");
 
 describe("Onboarding Controller", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     await User.deleteMany({});
   });
 

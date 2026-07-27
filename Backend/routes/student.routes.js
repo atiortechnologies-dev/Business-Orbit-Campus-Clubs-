@@ -24,6 +24,8 @@ const {
   getMentorAvailability,
 } = require("../controllers/student.controller");
 const companyOpportunityController = require("../controllers/companyOpportunity.controller");
+const notificationController = require("../controllers/notification.controller");
+const activityLogController = require("../controllers/activityLog.controller");
 
 // @route   GET /api/student/opportunities
 // @desc    Get open opportunities
@@ -129,6 +131,40 @@ router.get(
   requireAuth,
   authorizeRoles("student"),
   getMentorAvailability,
+);
+
+// ==========================================
+// NOTIFICATIONS & ACTIVITY LOGS
+// ==========================================
+
+// @route   GET /api/student/notifications
+// @desc    Get user notifications
+// @access  Private (Student)
+router.get(
+  "/notifications",
+  requireAuth,
+  authorizeRoles("student"),
+  notificationController.getNotifications,
+);
+
+// @route   PUT /api/student/notifications/:notificationId/read
+// @desc    Mark a notification as read
+// @access  Private (Student)
+router.put(
+  "/notifications/:notificationId/read",
+  requireAuth,
+  authorizeRoles("student"),
+  notificationController.markNotificationRead,
+);
+
+// @route   GET /api/student/activity-log
+// @desc    Get user activity logs
+// @access  Private (Student)
+router.get(
+  "/activity-log",
+  requireAuth,
+  authorizeRoles("student"),
+  activityLogController.getActivityLogs,
 );
 
 module.exports = router;

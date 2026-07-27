@@ -10,7 +10,6 @@ const applicationDocumentSchema = new mongoose.Schema(
   {
     application_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "IncubationApplication",
       required: true,
       index: true,
     },
