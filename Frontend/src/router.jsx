@@ -123,6 +123,10 @@ const InvestorDirectory = lazy(() => import('@/pages/investors/InvestorDirectory
 const InvestorProfileStudentView = lazy(() => import('@/pages/investors/InvestorProfile'));
 const SendPitchDeck = lazy(() => import('@/pages/investors/SendPitchDeck'));
 const InvestorConversation = lazy(() => import('@/pages/investors/InvestorConversation'));
+const HelpCenter = lazy(() => import('@/pages/support/HelpCenter'));
+const SupportDashboard = lazy(() => import('@/pages/support/SupportDashboard'));
+const RaiseSupportTicket = lazy(() => import('@/pages/support/RaiseSupportTicket'));
+const TicketDetail = lazy(() => import('@/pages/support/TicketDetail'));
 
 // Every page is loaded on demand (one chunk per route) instead of all
 // ~70 screens bundling into a single 900KB+ file — npm run build's own
@@ -187,6 +191,10 @@ export const router = createBrowserRouter([
   { path: '/investors/profile', element: withSuspense(InvestorProfileStudentView) },
   { path: '/investors/send-pitch', element: withSuspense(SendPitchDeck) },
   { path: '/investors/chat', element: withSuspense(InvestorConversation) },
+  { path: '/support', element: withSuspense(HelpCenter) },
+  { path: '/support/tickets', element: withSuspense(SupportDashboard) },
+  { path: '/support/raise-ticket', element: withSuspense(RaiseSupportTicket) },
+  { path: '/support/tickets/detail', element: withSuspense(TicketDetail) },
   { path: '/landing', element: withSuspense(LandingHome) },
   { path: '/landing/student', element: withSuspense(LandingStudent) },
   { path: '/landing/mentor', element: withSuspense(LandingMentor) },
