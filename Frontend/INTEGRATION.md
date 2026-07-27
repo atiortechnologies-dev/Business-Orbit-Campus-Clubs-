@@ -91,6 +91,13 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 - `pages/incubators/IncubatorApplicationForm.jsx` — submit application
 - `pages/freelancing/FreelancingApplicationForm.jsx` — submit application
 
+**Student — Mentor & Investor Network:**
+- `pages/mentors/MentorshipRequest.jsx` — submit request
+  (`POST /api/mentors/:id/requests`)
+- `pages/investors/SendPitchDeck.jsx` — submit pitch
+  (`POST /api/investors/:id/pitches`)
+- `pages/mentors/ChatConversation.jsx`, `pages/investors/InvestorConversation.jsx` — send message (real-time chat service)
+
 **Company — Post Opportunity & Applicants:**
 - `pages/company/PostOpportunityStep{1..4}.jsx` — save draft, publish
   (`POST /api/opportunities`)
@@ -574,6 +581,48 @@ precedent as every other role pair in this app.)*
   `POST /api/opportunities/:id/applications`.
 - **Coming Soon:** resume upload, Save, Save Draft, Open Chat, Withdraw
   Application.
+
+### Mentor Network — `src/pages/mentors/*.jsx`
+*(Fills the "Mentors" nav stub.)*
+- **Real:** `MentorshipRequest.jsx` gates Submit Request on Startup Name +
+  Problem Statement (same `canSubmit` pattern as every gated form here);
+  submitting navigates into `ChatConversation.jsx` — a sent request is the
+  start of that conversation, not a dead end. `ChatConversation.jsx`'s
+  message thread is real controlled state (send, see it appear, same
+  pattern as `mentor/Chats.jsx`'s own real messaging).
+- **Stub:** `MentorDirectory.jsx`'s Industry/Expertise filters and 3
+  listed mentors are hardcoded; `MentorProfile.jsx`'s reviews and stats
+  are a static snapshot. `// TODO(backend)` at `MentorshipRequest.jsx`'s
+  `handleSubmit`: `POST /api/mentors/:id/requests`. Chat messages don't
+  persist past the tab — `// TODO(backend)` at `handleSend`: send to a
+  real-time chat service.
+- **Coming Soon:** Save Mentor, Add Branch-equivalents (video/voice call
+  buttons), Attach file, shared-file downloads.
+
+### Investor Network — `src/pages/investors/*.jsx`
+*(Fills the "Investors" nav stub.)*
+- **Real:** `SendPitchDeck.jsx` gates Send Pitch Deck on Startup Name +
+  Elevator Pitch; submitting navigates into `InvestorConversation.jsx` —
+  same "the real action is the trigger for the next real screen" pattern
+  as Mentors' request flow and Incubators' acceptance flow.
+  `InvestorConversation.jsx`'s message thread is real controlled state.
+  `InvestorProfile.jsx`'s "Start Conversation" stays `ComingSoon`
+  (not faked open) — the wireframe itself gates it behind "Marcus
+  reviews your pitch or initiates contact," which isn't a real event yet.
+- **Stub:** `InvestorDirectory.jsx`'s filters/checkboxes and 3 listed
+  investors are hardcoded. `// TODO(backend)` at `SendPitchDeck.jsx`'s
+  `handleSubmit`: `POST /api/investors/:id/pitches`.
+- **Coming Soon:** Saved Investors, Website/LinkedIn links, View All
+  (portfolio), Preview Pitch, pitch-deck/supporting-document uploads.
+
+### Shared — Chat Inbox — `src/pages/mentors/ChatInbox.jsx` (`/mentors/messages`)
+One inbox listing both mentor and investor threads together — linked
+from both `ChatConversation.jsx`'s and `InvestorConversation.jsx`'s back
+arrow. **Real:** the 2 threads with a matching built conversation screen
+(Sarah Jenkins → Mentors, Marcus Thorne → Investors) navigate for real.
+**Coming Soon:** the other 2 listed threads (Elena Rodriguez, Sarah
+Chen) — shown for inbox realism but wrapped honestly since no
+conversation screen exists for them.
 
 ---
 
