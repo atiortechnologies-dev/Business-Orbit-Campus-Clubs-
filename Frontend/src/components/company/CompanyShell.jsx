@@ -19,9 +19,9 @@ import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard',        href: '/company/dashboard', real: true },
-  { icon: Plus,            label: 'Post Opportunity', href: '#', real: false },
+  { icon: Plus,            label: 'Post Opportunity', href: '/company/post-opportunity/step-1', real: true },
   { icon: FolderOpen,      label: 'My Opportunities', href: '/company/my-opportunities', real: true },
-  { icon: Users,           label: 'Applicants',       href: '#', real: false },
+  { icon: Users,           label: 'Applicants',       href: '/company/applicants', real: true },
   { icon: UserCircle,      label: 'Profile',          href: '#', real: false },
   { icon: Settings,        label: 'Settings',         href: '#', real: false },
 ];

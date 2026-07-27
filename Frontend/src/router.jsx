@@ -108,6 +108,12 @@ const MentorMeetings = lazy(() => import('@/pages/mentor/Meetings'));
 const MentorProfile = lazy(() => import('@/pages/mentor/Profile'));
 const CompanyDashboard = lazy(() => import('@/pages/company/Dashboard'));
 const CompanyMyOpportunities = lazy(() => import('@/pages/company/MyOpportunities'));
+const PostOpportunityStep1 = lazy(() => import('@/pages/company/PostOpportunityStep1'));
+const PostOpportunityStep2 = lazy(() => import('@/pages/company/PostOpportunityStep2'));
+const PostOpportunityStep3 = lazy(() => import('@/pages/company/PostOpportunityStep3'));
+const PostOpportunityStep4 = lazy(() => import('@/pages/company/PostOpportunityStep4'));
+const ApplicantsList = lazy(() => import('@/pages/company/ApplicantsList'));
+const ApplicantDetail = lazy(() => import('@/pages/company/ApplicantDetail'));
 
 // Every page is loaded on demand (one chunk per route) instead of all
 // ~70 screens bundling into a single 900KB+ file — npm run build's own
@@ -157,6 +163,12 @@ export const router = createBrowserRouter([
   },
   { path: '/company/dashboard', element: withSuspense(CompanyDashboard) },
   { path: '/company/my-opportunities', element: withSuspense(CompanyMyOpportunities) },
+  { path: '/company/post-opportunity/step-1', element: withSuspense(PostOpportunityStep1) },
+  { path: '/company/post-opportunity/step-2', element: withSuspense(PostOpportunityStep2) },
+  { path: '/company/post-opportunity/step-3', element: withSuspense(PostOpportunityStep3) },
+  { path: '/company/post-opportunity/step-4', element: withSuspense(PostOpportunityStep4) },
+  { path: '/company/applicants', element: withSuspense(ApplicantsList) },
+  { path: '/company/applicants/detail', element: withSuspense(ApplicantDetail) },
   { path: '/landing', element: withSuspense(LandingHome) },
   { path: '/landing/student', element: withSuspense(LandingStudent) },
   { path: '/landing/mentor', element: withSuspense(LandingMentor) },
