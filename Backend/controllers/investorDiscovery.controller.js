@@ -439,13 +439,13 @@ exports.requestMeeting = asyncHandler(async (req, res) => {
  * @route   POST /api/investor/conversations
  */
 exports.startConversation = asyncHandler(async (req, res) => {
-  const { founder_id, message } = req.body;
+  const { founder_id, message, startup_id } = req.body;
   const investorId = req.user._id;
 
-  if (!founder_id || !message) {
+  if (!founder_id || !message || !startup_id) {
     return res
       .status(400)
-      .json({ message: "Founder ID and message are required" });
+      .json({ message: "Founder ID, startup ID and message are required" });
   }
 
   const session = await mongoose.startSession();
@@ -456,6 +456,7 @@ exports.startConversation = asyncHandler(async (req, res) => {
     let chatRoom = await InvestorChatRoom.findOne({
       investor_id: investorId,
       founder_id: founder_id,
+      startup_id: startup_id,
     }).session(session);
 
     if (!chatRoom) {
@@ -464,6 +465,7 @@ exports.startConversation = asyncHandler(async (req, res) => {
           {
             investor_id: investorId,
             founder_id: founder_id,
+            startup_id: startup_id,
           },
         ],
         { session },
@@ -477,6 +479,7 @@ exports.startConversation = asyncHandler(async (req, res) => {
         {
           chat_id: chatRoom._id,
           sender_id: investorId,
+          receiver_id: founder_id,
           message: message,
         },
       ],

@@ -23,8 +23,12 @@ const applicantStatusSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    remarks: {
+      type: String,
+      trim: true,
+    },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: false } },
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
 module.exports = mongoose.model("ApplicantStatus", applicantStatusSchema);

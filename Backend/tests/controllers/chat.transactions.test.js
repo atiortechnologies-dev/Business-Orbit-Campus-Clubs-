@@ -41,6 +41,7 @@ describe("Chat Message Transactions", () => {
       email: "student_chat@test.com",
       password_hash: "hashed",
       role: "student",
+      account_status: "active",
     });
 
     mentorUser = await User.create({
@@ -48,6 +49,7 @@ describe("Chat Message Transactions", () => {
       email: "mentor_chat@test.com",
       password_hash: "hashed",
       role: "mentor",
+      account_status: "active",
     });
 
     const startupId = new mongoose.Types.ObjectId();

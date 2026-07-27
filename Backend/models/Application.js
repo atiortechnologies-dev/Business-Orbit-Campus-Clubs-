@@ -20,7 +20,7 @@ const applicationSchema = new mongoose.Schema(
     },
     application_status: {
       type: String,
-      enum: ["applied", "shortlisted", "rejected", "interviewing", "hired"],
+      enum: ["applied", "shortlisted", "rejected", "interviewing", "hired", "draft", "submitted", "viewed", "interview", "selected", "withdrawn"],
       default: "applied",
     },
     resume_url: {
@@ -30,8 +30,17 @@ const applicationSchema = new mongoose.Schema(
     cover_letter: {
       type: String,
     },
+    portfolio_url: {
+      type: String,
+    },
+    availability: {
+      type: String,
+    },
+    joining_date: {
+      type: Date,
+    },
   },
-  { timestamps: { createdAt: "applied_at", updatedAt: "updated_at" } },
+  { timestamps: { createdAt: "submitted_at", updatedAt: "updated_at" } },
 );
 
 // 🛡️ Correctness & Data Integrity: Prevent duplicate applications from the same student

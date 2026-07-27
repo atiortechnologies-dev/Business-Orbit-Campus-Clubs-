@@ -21,8 +21,20 @@ const opportunitySchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["Job", "Internship", "Project", "Other"],
+      enum: ["Job", "Internship", "Freelance", "Part-time", "Project", "Other"],
       required: true,
+    },
+    work_mode: {
+      type: String,
+      enum: ["Remote", "Hybrid", "On-site"],
+    },
+    industry: {
+      type: String,
+      trim: true,
+    },
+    experience_level: {
+      type: String,
+      trim: true,
     },
     description: {
       type: String,
@@ -40,13 +52,17 @@ const opportunitySchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    salary_range: {
+      type: String,
+      trim: true,
+    },
     application_deadline: {
       type: Date,
       required: true,
     },
     status: {
       type: String,
-      enum: ["draft", "open", "closed"],
+      enum: ["draft", "open", "active", "closed"],
       default: "open",
       index: true, // ⚡ Performance: Fast filtering by active status
     },

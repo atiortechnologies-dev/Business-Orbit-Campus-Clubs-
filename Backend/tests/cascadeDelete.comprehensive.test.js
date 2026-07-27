@@ -112,11 +112,13 @@ describe("Comprehensive Cascading Deletions", () => {
     invChatRoom = await InvestorChatRoom.create({
       investor_id: investorUser._id,
       founder_id: studentUser._id,
+      startup_id: startup._id,
     });
 
     await InvestorMessage.create({
       chat_id: invChatRoom._id,
       sender_id: investorUser._id,
+      receiver_id: studentUser._id,
       message: "Hello founder!",
     });
 
