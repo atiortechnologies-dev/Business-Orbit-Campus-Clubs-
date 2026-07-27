@@ -31,8 +31,8 @@ const stage3MVPRoutes = require("./routes/mvpSubmission.routes");
 const stage3ReviewRoutes = require("./routes/mvpReview.routes");
 
 const incubationRoutes = require("./routes/incubation.routes");
-
 const tractionRoutes = require("./routes/traction.routes");
+const launchRoutes = require("./routes/launch.routes");
 
 const http = require("http");
 const { configureSocket } = require("./utils/socket");
@@ -95,6 +95,9 @@ app.use("/api/student", incubationRoutes);
 
 // traction stage
 app.use("/api/student", tractionRoutes);
+
+// launch satge routes
+app.use("/api/student", launchRoutes);
 
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
