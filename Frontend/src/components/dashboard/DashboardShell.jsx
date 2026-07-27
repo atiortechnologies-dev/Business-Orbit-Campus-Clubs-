@@ -24,7 +24,7 @@ import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard',     href: '/dashboard', real: true },
   { icon: Rocket,          label: 'Build Startup',  href: '/build-startup/journey', real: true },
-  { icon: GraduationCap,   label: 'Mentors',        href: '#', real: false },
+  { icon: GraduationCap,   label: 'Mentors',        href: '/mentors', real: true },
   { icon: Wallet,          label: 'Investors',      href: '#', real: false },
   { icon: Building2,       label: 'Incubators',     href: '/incubators', real: true },
   { icon: Briefcase,       label: 'Freelancing',    href: '/freelancing', real: true },
