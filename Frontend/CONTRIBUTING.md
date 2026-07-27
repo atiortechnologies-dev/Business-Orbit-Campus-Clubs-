@@ -84,7 +84,18 @@ src/
                                OpportunityDetail.jsx →
                                FreelancingApplicationForm.jsx →
                                ApplyConfirmation.jsx → MyApplications.jsx
-    incubator/                Incubator.jsx, Applications.jsx,
+    mentors/                   Student-facing mentor network (not the
+                               Mentor role's own portal below): MentorDirectory.jsx
+                               → MentorProfile.jsx → MentorshipRequest.jsx
+                               → ChatConversation.jsx. Also holds
+                               ChatInbox.jsx (/mentors/messages) — shared
+                               with investors/, lists both mentor and
+                               investor threads
+    investors/                 Student-facing investor network (not the
+                               Investor role's own portal below):
+                               InvestorDirectory.jsx → InvestorProfile.jsx
+                               → SendPitchDeck.jsx → InvestorConversation.jsx
+    incubator/                 Incubator.jsx, Applications.jsx,
                                ApplicationReview.jsx, Messages.jsx, Settings.jsx
     admin/                    Admin.jsx (dashboard), VerificationQueue.jsx →
                                VerificationDetail.jsx → VerificationDecision.jsx
