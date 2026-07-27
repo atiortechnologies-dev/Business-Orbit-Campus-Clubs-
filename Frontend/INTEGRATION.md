@@ -87,6 +87,16 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 - `pages/mentor/Meetings.jsx` — save session notes/outcome
 - `pages/mentor/Chats.jsx` — send message
 
+**Student — Incubator Marketplace & Freelancing:**
+- `pages/incubators/IncubatorApplicationForm.jsx` — submit application
+- `pages/freelancing/FreelancingApplicationForm.jsx` — submit application
+
+**Company — Post Opportunity & Applicants:**
+- `pages/company/PostOpportunityStep{1..4}.jsx` — save draft, publish
+  (`POST /api/opportunities`)
+- `pages/company/ApplicantDetail.jsx` — update application status, save
+  internal notes
+
 **Shared:**
 - `components/layout/Sidebar.jsx` — every portal's sidebar footer shows a
   hardcoded name/initials/role; needs real authenticated-user data once
@@ -529,6 +539,41 @@ progress.
   nav's About is now **real** (`PublicNav.jsx` → `/landing`), now that the
   general landing page it points to actually exists — see "Public Landing
   Pages" above.
+
+### Incubator Marketplace — `src/pages/incubators/*.jsx`
+*(Student-facing — discovering and applying to incubation programs, not
+the Incubator role's own portal below. Fills the "Incubators" nav item
+`DashboardShell.jsx` had stubbed since the sidebar was built.)*
+- **Real:** `IncubatorApplicationForm.jsx`'s Startup Name/Problem
+  Statement/Proposed Solution gate a real "Submit Application" button
+  (same `canSubmit` pattern as every other gated form in this app);
+  submitting navigates to `IncubationConfirmed.jsx`, which links forward
+  into the already-built MVP journey step
+  `journey/mvp/IncubationProofSubmission.jsx` — accepting into a program
+  is the real trigger for that step, not a dead end.
+- **Stub:** `DiscoverIncubators.jsx`'s Industry/Stage filters and 3 listed
+  incubators are hardcoded; `MyIncubation.jsx`'s application tracker
+  (status timeline, documents, updates feed) is a static snapshot.
+  `// TODO(backend)` at `IncubatorApplicationForm.jsx`'s `handleSubmit`:
+  `POST /api/incubators/:id/applications`.
+- **Coming Soon:** resume/document uploads, Save Draft, Withdraw, Open
+  Conversation, Download Documents.
+
+### Freelancing — `src/pages/freelancing/*.jsx`
+*(Fills the "Freelancing" nav item's stub. Independent sample data from
+Admin's/Company's Opportunity screens — same no-cross-portal-wiring
+precedent as every other role pair in this app.)*
+- **Real:** `FreelancingApplicationForm.jsx` gates Submit on a written
+  Cover Letter and navigates to `ApplyConfirmation.jsx` on success.
+  `MyApplications.jsx`'s Active/Interviews/Rejected/Archived tabs are
+  genuine client-side filters over real application state (not hardcoded
+  counts) — each tab's number reflects what's actually in that category.
+- **Stub:** `FreelancingOpportunities.jsx`'s filters and 3 listed
+  opportunities are hardcoded. `// TODO(backend)` at
+  `FreelancingApplicationForm.jsx`'s `handleSubmit`:
+  `POST /api/opportunities/:id/applications`.
+- **Coming Soon:** resume upload, Save, Save Draft, Open Chat, Withdraw
+  Application.
 
 ---
 
@@ -995,23 +1040,23 @@ and `components/bocc/*` are gone.)*
 - **Stub:** all 4 stat cards, the Recent Applicant Activity table, and
   the Latest Postings list are hardcoded snapshots — same as every other
   portal's dashboard at this stage.
-- **Real:** "Manage Opportunities" and "SEE ALL JOB POSTS" → real
-  navigation to `/company/my-opportunities`.
-- **Coming Soon:** "Post New Opportunity," "View Applicants," "View all"
-  (applicant activity) — all genuinely blocked on screens that don't
-  exist yet (a create-opportunity form, an applicants directory).
+- **Real:** "Manage Opportunities," "SEE ALL JOB POSTS," "Post New
+  Opportunity," "View Applicants," and "View all" (applicant activity)
+  all now navigate to real screens — the last three were `ComingSoon`
+  until this batch built the screens they point to.
 
 ### `/company/my-opportunities` — `src/pages/company/MyOpportunities.jsx`
 - **Real:** search genuinely filters the 4 seeded opportunities
   client-side (by title or ref), using the shared `DataTable` component
   (desktop grid → stacked mobile cards, same as every other table in the
-  app).
+  app). "New Opportunity" now navigates to the Post Opportunity wizard
+  (was `ComingSoon` until this batch).
 - **Stub:** filtering only operates on 4 hardcoded rows. Pagination is
   real (not `ComingSoon`-wrapped) but honestly disabled, and "Showing N
   of 4" reflects the real filtered/total counts — same honest-count
   convention as Admin/Investor's tables.
-- **Coming Soon:** "New Opportunity," each row's Actions (kebab) menu —
-  both blocked on screens that don't exist yet.
+- **Coming Soon:** each row's Actions (kebab) menu — no edit/close-
+  opportunity screen exists yet.
 - One of the 4 seeded rows (`Regional Operations Director`) uses a
   `Pending Approval` status alongside the existing Active/Draft/Closed —
   added when Admin's opportunity moderation queue was built (see Admin
@@ -1021,11 +1066,49 @@ and `components/bocc/*` are gone.)*
   this was just the one place a status genuinely had nowhere to point to
   before.
 
+### `/company/post-opportunity/step-{1..4}` — `src/pages/company/PostOpportunityStep{1..4}.jsx`
+*(Fills the "Post Opportunity" nav stub. 4-step wizard —
+`PostOpportunityStepper.jsx` is the shared progress header, `Next Step`
+gates on each step's required fields exactly like every other gated form
+in this app.)*
+- **Real:** Step 1's Title, Step 2's Required Skills (add-on-Enter/
+  remove chips), and Step 3's Overview/Responsibilities (with live
+  character counters against each field's max length) all gate
+  progression. A small shared module, `postOpportunityDraft.js`, carries
+  Title/Type/Work Mode/Location/Salary/Overview/Skills across the 4 routes
+  in memory for the current session only — the one place in this app a
+  multi-step flow's later screen (Step 4's Live Preview) needs to reflect
+  an earlier screen's real input, so it's not backed by the URL or
+  `sessionStorage`, just a plain in-memory object that resets on reload
+  like everything else here. Step 4's Visibility Settings radio group is
+  real local state. "Publish Opportunity" navigates to My Opportunities.
+- **Stub:** nothing persists past the browser tab — `// TODO(backend)` at
+  each step's `handleSaveDraft`/`handleNext` and Step 4's `handlePublish`:
+  `POST /api/opportunities` (or `/drafts`) with the full wizard state.
+- **Coming Soon:** Company Logo upload, Supporting Documents upload, Add
+  Branch, Change (deadline).
+
+### `/company/applicants`, `/company/applicants/detail` — `ApplicantsList.jsx`, `ApplicantDetail.jsx`
+*(Fills the "Applicants" nav stub.)*
+- **Real:** `ApplicantsList.jsx`'s 4 filter selects are genuine controlled
+  state (visual filtering, not yet wired to the table — same "filter
+  controls are real state, don't filter yet" pattern as
+  `DiscoverIncubators.jsx`); "Clear all filters" resets them.
+  `ApplicantDetail.jsx`'s Application Status select and Internal Notes
+  textarea are real controlled fields.
+- **Stub:** the opportunity summary card and 3 listed applicants are
+  hardcoded; Internal Notes and Application Status don't persist.
+  `// TODO(backend)`: `GET /api/opportunities/:id/applicants`, `PATCH
+  /api/applicants/:id { status, notes }`.
+- **Coming Soon:** Filter, Sort, Export, Edit/Close Opportunity, Resume
+  icon, Schedule Interview, Download Resume, Contact Applicant, Reject,
+  Share Profile, Portfolio/GitHub links.
+
 ### Shell — `components/company/CompanyShell.jsx`
-Sidebar nav: Dashboard and My Opportunities are real; Post Opportunity,
-Applicants, Profile, and Settings are `real: false` (render as
-`ComingSoon` automatically via the shared `Sidebar.jsx`) since none of
-those screens exist yet. Header search and notifications are
+Sidebar nav: Dashboard, My Opportunities, Post Opportunity, and
+Applicants are all real now; Profile and Settings remain `real: false`
+(render as `ComingSoon` automatically via the shared `Sidebar.jsx`) since
+those screens don't exist yet. Header search and notifications are
 `ComingSoon`, matching every other portal shell's header.
 
 ---

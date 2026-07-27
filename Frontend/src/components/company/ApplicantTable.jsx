@@ -1,4 +1,4 @@
-import ComingSoon from '@/components/ui/ComingSoon';
+import { Link } from 'react-router-dom';
 import Badge from '@/components/ui/Badge';
 
 const ROWS = [
@@ -27,9 +27,9 @@ export default function ApplicantTable() {
     <div className="bg-surface-white rounded-xl border border-border-subtle overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle">
         <h2 className="font-poppins font-bold text-body text-text-heading">Recent Applicant Activity</h2>
-        <ComingSoon label="View all" position="top" inline className="font-inter text-small font-semibold text-text-muted hover:text-text-heading">
+        <Link to="/company/applicants" className="font-inter text-small font-semibold text-text-muted hover:text-text-heading transition-colors">
           View all
-        </ComingSoon>
+        </Link>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-small">
