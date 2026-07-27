@@ -68,10 +68,23 @@ src/
     Notifications.jsx         Student notifications
     Settings.jsx               Student account settings
     BuildStartupJourney.jsx   Student's 5-stage startup journey overview
-    journey/                  Real sub-flows for 3 of those 5 stages —
-                               ideation/, validation/, mvp/ — each a
-                               multi-screen pipeline (submit → review
-                               meeting → review result, roughly)
+    journey/                  Real sub-flows for all 5 stages — ideation/,
+                               validation/, mvp/, traction/, launch/ — each
+                               a multi-screen pipeline (submit → review
+                               meeting → review result, roughly), plus
+                               JourneyComplete.jsx after the last one
+    incubators/                Student-facing incubator marketplace (not
+                               the Incubator portal below): discover →
+                               profile → apply → confirmed → tracker
+    freelancing/                Student-facing opportunity board: browse →
+                               detail → apply → confirmed → my applications
+    mentors/                    Student-facing mentor network: directory →
+                               profile → request → chat, plus the shared
+                               chat inbox (mentor + investor threads)
+    investors/                  Student-facing investor network: directory →
+                               profile → send pitch deck → chat
+    support/                    Student help center: browse/search →
+                               raise ticket → my tickets → ticket detail
     legal/PrivacyPolicy.jsx   Public Terms of Service & Privacy Policy
     incubator/                Incubator portal (dashboard, applications,
                                application review, messages, settings)
@@ -79,15 +92,21 @@ src/
                                pipeline (queue → detail → decision), a
                                startup-review pipeline (queue → detail →
                                evaluation workspace → outcome, plus a
-                               meeting-scheduler branch), and an audit log
+                               meeting-scheduler branch), an audit log,
+                               announcements (list → create → preview →
+                               published), chapter management, opportunity
+                               moderation, and platform settings
     investor/                Investor portal (dashboard, incoming pitch
                                decks, single pitch-deck viewer)
     mentor/                  Mentor portal (dashboard, requests, chats,
                                meetings, profile)
-    company/                 Company portal (dashboard, my opportunities)
+    company/                 Company portal (dashboard, my opportunities,
+                               a 4-step post-opportunity wizard, applicants
+                               list + detail)
   components/
     ui/          Shared primitives (Button, Card, Input, Logo, ComingSoon,
-                 ThemeToggle, ThemeProvider, Badge, StatCard, DataTable, Modal)
+                 ThemeToggle, ThemeProvider, Badge, StatCard, DataTable,
+                 Modal, PlaceholderGraphic)
     auth/        Auth-specific components (RoleCard, PasswordStrengthMeter,
                  RoleSignupForm — the one shared component behind all 5
                  signup pages)
@@ -106,7 +125,7 @@ src/
     mentor/      MentorShell — header/content shell for the Mentor portal
     company/     CompanyShell — header/content shell for the Company portal,
                  plus its page-content components (StatsRow, ApplicantTable,
-                 RightPanel, OpportunitiesTable)
+                 RightPanel, OpportunitiesTable, PostOpportunityStepper)
   hooks/
     useDocumentTitle.js     Sets document.title per route
     useSidebarCollapsed.js  Persists the sidebar's collapsed/expanded state
@@ -143,15 +162,29 @@ tooltip, `aria-disabled`) instead of a dead link or a fake page — see
 | `/dashboard`, `/notifications`, `/settings`, `/build-startup/journey` | Student |
 | `/build-startup/journey/ideation` (+ `/submit`, `/confirmation`, `/review-meeting`, `/review-result`, `/resources`) | Student — Ideation stage |
 | `/build-startup/journey/validation` (+ `/survey-tracker`, `/evidence-upload`, `/report-submission`, `/confirmation`, `/review-meeting`, `/review-result`) | Student — Validation stage |
-| `/build-startup/journey/mvp` (+ `/choose-product-type`, `/submit`, `/success`, `/incubation-proof`) | Student — MVP stage |
+| `/build-startup/journey/mvp` (+ `/choose-product-type`, `/submit`, `/success`, `/incubation-proof`, `/incubation-verification`, `/incubation-approved`) | Student — MVP stage |
+| `/build-startup/journey/traction` (+ `/acquisition-tracker`, `/feedback-upload`, `/product-submission`, `/review`, `/review-meeting`, `/approved`) | Student — Traction stage |
+| `/build-startup/journey/launch` (+ `/submission`, `/pitch-deck`, `/proof-upload`, `/verification`) | Student — Launch stage |
+| `/build-startup/journey/complete` | Student — Journey complete |
+| `/incubators` (+ `/profile`, `/apply`, `/confirmed`, `/tracker`) | Student — Incubator Marketplace |
+| `/freelancing` (+ `/opportunity`, `/apply`, `/applied`, `/applications`) | Student — Freelancing |
+| `/mentors` (+ `/profile`, `/request`, `/chat`, `/messages`) | Student — Mentor Network (`/mentors/messages` is the shared chat inbox) |
+| `/investors` (+ `/profile`, `/send-pitch`, `/chat`) | Student — Investor Network |
+| `/support` (+ `/raise-ticket`, `/tickets`, `/tickets/detail`) | Student — Support Center |
 | `/incubator`, `/incubator/applications`, `/incubator/applications/review`, `/incubator/messages`, `/incubator/settings` | Incubator |
 | `/admin`, `/admin/verification(/detail\|/decision)`, `/admin/reviews(/detail\|/workspace\|/outcome\|/schedule-meeting)`, `/admin/audit-log` | Admin |
+| `/admin/announcements` (+ `/create`, `/preview`, `/published`) | Admin — Announcements |
+| `/admin/chapters` (+ `/detail`) | Admin — Chapter Management |
+| `/admin/opportunities` (+ `/review`) | Admin — Opportunity moderation |
+| `/admin/settings` | Admin — Settings |
 | `/investor`, `/investor/pitch-decks`, `/investor/pitch-decks/review` | Investor |
 | `/mentor`, `/mentor/requests`, `/mentor/chats`, `/mentor/meetings`, `/mentor/profile` | Mentor |
 | `/company/dashboard`, `/company/my-opportunities` | Company |
+| `/company/post-opportunity/step-{1..4}` | Company — Post Opportunity wizard |
+| `/company/applicants` (+ `/detail`) | Company — Applicants |
 | `/legal/privacy-policy` | Public |
 
-73 routes total. `src/router.jsx` is the single source of truth — if this
+126 routes total. `src/router.jsx` is the single source of truth — if this
 table and that file ever disagree, the file wins; update this table to
 match.
 
