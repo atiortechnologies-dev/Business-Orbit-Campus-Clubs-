@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Users,
   Rocket,
@@ -12,6 +13,7 @@ import {
   Upload,
   FolderPlus,
   Calendar,
+  Map,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdminShell from '@/components/admin/AdminShell';
@@ -25,14 +27,22 @@ const USER_DISTRIBUTION = [
   { label: 'Investors', pct: 15 },
 ];
 
-const FUNNEL = [
-  { label: 'Idea', value: 1240 },
-  { label: 'Validation', value: 840 },
-  { label: 'MVP', value: 456 },
-  { label: 'Traction', value: 182 },
-  { label: 'Launch', value: 42 },
-];
-const FUNNEL_MAX = FUNNEL[0].value;
+const FUNNEL_VIEWS = {
+  Daily: [
+    { label: 'Idea', value: 1240 },
+    { label: 'Validation', value: 840 },
+    { label: 'MVP', value: 456 },
+    { label: 'Traction', value: 182 },
+    { label: 'Launch', value: 42 },
+  ],
+  Monthly: [
+    { label: 'Idea', value: 5180 },
+    { label: 'Validation', value: 3420 },
+    { label: 'MVP', value: 1890 },
+    { label: 'Traction', value: 705 },
+    { label: 'Launch', value: 168 },
+  ],
+};
 
 const ACTIVITY_STREAM = [
   { icon: RefreshCw, text: 'System Upgrade Complete', time: '12m ago' },
@@ -41,12 +51,52 @@ const ACTIVITY_STREAM = [
   { icon: FolderPlus, text: 'Club Created "Fintech 2024"', time: '3h ago' },
 ];
 
+const INITIAL_CRITICAL_ACTIONS = [
+  {
+    id: 'ca1',
+    icon: AlertTriangle,
+    tone: 'error',
+    title: 'Identity Verification Loophole',
+    detail: '14 records flagged in batch #482',
+    reviewHref: '/admin/verification',
+  },
+  {
+    id: 'ca2',
+    icon: FileText,
+    tone: 'warning',
+    title: 'Compliance Report Due',
+    detail: 'Quarterly submission due in 3 days',
+  },
+  {
+    id: 'ca3',
+    icon: UserPlus,
+    tone: 'info',
+    title: 'New Mentor Application',
+    detail: 'Dr. Sarah Jenkins awaiting approval',
+  },
+];
+
+const TONE_CLASSES = {
+  error: 'bg-error/15 text-error',
+  warning: 'bg-warning/15 text-warning',
+  info: 'bg-info/15 text-info',
+};
+
 export default function AdminDashboardPage() {
   useDocumentTitle('BOCC Command Center — Admin Dashboard');
+  const [funnelView, setFunnelView] = useState('Daily');
+  const [criticalActions, setCriticalActions] = useState(INITIAL_CRITICAL_ACTIONS);
+
+  const funnel = FUNNEL_VIEWS[funnelView];
+  const funnelMax = funnel[0].value;
+
+  // TODO(backend): PATCH this critical action as acknowledged server-side
+  // (e.g. { actionId: id, status: 'dismissed' }) so it doesn't reappear
+  // for this admin on next load — the local removal below is optimistic.
+  const dismissAction = (id) => setCriticalActions((prev) => prev.filter((a) => a.id !== id));
 
   return (
     <AdminShell>
-      {/* ── KPI row ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard label="Total Users" value="12,482" icon={<Users size={18} strokeWidth={2} />} subtext="+8.4% this month" trendDirection="up" />
         <StatCard label="Active Startups" value="456" icon={<Rocket size={18} strokeWidth={2} />} subtext="92% engagement" />
@@ -62,7 +112,6 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-        {/* User Distribution */}
         <section className="lg:col-span-5 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <h3 className="font-poppins font-semibold text-card text-text-heading mb-6">User Distribution</h3>
           <div className="space-y-4 mb-6">
@@ -79,28 +128,38 @@ export default function AdminDashboardPage() {
             ))}
           </div>
           <ComingSoon label="Demographic Map" position="top">
-            <div className="w-full h-32 placeholder-box rounded-lg" />
+            <div className="w-full h-32 rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex flex-col items-center justify-center gap-1.5">
+              <Map size={20} strokeWidth={2} className="text-text-muted" />
+              <span className="font-inter text-caption text-text-muted">Demographic Map</span>
+            </div>
           </ComingSoon>
         </section>
 
-        {/* Startup Journey Funnel */}
         <section className="lg:col-span-7 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-poppins font-semibold text-card text-text-heading">Startup Journey Funnel</h3>
             <div className="flex items-center gap-1 bg-canvas-bg rounded-md p-1">
-              <span className="px-3 py-1 rounded font-inter font-medium text-caption bg-surface-white text-text-heading shadow-sm">Daily</span>
-              <ComingSoon label="Monthly view" position="bottom" inline>
-                <span className="px-3 py-1 rounded font-inter font-medium text-caption text-text-muted">Monthly</span>
-              </ComingSoon>
+              {Object.keys(FUNNEL_VIEWS).map((view) => (
+                <button
+                  key={view}
+                  type="button"
+                  onClick={() => setFunnelView(view)}
+                  className={`px-3 py-1 rounded font-inter font-medium text-caption transition-colors ${
+                    funnelView === view ? 'bg-surface-white text-text-heading shadow-sm' : 'text-text-muted hover:text-text-heading'
+                  }`}
+                >
+                  {view}
+                </button>
+              ))}
             </div>
           </div>
           <div className="flex items-end gap-3 h-32 mb-3">
-            {FUNNEL.map(({ label, value }) => (
+            {funnel.map(({ label, value }) => (
               <div key={label} className="flex-1 flex flex-col items-center justify-end gap-2 h-full">
                 <span className="font-inter font-semibold text-caption text-text-heading">{value.toLocaleString()}</span>
                 <div
-                  className="w-full bg-brand-black rounded-t"
-                  style={{ height: `${Math.max((value / FUNNEL_MAX) * 100, 4)}%` }}
+                  className="w-full bg-brand-black rounded-t transition-all"
+                  style={{ height: `${Math.max((value / funnelMax) * 100, 4)}%` }}
                 />
                 <span className="font-inter text-caption text-text-muted">{label}</span>
               </div>
@@ -127,53 +186,43 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-        {/* Critical Actions */}
         <section className="lg:col-span-7 bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden">
           <div className="px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
             <h3 className="font-poppins font-semibold text-card text-text-heading">Critical Actions</h3>
           </div>
-          <div className="divide-y divide-border-subtle">
-            <div className="p-6 flex items-start gap-4">
-              <div className="w-9 h-9 rounded-full bg-error/15 text-error flex items-center justify-center shrink-0">
-                <AlertTriangle size={18} strokeWidth={2} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-inter font-semibold text-body text-text-heading">Identity Verification Loophole</p>
-                <p className="font-inter text-small text-text-muted">14 records flagged in batch #482</p>
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <Link to="/admin/verification" className="px-3 py-1.5 bg-action-bg text-action-text rounded-md font-inter font-medium text-caption hover:opacity-90 transition-opacity">
-                  Review
-                </Link>
-                <ComingSoon label="Ignore" position="top" inline>
-                  <span className="px-3 py-1.5 border border-border-subtle rounded-md font-inter font-medium text-caption text-text-muted">
-                    Ignore
-                  </span>
-                </ComingSoon>
-              </div>
+          {criticalActions.length === 0 ? (
+            <p className="p-6 font-inter text-small text-text-muted">No critical actions — you're all caught up.</p>
+          ) : (
+            <div className="divide-y divide-border-subtle">
+              {criticalActions.map(({ id, icon: Icon, tone, title, detail, reviewHref }) => (
+                <div key={id} className="p-6 flex items-start gap-4">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${TONE_CLASSES[tone]}`}>
+                    <Icon size={18} strokeWidth={2} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-inter font-semibold text-body text-text-heading">{title}</p>
+                    <p className="font-inter text-small text-text-muted">{detail}</p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    {reviewHref && (
+                      <Link to={reviewHref} className="px-3 py-1.5 bg-action-bg text-action-text rounded-md font-inter font-medium text-caption hover:opacity-90 transition-opacity">
+                        Review
+                      </Link>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => dismissAction(id)}
+                      className="px-3 py-1.5 border border-border-subtle rounded-md font-inter font-medium text-caption text-text-muted hover:bg-canvas-bg hover:text-text-heading transition-colors"
+                    >
+                      Ignore
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="p-6 flex items-start gap-4">
-              <div className="w-9 h-9 rounded-full bg-warning/15 text-warning flex items-center justify-center shrink-0">
-                <FileText size={18} strokeWidth={2} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-inter font-semibold text-body text-text-heading">Compliance Report Due</p>
-                <p className="font-inter text-small text-text-muted">Quarterly submission due in 3 days</p>
-              </div>
-            </div>
-            <div className="p-6 flex items-start gap-4">
-              <div className="w-9 h-9 rounded-full bg-info/15 text-info flex items-center justify-center shrink-0">
-                <UserPlus size={18} strokeWidth={2} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-inter font-semibold text-body text-text-heading">New Mentor Application</p>
-                <p className="font-inter text-small text-text-muted">Dr. Sarah Jenkins awaiting approval</p>
-              </div>
-            </div>
-          </div>
+          )}
         </section>
 
-        {/* Activity Stream */}
         <section className="lg:col-span-5 bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden">
           <div className="px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
             <h3 className="font-poppins font-semibold text-card text-text-heading">Activity Stream</h3>
@@ -192,7 +241,6 @@ export default function AdminDashboardPage() {
         </section>
       </div>
 
-      {/* Upcoming Cycle — inverted panel */}
       <section className="bg-brand-black text-white rounded-lg p-6 shadow-card">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex-1">

@@ -6,6 +6,7 @@ import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { downloadCsv } from '@/utils/csv';
 
 const USERS = [
   { id: 'u1', name: 'Elena Rodriguez', email: 'elena.rodriguez@oxford.ac.uk', initials: 'ER', role: 'Chapter Lead', org: 'Oxford Chapter', regDate: '2024-10-18', status: 'Pending', docs: 3 },
@@ -26,13 +27,20 @@ export default function VerificationQueuePage() {
   const [roleFilter, setRoleFilter] = useState('All Roles');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [chapterFilter, setChapterFilter] = useState('All Chapters');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [dateFilterOpen, setDateFilterOpen] = useState(false);
 
   const visibleUsers = USERS.filter((u) => {
     if (roleFilter !== 'All Roles' && u.role !== roleFilter) return false;
     if (statusFilter !== 'All Status' && u.status !== statusFilter) return false;
     if (chapterFilter !== 'All Chapters' && u.org !== chapterFilter) return false;
+    if (dateFrom && u.regDate < dateFrom) return false;
+    if (dateTo && u.regDate > dateTo) return false;
     return true;
   });
+
+  const dateRangeLabel = dateFrom || dateTo ? `${dateFrom || '…'} → ${dateTo || '…'}` : 'Last 30 Days';
 
   const columns = [
     {
@@ -102,11 +110,21 @@ export default function VerificationQueuePage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <ComingSoon label="Export CSV" position="bottom" inline>
-            <span className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small">
-              <Download size={14} strokeWidth={2} /> Export CSV
-            </span>
-          </ComingSoon>
+          <button
+            type="button"
+            onClick={() => downloadCsv('verification-queue', [
+              { key: 'name', label: 'User Name' },
+              { key: 'email', label: 'Email' },
+              { key: 'role', label: 'Role' },
+              { key: 'org', label: 'Chapter' },
+              { key: 'regDate', label: 'Reg. Date' },
+              { key: 'status', label: 'Status' },
+              { key: 'docs', label: 'Documents' },
+            ], visibleUsers)}
+            className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small hover:bg-canvas-bg transition-colors"
+          >
+            <Download size={14} strokeWidth={2} /> Export CSV
+          </button>
           <ComingSoon label="Bulk Action" position="bottom" inline>
             <span className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small">
               <Zap size={14} strokeWidth={2} /> Bulk Action
@@ -147,10 +165,32 @@ export default function VerificationQueuePage() {
             {CHAPTER_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
           </select>
         </div>
-        <ComingSoon label="Date range picker" position="top" className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card space-y-1">
+        <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card space-y-1 relative">
           <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider block">Date Range</label>
-          <p className="font-inter text-small text-text-muted pt-2">Last 30 Days</p>
-        </ComingSoon>
+          <button
+            type="button"
+            onClick={() => setDateFilterOpen((v) => !v)}
+            className="w-full text-left font-inter text-small text-text-body pt-2 hover:text-text-heading transition-colors"
+          >
+            {dateRangeLabel}
+          </button>
+          {dateFilterOpen && (
+            <div className="absolute top-full left-0 mt-1 z-20 bg-surface-white border border-border-subtle rounded-md shadow-overlay p-4 flex flex-col gap-3 w-64">
+              <label className="flex flex-col gap-1">
+                <span className="font-inter text-caption text-text-muted">From</span>
+                <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="px-2 py-1.5 bg-canvas-bg border border-border-subtle rounded-md font-inter text-small text-text-heading focus:outline-none focus:ring-1 focus:ring-brand-black" />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="font-inter text-caption text-text-muted">To</span>
+                <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="px-2 py-1.5 bg-canvas-bg border border-border-subtle rounded-md font-inter text-small text-text-heading focus:outline-none focus:ring-1 focus:ring-brand-black" />
+              </label>
+              <div className="flex justify-between">
+                <button type="button" onClick={() => { setDateFrom(''); setDateTo(''); }} className="font-inter text-caption text-text-muted hover:text-text-heading transition-colors">Clear</button>
+                <button type="button" onClick={() => setDateFilterOpen(false)} className="font-inter font-semibold text-caption text-text-heading">Apply</button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -163,7 +203,7 @@ export default function VerificationQueuePage() {
           />
           <div className="flex justify-between items-center mt-4">
             <span className="font-inter text-small text-text-muted">
-              Showing {visibleUsers.length} of 142 entries
+              Showing {visibleUsers.length} of {USERS.length} entries
             </span>
           </div>
         </div>

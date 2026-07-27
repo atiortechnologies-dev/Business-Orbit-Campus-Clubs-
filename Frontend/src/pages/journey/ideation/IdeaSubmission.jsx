@@ -31,8 +31,14 @@ export default function IdeaSubmissionPage() {
     setFormData((prev) => ({ ...prev, document: e.target.files[0] ?? null }));
   };
 
+  const canSubmit =
+    formData.startupName.trim().length > 0 &&
+    formData.problemStatement.trim().length > 0 &&
+    formData.solution.trim().length > 0;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     // TODO(backend): POST formData to the idea-submission endpoint for the
     // current student, then advance their Ideation-stage status server-side.
     navigate('/build-startup/journey/ideation/confirmation');
@@ -110,7 +116,8 @@ export default function IdeaSubmissionPage() {
           </button>
           <button
             type="submit"
-            className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+            disabled={!canSubmit}
+            className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Submit Idea
           </button>

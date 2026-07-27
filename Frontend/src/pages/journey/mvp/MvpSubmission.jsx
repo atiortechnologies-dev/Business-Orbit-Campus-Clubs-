@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UploadCloud, Info, Link2, GitFork, ChevronRight } from 'lucide-react';
+import { UploadCloud, Info, Link2, GitFork, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
@@ -31,8 +31,14 @@ export default function MvpSubmissionPage() {
   const toggleChecklist = (key) => setChecklist((prev) => ({ ...prev, [key]: !prev[key] }));
   const updateField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
+  const canSubmit =
+    form.mvpTitle.trim().length > 0 &&
+    form.description.trim().length > 0 &&
+    form.liveDemoUrl.trim().length > 0;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     // TODO(backend): POST the MVP submission (form + checklist state) for technical review.
     navigate('/build-startup/journey/mvp/success');
   };
@@ -133,7 +139,8 @@ export default function MvpSubmissionPage() {
               <p className="font-inter font-semibold text-caption text-text-muted uppercase tracking-wider">Submission Preview</p>
               <span className="bg-warning/10 text-warning font-poppins font-semibold text-caption px-2.5 py-0.5 rounded-full">Draft</span>
             </div>
-            <div className="h-28 rounded-lg placeholder-box flex items-center justify-center mb-4">
+            <div className="h-28 rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex flex-col items-center justify-center gap-1.5 mb-4">
+              <ImageIcon size={20} strokeWidth={1.5} className="text-text-muted" />
               <p className="font-inter text-caption text-text-muted">No visual attached</p>
             </div>
             <h4 className="font-poppins font-semibold text-body text-text-heading">
@@ -178,7 +185,8 @@ export default function MvpSubmissionPage() {
             </button>
             <button
               type="submit"
-              className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+              disabled={!canSubmit}
+              className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Submit MVP
             </button>

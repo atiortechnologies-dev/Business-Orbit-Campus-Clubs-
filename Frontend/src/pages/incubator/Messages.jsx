@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Search,
   Edit,
@@ -17,9 +17,13 @@ import {
   ChevronLeft,
   TrendingUp,
   Download,
+  X,
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+
+const EMOJI = ['😀', '😂', '👍', '🙌', '🎉', '🔥', '❤️', '🚀', '👀', '💡', '✅', '🙏'];
 
 const CONVERSATIONS = [
   {
@@ -83,16 +87,16 @@ const SEEDED_MESSAGES_ACME = [
 ];
 
 export default function ChatsPage() {
+  useDocumentTitle('Messages — BOCC Incubator Portal');
   const [activeConv, setActiveConv] = useState('acme');
   const [inputText, setInputText] = useState('');
-  // Below `lg` the list and thread panels can't both fit — this app was
-  // stacking them full-height instead of showing one at a time, which on
-  // a phone meant scrolling past the entire conversation list before
-  // reaching any part of the actual thread. `lg:`+ ignores this entirely
-  // (both panels always show side-by-side there, see the className below).
+  // Below `lg` both panels can't fit side by side; without this, mobile stacked them full-height, forcing a scroll past the whole list to reach the thread.
   const [mobileView, setMobileView] = useState('list'); // 'list' | 'thread'
+  const [pendingAttachment, setPendingAttachment] = useState(null); // { file, url, isImage } | null
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const fileInputRef = useRef(null);
+  const imageInputRef = useRef(null);
 
-  // Local active conversation message history state
   const [messagesMap, setMessagesMap] = useState({
     acme: SEEDED_MESSAGES_ACME,
     ecostream: [
@@ -123,7 +127,7 @@ export default function ChatsPage() {
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!inputText.trim()) return;
+    if (!inputText.trim() && !pendingAttachment) return;
 
     const newMessage = {
       id: Date.now(),
@@ -131,17 +135,41 @@ export default function ChatsPage() {
       text: inputText,
       time: 'Just now',
       status: 'Sent',
+      ...(pendingAttachment && {
+        attachment: {
+          name: pendingAttachment.file.name,
+          size: `${(pendingAttachment.file.size / 1024).toFixed(0)} KB`,
+          url: pendingAttachment.url,
+          isImage: pendingAttachment.isImage,
+        },
+      }),
     };
 
     // TODO(backend): send `newMessage` over a real transport (websocket or
     // polling) and persist it — this only appends to local React state, so
     // it's gone on reload and the other party never actually receives it.
+    // The attachment's `url` is a local blob URL — real bytes for THIS
+    // session, but it needs a real upload endpoint to survive a reload or
+    // reach the other party.
     setMessagesMap((prev) => ({
       ...prev,
       [activeConv]: [...prev[activeConv], newMessage],
     }));
 
     setInputText('');
+    setPendingAttachment(null);
+  };
+
+  const handleAttachFile = (e, isImage) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPendingAttachment({ file, url: URL.createObjectURL(file), isImage });
+    e.target.value = '';
+  };
+
+  const insertEmoji = (emoji) => {
+    setInputText((prev) => prev + emoji);
+    setShowEmojiPicker(false);
   };
 
   const activeDetails = CONVERSATIONS.find((c) => c.id === activeConv);
@@ -150,12 +178,9 @@ export default function ChatsPage() {
   return (
     <IncubatorShell>
       <div className="flex-1 flex flex-col lg:flex-row -m-6 md:-m-8 h-[calc(100vh-72px)] overflow-hidden">
-        {/* 1. Left Panel: Conversation List — shown alone on mobile until a
-            conversation is picked; both panels always show together at
-            `lg:`+ regardless of mobileView. */}
         <div className={`${mobileView === 'list' ? 'flex' : 'hidden'} lg:flex w-full lg:w-80 flex-col border-r border-border-subtle bg-surface-white flex-shrink-0 transition-colors duration-150 ease-linear`}>
           <div className="p-4 border-b border-border-subtle flex items-center justify-between bg-canvas-bg/50">
-            <h2 className="font-poppins font-bold text-headline-sm text-text-heading">
+            <h2 className="font-poppins font-bold text-card text-text-heading">
               Messages
             </h2>
             <ComingSoon
@@ -193,7 +218,7 @@ export default function ChatsPage() {
                         {conv.time}
                       </span>
                     </div>
-                    <p className="font-inter text-body-md text-text-muted truncate">
+                    <p className="font-inter text-small text-text-muted truncate">
                       {conv.preview}
                     </p>
                   </div>
@@ -203,14 +228,10 @@ export default function ChatsPage() {
           </div>
         </div>
 
-        {/* 2. Center Panel: Active Chat Thread — shown alone on mobile once
-            a conversation is picked; see the list panel above. */}
         <div className={`${mobileView === 'thread' ? 'flex' : 'hidden'} lg:flex flex-1 flex-col bg-surface-white border-r border-border-subtle overflow-hidden transition-colors duration-150 ease-linear`}>
-          {/* Chat Header */}
           <div className="p-4 px-6 border-b border-border-subtle flex items-center justify-between bg-canvas-bg/50 flex-shrink-0">
             <div className="flex items-center gap-3">
-              {/* Back to the conversation list — mobile/tablet only, `lg:`+
-                  always shows both panels so there's nothing to "back" to. */}
+              {/* lg:hidden — at `lg:`+ both panels always show, so there's nothing to "back" to */}
               <button
                 type="button"
                 onClick={() => setMobileView('list')}
@@ -261,7 +282,6 @@ export default function ChatsPage() {
             </div>
           </div>
 
-          {/* Messages History */}
           <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-canvas-bg/10">
             <div className="flex justify-center select-none">
               <span className="px-3 py-1 bg-canvas-bg border border-border-subtle text-text-muted font-poppins font-semibold text-caption rounded-full">
@@ -293,28 +313,52 @@ export default function ChatsPage() {
                           : 'bg-surface-white text-text-body border-border-subtle rounded-tl-none'
                       }`}
                     >
-                      <p className="font-inter text-body-md whitespace-pre-line leading-relaxed">
+                      <p className="font-inter text-small whitespace-pre-line leading-relaxed">
                         {msg.text}
                       </p>
                     </div>
 
                     {msg.attachment && (
-                      <ComingSoon label={`Download ${msg.attachment.name}`} position="top" inline={false}>
-                        <div className="mt-3 p-3 bg-surface-white border border-border-subtle rounded-lg flex items-center gap-3 cursor-pointer hover:bg-canvas-bg transition-colors w-full shadow-card text-left">
-                          <div className="w-10 h-10 bg-canvas-bg border border-border-subtle rounded flex items-center justify-center text-text-muted">
-                            <FileText size={20} strokeWidth={2} />
+                      msg.attachment.url ? (
+                        // Real local bytes (attached this session) — a genuine download, not a stub.
+                        msg.attachment.isImage ? (
+                          <a href={msg.attachment.url} download={msg.attachment.name} className="mt-3 block w-40 rounded-lg overflow-hidden border border-border-subtle shadow-card">
+                            <img src={msg.attachment.url} alt={msg.attachment.name} className="w-full h-auto" />
+                          </a>
+                        ) : (
+                          <a href={msg.attachment.url} download={msg.attachment.name} className="mt-3 p-3 bg-surface-white border border-border-subtle rounded-lg flex items-center gap-3 hover:bg-canvas-bg transition-colors w-full shadow-card text-left">
+                            <div className="w-10 h-10 bg-canvas-bg border border-border-subtle rounded flex items-center justify-center text-text-muted">
+                              <FileText size={20} strokeWidth={2} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-poppins font-semibold text-small text-text-heading truncate">
+                                {msg.attachment.name}
+                              </p>
+                              <p className="font-inter text-xs text-text-muted">
+                                {msg.attachment.size}
+                              </p>
+                            </div>
+                            <Download size={18} className="text-text-muted flex-shrink-0" />
+                          </a>
+                        )
+                      ) : (
+                        <ComingSoon label={`Download ${msg.attachment.name}`} position="top" inline={false}>
+                          <div className="mt-3 p-3 bg-surface-white border border-border-subtle rounded-lg flex items-center gap-3 cursor-pointer hover:bg-canvas-bg transition-colors w-full shadow-card text-left">
+                            <div className="w-10 h-10 bg-canvas-bg border border-border-subtle rounded flex items-center justify-center text-text-muted">
+                              <FileText size={20} strokeWidth={2} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-poppins font-semibold text-small text-text-heading truncate">
+                                {msg.attachment.name}
+                              </p>
+                              <p className="font-inter text-xs text-text-muted">
+                                {msg.attachment.size}
+                              </p>
+                            </div>
+                            <Download size={18} className="text-text-muted flex-shrink-0" />
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-poppins font-semibold text-small text-text-heading truncate">
-                              {msg.attachment.name}
-                            </p>
-                            <p className="font-inter text-xs text-text-muted">
-                              {msg.attachment.size}
-                            </p>
-                          </div>
-                          <Download size={18} className="text-text-muted flex-shrink-0" />
-                        </div>
-                      </ComingSoon>
+                        </ComingSoon>
+                      )
                     )}
 
                     <span className={`font-inter text-[10px] leading-[14px] text-text-muted mt-1 ${isMe ? 'text-right' : ''}`}>
@@ -326,9 +370,21 @@ export default function ChatsPage() {
             })}
           </div>
 
-          {/* Chat Input Composition Bar */}
           <div className="p-4 border-t border-border-subtle bg-surface-white flex-shrink-0">
             <form onSubmit={handleSendMessage} className="border border-border-subtle rounded-xl p-3 bg-canvas-bg/30 focus-within:ring-1 focus-within:ring-brand-black transition-all">
+              {pendingAttachment && (
+                <div className="flex items-center gap-2 mb-2 p-2 bg-surface-white border border-border-subtle rounded-lg w-fit max-w-full">
+                  {pendingAttachment.isImage ? (
+                    <img src={pendingAttachment.url} alt="" className="w-8 h-8 rounded object-cover shrink-0" />
+                  ) : (
+                    <FileText size={16} strokeWidth={2} className="text-text-muted shrink-0" />
+                  )}
+                  <span className="font-inter text-caption text-text-body truncate">{pendingAttachment.file.name}</span>
+                  <button type="button" onClick={() => setPendingAttachment(null)} aria-label="Remove attachment" className="text-text-muted hover:text-error transition-colors shrink-0">
+                    <X size={14} strokeWidth={2} />
+                  </button>
+                </div>
+              )}
               <textarea
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
@@ -338,41 +394,59 @@ export default function ChatsPage() {
                     handleSendMessage(e);
                   }
                 }}
-                className="w-full bg-transparent border-none focus:ring-0 font-inter text-body-md text-text-body resize-none h-10 max-h-32 p-0 focus:outline-none placeholder:text-text-muted"
+                className="w-full bg-transparent border-none focus:ring-0 font-inter text-small text-text-body resize-none h-10 max-h-32 p-0 focus:outline-none placeholder:text-text-muted"
                 placeholder="Type a message..."
               />
               <div className="flex items-center justify-between mt-2 pt-2 border-t border-border-subtle/50">
-                <div className="flex items-center gap-1">
-                  <ComingSoon
-                    label="Attach File"
-                    position="top"
-                    inline
+                <div className="flex items-center gap-1 relative">
+                  <input ref={fileInputRef} type="file" onChange={(e) => handleAttachFile(e, false)} className="sr-only" />
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    aria-label="Attach file"
                     className="p-1.5 rounded-lg hover:bg-canvas-bg text-text-muted hover:text-text-heading transition-colors"
                   >
                     <Paperclip size={18} strokeWidth={2} />
-                  </ComingSoon>
-                  <ComingSoon
-                    label="Add Emoji"
-                    position="top"
-                    inline
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowEmojiPicker((v) => !v)}
+                    aria-label="Add emoji"
                     className="p-1.5 rounded-lg hover:bg-canvas-bg text-text-muted hover:text-text-heading transition-colors"
                   >
                     <Smile size={18} strokeWidth={2} />
-                  </ComingSoon>
-                  <ComingSoon
-                    label="Insert Image"
-                    position="top"
-                    inline
+                  </button>
+                  {showEmojiPicker && (
+                    <div className="absolute bottom-full left-0 mb-2 z-20 bg-surface-white border border-border-subtle rounded-lg shadow-overlay p-2 grid grid-cols-6 gap-1 w-56">
+                      {EMOJI.map((emoji) => (
+                        <button
+                          key={emoji}
+                          type="button"
+                          onClick={() => insertEmoji(emoji)}
+                          className="text-lg p-1 rounded hover:bg-canvas-bg transition-colors"
+                        >
+                          {emoji}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <input ref={imageInputRef} type="file" accept="image/*" onChange={(e) => handleAttachFile(e, true)} className="sr-only" />
+                  <button
+                    type="button"
+                    onClick={() => imageInputRef.current?.click()}
+                    aria-label="Insert image"
                     className="p-1.5 rounded-lg hover:bg-canvas-bg text-text-muted hover:text-text-heading transition-colors"
                   >
                     <ImageIcon size={18} strokeWidth={2} />
-                  </ComingSoon>
+                  </button>
                 </div>
                 <button
                   type="submit"
-                  disabled={!inputText.trim()}
+                  disabled={!inputText.trim() && !pendingAttachment}
                   className={`px-4 py-2 rounded-lg flex items-center gap-1.5 font-poppins font-semibold text-xs transition-opacity ${
-                    inputText.trim()
+                    inputText.trim() || pendingAttachment
                       ? 'bg-action-bg text-action-text hover:opacity-90 active:scale-[0.98]'
                       : 'bg-canvas-bg text-text-muted cursor-not-allowed'
                   }`}
@@ -385,17 +459,15 @@ export default function ChatsPage() {
           </div>
         </div>
 
-        {/* 3. Right Panel: Contextual Contact Card */}
         <div className="hidden xl:flex w-80 border-l border-border-subtle bg-surface-white flex-col overflow-y-auto flex-shrink-0 transition-colors duration-150 ease-linear">
-          {/* Org Profile Snapshot */}
           <div className="p-6 flex flex-col items-center text-center border-b border-border-subtle bg-canvas-bg/10">
             <div className="w-20 h-20 rounded-xl bg-canvas-bg border border-border-subtle flex items-center justify-center mb-3 font-poppins font-bold text-text-heading text-2xl select-none">
               {activeDetails.avatar}
             </div>
-            <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+            <h3 className="font-poppins font-bold text-card text-text-heading">
               {activeDetails.name}
             </h3>
-            <p className="font-inter text-body-md text-text-muted mt-0.5">
+            <p className="font-inter text-small text-text-muted mt-0.5">
               {activeDetails.subtitle}
             </p>
             <div className="flex flex-wrap justify-center gap-1.5 mt-3">
@@ -409,7 +481,6 @@ export default function ChatsPage() {
           </div>
 
           <div className="p-6 space-y-6">
-            {/* Key Contacts */}
             <div className="space-y-3">
               <h4 className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-widest">
                 Key Contacts
@@ -444,7 +515,6 @@ export default function ChatsPage() {
               </div>
             </div>
 
-            {/* Upcoming Milestone */}
             <div className="p-4 bg-canvas-bg border border-border-subtle rounded-xl space-y-3">
               <div className="flex justify-between items-start">
                 <h4 className="font-poppins font-bold text-small text-text-heading">
@@ -452,7 +522,7 @@ export default function ChatsPage() {
                 </h4>
                 <Milestone size={18} className="text-text-muted" />
               </div>
-              <p className="font-inter text-body-md text-text-body font-semibold">
+              <p className="font-inter text-small text-text-body font-semibold">
                 Pilot Launch Phase A
               </p>
               <div className="flex items-center justify-between text-xs text-text-muted font-inter">
@@ -466,7 +536,6 @@ export default function ChatsPage() {
               </div>
             </div>
 
-            {/* Quick Actions List */}
             <div className="space-y-2">
               <h4 className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-widest mb-3">
                 Quick Actions

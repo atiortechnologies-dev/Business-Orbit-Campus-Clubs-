@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const OBJECTIVES = [
@@ -72,9 +73,11 @@ export default function TractionStagePage() {
       </div>
 
       <div className="mb-8 bg-surface-white border border-border-subtle rounded-lg p-8 flex flex-col md:flex-row gap-8">
-        <div className="w-full md:w-56 aspect-square shrink-0 rounded-lg placeholder-box border border-border-subtle flex items-center justify-center">
-          <span className="font-inter text-caption text-text-muted text-center px-2">Stage Visual</span>
-        </div>
+        <PlaceholderGraphic
+          icon={TrendingUp}
+          label="Stage Visual"
+          className="w-full md:w-56 aspect-square shrink-0 rounded-lg"
+        />
 
         <div className="flex-1">
           <p className="font-inter text-body text-text-body max-w-2xl mb-6">

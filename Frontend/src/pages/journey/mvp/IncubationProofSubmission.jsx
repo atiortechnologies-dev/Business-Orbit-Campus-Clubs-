@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UploadCloud, File, Trash2, CheckCircle2, ChevronRight, Clock } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -10,6 +10,7 @@ const STEPS = ['Upload proof', 'Admin review', 'Status updated', 'Stage 4 unlock
 
 export default function IncubationProofSubmissionPage() {
   useDocumentTitle('Incubation Proof Submission — BOCC');
+  const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
   const [form, setForm] = useState({
@@ -22,7 +23,6 @@ export default function IncubationProofSubmissionPage() {
     notes: '',
   });
   const [file, setFile] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
 
   const updateField = (key) => (e) => setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
@@ -30,10 +30,13 @@ export default function IncubationProofSubmissionPage() {
     if (fileList[0]) setFile({ name: fileList[0].name, size: fileList[0].size });
   };
 
+  const canSubmit = form.incubatorName.trim().length > 0 && !!file;
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!canSubmit) return;
     // TODO(backend): POST incubation-proof details + document to the verification endpoint.
-    setSubmitted(true);
+    navigate('/build-startup/journey/mvp/incubation-verification');
   };
 
   return (
@@ -51,13 +54,6 @@ export default function IncubationProofSubmissionPage() {
         Upload your incubation acceptance proof to verify your startup's incubation status.
         Once verified, you'll unlock the next stage of your startup journey.
       </p>
-
-      {submitted && (
-        <div className="mb-6 flex items-center gap-2 rounded-lg border bg-success/10 border-success/30 text-success px-4 py-3 font-inter text-small">
-          <CheckCircle2 size={16} strokeWidth={2} />
-          Submitted for verification — the admin team will review within 2–3 business days.
-        </div>
-      )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
@@ -164,7 +160,8 @@ export default function IncubationProofSubmissionPage() {
         <div className="lg:col-span-12 flex items-center gap-3 pt-6 border-t border-divider-line">
           <button
             type="submit"
-            className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+            disabled={!canSubmit}
+            className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Submit for Verification
           </button>

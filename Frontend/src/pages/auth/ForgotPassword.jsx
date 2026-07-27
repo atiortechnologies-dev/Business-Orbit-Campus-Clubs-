@@ -1,21 +1,11 @@
-/**
- * @page ForgotPasswordPage  /forgot-password
- * Owns email value, validation, and the submitted/confirmation
- * state swap. Valid submit swaps the form inside the Card for a confirmation
- * view (client state only — no backend exists yet, so no email is actually
- * sent).
- *
- * The Card outer shell, Back to Login link, and brand caption remain visible
- * during both states. Only the Card content swaps.
- */
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, Lock, Mail, ArrowRight, CheckCircle } from 'lucide-react';
+import { ChevronLeft, Mail, ArrowRight, CheckCircle } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -26,6 +16,7 @@ function validateEmail(value) {
 }
 
 export default function ForgotPasswordPage() {
+  useDocumentTitle('Forgot Password — BOCC');
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [touched, setTouched] = useState(false);
@@ -53,20 +44,17 @@ export default function ForgotPasswordPage() {
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-10 bg-canvas-bg">
       <div className="w-full max-w-sm flex flex-col gap-4">
 
-        {/* Back to Login — above card, always visible */}
         <Link
           to="/login"
-          className="inline-flex items-center gap-1 text-[14px] leading-[20px] font-normal text-text-body hover:text-text-heading transition-all duration-150 ease-linear self-start font-inter"
+          className="inline-flex items-center gap-1 text-small font-normal text-text-body hover:text-text-heading transition-all duration-150 ease-linear self-start font-inter"
           aria-label="Return to login"
         >
           <ChevronLeft size={14} strokeWidth={2} aria-hidden="true" />
           Back to Login
         </Link>
 
-        {/* ── Card ───────────────────────────────────────── */}
         <Card className="p-8 flex flex-col gap-6">
           {submitted ? (
-            /* ── Confirmation view (swaps in after valid submit) ── */
             <div className="flex flex-col items-center gap-5 text-center animate-slide-in">
               <div className="w-14 h-14 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center">
                 <CheckCircle
@@ -77,8 +65,8 @@ export default function ForgotPasswordPage() {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <h2 className="text-[22px] leading-[28px] font-medium text-text-heading font-poppins">Check your inbox</h2>
-                <p className="text-[16px] leading-[24px] font-normal text-text-body font-inter leading-relaxed">
+                <h2 className="text-card font-medium text-text-heading font-poppins">Check your inbox</h2>
+                <p className="text-body font-normal text-text-body font-inter leading-relaxed">
                   If{' '}
                   <span className="text-text-heading font-medium">{email}</span>{' '}
                   is registered, you&apos;ll receive a reset link shortly.
@@ -86,36 +74,70 @@ export default function ForgotPasswordPage() {
               </div>
               <Link
                 to="/login"
-                className="text-[14px] leading-[20px] font-normal text-text-body hover:underline transition-all duration-150 ease-linear font-inter"
+                className="text-small font-normal text-text-body hover:underline transition-all duration-150 ease-linear font-inter"
               >
                 Back to Login
               </Link>
             </div>
           ) : (
-            /* ── Form view ─────────────────────────────────── */
             <>
-              {/* Illustration placeholder */}
-              <div
-                className="w-full aspect-[5/2] border border-dashed border-border-subtle bg-transparent flex flex-col items-center justify-center gap-2 text-text-muted rounded-lg"
+              {/* Custom illustration — "recovery request" motif: an email
+                  being sent out, with the key to your account riding along
+                  with it. Distinct from Login's orbit (that's a brand mark;
+                  this is about what's actually happening on THIS screen —
+                  requesting access back via email) and from ResetPassword's
+                  shield motif (that's the "secured" end state, this is the
+                  "request in flight" moment). Composition is centered on
+                  x=250 (envelope+key together span ~122-378) — an earlier
+                  version had the whole group drifted right of center with
+                  no counterweight on the left. The envelope keeps its fixed
+                  brand-black fill (like the Sidebar) for the flap lines to
+                  read as literal white against, but that fill is close in
+                  luminance to the dark-mode card surface, so on its own the
+                  envelope nearly vanished in dark mode — unlike Login's
+                  orbit or ResetPassword's shield, which both have a neon
+                  element sitting directly on the dark shape to anchor the
+                  eye. Added the same fix here: a neon seal at the flap's
+                  center point, plus a border-subtle outline so the
+                  envelope's edge reads regardless of fill-to-background
+                  contrast. */}
+              <svg
+                viewBox="0 0 500 200"
+                className="w-full aspect-[5/2] rounded-lg"
                 role="img"
-                aria-label="Illustration placeholder"
+                aria-label="Illustration of an email being sent with an account recovery key"
               >
-                <Lock size={32} strokeWidth={2} className="text-text-muted" aria-hidden="true" />
-                <span className="text-[11px] uppercase tracking-widest select-none font-inter font-medium">
-                  Placeholder
-                </span>
-              </div>
+                <circle cx="40" cy="55" r="3" fill="var(--color-border-subtle)" />
+                <circle cx="65" cy="70" r="4" fill="var(--color-border-subtle)" />
+                <circle cx="90" cy="85" r="5" fill="var(--color-border-subtle)" />
 
-              {/* Heading + description */}
+                <rect x="122" y="55" width="150" height="100" rx="10" fill="var(--color-brand-black)" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+                <line x1="122" y1="65" x2="197" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="272" y1="65" x2="197" y2="115" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                <circle cx="197" cy="115" r="6" fill="var(--color-accent-neon)" />
+
+                {/* Key — the reset link/access riding along with the email.
+                    Ring + horizontal shaft + perpendicular teeth, not a
+                    ring-plus-diagonal-line (that reads as a magnifying
+                    glass, not a key — first draft of this shape made
+                    exactly that mistake). */}
+                <circle cx="312" cy="115" r="15" fill="none" stroke="var(--color-accent-neon)" strokeWidth="5" />
+                <rect x="326" y="111" width="52" height="8" fill="var(--color-accent-neon)" />
+                <rect x="357" y="119" width="7" height="13" fill="var(--color-accent-neon)" />
+                <rect x="370" y="119" width="7" height="9" fill="var(--color-accent-neon)" />
+
+                <circle cx="50" cy="160" r="3" fill="var(--color-border-subtle)" />
+                <circle cx="460" cy="50" r="3" fill="var(--color-border-subtle)" />
+              </svg>
+
               <div className="flex flex-col gap-2 text-center">
-                <h1 className="text-[22px] leading-[28px] font-medium text-text-heading font-poppins">Forgot Password?</h1>
-                <p className="text-[16px] leading-[24px] font-normal text-text-body font-inter leading-relaxed">
+                <h1 className="text-card font-medium text-text-heading font-poppins">Forgot Password?</h1>
+                <p className="text-body font-normal text-text-body font-inter leading-relaxed">
                   No worries! Enter the email address associated with your BOCC account
                   and we&apos;ll send you a link to reset your password.
                 </p>
               </div>
 
-              {/* Form */}
               <form
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-4"
@@ -140,8 +162,7 @@ export default function ForgotPasswordPage() {
                 </Button>
               </form>
 
-              {/* Login reminder */}
-              <p className="text-[14px] leading-[20px] font-normal text-center text-text-muted font-inter">
+              <p className="text-small font-normal text-center text-text-muted font-inter">
                 Remember your password?{' '}
                 <Link
                   to="/login"
@@ -151,11 +172,9 @@ export default function ForgotPasswordPage() {
                 </Link>
               </p>
 
-              {/* Divider */}
               <div className="h-px bg-divider-line" role="separator" />
 
-              {/* Secondary links */}
-              <div className="flex items-center justify-center gap-3 text-[14px] leading-[20px] font-normal font-inter text-text-muted">
+              <div className="flex items-center justify-center gap-3 text-small font-normal font-inter text-text-muted">
                 <Link
                   to="/role-selection"
                   className="text-text-body hover:underline transition-all duration-150 ease-linear"
@@ -173,8 +192,7 @@ export default function ForgotPasswordPage() {
           )}
         </Card>
 
-        {/* Below-card brand tagline */}
-        <p className="text-center text-[12px] leading-[16px] font-medium uppercase tracking-[0.2em] text-text-muted font-inter mt-4">
+        <p className="text-center text-caption font-medium uppercase tracking-[0.2em] text-text-muted font-inter mt-4">
           Business Orbit Campus Clubs
         </p>
 

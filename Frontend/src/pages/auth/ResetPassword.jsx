@@ -1,30 +1,12 @@
-/**
- * @page ResetPasswordPage  /reset-password
- * Owns new/confirm password values, two independent eye
- * toggles, live strength computation, and confirm-match validation.
- *
- * Strength formula (1 point each):
- *   1. length >= 8
- *   2. contains uppercase letter
- *   3. contains lowercase letter OR digit
- *   4. contains symbol (non-alphanumeric)
- * → 0–4 integer passed to PasswordStrengthMeter as prop.
- *
- * Confirm password: validated on blur of the confirm field and on submit.
- * Both eye toggles are completely independent state variables.
- * No backend exists yet — a valid submit redirects straight to /login (see
- * the TODO in handleSubmit for what a real integration needs to do instead).
- */
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Key, Lock, Shield, Eye, EyeOff } from 'lucide-react';
+import { Lock, Shield, Eye, EyeOff } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import PasswordStrengthMeter from '@/components/auth/PasswordStrengthMeter';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
-/* ── Strength computation ───────────────────────────────── */
 function computeStrength(password) {
   if (!password) return 0;
   let score = 0;
@@ -35,7 +17,6 @@ function computeStrength(password) {
   return score;
 }
 
-/* ── Eye toggle button ──────────────────────────────────── */
 function EyeToggle({ show, onToggle }) {
   return (
     <button
@@ -53,8 +34,8 @@ function EyeToggle({ show, onToggle }) {
   );
 }
 
-/* ── Component ──────────────────────────────────────────── */
 export default function ResetPasswordPage() {
+  useDocumentTitle('Reset Password — BOCC');
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -103,35 +84,51 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-sm">
         <Card className="p-8 flex flex-col gap-6">
 
-          {/* Illustration placeholder */}
-          <div
-            className="w-full aspect-[5/2] border border-dashed border-border-subtle bg-transparent flex flex-col items-center justify-center gap-2 text-text-muted rounded-lg"
+          {/* Custom illustration — "secured" motif: a shield with a keyhole,
+              accent-neon lit up. Distinct from ForgotPassword's envelope
+              (that's the "request in flight" moment; this is the "new
+              password locks it back down" moment right before this form's
+              own submit). The keyhole is drawn with fixed accent-neon, not
+              a theme-reactive token, so it reads as one continuous element
+              with the fixed brand-black shield regardless of theme — the
+              two rings around it are theme-reactive since they sit on the
+              Card's own reactive background, not on the shield's fill. */}
+          <svg
+            viewBox="0 0 500 200"
+            className="w-full aspect-[5/2] rounded-lg"
             role="img"
-            aria-label="Illustration placeholder"
+            aria-label="Illustration of a shield with a keyhole, representing a secured account"
           >
-            <Key size={32} strokeWidth={2} className="text-text-muted" aria-hidden="true" />
-            <span className="text-[11px] uppercase tracking-widest select-none font-inter font-medium">
-              Placeholder
-            </span>
-          </div>
+            <circle cx="250" cy="105" r="85" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+            <circle cx="250" cy="105" r="65" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
 
-          {/* Heading + description */}
+            <path
+              d="M250 45 L300 63 L300 105 Q300 143 250 165 Q200 143 200 105 L200 63 Z"
+              fill="var(--color-brand-black)"
+            />
+
+            <circle cx="250" cy="93" r="13" fill="var(--color-accent-neon)" />
+            <polygon points="242,102 258,102 251,130 249,130" fill="var(--color-accent-neon)" />
+
+            <circle cx="110" cy="60" r="3" fill="var(--color-border-subtle)" />
+            <circle cx="395" cy="150" r="3" fill="var(--color-border-subtle)" />
+            <circle cx="120" cy="155" r="4" fill="var(--color-border-subtle)" />
+          </svg>
+
           <div className="flex flex-col gap-2 text-center">
-            <h1 className="text-[22px] leading-[28px] font-medium text-text-heading font-poppins">Reset Password</h1>
-            <p className="text-[16px] leading-[24px] font-normal text-text-body font-inter leading-relaxed">
+            <h1 className="text-card font-medium text-text-heading font-poppins">Reset Password</h1>
+            <p className="text-body font-normal text-text-body font-inter leading-relaxed">
               Secure your account by choosing a strong, unique password that you
               haven&apos;t used before.
             </p>
           </div>
 
-          {/* Form */}
           <form
             onSubmit={handleSubmit}
             className="flex flex-col gap-4"
             noValidate
             aria-label="Reset password form"
           >
-            {/* New Password + live strength meter + hint */}
             <div className="flex flex-col gap-2">
               <Input
                 id="new-password"
@@ -152,12 +149,11 @@ export default function ResetPasswordPage() {
               {/* Meter — receives computed strength as prop; animates via
                   transition-colors on each segment (PasswordStrengthMeter.jsx) */}
               <PasswordStrengthMeter strength={strength} />
-              <p className="text-[14px] leading-[20px] font-normal text-text-muted font-inter">
+              <p className="text-small font-normal text-text-muted font-inter">
                 Use uppercase letters, numbers, and symbols for maximum security.
               </p>
             </div>
 
-            {/* Confirm Password — independent eye toggle */}
             <Input
               id="confirm-password"
               label="Confirm Password"
@@ -182,17 +178,15 @@ export default function ResetPasswordPage() {
               }
             />
 
-            {/* Save */}
             <Button variant="ghost" fullWidth type="submit">
               Save New Password
             </Button>
           </form>
 
-          {/* Return to Login */}
           <p className="text-sm text-center">
             <Link
               to="/login"
-              className="text-[14px] leading-[20px] font-normal text-text-body hover:text-text-heading underline underline-offset-2 transition-all duration-150 ease-linear font-inter"
+              className="text-small font-normal text-text-body hover:text-text-heading underline underline-offset-2 transition-all duration-150 ease-linear font-inter"
             >
               Return to Login
             </Link>

@@ -39,8 +39,11 @@ export default function ScheduleMeetingPage() {
   );
   const [scheduled, setScheduled] = useState(false);
 
+  const canSchedule = agenda.trim().length > 0;
+
   function handleSubmit(e) {
     e.preventDefault();
+    if (!canSchedule) return;
     // TODO(backend): POST this meeting to the real scheduling API instead
     // of just flipping local state.
     setScheduled(true);
@@ -133,7 +136,7 @@ export default function ScheduleMeetingPage() {
 
             <div className="flex justify-end gap-3 pt-2">
               <Button type="button" variant="outline" onClick={() => navigate('/admin/reviews')}>Cancel</Button>
-              <Button type="submit" variant="primary">Schedule Meeting &amp; Send Invitation</Button>
+              <Button type="submit" variant="primary" disabled={!canSchedule}>Schedule Meeting &amp; Send Invitation</Button>
             </div>
           </form>
 

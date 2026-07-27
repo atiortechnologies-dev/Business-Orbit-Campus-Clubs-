@@ -1,9 +1,10 @@
 # Contributing to BOCC-Shared-App
 
 This is the shared frontend for **every** BOCC role (Student, Incubator,
-Auth) — one Vite + React app, not one project per role. Read this before
-adding a new screen, especially if someone else might be building a
-different screen of the *same* portal at the same time as you.
+Admin, Investor, Mentor, Company, plus Auth/Onboarding and public
+Landing) — one Vite + React app, not one project per role. Read this
+before adding a new screen, especially if someone else might be building
+a different screen of the *same* portal at the same time as you.
 
 ## 1. Where things live
 
@@ -20,7 +21,8 @@ src/
 
   layouts/
     AuthLayout.jsx           Wraps /login, /forgot-password,
-                              /reset-password, /role-selection, /signup/*
+                              /reset-password, /role-selection, /signup/*,
+                              and every /onboarding/* route
 
   pages/                     One file per screen. This is almost always
                               where YOUR new work goes.
@@ -34,7 +36,12 @@ src/
     Notifications.jsx
     BuildStartupJourney.jsx   5-stage overview; Ideation/Validation/MVP
                                circles link into journey/ below once that
-                               stage's review-result unlocks it
+                               stage's review-result unlocks it. All 5
+                               stages now have real screens under journey/
+                               below, but this file's own STAGES array still
+                               hardcodes every stage but Ideation as locked
+                               regardless of build status — unchanged here,
+                               see INTEGRATION.md's Traction/Launch entries
     Settings.jsx               Student account settings
     journey/                  Sub-flows for BuildStartupJourney's stages,
                                one folder per stage, only Student-facing
@@ -50,7 +57,19 @@ src/
                                ReviewResult
       mvp/                     MvpOverview → ChooseProductType →
                                MvpSubmission → SubmissionSuccess →
-                               IncubationProofSubmission
+                               IncubationProofSubmission →
+                               IncubationVerificationReview →
+                               IncubationVerificationApproved
+      traction/                TractionStage → UserAcquisitionTracker →
+                               CustomerFeedbackUpload →
+                               TractionProductSubmission → TractionReview →
+                               TractionReviewMeeting → TractionApproved
+      launch/                  LaunchStage → LaunchSubmission →
+                               FinalPitchDeckUpload → LaunchProofUpload →
+                               LaunchVerificationReview
+      JourneyComplete.jsx      Graduation screen after all 5 stages, sits
+                               directly in journey/ (not its own subfolder,
+                               nothing else in the flow follows it)
     incubator/                Incubator.jsx, Applications.jsx,
                                ApplicationReview.jsx, Messages.jsx, Settings.jsx
     admin/                    Admin.jsx (dashboard), VerificationQueue.jsx →
@@ -60,24 +79,70 @@ src/
                                second pipeline, with ScheduleMeeting.jsx
                                branching off ReviewDetail), AuditLog.jsx
     legal/PrivacyPolicy.jsx
+    landing/                  Public marketing pages, no auth required —
+                               Home.jsx, Student.jsx, Mentor.jsx,
+                               Investor.jsx, Companies.jsx, Incubator.jsx —
+                               see INTEGRATION.md's "Public Landing Pages"
+                               section for what's real vs. stub on each
+    onboarding/               Post-signup flow, wrapped in AuthLayout:
+                               Welcome.jsx → VerifyEmail.jsx →
+                               VerificationProgress.jsx (or
+                               ApplicationRejected.jsx), then
+                               complete-profile/{Student,Mentor,Investor,
+                               Incubator,Company}.jsx — 5 thin pages behind
+                               components/onboarding/CompleteProfileShell.jsx
+    investor/                 Investor.jsx (dashboard), IncomingPitchDecks.jsx,
+                               PitchDeck.jsx
+    mentor/                   Mentor.jsx (dashboard), Requests.jsx, Chats.jsx,
+                               Meetings.jsx, Profile.jsx
+    company/                  Dashboard.jsx, MyOpportunities.jsx — originally
+                               added by a different contributor directly to
+                               main; fully remediated onto this file's
+                               conventions, see components/company/ below
 
   components/
     ui/          Generic, reusable anywhere: Button, Card, Input, Logo,
                  ComingSoon, ThemeToggle, ThemeProvider, Badge, StatCard,
                  DataTable, Modal
     layout/      PublicNav (shared top nav for all public/auth pages),
-                 Sidebar (shared side panel for Student + Incubator + Admin)
+                 Sidebar (shared side panel — used by every authenticated
+                 portal's shell: Student, Incubator, Admin, Investor,
+                 Mentor, Company)
     auth/        RoleCard, PasswordStrengthMeter, RoleSignupForm (shared
                  shell behind all 5 /signup/<role> pages — see §3)
+    onboarding/  CompleteProfileShell (shared shell behind all 5
+                 complete-profile/<role> pages, same pattern as
+                 RoleSignupForm above) + shared field components: TagInput,
+                 CheckboxPills, RadioPills, SelectField, TextAreaField
     dashboard/   DashboardShell — the Student portal's page wrapper
     incubator/   IncubatorShell — the Incubator portal's page wrapper
     admin/       AdminShell — the Admin portal's page wrapper
+    investor/    InvestorShell — the Investor portal's page wrapper
+    mentor/      MentorShell — the Mentor portal's page wrapper
+    company/     CompanyShell (the fifth instance of the same shell
+                 pattern) — the Company portal's page wrapper, plus its
+                 page-content components (ApplicantTable, RightPanel,
+                 StatsRow, OpportunitiesTable)
+    landing/     Public marketing-page sections — landing/{Navbar,Footer,
+                 FAQ,...}.jsx shared across pages, plus one subfolder per
+                 role (landing/student/, landing/mentor/, etc.) for
+                 page-specific sections. Kept fully separate from
+                 components/{dashboard,incubator,admin}/ even where a name
+                 collides — landing/incubator/ (marketing sections) and
+                 incubator/ (IncubatorShell, the real authenticated shell)
+                 are deliberately different folders; the original commit
+                 mixed them into one and it's not repeating that mistake.
 
   hooks/
     useDocumentTitle.js      Call this at the top of a page to set the tab title
     useSidebarCollapsed.js   Backs the desktop sidebar's collapse/expand
                               toggle; localStorage-persisted, shared by all
-                              three shells so the state survives navigation
+                              portal shells so the state survives navigation
+
+  utils/
+    csv.js                   downloadCsv(filename, columns, rows) — turns
+                              local table state into a real .csv download,
+                              shared by every "Export CSV" action
 
 public/
   logos/       Brand logo PNGs — don't add new logo assets without checking
@@ -90,8 +155,9 @@ public/
 1. **Create the file** under `src/pages/`, matching the existing
    organization: student-portal pages sit flat in `pages/`, Incubator pages
    go in `pages/incubator/`, auth pages in `pages/auth/`, public pages in
-   their own subfolder (see `pages/legal/`). PascalCase filename matching
-   the page's purpose (`Settings.jsx`, not `settings-page.jsx`).
+   their own subfolder (see `pages/legal/`, `pages/landing/`). PascalCase
+   filename matching the page's purpose (`Settings.jsx`, not
+   `settings-page.jsx`).
 2. **Wrap it in the right shell** — don't build your own header/sidebar:
    - Student portal page → wrap your content in `<DashboardShell>` (see
      `pages/Dashboard.jsx` for the pattern).
@@ -125,11 +191,12 @@ Before writing a new component, check `components/ui/` and
 | Light/dark toggle | `components/ui/ThemeToggle.jsx` |
 | Reading/toggling theme | `useTheme()` from `components/ui/ThemeProvider.jsx` |
 | Top nav on a public/auth page | `components/layout/PublicNav.jsx` — already wired into `AuthLayout`, only import it directly if you're building a new *public* page outside that layout |
-| Dashboard side panel | `components/layout/Sidebar.jsx` — already wired into all three shells, you should never need to import this directly |
+| Dashboard side panel | `components/layout/Sidebar.jsx` — already wired into all six portal shells (Dashboard/Incubator/Admin/Investor/Mentor/Company), you should never need to import this directly |
 | A status/category pill | `components/ui/Badge.jsx` — `variant="success\|warning\|error\|info\|neutral\|brand"`, Title Case content (not uppercase — the component doesn't force a case, older screens' own inline badges predate this and are uppercase, don't "fix" them to match unless you're already touching that file) |
 | A metric tile (label + big number + trend) | `components/ui/StatCard.jsx` |
 | A dense list/queue with columns | `components/ui/DataTable.jsx` — desktop grid, auto-collapses to stacked cards below `md`. Read the component's own doc comment before adding a 6+ column table; see the gotcha in §6 about column count vs. container width |
 | A confirmation/decision dialog | `components/ui/Modal.jsx` — Escape-to-close, backdrop-click-to-close, already wired for `role="dialog"` |
+| A "media coming soon" image slot (hero shots, partner photos, testimonial headshots — anything standing in for real photography, not an app state) | `components/ui/PlaceholderGraphic.jsx` — dashed border + a contextual lucide icon + short caption, accepts `children` for any overlay badge layered on top. Don't reach for a bare dashed `<div>` or invent a second placeholder style; this is also what replaced the old `.placeholder-box` CSS class, which no longer exists |
 | A role-specific signup form | `components/auth/RoleSignupForm.jsx` — owns password/confirm/strength/terms/submit for all 5 `/signup/<role>` pages; a new page just passes `fields` (its own field list) + copy, see `pages/auth/StudentSignup.jsx` for the ~25-line pattern. Don't build a 6th copy of the password/terms handling by hand |
 
 The design guide (ask whoever's tracking `Frontend/Working/` for the
@@ -285,6 +352,25 @@ lines, don't take "theirs" or "mine."
   before clicking, or verify by dispatching the click via
   `javascript_tool` (`document.querySelector(...).click()`) — if that
   makes it work, the component was fine all along.
+- **The `computer` tool's `key` action for Enter/Return does not reliably
+  populate `KeyboardEvent.key`.** Verified directly: attaching a capturing
+  `keydown` listener and pressing "Return" via `computer` produced
+  `e.key === ''` (empty string), not `'Enter'` — so any `onKeyDown`
+  handler written the normal way (`if (e.key !== 'Enter') return;`, the
+  same pattern used by `TagInput.jsx`'s add-tag-on-Enter and
+  `Chats.jsx`'s send-on-Enter) will silently no-op when driven by this
+  tool, even though a real keyboard's Enter key works fine. Also: a prior
+  `form_input` call that sets a controlled input's value does not
+  reliably fire React's `onChange`, so `draft`/similar state can stay
+  stale even though the DOM's `.value` looks correct in a screenshot. To
+  verify an Enter-to-submit interaction actually works, don't trust a
+  `computer key: "Return"` press alone — either use `computer type` to
+  enter real per-character keystrokes (those fire real `input` events)
+  followed by the key press and confirm the *result*, or dispatch a
+  spec-correct event directly for verification purposes: `el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))`
+  after setting `.value` via the native setter. If that makes it work,
+  the component was fine all along — this is a tool-dispatch gap, not an
+  app bug.
 - **`lucide-react` does not export brand/logo icons like `Github`** — only
   generic UI icons (this version's git-related set is `GitFork`,
   `GitBranch`, `GitCommit`, etc., no literal GitHub mark). Importing a
@@ -294,6 +380,54 @@ lines, don't take "theirs" or "mine."
   completely blank with an empty `#root` and no console error, check the
   actual terminal running `npm run dev` for an "Unhandled error" line
   before assuming it's a logic bug.
+- **Not every `ComingSoon` deserves to stay one — check whether it's
+  actually self-contained before reaching for the stub.** The rule applied
+  across the whole app in the pass that added this note: a `ComingSoon`
+  stays if it needs a backend, a real uploaded file, or a screen that
+  doesn't exist yet; it gets built if it's a client-side interaction
+  operating on data already on the page (a filter, a local add/remove, a
+  modal showing text, a client-generated file). Three small utilities
+  exist specifically so you don't have to stub these:
+  - **CSV export** — `downloadCsv(filename, columns, rows)` in
+    `src/utils/csv.js`. Serializes whatever's in local state to a real
+    `.csv` via `Blob` + `URL.createObjectURL`. No backend needed for
+    "export what's on screen right now."
+  - **Calendar events** — build a minimal `.ics` string by hand and
+    download it the same `Blob`/`URL.createObjectURL` way (see
+    `downloadIcs` in `pages/Notifications.jsx` or
+    `downloadReviewMeetingIcs` in `journey/mvp/SubmissionSuccess.jsx`).
+    Don't reach for a calendar-API integration for a single "add this one
+    event" button.
+  - **File attachments the user just picked** — if a user selects a file
+    in *this* session (a chat attachment, a photo, a logo), you already
+    have its real bytes. `URL.createObjectURL(file)` gives a real,
+    downloadable/viewable blob URL — render it as an actual `<a
+    download>`/`<img>`, don't wrap it in `ComingSoon`. That's different
+    from a *pre-seeded mock* attachment (a filename/size with no
+    underlying `File` object) — those stay `ComingSoon` since the bytes
+    genuinely never existed. See `pages/incubator/Messages.jsx`'s
+    attachment rendering for both cases side by side.
+  - Also watch for **dishonest counts riding along with a stub**
+    ("Showing 1-4 of 142", "12,482 logs") — when you unstub the real rows,
+    fix the count to match what's actually loaded rather than leaving an
+    old placeholder total next to real data.
+- **Custom SVG illustrations inside a fixed-black container need literal
+  `white`, not the `surface-white` token.** Same root cause as the
+  Sidebar's own fixed-vs-reactive rule above, but it bit an inline SVG
+  this time: `journey/mvp/MvpOverview.jsx`'s "assembling blocks"
+  illustration sits inside its own `fill="var(--color-brand-black)"` rect
+  (a fixed-black surface, like the sidebar), but the blocks inside it were
+  first written with `var(--color-surface-white)` — which flips to a dark
+  color in dark mode and went nearly invisible against a background that
+  never inverts. Caught by an actual dark-mode screenshot, not by reading
+  the code. Fixed by using the literal string `"white"` (optionally with
+  `fillOpacity`/`strokeOpacity`) for anything drawn on that fixed surface.
+  Contrast with `Dashboard.jsx`'s "idea spark" SVG, which correctly uses
+  `var(--color-border-subtle)` for its rings — that illustration has no
+  background fill of its own, it sits directly on the page's own
+  theme-reactive canvas, so the reactive token is the right call there.
+  Rule of thumb: the token choice depends on what's *behind* the shape,
+  not on what the shape depicts.
 
 ## 7. Before calling a screen "done"
 
@@ -305,3 +439,105 @@ lines, don't take "theirs" or "mine."
   uses it, not just your own page — they're shared.
 - Run `npm run build` — it must complete with 0 errors before you consider
   the work finished, even though there's no CI enforcing this yet.
+
+## 8. Deferred: a motion/animation pattern worth a team decision
+
+The public landing pages (`pages/landing/*`) were originally built by Shivom
+with `framer-motion` — a staggered entrance animation on page load, plus
+scroll-triggered fades further down each page. Every other screen in this
+app does motion with plain CSS transitions (`transition-all duration-200`,
+the `animate-fade-in`/`animate-slide-in` utilities in `index.css`), so
+adding an animation *library* is a real, app-wide decision — not something
+to slip in through one feature. The landing pages were rebuilt on the CSS-
+transition convention to stay consistent with the rest of the app, and
+`framer-motion` was removed from `package.json` accordingly.
+
+The original pattern is preserved here rather than left buried in git
+history, in case the team wants to evaluate adopting it more broadly later:
+
+```jsx
+// Page-load stagger — wrap a section, then each direct child gets its own
+// entrance timing automatically via variants propagation.
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
+};
+const itemVariants = {
+  hidden: { y: 28, opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { type: 'spring', damping: 22, stiffness: 120 } },
+};
+
+<motion.div variants={containerVariants} initial="hidden" animate="visible">
+  <motion.h1 variants={itemVariants}>...</motion.h1>
+  <motion.p variants={itemVariants}>...</motion.p>
+</motion.div>
+
+// Scroll-triggered fade-in further down a long page — fires once, when the
+// element enters the viewport, instead of on initial mount.
+<motion.div
+  initial={{ opacity: 0 }}
+  whileInView={{ opacity: 1 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.5 }}
+>
+  ...
+</motion.div>
+```
+
+The full original implementation (before the rebuild) is preserved in git
+history on `main` at commit `1c74d81` — every file under
+`src/components/{student,mentor,investor,companies,landing}/` and the old
+`src/components/incubator/{Hero,FAQ,Footer,...}.jsx` at that commit shows
+the pattern applied across a whole page, not just the snippet above.
+`git show 1c74d81:Frontend/src/components/student/Hero.jsx` is a good
+starting point.
+
+**Not currently applied anywhere in the shipping app.** If the team decides
+to adopt it: add `framer-motion` back to `package.json`, and apply it
+consistently everywhere rather than only on the pages that happen to have
+had it first — the whole point of this note is to avoid exactly that kind
+of one-off inconsistency.
+
+## 9. Integrating a second intern's repo (Investor/Mentor portals + onboarding)
+
+The Investor portal, Mentor portal, and onboarding/verification flow (see
+`INTEGRATION.md`'s corresponding sections) were ported from a second
+intern's (Madhu's) separate repo — a different, older codebase (React 18,
+Tailwind v3 with a real `tailwind.config.js`, `react-router-dom` v6) rather
+than a branch of this one. Notes specific to that kind of integration,
+distinct from the Shivom landing-page pass documented above:
+
+- **A case-only import mismatch (`./MentorChats` vs. actual folder
+  `Mentorchats`) built and ran fine in the source repo on macOS but would
+  hard-fail on any case-sensitive filesystem (Linux CI, Vercel).** macOS's
+  default filesystem is case-insensitive, so `import from
+  './pages/MentorChats/MentorChats'` resolved against a real folder named
+  `Mentorchats` without complaint locally. If you're ever pulling in
+  another contributor's repo and it's macOS-only tested, don't trust a
+  clean local build as proof the imports are actually correct — grep for
+  import paths against real `ls` output of the target folders, or build
+  once on a case-sensitive filesystem/CI runner before trusting it.
+- **A source repo with role-specific near-duplicate pages (5 files sharing
+  ~80% identical chrome, differing only in field content) is a signal to
+  build one shared shell + thin per-role pages, not port 5 near-duplicate
+  files.** This codebase already had exactly this pattern solved once
+  (`RoleSignupForm.jsx` + 5 thin `*Signup.jsx` pages) — the CompleteProfile
+  step reused that same shape rather than reinventing it. Before porting a
+  batch of similar-looking source files 1:1, check whether an existing
+  shared-component pattern in *this* repo already covers the shape.
+- **Cross-checked persona names across a source repo's own files before
+  trusting any single one.** Madhu's source had 3 different names for the
+  Mentor's own identity across her 5 Mentor files (an internal
+  inconsistency in her repo, not intentional), one of which ("Alex
+  Rivera") collided with this app's real Admin persona. Consolidated to
+  one name (Priya Anand) used consistently across all 5 rebuilt Mentor
+  screens, and renamed the one incidental third-party data collision
+  found in seed data too. When porting authenticated-portal content from
+  an external source, grep the *whole* source folder for the persona name
+  before picking one, not just the first file you read — and check it
+  against this app's own existing personas (Alex Chen/Student, Sarah
+  Jenkins/Incubator, Alex Rivera/Admin) for collisions.
+- Same "genericize real institution names" rule as `CONTRIBUTING.md` §8's
+  LogoStrip note applied again here: the onboarding Welcome screen's
+  chapter card named a real institution ("UIET Chandigarh Chapter, Panjab
+  University") — genericized to a fictional "Riverside Tech Chapter."

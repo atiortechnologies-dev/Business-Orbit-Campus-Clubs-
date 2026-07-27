@@ -43,12 +43,10 @@ const ACHIEVEMENTS = [
 ];
 
 export default function JourneyPage() {
-  useDocumentTitle('Startup Journey — BOCC Campus Clubs');
+  useDocumentTitle('Startup Journey — BOCC');
 
   return (
     <DashboardShell pageId="journey">
-
-      {/* ── Breadcrumb + page title ───────────────────────────────── */}
       <nav className="mb-2 flex items-center gap-2 text-text-muted font-inter font-normal text-small">
         <Link to="/dashboard" className="hover:text-text-heading transition-colors">Dashboard</Link>
         <ChevronRight size={14} strokeWidth={2} className="text-text-muted" />
@@ -60,7 +58,6 @@ export default function JourneyPage() {
         Startup Journey
       </h1>
 
-      {/* ── Welcome Hero ───────────────────────────────────────────── */}
       <section
         className="grid grid-cols-1 md:grid-cols-12 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card mb-12 items-center"
         style={{ gap: 'var(--spacing-gutter)' }}
@@ -80,17 +77,40 @@ export default function JourneyPage() {
             Start Your Journey
           </Link>
         </div>
-        {/* Placeholder box */}
-        <div className="md:col-span-5 h-64 md:h-80 placeholder-box rounded-lg" />
+        {/* Abstract "5-stage ascending path" motif, matching STAGES below — same geometric line-art language as Login's orbit, Dashboard's idea spark, and MVP Overview's assembling blocks */}
+        <svg
+          viewBox="0 0 400 320"
+          className="md:col-span-5 w-full h-64 md:h-80 rounded-lg"
+          role="img"
+          aria-label="Illustration of a path rising through five stages toward a flag"
+        >
+          <path
+            d="M 30 280 C 90 280, 90 220, 130 210 S 190 190, 200 150 S 250 110, 260 90 S 320 60, 340 40"
+            fill="none"
+            stroke="var(--color-border-subtle)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeDasharray="1 14"
+          />
+
+          {/* Waypoints 1-4 (Ideation → Traction) */}
+          <circle cx="30" cy="280" r="9" fill="var(--color-brand-black)" />
+          <circle cx="130" cy="210" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="2" />
+          <circle cx="200" cy="150" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="2" />
+          <circle cx="260" cy="90" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="2" />
+
+          {/* Waypoint 5 (Launch & Pitch) — flag */}
+          <circle cx="340" cy="40" r="10" fill="var(--color-accent-neon)" />
+          <line x1="340" y1="40" x2="340" y2="14" stroke="var(--color-brand-black)" strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M 340 14 L 366 21 L 340 28 Z" fill="var(--color-brand-black)" />
+        </svg>
       </section>
 
-      {/* ── Journey Roadmap ────────────────────────────────────────── */}
       <section className="mb-12">
         <h3 className="text-text-heading font-poppins font-semibold text-section mb-6">
           Journey Roadmap
         </h3>
         <div className="relative flex flex-col md:flex-row justify-between gap-4 md:gap-0 items-start md:items-center">
-          {/* Connecting line — desktop only */}
           <div className="hidden md:block absolute top-10 left-0 right-0 h-[1px] bg-border-subtle z-0" />
 
           {STAGES.map(({ label, sub, active }) => (
@@ -125,7 +145,6 @@ export default function JourneyPage() {
         </div>
       </section>
 
-      {/* ── Overview stat cards ────────────────────────────────────── */}
       <section
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-12"
         style={{ gap: 'var(--spacing-gutter)' }}
@@ -138,7 +157,6 @@ export default function JourneyPage() {
         ))}
       </section>
 
-      {/* ── What You'll Achieve ───────────────────────────────────── */}
       <section className="mb-16">
         <h3 className="text-text-heading font-poppins font-semibold text-section mb-8">
           What You'll Achieve
@@ -149,19 +167,16 @@ export default function JourneyPage() {
               key={title}
               className="p-6 bg-surface-white border border-border-subtle rounded-lg shadow-card flex flex-col gap-3 hover:border-text-muted transition-colors"
             >
-              {/* Icon Swatch */}
               <div className="w-12 h-12 rounded-md bg-canvas-bg flex items-center justify-center border border-border-subtle">
                 <Icon size={24} strokeWidth={2} className="text-text-body" />
               </div>
-              <h4 className="text-text-heading font-inter font-semibold text-body">{title}</h4>
-              {/* Thin progress bar placeholder */}
+              <h4 className="text-text-heading font-poppins font-semibold text-body">{title}</h4>
               <div className="h-1 bg-border-subtle w-full rounded" />
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── Final CTA ──────────────────────────────────────────────── */}
       <section className="flex flex-col items-center gap-6 py-12 border-t border-divider-line mt-12">
         <Link
           to="/build-startup/journey/ideation"

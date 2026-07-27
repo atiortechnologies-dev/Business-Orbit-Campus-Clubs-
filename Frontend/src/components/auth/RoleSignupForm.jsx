@@ -1,24 +1,3 @@
-/**
- * @component RoleSignupForm
- * @description
- * Shared shell for all 5 role-signup pages (Student/Company/Investor/
- * Mentor/Incubator). Adapted from a fellow intern's 5 near-duplicate
- * signup files — same layout, same password/terms handling, same submit
- * flow in every one of them, with only the middle field list differing
- * per role. Centralized here once instead of copy-pasted 5 times.
- *
- * Owns: role-specific field values (generic, keyed by `fields[].name`),
- * password + confirm-password + strength + show/hide, terms checkbox,
- * and the submit/success flow. Each page just supplies its own field
- * list and copy — see StudentSignup.jsx for the pattern.
- *
- * @param {object} props
- * @param {string} props.roleId          - e.g. 'student' — used for input id prefixes
- * @param {string} props.title
- * @param {string} props.subtitle
- * @param {React.ReactNode} props.icon
- * @param {Array}  props.fields          - [{ name, label, type, placeholder, helperText, options, colSpan }]
- */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, CheckCircle2, ArrowRight } from 'lucide-react';
@@ -37,6 +16,12 @@ function computeStrength(password) {
   return score;
 }
 
+// Shared shell for all 5 role-signup pages (Student/Company/Investor/
+// Mentor/Incubator) — adapted from a fellow intern's 5 near-duplicate
+// signup files (same layout/password/terms/submit flow, only the field
+// list differed per role) and centralized here instead of staying
+// copy-pasted 5 times. See StudentSignup.jsx for how a page supplies its
+// own field list/copy.
 export default function RoleSignupForm({ roleId, title, subtitle, icon, fields }) {
   const [values, setValues] = useState(() => Object.fromEntries(fields.map((f) => [f.name, ''])));
   const [password, setPassword] = useState('');
@@ -59,7 +44,15 @@ export default function RoleSignupForm({ roleId, title, subtitle, icon, fields }
       return;
     }
     setError('');
-    // TODO(backend): POST { role: roleId, ...values, password } to the registration endpoint.
+    // TODO(backend): POST to Backend/routes/authRoute.js's real
+    // POST /api/auth/register (Backend/utils/validators.js's registerSchema).
+    // Base fields need renaming to match: fullName -> full_name,
+    // confirmPassword -> confirm_password (email/phone/password already
+    // match). role must be sent as the literal roleId string. Each role's
+    // *Signup.jsx FIELDS array has its own comment mapping that role's
+    // fields to the backend's role-specific schema — check those before
+    // wiring this up, three of the five forms are missing fields the
+    // backend actually requires (not just naming mismatches).
     setSubmitted(true);
   };
 

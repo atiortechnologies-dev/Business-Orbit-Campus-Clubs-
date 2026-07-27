@@ -33,9 +33,9 @@ const NAV_ITEMS = [
 ];
 
 export default function DashboardShell({ pageId = 'pg', children }) {
-  // Drawer state for the sidebar below `lg` — see Sidebar.jsx's isOpen/
-  // onClose doc comment. Owned here (not inside Sidebar) because the
-  // header's Menu button that opens it lives in this file, not there.
+  // Drawer state for the sidebar below `lg` — owned here (not inside
+  // Sidebar) because the header's Menu button that opens it lives in this
+  // file, not there.
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, onToggleCollapse] = useSidebarCollapsed();
 
@@ -47,7 +47,7 @@ export default function DashboardShell({ pageId = 'pg', children }) {
           gets covered. */}
       <style>{`
         @media (min-width: 1024px) {
-          #${pageId}-main    { margin-left: ${collapsed ? '80px' : '264px'}; }
+          #${pageId}-main    { margin-left: ${collapsed ? '80px' : 'var(--spacing-sidebar-width)'}; }
           #${pageId}-header  { padding-left: var(--spacing-margin-desktop); padding-right: var(--spacing-margin-desktop); }
           #${pageId}-content { padding-left: var(--spacing-margin-desktop); padding-right: var(--spacing-margin-desktop); }
           #${pageId}-footer  { padding-left: var(--spacing-margin-desktop); padding-right: var(--spacing-margin-desktop); }
@@ -65,16 +65,13 @@ export default function DashboardShell({ pageId = 'pg', children }) {
         onToggleCollapse={onToggleCollapse}
       />
 
-      {/* ── Main canvas ──────────────────────────────────────────────── */}
       <main id={`${pageId}-main`} className="flex flex-col min-h-screen">
 
-        {/* Top header */}
         <header
           id={`${pageId}-header`}
           className="flex justify-between items-center w-full sticky top-0 h-[72px] bg-surface-white border-b border-divider-line z-40"
           style={{ paddingLeft: 'var(--spacing-margin-mobile)', paddingRight: 'var(--spacing-margin-mobile)' }}
         >
-          {/* Left */}
           <div className="flex items-center gap-4">
             {/* Opens the Sidebar drawer below `lg` — previously rendered
                 with no onClick at all, i.e. it did nothing when tapped. */}
@@ -86,12 +83,16 @@ export default function DashboardShell({ pageId = 'pg', children }) {
             >
               <Menu size={24} strokeWidth={2} />
             </button>
-            <p className="hidden md:block font-poppins font-semibold text-section text-text-heading whitespace-nowrap">
-              BOCC Campus Clubs
-            </p>
+            <div className="hidden md:block">
+              <p className="font-poppins font-semibold text-section text-text-heading whitespace-nowrap">
+                BOCC Student
+              </p>
+              <p className="font-inter text-caption text-text-muted whitespace-nowrap">
+                Founder Workspace
+              </p>
+            </div>
           </div>
 
-          {/* Right */}
           <div className="flex items-center gap-6">
             <ComingSoon
               label="Search"
@@ -109,21 +110,17 @@ export default function DashboardShell({ pageId = 'pg', children }) {
                   <Bell size={20} strokeWidth={2} />
                 </span>
               </Link>
-              <ComingSoon label="Settings" position="bottom" inline>
-                <span className="block p-2 rounded-full transition-colors hover:bg-canvas-bg">
-                  <Settings size={20} strokeWidth={2} />
-                </span>
-              </ComingSoon>
-              {/* Theme toggle */}
+              <Link to="/settings" className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted hover:text-text-heading">
+                <Settings size={20} strokeWidth={2} />
+              </Link>
               <ThemeToggle size={20} className="block" />
-              <ComingSoon label="User" position="bottom" inline>
-                <div className="w-8 h-8 placeholder-box rounded-full" />
-              </ComingSoon>
+              <Link to="/settings" className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity">
+                AC
+              </Link>
             </div>
           </div>
         </header>
 
-        {/* Page content slot */}
         <div
           id={`${pageId}-content`}
           className="flex-1 py-8 w-full mx-auto"
@@ -136,7 +133,6 @@ export default function DashboardShell({ pageId = 'pg', children }) {
           {children}
         </div>
 
-        {/* Footer */}
         <footer
           id={`${pageId}-footer`}
           className="flex flex-col md:flex-row justify-between items-center w-full bg-canvas-bg border-t border-divider-line py-6 mt-auto"

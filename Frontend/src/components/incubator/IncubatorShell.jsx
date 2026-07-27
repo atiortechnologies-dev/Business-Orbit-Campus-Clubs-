@@ -48,8 +48,8 @@ export default function IncubatorShell({ children }) {
         {/* Incubator-only extra footer row — Student's sidebar has no
             equivalent, so this is passed as children rather than baked
             into the shared Sidebar component itself. Uses white/70 (not a
-            theme-reactive token) for the same reason documented at the top
-            of Sidebar.jsx — this renders inside the permanently-black
+            theme-reactive token) for the same reason documented in
+            Sidebar.jsx — this renders inside the permanently-black
             sidebar, not the theme-reactive page canvas. */}
         <div className="border-t border-white/10 pt-4 mb-4">
           <ComingSoon label="Help Center" position="top" inline={false} className="flex items-center gap-3 py-2 px-3 text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200">
@@ -59,13 +59,10 @@ export default function IncubatorShell({ children }) {
         </div>
       </Sidebar>
 
-      {/* ── Main content wrapper ─────────────────────────────────────── */}
-      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[264px]'} min-h-screen flex flex-col`}>
-        {/* Header */}
+      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[var(--spacing-sidebar-width)]'} min-h-screen flex flex-col`}>
         <header
           className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear"
         >
-          {/* Brand/Subtitle & Search */}
           <div className="flex items-center gap-6 flex-1 min-w-0">
             {/* Opens the Sidebar drawer below `lg` — Incubator had no
                 mobile nav trigger at all before this (Dashboard at least
@@ -83,12 +80,11 @@ export default function IncubatorShell({ children }) {
               <h2 className="font-poppins font-bold text-[18px] leading-[24px] text-text-heading whitespace-nowrap">
                 BOCC Incubator
               </h2>
-              <p className="font-inter text-[12px] leading-[16px] text-text-muted whitespace-nowrap">
+              <p className="font-inter text-caption text-text-muted whitespace-nowrap">
                 Incubation Management
               </p>
             </div>
-            
-            {/* Search Input (Coming Soon wrapper) */}
+
             <div className="relative w-full max-w-md">
               <ComingSoon label="Search" position="bottom" inline={false}>
                 <div className="relative w-full">
@@ -97,16 +93,14 @@ export default function IncubatorShell({ children }) {
                     type="text"
                     disabled
                     placeholder="Search applications..."
-                    className="w-full bg-canvas-bg border border-border-subtle rounded-lg pl-10 pr-4 py-2 font-inter text-[14px] leading-[20px] focus:outline-none cursor-not-allowed"
+                    className="w-full bg-canvas-bg border border-border-subtle rounded-lg pl-10 pr-4 py-2 font-inter text-small focus:outline-none cursor-not-allowed"
                   />
                 </div>
               </ComingSoon>
             </div>
           </div>
 
-          {/* Header Action Items */}
           <div className="flex items-center gap-4 ml-4">
-            {/* Notifications Bell */}
             <ComingSoon
               label="Notifications"
               position="bottom"
@@ -116,7 +110,6 @@ export default function IncubatorShell({ children }) {
               <Bell size={20} strokeWidth={2} />
             </ComingSoon>
 
-            {/* Chat Bubble Icon (Real Link to Messages) */}
             <Link
               to="/incubator/messages"
               className="p-2 rounded-full text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors relative"
@@ -124,25 +117,21 @@ export default function IncubatorShell({ children }) {
               <MessageSquare size={20} strokeWidth={2} />
             </Link>
 
-            {/* Theme toggle */}
             <ThemeToggle size={20} />
 
-            {/* Avatar Link to Settings */}
             <Link
               to="/incubator/settings"
-              className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-[12px] select-none hover:opacity-80 transition-opacity"
+              className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
             >
               AU
             </Link>
           </div>
         </header>
 
-        {/* Page Content Canvas */}
-        <div className="flex-1 p-6 md:p-8 max-w-[1440px] w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-[var(--spacing-container-max)] w-full mx-auto flex flex-col">
           {children}
         </div>
 
-        {/* Footer */}
         <footer
           className="flex flex-col md:flex-row justify-between items-center w-full bg-canvas-bg border-t border-divider-line py-6 px-4 lg:px-10 mt-auto transition-colors duration-150 ease-linear"
         >

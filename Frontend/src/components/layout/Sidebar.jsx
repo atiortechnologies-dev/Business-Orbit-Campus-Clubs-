@@ -4,45 +4,13 @@ import { ChevronsLeft, ChevronsRight } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
 import Logo from '@/components/ui/Logo';
 
-/**
- * Sidebar — the shared "Dashboard Control Sidebar" from the design guide:
- * fixed 264px width, solid Brand Black canvas, active items marked with a
- * neon-yellow left border. Used by DashboardShell (Student), IncubatorShell
- * (Incubator), and AdminShell (Admin) — before this extraction the portals
- * had drifted into visibly different sidebars (white vs black background,
- * different active-state styling, different fonts) despite being the same
- * conceptual component. One shared component here means that can't happen
- * silently again — a future style tweak only has to land in one place.
- *
- * `navItems` stays a prop (not hardcoded) since each portal's link list is
- * genuinely feature-specific; everything about *how* those links render is
- * fixed here so the portals can't drift apart again.
- *
- * @prop {Array<{icon, label, href, real}>} navItems
- * @prop {string} footerInitials  1-2 letters shown in the footer avatar circle.
- * @prop {string} footerName      Display name shown in the footer card.
- * @prop {string} footerRole      Role/title line shown under the name.
- * @prop {ReactNode} [children]   Optional portal-specific extra content
- *                                 (e.g. Incubator's "Help Center" row),
- *                                 rendered between the nav list and the
- *                                 user-card footer. Hidden while collapsed.
- * @prop {boolean} [isOpen=false] Mobile/tablet drawer state (irrelevant at
- *                                 the `lg` breakpoint and above, where the
- *                                 sidebar is always visible and static —
- *                                 see the shell components for how this is
- *                                 owned/toggled).
- * @prop {function} [onClose]     Called when the drawer should close: from
- *                                 the backdrop, Escape, or picking a nav
- *                                 item. No-op above `lg`.
- * @prop {boolean} [collapsed=false] Desktop-only icon-rail mode (264px →
- *                                 80px). Owned by the shell, not this
- *                                 component, because the shell's own main-
- *                                 content margin has to shrink in step with
- *                                 it — see any shell for the pattern.
- * @prop {function} [onToggleCollapse] Toggles `collapsed`. No-op below `lg`
- *                                 (there's no collapse control on mobile,
- *                                 the drawer already fully hides instead).
- */
+// Shared "Dashboard Control Sidebar" (fixed 264px, brand-black canvas,
+// neon-yellow active border) used by DashboardShell/IncubatorShell/
+// AdminShell. Extracted into one component because the portals had
+// drifted into visibly different sidebars (white vs black bg, different
+// active-state styling/fonts) despite being the same conceptual piece —
+// a future style tweak now only has to land here once. `navItems` stays a
+// prop since each portal's link list is genuinely feature-specific.
 export default function Sidebar({
   navItems,
   footerInitials,
@@ -51,6 +19,8 @@ export default function Sidebar({
   children,
   isOpen = false,
   onClose = () => {},
+  // Owned by the shell (not here) since the shell's own main-content
+  // margin has to shrink in step with this — see any shell for the pattern.
   collapsed = false,
   onToggleCollapse = () => {},
 }) {
@@ -98,7 +68,7 @@ export default function Sidebar({
         className={`flex flex-col h-screen py-6 fixed left-0 top-0 z-50 border-r border-white/10 bg-brand-black
           transform transition-[transform,width] duration-200 ease-out
           lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          ${collapsed ? 'lg:w-20' : 'lg:w-[264px]'} w-[264px]`}
+          ${collapsed ? 'lg:w-20' : 'lg:w-[var(--spacing-sidebar-width)]'} w-[var(--spacing-sidebar-width)]`}
       >
       {/* IMPORTANT for anyone editing this file: this sidebar's background
           is ALWAYS brand-black, in both light and dark theme — it does not
@@ -126,11 +96,10 @@ export default function Sidebar({
           </div>
         ) : null}
         <div className={collapsed ? 'lg:hidden' : ''}>
-          <Logo variant="stacked" sidebar force="dark" priority />
+          <Logo variant="horizontal" sidebar force="dark" priority />
         </div>
       </div>
 
-      {/* Nav links */}
       <nav className="flex-1 space-y-1">
         {navItems.map(({ icon: Icon, label, href, real }) => {
           const isActive = real && href === activeHref;

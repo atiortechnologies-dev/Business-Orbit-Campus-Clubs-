@@ -6,6 +6,7 @@ import Badge from '@/components/ui/Badge';
 import StatCard from '@/components/ui/StatCard';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { downloadCsv } from '@/utils/csv';
 
 const SUBMISSIONS = [
   { id: 's1', name: 'Lumina AI', founder: 'Sarah Jenkins', chapter: 'Stanford Chapter', stage: 'MVP', date: '2024-10-24', reviewer: 'Alex Rivera', priority: 'High', status: 'Pending' },
@@ -29,7 +30,9 @@ export default function ReviewQueuePage() {
       mobileLabel: false,
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 placeholder-box rounded-md shrink-0" />
+          <div className="w-9 h-9 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-xs select-none shrink-0">
+            {row.name.charAt(0)}
+          </div>
           <div className="min-w-0">
             <p className="font-poppins font-semibold text-small text-text-heading truncate">{row.name}</p>
             <p className="font-inter text-caption text-text-muted truncate">{row.founder}</p>
@@ -86,11 +89,22 @@ export default function ReviewQueuePage() {
               <Zap size={14} strokeWidth={2} /> Bulk Action
             </span>
           </ComingSoon>
-          <ComingSoon label="Export CSV" position="bottom" inline>
-            <span className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small">
-              <Download size={14} strokeWidth={2} /> Export CSV
-            </span>
-          </ComingSoon>
+          <button
+            type="button"
+            onClick={() => downloadCsv('review-queue', [
+              { key: 'name', label: 'Startup' },
+              { key: 'founder', label: 'Founder' },
+              { key: 'chapter', label: 'Chapter' },
+              { key: 'stage', label: 'Stage' },
+              { key: 'date', label: 'Submitted' },
+              { key: 'reviewer', label: 'Reviewer' },
+              { key: 'priority', label: 'Priority' },
+              { key: 'status', label: 'Status' },
+            ], SUBMISSIONS)}
+            className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small hover:bg-canvas-bg transition-colors"
+          >
+            <Download size={14} strokeWidth={2} /> Export CSV
+          </button>
         </div>
       </div>
 

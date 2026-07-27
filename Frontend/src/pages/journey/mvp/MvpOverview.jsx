@@ -49,7 +49,31 @@ export default function MvpOverviewPage() {
         <div className="lg:col-span-7 bg-surface-white border border-border-subtle rounded-lg shadow-card p-6">
           <h3 className="font-poppins font-semibold text-body text-text-heading mb-1">Development Roadmap</h3>
           <p className="font-inter text-small text-text-muted mb-4">Visualizing your product architecture and core flow.</p>
-          <div className="h-48 rounded-lg placeholder-box" />
+          {/* "Assembling blocks" motif, same line-art language as the app's other illustrations. This box is a FIXED brand-black surface (like the sidebar) — every white here must be literal, not the theme-reactive surface-white token, or it'll invert against a background that never does. See Sidebar.jsx for the same rule. */}
+          <svg
+            viewBox="0 0 400 200"
+            className="w-full h-48 rounded-lg"
+            role="img"
+            aria-label="Illustration of building blocks assembling into a product"
+          >
+            <rect x="0" y="0" width="400" height="200" rx="8" fill="var(--color-brand-black)" />
+
+            {/* Guide lines from incoming blocks to the assembled cluster */}
+            <line x1="60" y1="40" x2="150" y2="90" stroke="white" strokeOpacity="0.15" strokeWidth="1.5" strokeDasharray="4 4" />
+            <line x1="330" y1="50" x2="235" y2="95" stroke="white" strokeOpacity="0.15" strokeWidth="1.5" strokeDasharray="4 4" />
+            <line x1="70" y1="165" x2="155" y2="125" stroke="white" strokeOpacity="0.15" strokeWidth="1.5" strokeDasharray="4 4" />
+
+            {/* Assembled cluster, center */}
+            <rect x="152" y="82" width="46" height="46" rx="6" fill="white" />
+            <rect x="202" y="82" width="46" height="46" rx="6" fill="var(--color-accent-neon)" />
+            <rect x="152" y="132" width="46" height="46" rx="6" fill="white" fillOpacity="0.6" />
+            <rect x="202" y="132" width="46" height="46" rx="6" fill="white" fillOpacity="0.3" />
+
+            {/* Incoming blocks, still in transit */}
+            <rect x="36" y="18" width="30" height="30" rx="5" fill="none" stroke="white" strokeOpacity="0.4" strokeWidth="2" />
+            <rect x="312" y="30" width="26" height="26" rx="5" fill="white" fillOpacity="0.25" />
+            <rect x="44" y="148" width="24" height="24" rx="5" fill="none" stroke="var(--color-accent-neon)" strokeOpacity="0.6" strokeWidth="2" />
+          </svg>
         </div>
         <div className="lg:col-span-5 bg-surface-white border border-border-subtle rounded-lg shadow-card p-6">
           <h3 className="font-poppins font-semibold text-body text-text-heading mb-4">Learning Objectives</h3>
@@ -79,7 +103,7 @@ export default function MvpOverviewPage() {
             <CheckCircle2 size={16} strokeWidth={2} className="text-text-body" />
             <p className="font-inter font-semibold text-caption text-text-muted uppercase tracking-wider">Key Deliverables</p>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
             {DELIVERABLES.map((d) => (
               <p key={d} className="font-inter text-small text-text-body">{d}</p>
             ))}

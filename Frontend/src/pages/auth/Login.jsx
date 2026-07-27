@@ -1,30 +1,18 @@
-/**
- * @page LoginPage  /login
- * Owns email/password values, validation errors, eye-toggle,
- * remember-me checkbox. No backend exists yet: a valid submit redirects to
- * /dashboard directly (see the TODO in handleSubmit for what a real
- * integration needs to do instead).
- *
- * Validation: blur + submit, format-only checks.
- * Eye toggle: independent show/hide for the password field.
- */
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Activity,
   ChevronLeft,
   Mail,
   Lock,
   Eye,
   EyeOff,
-  Image as ImageIcon,
 } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Logo from '@/components/ui/Logo';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
-/* ── Validation helpers ─────────────────────────────────── */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function validateField(name, value) {
@@ -39,8 +27,8 @@ function validateField(name, value) {
   return '';
 }
 
-/* ── Component ──────────────────────────────────────────── */
 export default function LoginPage() {
+  useDocumentTitle('Login — BOCC');
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -77,39 +65,64 @@ export default function LoginPage() {
   return (
     <div className="flex-1 grid lg:grid-cols-[44%_56%]">
 
-      {/* ── Left column (desktop only) ────────────────────── */}
       <section
         className="hidden lg:flex flex-col gap-8 pl-20 pr-4 pt-10 pb-14 bg-canvas-bg"
         aria-labelledby="hero-heading"
       >
-        {/* Illustration placeholder */}
-        <div
-          className="w-full aspect-[4/3] border border-dashed border-border-subtle bg-transparent flex flex-col items-center justify-center gap-2 text-text-muted rounded-lg"
+        {/* Custom illustration — abstract "orbit" motif: a central hub with
+            campus clubs orbiting it, themed entirely with design tokens so
+            it adapts to light/dark like every other element on this page.
+            This one's specific to Login (it's literally the brand name) —
+            ForgotPassword and ResetPassword each get their own motif tied
+            to what's actually happening on THOSE screens (an envelope+key
+            "request in flight," a shield+keyhole "secured" state) rather
+            than reusing this one for generic auth-flow consistency, which
+            read as irrelevant on a password-recovery screen. All of them
+            share the same geometric line-art language (Dashboard's idea
+            spark, Startup Journey's path, MVP Overview's assembling blocks
+            included) even though each motif itself is bespoke per screen. */}
+        <svg
+          viewBox="0 0 400 300"
+          className="w-full aspect-[4/3] rounded-lg"
           role="img"
-          aria-label="Illustration placeholder"
+          aria-label="Illustration of campus clubs orbiting a central hub"
         >
-          <ImageIcon size={40} strokeWidth={2} aria-hidden="true" />
-          <span className="text-[11px] uppercase tracking-widest select-none font-inter font-medium">
-            Placeholder
-          </span>
-        </div>
+          <ellipse cx="200" cy="150" rx="170" ry="70" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-8 200 150)" />
+          <ellipse cx="200" cy="150" rx="130" ry="100" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(12 200 150)" />
+          <ellipse cx="200" cy="150" rx="90" ry="130" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-15 200 150)" />
 
-        {/* Heading + paragraph */}
+          <circle cx="200" cy="150" r="26" fill="var(--color-brand-black)" />
+          <circle cx="200" cy="150" r="9" fill="var(--color-accent-neon)" />
+
+          <circle cx="332" cy="128" r="10" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+          <circle cx="332" cy="128" r="3" fill="var(--color-accent-neon)" />
+
+          <circle cx="88" cy="185" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+          <circle cx="88" cy="185" r="2.5" fill="var(--color-accent-neon)" />
+
+          <circle cx="255" cy="245" r="7" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+
+          <circle cx="140" cy="45" r="6" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+
+          <circle cx="60" cy="90" r="4" fill="var(--color-border-subtle)" />
+          <circle cx="330" cy="220" r="4" fill="var(--color-border-subtle)" />
+          <circle cx="230" cy="30" r="3" fill="var(--color-border-subtle)" />
+        </svg>
+
         <div className="flex flex-col gap-4">
           <h1
             id="hero-heading"
-            className="text-[32px] leading-[40px] font-semibold text-text-heading font-poppins"
+            className="text-section font-semibold text-text-heading font-poppins"
           >
             Empowering the Next Generation of Business Leaders.
           </h1>
-          <p className="text-[16px] leading-[24px] font-normal text-text-body font-inter">
+          <p className="text-body font-normal text-text-body font-inter">
             Join Business Orbit Campus Clubs (BOCC) to bridge the gap between
             academic innovation and global industry standard. Connect with mentors,
             investors, and fellow entrepreneurs to launch your professional journey.
           </p>
         </div>
 
-        {/* Avatar cluster + trust line */}
         <div className="flex items-center gap-3">
           <div className="flex -space-x-2" aria-hidden="true">
             {[0, 1, 2].map((i) => (
@@ -126,50 +139,43 @@ export default function LoginPage() {
               +10k
             </span>
           </div>
-          <p className="text-[14px] leading-[20px] font-normal text-text-muted font-inter">
+          <p className="text-small font-normal text-text-muted font-inter">
             Trusted by students across 500+ campuses worldwide.
           </p>
         </div>
       </section>
 
-      {/* ── Right column ──────────────────────────────────── */}
       <section
         className="flex flex-col px-4 sm:px-8 lg:px-12 pt-8 pb-14 bg-canvas-bg"
         aria-labelledby="login-heading"
       >
-        {/* Back to Home */}
         <Link
-          to="/login"
-          className="inline-flex items-center gap-1 text-[14px] leading-[20px] text-text-muted hover:text-text-heading transition-all duration-150 ease-linear self-start font-inter"
+          to="/landing"
+          className="inline-flex items-center gap-1 text-small text-text-muted hover:text-text-heading transition-all duration-150 ease-linear self-start font-inter"
           aria-label="Back to home page"
         >
           <ChevronLeft size={14} strokeWidth={2} aria-hidden="true" />
           Back to Home
         </Link>
 
-        {/* Centred main content */}
         <div className="flex-1 flex flex-col items-center justify-center gap-5 py-6">
           <div className="w-full max-w-[546px] flex flex-col items-center gap-5">
 
-            {/* Decorative Activity icon above heading */}
-            <Activity
-              size={26}
-              strokeWidth={2}
-              className="text-text-heading"
-              aria-hidden="true"
-            />
+            {/* BOCC mark above heading — PublicNav already renders the
+                horizontal lockup above this page, so this is a secondary
+                instance (no `priority`) sized to match the small
+                decorative-icon role it replaces, not a header-scale logo. */}
+            <Logo variant="mark" size={28} />
 
-            {/* Heading + subtext */}
             <div className="text-center flex flex-col gap-1.5">
-              <h2 id="login-heading" className="text-[22px] leading-[28px] font-medium text-text-heading font-poppins">
+              <h2 id="login-heading" className="text-card font-medium text-text-heading font-poppins">
                 Welcome Back
               </h2>
-              <p className="text-[16px] leading-[24px] font-normal text-text-body font-inter">
+              <p className="text-body font-normal text-text-body font-inter">
                 Enter your credentials to access your BOCC portal.
               </p>
             </div>
 
-            {/* Form card */}
             <Card className="w-full">
               <form
                 onSubmit={handleSubmit}
@@ -177,7 +183,6 @@ export default function LoginPage() {
                 noValidate
                 aria-label="Login form"
               >
-                {/* Email */}
                 <Input
                   id="login-email"
                   label="Email Address"
@@ -191,7 +196,6 @@ export default function LoginPage() {
                   leftSlot={<Mail size={15} strokeWidth={2} />}
                 />
 
-                {/* Password — eye toggle */}
                 <Input
                   id="login-password"
                   label="Password"
@@ -218,11 +222,10 @@ export default function LoginPage() {
                   }
                 />
 
-                {/* Remember me + Forgot password */}
                 <div className="flex items-center justify-between">
                   <label
                     htmlFor="remember-me"
-                    className="flex items-center gap-2 text-[14px] leading-[20px] font-normal text-text-muted cursor-pointer select-none font-inter"
+                    className="flex items-center gap-2 text-small font-normal text-text-muted cursor-pointer select-none font-inter"
                   >
                     <div className="relative flex items-center justify-center w-4 h-4">
                       <input
@@ -248,27 +251,24 @@ export default function LoginPage() {
                   </label>
                   <Link
                     to="/forgot-password"
-                    className="text-[14px] leading-[20px] font-normal text-text-body font-inter hover:underline transition-all duration-150 ease-linear"
+                    className="text-small font-normal text-text-body font-inter hover:underline transition-all duration-150 ease-linear"
                   >
                     Forgot password?
                   </Link>
                 </div>
 
-                {/* Primary CTA */}
                 <Button variant="primary" fullWidth type="submit">
                   Login to Account
                 </Button>
 
-                {/* Divider */}
                 <div className="flex items-center gap-3" role="separator">
                   <div className="flex-1 h-px bg-divider-line" />
-                  <span className="text-[12px] leading-[16px] font-medium tracking-wide text-text-muted font-inter shrink-0">
+                  <span className="text-caption font-medium tracking-wide text-text-muted font-inter shrink-0">
                     NEW TO BOCC?
                   </span>
                   <div className="flex-1 h-px bg-divider-line" />
                 </div>
 
-                {/* Secondary CTA */}
                 <Button
                   variant="outline"
                   fullWidth
@@ -280,8 +280,7 @@ export default function LoginPage() {
               </form>
             </Card>
 
-            {/* Disclaimer */}
-            <p className="text-[14px] leading-[20px] font-normal text-center text-text-muted font-inter">
+            <p className="text-small font-normal text-center text-text-muted font-inter">
               By logging in, you agree to our{' '}
               <Link
                 to="/legal/privacy-policy"

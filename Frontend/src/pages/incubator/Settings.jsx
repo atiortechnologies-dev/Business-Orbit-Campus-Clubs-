@@ -10,9 +10,13 @@ import {
   X,
   Plus,
   CheckCircle,
+  AlertTriangle,
+  ChevronDown,
 } from 'lucide-react';
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
+import Modal from '@/components/ui/Modal';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const DEFAULT_FORM_STATE = {
   incubatorName: 'BOCC Incubator',
@@ -40,11 +44,22 @@ const INITIAL_WORKING_DAYS = {
 };
 
 export default function SettingsPage() {
+  useDocumentTitle('Settings — BOCC Incubator Portal');
   const [form, setForm] = useState(DEFAULT_FORM_STATE);
   const [industries, setIndustries] = useState(INITIAL_INDUSTRIES);
   const [workingDays, setWorkingDays] = useState(INITIAL_WORKING_DAYS);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [industryDraft, setIndustryDraft] = useState('');
+  const [addingIndustry, setAddingIndustry] = useState(false);
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [deactivateOpen, setDeactivateOpen] = useState(false);
+  const [deactivateConfirmText, setDeactivateConfirmText] = useState('');
+  const [deactivateRequested, setDeactivateRequested] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -66,43 +81,88 @@ export default function SettingsPage() {
     setEmailNotifications(true);
   };
 
+  const canSave = form.incubatorName.trim().length > 0;
+
   const handleSave = () => {
+    if (!canSave) return;
     // TODO(backend): PATCH the incubator profile with `form`, `industries`,
     // `workingDays`, and `emailNotifications`.
     setSaveSuccess(true);
     setTimeout(() => setSaveSuccess(false), 2000);
   };
 
+  const addIndustry = () => {
+    const trimmed = industryDraft.trim();
+    if (trimmed && !industries.includes(trimmed)) setIndustries((prev) => [...prev, trimmed]);
+    setIndustryDraft('');
+    setAddingIndustry(false);
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLogoUrl(URL.createObjectURL(file));
+  };
+
+  const handlePasswordField = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordSubmit = () => {
+    if (passwordForm.next.length < 8) {
+      setPasswordError('New password must be at least 8 characters.');
+      return;
+    }
+    if (passwordForm.next !== passwordForm.confirm) {
+      setPasswordError('New password and confirmation do not match.');
+      return;
+    }
+    setPasswordError('');
+    // TODO(backend): verify `passwordForm.current` and update the account
+    // password with `passwordForm.next`.
+    setPasswordSuccess(true);
+    setPasswordForm({ current: '', next: '', confirm: '' });
+    setTimeout(() => { setPasswordSuccess(false); setPasswordOpen(false); }, 1500);
+  };
+
+  const handleDeactivateConfirm = () => {
+    // TODO(backend): deactivate the incubator account and sign out.
+    setDeactivateOpen(false);
+    setDeactivateConfirmText('');
+    setDeactivateRequested(true);
+  };
+
   return (
     <IncubatorShell>
       <header className="mb-8">
-        <h2 className="font-poppins font-bold text-headline-lg text-text-heading">
+        <h2 className="font-poppins font-bold text-section text-text-heading">
           Profile Management
         </h2>
-        <p className="font-inter text-body-lg text-text-muted mt-1">
+        <p className="font-inter text-body text-text-muted mt-1">
           Manage your organization's presence and administrative settings.
         </p>
       </header>
 
       <div className="grid grid-cols-12 gap-8 pb-24">
-        {/* Left Column: Profile Summary */}
         <div className="col-span-12 lg:col-span-4 space-y-6">
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex flex-col items-center text-center">
-              {/* Org Avatar */}
-              <div className="w-24 h-24 rounded-2xl bg-canvas-bg border border-border-subtle mb-4 flex items-center justify-center font-poppins font-bold text-text-heading text-4xl select-none">
-                BI
+              <div
+                className="w-24 h-24 rounded-2xl bg-canvas-bg border border-border-subtle mb-4 flex items-center justify-center font-poppins font-bold text-text-heading text-4xl select-none bg-cover bg-center"
+                style={logoUrl ? { backgroundImage: `url(${logoUrl})` } : undefined}
+              >
+                {!logoUrl && 'BI'}
               </div>
               <div className="flex items-center gap-1 mb-1">
-                <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+                <h3 className="font-poppins font-bold text-card text-text-heading">
                   BOCC Incubator
                 </h3>
               </div>
-              <p className="font-inter text-body-md text-text-muted mb-6">
+              <p className="font-inter text-small text-text-muted mb-6">
                 Sarah Jenkins • Lead Representative
               </p>
               
-              {/* Progress bar */}
               <div className="w-full space-y-2 mb-6">
                 <div className="flex justify-between font-poppins font-semibold text-caption text-text-heading">
                   <span>Profile Completion</span>
@@ -113,7 +173,6 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              {/* View Public Profile */}
               <ComingSoon label="View Public Profile" position="top" inline={false}>
                 <div className="w-full flex items-center justify-center gap-2 py-2.5 border border-border-subtle text-text-heading font-poppins font-semibold text-small rounded-lg hover:bg-canvas-bg cursor-pointer transition-colors">
                   <ExternalLink size={16} strokeWidth={2} />
@@ -122,37 +181,33 @@ export default function SettingsPage() {
               </ComingSoon>
             </div>
 
-            {/* Quick Actions */}
             <div className="mt-8 pt-6 border-t border-divider-line">
               <h4 className="font-poppins font-semibold text-small text-text-heading mb-4">
                 Quick Actions
               </h4>
               <div className="space-y-2">
                 <ComingSoon label="Download Data Audit" position="top" inline={false}>
-                  <div className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-body-md text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
+                  <div className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-small text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
                     <span>Download Data Audit</span>
                     <Download size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
                 </ComingSoon>
 
-                <ComingSoon label="Update Organization Logo" position="top" inline={false}>
-                  <div className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-body-md text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
-                    <span>Update Organization Logo</span>
-                    <Camera size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </div>
-                </ComingSoon>
+                <label className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-small text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
+                  <span>Update Organization Logo</span>
+                  <Camera size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <input type="file" accept="image/*" onChange={handleLogoChange} className="sr-only" />
+                </label>
               </div>
             </div>
           </section>
         </div>
 
-        {/* Right Column: Settings Sections */}
         <div className="col-span-12 lg:col-span-8 space-y-6">
-          {/* Org Info */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex items-center gap-2 mb-6">
               <Building size={20} className="text-text-muted" />
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+              <h3 className="font-poppins font-bold text-card text-text-heading">
                 Organization Information
               </h3>
             </div>
@@ -166,7 +221,7 @@ export default function SettingsPage() {
                   name="incubatorName"
                   value={form.incubatorName}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
               <div className="space-y-1">
@@ -178,7 +233,7 @@ export default function SettingsPage() {
                   name="repName"
                   value={form.repName}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
               <div className="space-y-1">
@@ -189,7 +244,7 @@ export default function SettingsPage() {
                   type="email"
                   disabled
                   value="sarah.j@incubatorhub.com"
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-muted/60 bg-canvas-bg/80 cursor-not-allowed"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-muted/60 bg-canvas-bg/80 cursor-not-allowed"
                 />
               </div>
               <div className="space-y-1">
@@ -201,7 +256,7 @@ export default function SettingsPage() {
                   name="phone"
                   value={form.phone}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
               <div className="space-y-1 md:col-span-2">
@@ -213,7 +268,7 @@ export default function SettingsPage() {
                   name="website"
                   value={form.website}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
               <div className="space-y-1 md:col-span-2">
@@ -225,17 +280,16 @@ export default function SettingsPage() {
                   name="address"
                   value={form.address}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
             </div>
           </section>
 
-          {/* Incubator Details */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex items-center gap-2 mb-6">
               <Info size={20} className="text-text-muted" />
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+              <h3 className="font-poppins font-bold text-card text-text-heading">
                 Incubator Details
               </h3>
             </div>
@@ -249,11 +303,10 @@ export default function SettingsPage() {
                   value={form.about}
                   onChange={handleInputChange}
                   rows={4}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 />
               </div>
 
-              {/* Focus Industries Chips */}
               <div className="space-y-2">
                 <label className="font-poppins font-semibold text-caption text-text-muted">
                   Focus Industries
@@ -275,15 +328,27 @@ export default function SettingsPage() {
                     </span>
                   ))}
                   
-                  <ComingSoon
-                    label="Add Industry"
-                    position="top"
-                    inline
-                    className="px-3 py-1 border border-dashed border-border-subtle hover:border-brand-black text-text-muted hover:text-text-heading rounded-full font-poppins font-semibold text-xs transition-colors flex items-center gap-1"
-                  >
-                    <Plus size={12} />
-                    Add Industry
-                  </ComingSoon>
+                  {addingIndustry ? (
+                    <input
+                      type="text"
+                      autoFocus
+                      value={industryDraft}
+                      onChange={(e) => setIndustryDraft(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addIndustry())}
+                      onBlur={addIndustry}
+                      placeholder="Industry name..."
+                      className="px-3 py-1 border border-border-subtle rounded-full font-inter text-xs text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black w-32"
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setAddingIndustry(true)}
+                      className="px-3 py-1 border border-dashed border-border-subtle hover:border-brand-black text-text-muted hover:text-text-heading rounded-full font-poppins font-semibold text-xs transition-colors flex items-center gap-1"
+                    >
+                      <Plus size={12} />
+                      Add Industry
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -296,7 +361,7 @@ export default function SettingsPage() {
                     name="stages"
                     value={form.stages}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                    className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                   >
                     <option>Pre-seed to Seed</option>
                     <option>Seed to Series A</option>
@@ -312,18 +377,17 @@ export default function SettingsPage() {
                     name="maxStartups"
                     value={form.maxStartups}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                    className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                   />
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Contact & Availability */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex items-center gap-2 mb-6">
               <Calendar size={20} className="text-text-muted" />
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+              <h3 className="font-poppins font-bold text-card text-text-heading">
                 Contact &amp; Availability
               </h3>
             </div>
@@ -336,7 +400,7 @@ export default function SettingsPage() {
                   name="meetingPreference"
                   value={form.meetingPreference}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 >
                   <option>Video Call (Remote)</option>
                   <option>In-person (On-site)</option>
@@ -351,7 +415,7 @@ export default function SettingsPage() {
                   name="primaryComm"
                   value={form.primaryComm}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-body-md text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
+                  className="w-full px-4 py-2 border border-border-subtle rounded-lg font-inter text-small text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black transition-all bg-canvas-bg/30"
                 >
                   <option>Email</option>
                   <option>Slack</option>
@@ -359,7 +423,6 @@ export default function SettingsPage() {
                 </select>
               </div>
 
-              {/* Working Hours selector */}
               <div className="space-y-2 md:col-span-2">
                 <label className="font-poppins font-semibold text-caption text-text-muted">
                   Working Hours (PST)
@@ -401,7 +464,7 @@ export default function SettingsPage() {
                     <span className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase">
                       Time Range
                     </span>
-                    <span className="font-inter text-body-md font-semibold text-text-heading">
+                    <span className="font-inter text-small font-semibold text-text-heading">
                       09:00 AM - 05:30 PM
                     </span>
                   </div>
@@ -410,44 +473,88 @@ export default function SettingsPage() {
             </div>
           </section>
 
-          {/* Account Settings */}
           <section className="bg-surface-white border border-border-subtle rounded-xl p-6 shadow-card transition-colors duration-150 ease-linear">
             <div className="flex items-center gap-2 mb-6">
               <Lock size={20} className="text-text-muted" />
-              <h3 className="font-poppins font-bold text-headline-sm text-text-heading">
+              <h3 className="font-poppins font-bold text-card text-text-heading">
                 Account &amp; Privacy
               </h3>
             </div>
             <div className="divide-y divide-border-subtle">
-              {/* Update Password */}
-              <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <p className="font-poppins font-semibold text-small text-text-heading">
-                    Password Security
-                  </p>
-                  <p className="font-inter text-body-md text-text-muted">
-                    Last changed 4 months ago.
-                  </p>
-                </div>
-                <ComingSoon label="Update Password" position="top" inline>
-                  <span className="px-4 py-2 border border-border-subtle rounded-lg font-poppins font-semibold text-small hover:bg-canvas-bg cursor-pointer block text-center">
+              <div className="py-4">
+                <button
+                  type="button"
+                  onClick={() => setPasswordOpen((v) => !v)}
+                  className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left"
+                >
+                  <div>
+                    <p className="font-poppins font-semibold text-small text-text-heading">
+                      Password Security
+                    </p>
+                    <p className="font-inter text-small text-text-muted">
+                      Last changed 4 months ago.
+                    </p>
+                  </div>
+                  <span className="px-4 py-2 border border-border-subtle rounded-lg font-poppins font-semibold text-small hover:bg-canvas-bg flex items-center gap-1.5 shrink-0">
                     Update Password
+                    <ChevronDown size={14} strokeWidth={2} className={`transition-transform ${passwordOpen ? 'rotate-180' : ''}`} />
                   </span>
-                </ComingSoon>
+                </button>
+                {passwordOpen && (
+                  <div className="mt-4 space-y-3 max-w-sm">
+                    {passwordSuccess ? (
+                      <p className="flex items-center gap-2 text-success font-inter text-small">
+                        <CheckCircle size={16} strokeWidth={2} /> Password updated.
+                      </p>
+                    ) : (
+                      <>
+                        <input
+                          type="password"
+                          name="current"
+                          value={passwordForm.current}
+                          onChange={handlePasswordField}
+                          placeholder="Current password"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                        />
+                        <input
+                          type="password"
+                          name="next"
+                          value={passwordForm.next}
+                          onChange={handlePasswordField}
+                          placeholder="New password"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                        />
+                        <input
+                          type="password"
+                          name="confirm"
+                          value={passwordForm.confirm}
+                          onChange={handlePasswordField}
+                          placeholder="Confirm new password"
+                          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                        />
+                        {passwordError && <p className="text-error font-inter text-small">{passwordError}</p>}
+                        <button
+                          type="button"
+                          onClick={handlePasswordSubmit}
+                          className="bg-action-bg text-action-text px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+                        >
+                          Update Password
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {/* Notification toggle */}
               <div className="py-4 flex items-center justify-between">
                 <div>
                   <p className="font-poppins font-semibold text-small text-text-heading">
                     Email Notifications
                   </p>
-                  <p className="font-inter text-body-md text-text-muted">
+                  <p className="font-inter text-small text-text-muted">
                     Receive alerts about new startup applications.
                   </p>
                 </div>
-                
-                {/* Custom Toggle Switch */}
                 <button
                   type="button"
                   onClick={() => setEmailNotifications(!emailNotifications)}
@@ -463,30 +570,36 @@ export default function SettingsPage() {
                 </button>
               </div>
 
-              {/* Deactivate account */}
-              <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <p className="font-poppins font-semibold text-small text-error">
-                    Deactivate Account
-                  </p>
-                  <p className="font-inter text-body-md text-text-muted">
-                    Temporarily disable your incubator profile.
-                  </p>
+              {deactivateRequested ? (
+                <div className="py-4 flex items-center gap-2.5 text-warning font-inter text-small">
+                  <AlertTriangle size={16} strokeWidth={2} /> Deactivation requested — our team will follow up by email.
                 </div>
-                
-                <ComingSoon label="Deactivate Account" position="top" inline>
-                  <span className="text-error font-poppins font-bold text-small hover:underline cursor-pointer">
+              ) : (
+                <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <p className="font-poppins font-semibold text-small text-error">
+                      Deactivate Account
+                    </p>
+                    <p className="font-inter text-small text-text-muted">
+                      Temporarily disable your incubator profile.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setDeactivateOpen(true)}
+                    className="text-error font-poppins font-bold text-small hover:underline cursor-pointer"
+                  >
                     Deactivate
-                  </span>
-                </ComingSoon>
-              </div>
+                  </button>
+                </div>
+              )}
             </div>
           </section>
         </div>
       </div>
 
-      {/* Bottom Sticky Action Bar */}
-      <footer className="fixed bottom-0 right-0 left-0 lg:left-[264px] h-20 bg-surface-white border-t border-border-subtle flex items-center justify-between px-6 md:px-8 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.03)] transition-colors duration-150 ease-linear">
+      <footer className="fixed bottom-0 right-0 left-0 lg:left-[var(--spacing-sidebar-width)] h-20 bg-surface-white border-t border-border-subtle flex items-center justify-between px-6 md:px-8 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.03)] transition-colors duration-150 ease-linear">
         <div>
           {saveSuccess && (
             <div className="flex items-center gap-2 text-success font-poppins font-semibold text-small animate-fade-in select-none">
@@ -507,12 +620,43 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={handleSave}
-            className="px-6 py-2.5 bg-action-bg text-action-text rounded-lg font-poppins font-semibold text-small hover:opacity-90 active:scale-[0.98] transition-all flex items-center gap-1.5"
+            disabled={!canSave}
+            className="px-6 py-2.5 bg-action-bg text-action-text rounded-lg font-poppins font-semibold text-small hover:opacity-90 active:scale-[0.98] transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span>Save Changes</span>
           </button>
         </div>
       </footer>
+
+      <Modal isOpen={deactivateOpen} onClose={() => { setDeactivateOpen(false); setDeactivateConfirmText(''); }} title="Deactivate account">
+        <p className="font-inter text-small text-text-body mb-4">
+          This temporarily disables your incubator profile and hides it from applicants. Type <strong>DEACTIVATE</strong> to confirm.
+        </p>
+        <input
+          type="text"
+          value={deactivateConfirmText}
+          onChange={(e) => setDeactivateConfirmText(e.target.value)}
+          placeholder="DEACTIVATE"
+          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 mb-4 focus:outline-none focus:ring-1 focus:ring-error"
+        />
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => { setDeactivateOpen(false); setDeactivateConfirmText(''); }}
+            className="border border-border-subtle text-text-heading px-5 py-2 rounded-md hover:bg-canvas-bg transition-colors font-poppins font-semibold text-small"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleDeactivateConfirm}
+            disabled={deactivateConfirmText !== 'DEACTIVATE'}
+            className="bg-error text-white px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Deactivate Account
+          </button>
+        </div>
+      </Modal>
     </IncubatorShell>
   );
 }

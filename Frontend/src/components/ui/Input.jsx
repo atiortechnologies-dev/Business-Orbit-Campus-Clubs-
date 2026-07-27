@@ -1,34 +1,3 @@
-/**
- * @component Input
- * @description
- * Accessible form input with label, optional icon slots, validation error,
- * and optional helper text. Renders an associated <label> + <input> pair.
- *
- *  – `error` prop: string — displayed below in red with a fade+slide-in
- *    animation. When set, border and focus ring switch to the error color
- *    and aria-invalid is set.
- *  – `rightSlot` is NOT pointer-events-none — it can contain an interactive
- *    element (e.g. the password eye-toggle button), which manages its own
- *    focus/click styling independently of this input.
- *  – Focus ring uses --color-brand-black.
- *  – Input background is bg-surface-white (same token the surrounding Card
- *    uses), so it reads as a slightly recessed field inside the card rather
- *    than a separate surface.
- *
- * @param {object}          props
- * @param {string}          props.id                - Unique id (required for label association)
- * @param {string}          props.label             - Visible label text
- * @param {string}          [props.labelClassName]  - Extra classes on <label>
- * @param {string}          [props.type='text']     - HTML input type
- * @param {string}          [props.placeholder]     - Placeholder text
- * @param {string}          [props.autoComplete]    - autocomplete attribute
- * @param {string}          [props.error]           - Validation error message
- * @param {string}          [props.helperText]      - Hint text (shown only when no error)
- * @param {React.ReactNode} [props.leftSlot]        - Decorative icon on the left
- * @param {React.ReactNode} [props.rightSlot]       - Icon or interactive button on the right
- * @param {string}          [props.className]       - Extra classes on the wrapper div
- * @param {boolean}         [props.required]        - Whether the field is required
- */
 export default function Input({
   id,
   label,
@@ -48,7 +17,6 @@ export default function Input({
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
-      {/* Label */}
       <label htmlFor={id} className={`text-caption font-medium text-text-heading font-inter ${labelClassName}`}>
         {label}
         {required && (
@@ -56,7 +24,6 @@ export default function Input({
         )}
       </label>
 
-      {/* Input row */}
       <div className="relative flex items-center">
         {leftSlot && (
           <span
@@ -83,6 +50,8 @@ export default function Input({
               : undefined
           }
           className={[
+            // bg-surface-white matches the surrounding Card, so the field
+            // reads as recessed rather than a separate surface.
             'w-full rounded-md border bg-surface-white text-sm text-text-body font-inter',
             'placeholder:text-text-muted',
             'transition-all duration-150 ease-linear',
@@ -120,7 +89,6 @@ export default function Input({
         </p>
       )}
 
-      {/* Helper text — only shown when no error */}
       {helperText && !hasError && (
         <p id={`${id}-hint`} className="text-xs text-text-muted font-inter">
           {helperText}

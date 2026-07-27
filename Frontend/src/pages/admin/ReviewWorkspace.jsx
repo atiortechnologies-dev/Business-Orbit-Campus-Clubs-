@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronRight, Lock, Send } from 'lucide-react';
+import { ChevronRight, Lock, Send, FileText } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import Badge from '@/components/ui/Badge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -33,6 +33,7 @@ export default function ReviewWorkspacePage() {
   const [checklist, setChecklist] = useState(INITIAL_CHECKLIST);
   const [metrics, setMetrics] = useState(INITIAL_METRICS);
   const [decision, setDecision] = useState(null);
+  const [strengths, setStrengths] = useState('');
   const [draftSaved, setDraftSaved] = useState(false);
 
   const completedCount = checklist.filter((c) => c.done).length;
@@ -49,7 +50,10 @@ export default function ReviewWorkspacePage() {
     setMetrics((prev) => prev.map((m) => (m.id === id ? { ...m, value: Number(value) } : m)));
   }
 
+  const canSaveDraft = strengths.trim().length > 0;
+
   function handleSaveDraft() {
+    if (!canSaveDraft) return;
     // TODO(backend): POST the current checklist/metrics/notes as a draft.
     setDraftSaved(true);
     setTimeout(() => setDraftSaved(false), 2000);
@@ -101,7 +105,13 @@ export default function ReviewWorkspacePage() {
             <h3 className="font-poppins font-semibold text-body text-text-heading">Reviewer Notes</h3>
             <div>
               <label className="font-inter font-medium text-caption text-text-muted uppercase tracking-wider block mb-1">Core Strengths</label>
-              <textarea rows={3} className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body resize-none focus:outline-none focus:ring-1 focus:ring-brand-black" placeholder="What's working well..." />
+              <textarea
+                rows={3}
+                value={strengths}
+                onChange={(e) => setStrengths(e.target.value)}
+                className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body resize-none focus:outline-none focus:ring-1 focus:ring-brand-black"
+                placeholder="What's working well..."
+              />
             </div>
             <div>
               <label className="font-inter font-medium text-caption text-text-muted uppercase tracking-wider block mb-1">Required Improvements</label>
@@ -158,7 +168,7 @@ export default function ReviewWorkspacePage() {
                     decision === id
                       ? id === 'reject'
                         ? 'bg-error text-white border-error'
-                        : 'bg-brand-black text-white border-brand-black'
+                        : 'bg-action-bg text-action-text border-brand-black dark:border-white'
                       : 'bg-canvas-bg text-text-heading border-border-subtle hover:bg-canvas-bg/70'
                   }`}
                 >
@@ -170,14 +180,16 @@ export default function ReviewWorkspacePage() {
 
           <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card">
             <p className="font-inter font-medium text-caption text-text-muted uppercase tracking-wider mb-2">Submission Preview</p>
-            <div className="placeholder-box rounded-md h-32" />
+            <div className="rounded-md h-32 border-2 border-dashed border-border-subtle bg-canvas-bg flex items-center justify-center">
+              <FileText size={28} strokeWidth={1.5} className="text-text-muted" />
+            </div>
             <p className="font-inter text-caption text-text-muted mt-2 text-center">Architecture.pdf</p>
           </div>
         </div>
       </div>
 
       {/* Sticky action footer */}
-      <div className="fixed bottom-0 right-0 left-0 lg:left-[264px] bg-surface-white border-t border-border-subtle py-4 px-6 md:px-10 flex items-center justify-between z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+      <div className="fixed bottom-0 right-0 left-0 lg:left-[var(--spacing-sidebar-width)] bg-surface-white border-t border-border-subtle py-4 px-6 md:px-10 flex items-center justify-between z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
         <span className="font-inter text-caption text-text-muted">
           {draftSaved ? 'Draft saved.' : 'Last autosave: 2 minutes ago'}
         </span>
@@ -185,7 +197,8 @@ export default function ReviewWorkspacePage() {
           <button
             type="button"
             onClick={handleSaveDraft}
-            className="px-5 py-2.5 border border-border-subtle rounded-md font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
+            disabled={!canSaveDraft}
+            className="px-5 py-2.5 border border-border-subtle rounded-md font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save Draft
           </button>

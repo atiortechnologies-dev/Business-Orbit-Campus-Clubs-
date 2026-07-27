@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, FileUp, ChevronRight, ArrowRight, TrendingUp, AlertCircle } from 'lucide-react';
+import { Plus, FileUp, ChevronRight, ArrowRight, TrendingUp, AlertCircle, Paperclip, X } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import StatCard from '@/components/ui/StatCard';
-import ComingSoon from '@/components/ui/ComingSoon';
+import Modal from '@/components/ui/Modal';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
-const RECENT = [
-  { id: 65, sentiment: 'Positive Sentiment', tag: 'Product Fit' },
-  { id: 64, sentiment: 'Neutral Sentiment', tag: 'UI Feedback' },
-  { id: 63, sentiment: 'Negative Sentiment', tag: 'Pricing Concern' },
+const SENTIMENT_LABELS = { positive: 'Positive Sentiment', neutral: 'Neutral Sentiment', negative: 'Negative Sentiment' };
+
+const INITIAL_RECENT = [
+  { id: 65, sentimentKey: 'positive', sentiment: 'Positive Sentiment', tag: 'Product Fit' },
+  { id: 64, sentimentKey: 'neutral', sentiment: 'Neutral Sentiment', tag: 'UI Feedback' },
+  { id: 63, sentimentKey: 'negative', sentiment: 'Negative Sentiment', tag: 'Pricing Concern' },
 ];
 
 const LEARNINGS = [
@@ -20,7 +22,11 @@ const LEARNINGS = [
 export default function SurveyTrackerPage() {
   useDocumentTitle('Survey Tracker — BOCC');
   const navigate = useNavigate();
-  const [responses] = useState({ total: 65, target: 100, positive: 42, negative: 23 });
+  const [responses, setResponses] = useState({ total: 65, target: 100, positive: 42, negative: 23 });
+  const [recent, setRecent] = useState(INITIAL_RECENT);
+  const [addOpen, setAddOpen] = useState(false);
+  const [draft, setDraft] = useState({ sentiment: 'positive', tag: '' });
+  const [queuedFiles, setQueuedFiles] = useState([]);
 
   const completion = Math.round((responses.total / responses.target) * 100);
 
@@ -28,6 +34,30 @@ export default function SurveyTrackerPage() {
     // TODO(backend): persist survey-tracker state for the current student.
     navigate('/build-startup/journey/validation/evidence-upload');
   };
+
+  const addResponse = () => {
+    if (!draft.tag.trim()) return;
+    const nextId = Math.max(...recent.map((r) => r.id), responses.total) + 1;
+    setRecent((prev) => [{ id: nextId, sentimentKey: draft.sentiment, sentiment: SENTIMENT_LABELS[draft.sentiment], tag: draft.tag.trim() }, ...prev]);
+    setResponses((prev) => ({
+      ...prev,
+      total: prev.total + 1,
+      positive: prev.positive + (draft.sentiment === 'positive' ? 1 : 0),
+      negative: prev.negative + (draft.sentiment === 'negative' ? 1 : 0),
+    }));
+    setDraft({ sentiment: 'positive', tag: '' });
+    setAddOpen(false);
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    // TODO(backend): upload `file` and parse survey responses from it.
+    setQueuedFiles((prev) => [...prev, { name: file.name, size: file.size }]);
+    e.target.value = '';
+  };
+
+  const removeQueuedFile = (name) => setQueuedFiles((prev) => prev.filter((f) => f.name !== name));
 
   return (
     <DashboardShell pageId="survey-tracker">
@@ -84,11 +114,13 @@ export default function SurveyTrackerPage() {
             </div>
             <h4 className="font-poppins font-semibold text-body text-white mb-1">Add Responses</h4>
             <p className="font-inter text-caption text-white/70 mb-4">Manually input survey results from 1-on-1 interviews.</p>
-            <ComingSoon label="Add Survey Responses" position="top" inline>
-              <span className="block w-full bg-white text-brand-black py-2 rounded-md font-poppins font-semibold text-caption uppercase tracking-wider">
-                Add Survey Responses
-              </span>
-            </ComingSoon>
+            <button
+              type="button"
+              onClick={() => setAddOpen(true)}
+              className="block w-full bg-white text-brand-black py-2 rounded-md font-poppins font-semibold text-caption uppercase tracking-wider hover:opacity-90 transition-opacity"
+            >
+              Add Survey Responses
+            </button>
           </div>
           <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card p-6 text-center">
             <div className="w-10 h-10 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center mx-auto mb-3">
@@ -96,14 +128,71 @@ export default function SurveyTrackerPage() {
             </div>
             <h4 className="font-poppins font-semibold text-body text-text-heading mb-1">Bulk Import</h4>
             <p className="font-inter text-caption text-text-muted mb-4">Upload .csv or Excel files from external survey tools.</p>
-            <ComingSoon label="Upload Results" position="top" inline>
-              <span className="block w-full border border-border-subtle text-text-heading py-2 rounded-md font-poppins font-semibold text-caption uppercase tracking-wider">
-                Upload Results
-              </span>
-            </ComingSoon>
+            <label className="block w-full border border-border-subtle text-text-heading py-2 rounded-md font-poppins font-semibold text-caption uppercase tracking-wider hover:bg-canvas-bg transition-colors cursor-pointer">
+              Upload Results
+              <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileSelect} className="sr-only" />
+            </label>
+            {queuedFiles.length > 0 && (
+              <div className="mt-3 space-y-1.5 text-left">
+                {queuedFiles.map((f) => (
+                  <div key={f.name} className="flex items-center justify-between gap-2 bg-canvas-bg border border-border-subtle rounded-md px-2.5 py-1.5">
+                    <span className="flex items-center gap-1.5 min-w-0 font-inter text-caption text-text-body truncate">
+                      <Paperclip size={12} strokeWidth={2} className="shrink-0 text-text-muted" />
+                      {f.name}
+                    </span>
+                    <button type="button" onClick={() => removeQueuedFile(f.name)} aria-label={`Remove ${f.name}`} className="shrink-0 text-text-muted hover:text-error transition-colors">
+                      <X size={12} strokeWidth={2} />
+                    </button>
+                  </div>
+                ))}
+                <p className="font-inter text-caption text-text-muted">Queued — imported once submitted for review.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <Modal isOpen={addOpen} onClose={() => setAddOpen(false)} title="Add survey response">
+        <div className="space-y-4">
+          <div>
+            <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider block mb-1.5">Sentiment</label>
+            <div className="flex gap-2">
+              {Object.entries(SENTIMENT_LABELS).map(([key, label]) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => setDraft((prev) => ({ ...prev, sentiment: key }))}
+                  className={`flex-1 py-2 rounded-md border font-inter text-small transition-colors ${
+                    draft.sentiment === key
+                      ? 'bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black'
+                      : 'border-border-subtle text-text-body hover:bg-canvas-bg'
+                  }`}
+                >
+                  {label.replace(' Sentiment', '')}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider block mb-1.5">Tag / Topic</label>
+            <input
+              type="text"
+              value={draft.tag}
+              onChange={(e) => setDraft((prev) => ({ ...prev, tag: e.target.value }))}
+              placeholder="e.g. Pricing Concern"
+              className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={addResponse}
+            disabled={!draft.tag.trim()}
+            className="w-full bg-action-bg text-action-text py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Add Response
+          </button>
+        </div>
+      </Modal>
 
       <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden mb-8">
         <div className="flex items-center justify-between bg-canvas-bg px-5 py-3">
@@ -111,7 +200,7 @@ export default function SurveyTrackerPage() {
           <p className="font-inter text-caption text-text-muted">Last updated: 2 hours ago</p>
         </div>
         <div className="divide-y divide-divider-line">
-          {RECENT.map(({ id, sentiment, tag }) => (
+          {recent.map(({ id, sentiment, tag }) => (
             <div key={id} className="flex items-center justify-between px-5 py-3">
               <div className="flex items-center gap-3">
                 <AlertCircle size={16} strokeWidth={2} className="text-text-muted" />
