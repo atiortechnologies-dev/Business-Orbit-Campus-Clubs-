@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Plus, FolderOpen, Users, FileText } from 'lucide-react';
-import ComingSoon from '@/components/ui/ComingSoon';
 import Badge from '@/components/ui/Badge';
 
 const POSTINGS = [
@@ -15,10 +14,13 @@ export default function RightPanel() {
       <div className="bg-surface-white rounded-xl border border-border-subtle p-5">
         <h2 className="font-poppins font-bold text-body text-text-heading mb-4">Quick Actions</h2>
         <div className="space-y-2.5">
-          <ComingSoon label="Post New Opportunity" position="top" className="w-full flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small py-2.5 rounded-lg hover:opacity-90 transition-all">
+          <Link
+            to="/company/post-opportunity/step-1"
+            className="w-full flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small py-2.5 rounded-lg hover:opacity-90 transition-all"
+          >
             <Plus size={16} strokeWidth={2} />
             Post New Opportunity
-          </ComingSoon>
+          </Link>
           <Link
             to="/company/my-opportunities"
             className="w-full flex items-center justify-center gap-2 bg-surface-white border border-border-subtle text-text-heading font-poppins font-semibold text-small py-2.5 rounded-lg hover:bg-canvas-bg transition-colors"
@@ -26,10 +28,13 @@ export default function RightPanel() {
             <FolderOpen size={16} strokeWidth={2} />
             Manage Opportunities
           </Link>
-          <ComingSoon label="View Applicants" position="top" className="w-full flex items-center justify-center gap-2 bg-surface-white border border-border-subtle text-text-heading font-poppins font-semibold text-small py-2.5 rounded-lg hover:bg-canvas-bg transition-colors">
+          <Link
+            to="/company/applicants"
+            className="w-full flex items-center justify-center gap-2 bg-surface-white border border-border-subtle text-text-heading font-poppins font-semibold text-small py-2.5 rounded-lg hover:bg-canvas-bg transition-colors"
+          >
             <Users size={16} strokeWidth={2} />
             View Applicants
-          </ComingSoon>
+          </Link>
         </div>
       </div>
 

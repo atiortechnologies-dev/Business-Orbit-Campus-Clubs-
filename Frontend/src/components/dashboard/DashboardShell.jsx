@@ -26,8 +26,8 @@ const NAV_ITEMS = [
   { icon: Rocket,          label: 'Build Startup',  href: '/build-startup/journey', real: true },
   { icon: GraduationCap,   label: 'Mentors',        href: '#', real: false },
   { icon: Wallet,          label: 'Investors',      href: '#', real: false },
-  { icon: Building2,       label: 'Incubators',     href: '#', real: false },
-  { icon: Briefcase,       label: 'Freelancing',    href: '#', real: false },
+  { icon: Building2,       label: 'Incubators',     href: '/incubators', real: true },
+  { icon: Briefcase,       label: 'Freelancing',    href: '/freelancing', real: true },
   { icon: User,            label: 'Profile',        href: '/settings', real: true },
   { icon: HelpCircle,      label: 'Help',           href: '#', real: false },
 ];

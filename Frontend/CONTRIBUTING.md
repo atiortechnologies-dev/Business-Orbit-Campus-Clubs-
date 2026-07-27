@@ -70,6 +70,20 @@ src/
       JourneyComplete.jsx      Graduation screen after all 5 stages, sits
                                directly in journey/ (not its own subfolder,
                                nothing else in the flow follows it)
+    incubators/                Student-facing incubator marketplace (not
+                               the Incubator role's own portal below —
+                               deliberately separate folders, same
+                               landing/incubator/ vs. incubator/ split
+                               noted under components/ below):
+                               DiscoverIncubators.jsx → IncubatorProfile.jsx
+                               → IncubatorApplicationForm.jsx →
+                               IncubationConfirmed.jsx (links forward into
+                               journey/mvp/IncubationProofSubmission.jsx)
+                               → MyIncubation.jsx
+    freelancing/               FreelancingOpportunities.jsx →
+                               OpportunityDetail.jsx →
+                               FreelancingApplicationForm.jsx →
+                               ApplyConfirmation.jsx → MyApplications.jsx
     incubator/                Incubator.jsx, Applications.jsx,
                                ApplicationReview.jsx, Messages.jsx, Settings.jsx
     admin/                    Admin.jsx (dashboard), VerificationQueue.jsx →
@@ -108,7 +122,11 @@ src/
     company/                  Dashboard.jsx, MyOpportunities.jsx — originally
                                added by a different contributor directly to
                                main; fully remediated onto this file's
-                               conventions, see components/company/ below
+                               conventions, see components/company/ below.
+                               PostOpportunityStep{1..4}.jsx (4-step wizard,
+                               shares in-session state via
+                               postOpportunityDraft.js — see INTEGRATION.md),
+                               ApplicantsList.jsx → ApplicantDetail.jsx
 
   components/
     ui/          Generic, reusable anywhere: Button, Card, Input, Logo,
@@ -132,7 +150,8 @@ src/
     company/     CompanyShell (the fifth instance of the same shell
                  pattern) — the Company portal's page wrapper, plus its
                  page-content components (ApplicantTable, RightPanel,
-                 StatsRow, OpportunitiesTable)
+                 StatsRow, OpportunitiesTable, PostOpportunityStepper —
+                 the shared 4-step progress header)
     landing/     Public marketing-page sections — landing/{Navbar,Footer,
                  FAQ,...}.jsx shared across pages, plus one subfolder per
                  role (landing/student/, landing/mentor/, etc.) for
