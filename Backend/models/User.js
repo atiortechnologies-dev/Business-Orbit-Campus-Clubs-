@@ -74,6 +74,44 @@ userSchema.index({ full_name: "text" });
 
 const cascadeService = require("../services/cascadeService");
 
-// Cascade deletion is now handled explicitly in the controllers using transactions.
+userSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    const session = this.getOptions().session;
+    await cascadeService.deleteUserDependencies(doc._id, session);
+  }
+});
+
+userSchema.post(
+  "deleteOne",
+  { document: true, query: false },
+  async function () {
+    const session = this.$session();
+    await cascadeService.deleteUserDependencies(this._id, session);
+  },
+);
+
+userSchema.pre(
+  "deleteOne",
+  { document: false, query: true },
+  async function () {
+    const doc = await this.model
+      .findOne(this.getFilter())
+      .session(this.getOptions().session);
+    if (doc) {
+      this._cascadeUserId = doc._id;
+    }
+  },
+);
+
+userSchema.post(
+  "deleteOne",
+  { document: false, query: true },
+  async function () {
+    if (this._cascadeUserId) {
+      const session = this.getOptions().session;
+      await cascadeService.deleteUserDependencies(this._cascadeUserId, session);
+    }
+  },
+);
 
 module.exports = mongoose.model("User", userSchema);
