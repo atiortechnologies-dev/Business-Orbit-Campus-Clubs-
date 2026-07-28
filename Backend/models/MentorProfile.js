@@ -19,7 +19,7 @@ const mentorProfileSchema = new mongoose.Schema(
     organization: { type: String, required: true, trim: true },
     designation: { type: String, required: true, trim: true },
     expertise: { type: String, required: true, trim: true },
-    years_of_experience: { type: Number, required: true, min: 0 },
+    years_of_experience: { type: String, required: true },
 
     //^ Fields captured at onboarding
     profile_photo: { type: String, default: "" },

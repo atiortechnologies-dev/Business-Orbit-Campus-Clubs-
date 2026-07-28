@@ -41,6 +41,7 @@ const createProfile = asyncHandler(async (req, res) => {
       message: "Please verify your email before completing your profile",
     });
   }
+
   if (account_status !== "active") {
     return res
       .status(403)
@@ -52,18 +53,25 @@ const createProfile = asyncHandler(async (req, res) => {
   if (!data) return;
 
   const ProfileModel = config.ProfileModel;
+
+  // 1. Fetch existing profile created during registration
   let profile = await ProfileModel.findOne({ user_id: userId });
 
-  if (profile && profile.profile_status === "completed") {
+  if (!profile) {
+    return res.status(404).json({
+      success: false,
+      message: "Initial profile not found. Please re-register.",
+    });
+  }
+
+  if (profile.profile_status === "completed") {
     return res.status(409).json({
       success: false,
       message: "Profile already completed. Use PUT to update it instead.",
     });
   }
-  if (!profile) {
-    profile = new ProfileModel({ user_id: userId });
-  }
 
+  // 2. Assign onboarding fields to the existing document (preserving college, degree, grad year)
   profile.bio = data.bio;
   profile.skills = data.skills;
   profile.linkedin_url = data.linkedin_url;
@@ -77,6 +85,8 @@ const createProfile = asyncHandler(async (req, res) => {
 
   profile.profile_status = "completed";
   profile.profile_completed_at = new Date();
+
+  // 3. Save existing profile
   await profile.save();
 
   await User.findByIdAndUpdate(userId, { profile_status: "completed" });

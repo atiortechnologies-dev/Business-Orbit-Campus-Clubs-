@@ -1,6 +1,6 @@
-import { UserPlus } from 'lucide-react';
-import RoleSignupForm from '@/components/auth/RoleSignupForm';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { UserPlus } from "lucide-react";
+import RoleSignupForm from "@/components/auth/RoleSignupForm";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 // Backend/utils/validators.js's mentorFields expects: organization
 // (matches), designation (matches), expertise (matches),
@@ -10,17 +10,45 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 // frontend change to collect an exact number; a straight field rename
 // won't fix the type mismatch.
 const FIELDS = [
-  { name: 'fullName', label: 'Full Name', placeholder: 'e.g. Sam Rivera' },
-  { name: 'email', label: 'Email', type: 'email', placeholder: 'you@example.com' },
-  { name: 'phone', label: 'Phone', type: 'tel', placeholder: '+1 (555) 000-0000' },
-  { name: 'organization', label: 'Current Organization', placeholder: 'e.g. TechCorp' },
-  { name: 'designation', label: 'Designation', placeholder: 'e.g. Senior Product Manager' },
-  { name: 'experience', label: 'Experience', type: 'select', options: ['0-2 years', '3-5 years', '6-10 years', '10+ years'] },
-  { name: 'expertise', label: 'Area of Expertise', placeholder: 'e.g. Product Strategy, Fundraising', colSpan: 2 },
+  { name: "full_name", label: "Full Name", placeholder: "e.g. Sam Rivera" },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "you@example.com",
+  },
+  {
+    name: "phone",
+    label: "Phone",
+    type: "tel",
+    placeholder: "+1 (555) 000-0000",
+  },
+  {
+    name: "organization",
+    label: "Current Organization",
+    placeholder: "e.g. TechCorp",
+  },
+  {
+    name: "designation",
+    label: "Designation",
+    placeholder: "e.g. Senior Product Manager",
+  },
+  {
+    name: "years_of_experience",
+    label: "Experience",
+    type: "select",
+    options: ["0-2 years", "3-5 years", "6-10 years", "10+ years"],
+  },
+  {
+    name: "expertise",
+    label: "Area of Expertise",
+    placeholder: "e.g. Product Strategy, Fundraising",
+    colSpan: 2,
+  },
 ];
 
 export default function MentorSignupPage() {
-  useDocumentTitle('Mentor Sign Up — BOCC');
+  useDocumentTitle("Mentor Sign Up — BOCC");
   return (
     <RoleSignupForm
       roleId="mentor"
