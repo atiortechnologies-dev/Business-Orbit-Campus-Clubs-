@@ -8,10 +8,14 @@ const mongoose = require("mongoose");
 const {
   acceptRequest,
   declineRequest,
+  viewStudentProfile,
 } = require("../../controllers/mentorRequest.controller");
 const MentorRequest = require("../../models/MentorRequest");
 const MentorAssignment = require("../../models/MentorAssignment");
 const ChatRoom = require("../../models/ChatRoom");
+const StudentProfile = require("../../models/StudentProfile");
+const User = require("../../models/User");
+const Startup = require("../../models/Startup");
 
 const mockResponse = () => {
   const res = {};
@@ -43,6 +47,9 @@ describe("Mentor Request Controller", () => {
     const ActivityLog = require("../../models/ActivityLog");
     await Notification.createCollection();
     await ActivityLog.createCollection();
+    await StudentProfile.createCollection();
+    await User.createCollection();
+    await Startup.createCollection();
   });
 
   describe("acceptRequest", () => {
@@ -51,7 +58,9 @@ describe("Mentor Request Controller", () => {
         mentor_id: mentorId,
         student_id: studentId,
         startup_id: startupId,
-        request_summary: "Help me",
+        problem_statement: "Help me",
+        help_required: "Help me",
+        preferred_time: "Now",
         status: "pending",
       });
 
@@ -61,7 +70,9 @@ describe("Mentor Request Controller", () => {
       };
       const res = mockResponse();
 
-      const next = jest.fn((err) => { if (err) console.error("NEXT ERROR:", err); });
+      const next = jest.fn((err) => {
+        if (err) console.error("NEXT ERROR:", err);
+      });
       await acceptRequest(req, res, next);
       if (next.mock.calls.length > 0) throw next.mock.calls[0][0];
 
@@ -90,7 +101,9 @@ describe("Mentor Request Controller", () => {
         mentor_id: mentorId,
         student_id: studentId,
         startup_id: startupId,
-        request_summary: "Help me",
+        problem_statement: "Help me",
+        help_required: "Help me",
+        preferred_time: "Now",
         status: "declined",
       });
 
@@ -117,7 +130,9 @@ describe("Mentor Request Controller", () => {
         mentor_id: mentorId,
         student_id: studentId,
         startup_id: startupId,
-        request_summary: "Help me",
+        problem_statement: "Help me",
+        help_required: "Help me",
+        preferred_time: "Now",
         status: "pending",
       });
 
@@ -133,6 +148,77 @@ describe("Mentor Request Controller", () => {
 
       const updatedReq = await MentorRequest.findById(request._id);
       expect(updatedReq.status).toBe("declined");
+    });
+  });
+
+  describe("viewStudentProfile", () => {
+    it("should allow a mentor to view profile if a MentorAssignment exists", async () => {
+      await MentorAssignment.create({
+        mentor_id: mentorId,
+        student_id: studentId,
+        startup_id: startupId,
+        status: "active",
+      });
+
+      const req = {
+        params: { studentId },
+        user: { _id: mentorId },
+      };
+      const res = mockResponse();
+
+      const next = jest.fn((err) => {
+        if (err) console.error("NEXT ERROR:", err);
+      });
+      await viewStudentProfile(req, res, next);
+      if (next.mock.calls.length > 0) throw next.mock.calls[0][0];
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json.mock.calls[0][0]).toHaveProperty("studentInformation");
+    });
+
+    it("should allow a mentor to view profile if a MentorRequest exists", async () => {
+      await MentorRequest.create({
+        mentor_id: mentorId,
+        student_id: studentId,
+        startup_id: startupId,
+        problem_statement: "Help me",
+        help_required: "Help me",
+        preferred_time: "Now",
+        status: "pending",
+      });
+
+      const req = {
+        params: { studentId },
+        user: { _id: mentorId },
+      };
+      const res = mockResponse();
+
+      const next = jest.fn((err) => {
+        if (err) console.error("NEXT ERROR:", err);
+      });
+      await viewStudentProfile(req, res, next);
+      if (next.mock.calls.length > 0) throw next.mock.calls[0][0];
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json.mock.calls[0][0]).toHaveProperty("studentInformation");
+    });
+
+    it("should deny access if neither MentorAssignment nor MentorRequest exists", async () => {
+      const req = {
+        params: { studentId },
+        user: { _id: mentorId },
+      };
+      const res = mockResponse();
+
+      const next = jest.fn((err) => {
+        if (err) console.error("NEXT ERROR:", err);
+      });
+      await viewStudentProfile(req, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(403);
+      expect(res.json.mock.calls[0][0]).toEqual({
+        message: "Not authorized to view this student's profile.",
+      });
     });
   });
 });

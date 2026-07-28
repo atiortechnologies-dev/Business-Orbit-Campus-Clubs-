@@ -60,7 +60,6 @@ const sendEmail = async ({
 
   try {
     const info = await transport.sendMail(emailOptions);
-    console.log(`Email sent to ${toEmail}. Message ID: ${info.messageId}`);
     return info;
   } catch (error) {
     console.error("Error sending email via Mailtrap:", error);

@@ -42,7 +42,11 @@ describe("Profile Controller", () => {
       account_status: "pending_verification",
       email_verified: false,
     });
-    unverifiedJwt = generateToken(unverifiedUser._id, "student", "unverified@example.com");
+    unverifiedJwt = generateToken(
+      unverifiedUser._id,
+      "student",
+      "unverified@example.com",
+    );
 
     await StudentProfile.create({
       user_id: unverifiedUser._id,
@@ -61,7 +65,9 @@ describe("Profile Controller", () => {
         .send({ bio: "Hello" });
 
       expect(res.statusCode).toBe(403);
-      expect(res.body.message).toBe("Please verify your email before completing your profile");
+      expect(res.body.message).toBe(
+        "Please verify your email before completing your profile",
+      );
     });
 
     it("should return 400 for invalid data", async () => {
@@ -97,7 +103,7 @@ describe("Profile Controller", () => {
       expect(profile).not.toBeNull();
       expect(profile.college).toBe("MIT");
       expect(profile.skills.length).toBe(2);
-      
+
       const user = await User.findById(activeId);
       expect(user.profile_status).toBe("completed");
     });
@@ -105,7 +111,7 @@ describe("Profile Controller", () => {
     it("should return 409 if profile is already completed", async () => {
       await StudentProfile.findOneAndUpdate(
         { user_id: activeId },
-        { profile_status: "completed" }
+        { profile_status: "completed" },
       );
 
       const res = await request(app)
@@ -120,7 +126,9 @@ describe("Profile Controller", () => {
         });
 
       expect(res.statusCode).toBe(409);
-      expect(res.body.message).toBe("Profile already completed. Use PUT to update it instead.");
+      expect(res.body.message).toBe(
+        "Profile already completed. Use PUT to update it instead.",
+      );
     });
   });
 
@@ -152,16 +160,21 @@ describe("Profile Controller", () => {
         .send({ bio: "This is a new bio that is long enough." });
 
       expect(res.statusCode).toBe(404);
-      expect(res.body.message).toBe("Profile not found. Complete your profile first.");
+      expect(res.body.message).toBe(
+        "Profile not found. Complete your profile first.",
+      );
     });
 
     it("should successfully update an existing profile", async () => {
       // The profile was created in beforeEach with profile_status: "incomplete"
-      
+
       const res = await request(app)
         .put("/api/student/profile")
         .set("Authorization", `Bearer ${activeJwt}`)
-        .send({ bio: "This is a new bio that is long enough.", portfolio_url: "https://github.com/test" });
+        .send({
+          bio: "This is a new bio that is long enough.",
+          portfolio_url: "https://github.com/test",
+        });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);

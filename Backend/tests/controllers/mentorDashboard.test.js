@@ -87,7 +87,9 @@ describe("Mentor Dashboard Controller", () => {
         mentor_id: mentorId,
         student_id: studentId,
         startup_id: startupId,
-        request_summary: "Test",
+        problem_statement: "Test",
+        help_required: "Test",
+        preferred_time: "Now",
         status: "pending",
       });
 
@@ -139,7 +141,9 @@ describe("Mentor Dashboard Controller", () => {
         mentor_id: mentorId,
         student_id: studentId,
         startup_id: startupId,
-        request_summary: "Test",
+        problem_statement: "Test",
+        help_required: "Test",
+        preferred_time: "Now",
         status: "pending",
       });
 
@@ -169,13 +173,13 @@ describe("Mentor Dashboard Controller", () => {
         chat_id: chat._id,
         sender_id: studentId,
         message: "Hello",
-        is_read: false,
+        read_at: null,
       });
       await Message.create({
         chat_id: chat._id,
         sender_id: studentId,
         message: "Read message",
-        is_read: true,
+        read_at: new Date(),
       });
 
       const req = { user: { _id: mentorId } };
@@ -187,7 +191,7 @@ describe("Mentor Dashboard Controller", () => {
       const data = res.json.mock.calls[0][0];
 
       expect(data.length).toBe(1);
-      expect(data[0].studentName).toBe("Test Student");
+      expect(data[0].participantName).toBe("Test Student");
       expect(data[0].lastMessage).toBe("Read message"); // Because of creation order they have the same timestamp but the last created is actually the first in the sort. Wait, I didn't enforce a delay in creation so timestamps are identical. The query might pick any.
 
       // Let's just assert unreadCount

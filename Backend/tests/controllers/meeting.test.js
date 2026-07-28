@@ -61,7 +61,7 @@ describe("Meeting Controller", () => {
       // Create meetings
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 2);
-      
+
       const futureDate2 = new Date();
       futureDate2.setDate(futureDate2.getDate() + 5);
 

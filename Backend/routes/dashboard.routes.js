@@ -1,3 +1,9 @@
+/**
+ * @file dashboard.routes.js
+ * @description Exposes endpoint for retrieving student dashboard summary data.
+ * @architecture A minimal router restricted to the 'student' role.
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -24,4 +30,8 @@ router.put("/profile", validateRequest(updateProfileSchema), updateProfile);
 router.get("/startup", getStartup);
 router.put("/startup", validateRequest(updateStartupSchema), updateStartup);
 
+/**
+ * @module dashboardRouter
+ * @description Express router for student dashboard endpoints.
+ */
 module.exports = router;

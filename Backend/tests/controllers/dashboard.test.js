@@ -45,7 +45,11 @@ describe("Dashboard Controller", () => {
       email_verified: false,
     });
     unverifiedId = unverified._id;
-    unverifiedJwt = generateToken(unverifiedId, "student", "unverified@example.com");
+    unverifiedJwt = generateToken(
+      unverifiedId,
+      "student",
+      "unverified@example.com",
+    );
 
     // Inactive student
     const inactive = await User.create({

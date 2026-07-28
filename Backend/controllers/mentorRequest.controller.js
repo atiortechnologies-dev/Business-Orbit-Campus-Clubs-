@@ -63,7 +63,12 @@ exports.getAllPendingRequests = asyncHandler(async (req, res) => {
   ];
 
   // Apply related filters
-  if (stage) pipeline.push({ $match: { "startup.current_stage": !isNaN(stage) ? Number(stage) : stage } });
+  if (stage)
+    pipeline.push({
+      $match: {
+        "startup.current_stage": !isNaN(stage) ? Number(stage) : stage,
+      },
+    });
   if (category) pipeline.push({ $match: { "startup.category": category } });
   if (college) pipeline.push({ $match: { "studentProfile.college": college } });
 
@@ -82,7 +87,11 @@ exports.getAllPendingRequests = asyncHandler(async (req, res) => {
       startupName: "$startup.startup_name",
       startupStage: "$startup.current_stage",
       startupCategory: "$startup.category",
-      requestSummary: "$request_summary",
+      problemStatement: "$problem_statement",
+      helpRequired: "$help_required",
+      preferredMeetingMode: "$preferred_meeting_mode",
+      preferredTime: "$preferred_time",
+      additionalNotes: "$additional_notes",
       submittedDate: "$created_at",
       requestStatus: "$status",
     },
@@ -103,10 +112,17 @@ exports.viewStudentProfile = asyncHandler(async (req, res) => {
   const mentorId = req.user._id;
 
   // Ensure the mentor is assigned or has a request from this student to get the startup_id
-  const assignmentOrRequest = await MentorRequest.findOne({
+  let assignmentOrRequest = await MentorAssignment.findOne({
     mentor_id: mentorId,
     student_id: studentId,
   }).populate("startup_id");
+
+  if (!assignmentOrRequest) {
+    assignmentOrRequest = await MentorRequest.findOne({
+      mentor_id: mentorId,
+      student_id: studentId,
+    }).populate("startup_id");
+  }
 
   if (!assignmentOrRequest) {
     return res
@@ -119,9 +135,22 @@ exports.viewStudentProfile = asyncHandler(async (req, res) => {
   }).populate("user_id", "full_name email");
   const startup = assignmentOrRequest.startup_id;
 
+  // Fallback to basic User data if the student hasn't completed their StudentProfile yet
+  let name = "Unknown Student";
+  if (studentProfile && studentProfile.user_id) {
+    name = studentProfile.user_id.full_name;
+  } else {
+    // If StudentProfile doesn't exist, we can still try to get the basic user info
+    const User = require("../models/User");
+    const user = await User.findById(studentId).select("full_name");
+    if (user) {
+      name = user.full_name;
+    }
+  }
+
   res.status(200).json({
     studentInformation: {
-      name: studentProfile?.user_id?.full_name,
+      name: name,
       college: studentProfile?.college,
       degree: studentProfile?.degree,
       graduationYear: studentProfile?.graduation_year,
@@ -217,6 +246,19 @@ exports.acceptRequest = asyncHandler(async (req, res, next) => {
     });
     await notification.save({ session });
 
+    await ActivityLog.create(
+      [
+        {
+          user_id: mentorId,
+          action: "ACCEPT_MENTOR_REQUEST",
+          entity_type: "MentorRequest",
+          entity_id: requestId,
+          description: "Mentor accepted the mentorship request.",
+        },
+      ],
+      { session },
+    );
+
     await session.commitTransaction();
     res
       .status(200)
@@ -238,44 +280,63 @@ exports.declineRequest = asyncHandler(async (req, res) => {
   const { requestId } = req.params;
   const mentorId = req.user._id;
 
-  const request = await MentorRequest.findOne({
-    _id: requestId,
-    mentor_id: mentorId,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!request) {
-    return res
-      .status(404)
-      .json({ message: "Request not found or unauthorized." });
+  try {
+    const request = await MentorRequest.findOne({
+      _id: requestId,
+      mentor_id: mentorId,
+    }).session(session);
+
+    if (!request) {
+      await session.abortTransaction();
+      return res
+        .status(404)
+        .json({ message: "Request not found or unauthorized." });
+    }
+
+    if (request.status !== REQUEST_STATUS.PENDING) {
+      await session.abortTransaction();
+      return res
+        .status(400)
+        .json({ message: "Only pending requests can be declined." });
+    }
+
+    request.status = REQUEST_STATUS.DECLINED;
+    await request.save({ session });
+
+    // Store decline action for audit purposes and Notify student
+    await ActivityLog.create(
+      [
+        {
+          user_id: mentorId,
+          action: "DECLINE_MENTOR_REQUEST",
+          entity_type: "MentorRequest",
+          entity_id: requestId,
+          description: "Mentor declined the mentorship request.",
+        },
+      ],
+      { session },
+    );
+
+    const notification = new Notification({
+      recipient_id: request.student_id,
+      title: "Mentorship Request Declined",
+      message: "Your mentorship request was declined.",
+      type: "warning",
+    });
+    await notification.save({ session });
+
+    await session.commitTransaction();
+
+    res
+      .status(200)
+      .json({ message: "Mentorship request declined successfully." });
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  if (request.status !== REQUEST_STATUS.PENDING) {
-    return res
-      .status(400)
-      .json({ message: "Only pending requests can be declined." });
-  }
-
-  request.status = REQUEST_STATUS.DECLINED;
-  await request.save();
-
-  // Store decline action for audit purposes and Notify student
-  await ActivityLog.create({
-    user_id: mentorId,
-    action: "DECLINE_MENTOR_REQUEST",
-    entity_type: "MentorRequest",
-    entity_id: requestId,
-    description: "Mentor declined the mentorship request.",
-  });
-
-  const notification = new Notification({
-    recipient_id: request.student_id,
-    title: "Mentorship Request Declined",
-    message: "Your mentorship request was declined.",
-    type: "warning",
-  });
-  await notification.save();
-
-  res
-    .status(200)
-    .json({ message: "Mentorship request declined successfully." });
 });
