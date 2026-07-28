@@ -35,4 +35,20 @@ router.post(
   launchController.submitLaunchDetails,
 );
 
+// SCREEN 3: PITCH DECK UPLOAD
+
+router.get("/stages/launch/pitch-deck", launchController.getPitchDeck);
+router.post(
+  "/stages/launch/pitch-deck/upload",
+  launchController.uploadPitchDeck,
+);
+router.delete(
+  "/stages/launch/pitch-deck/:documentId",
+  launchController.deletePitchDocument,
+);
+router.post(
+  "/stages/launch/pitch-deck/submit",
+  launchController.submitPitchDeck,
+);
+
 module.exports = router;

@@ -192,6 +192,69 @@ const submitLaunchDetails = asyncHandler(async (req, res) => {
   });
 });
 
+// ========= SCREEN 3: PITCH DECK UPLOAD =========
+
+const getPitchDeck = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const documents = await LaunchPitchDocument.find({
+    startup_id: startup._id,
+  }).lean();
+
+  res.status(200).json({ success: true, data: documents });
+});
+
+const uploadPitchDeck = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const { document_type } = req.body;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const document = new LaunchPitchDocument({
+    startup_id: startup._id,
+    student_id: userId,
+    document_type,
+    file_name: req.file?.originalname || "document",
+    file_url: `/uploads/${Date.now()}-${req.file?.originalname || "document"}`,
+    file_size: req.file?.size || 0,
+    mime_type: req.file?.mimetype,
+    upload_status: "Draft",
+    uploaded_at: new Date(),
+  });
+
+  await document.save();
+
+  res.status(201).json({
+    success: true,
+    message: "Document uploaded",
+    data: { document_id: document.document_id },
+  });
+});
+
+const deletePitchDocument = asyncHandler(async (req, res) => {
+  const { documentId } = req.params;
+  const { id: userId } = req.user;
+
+  await LaunchPitchDocument.deleteOne({
+    document_id: documentId,
+    student_id: userId,
+  });
+
+  res.status(200).json({ success: true, message: "Document deleted" });
+});
+
+const submitPitchDeck = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  await LaunchPitchDocument.updateMany(
+    { startup_id: startup._id },
+    { upload_status: "Submitted" },
+  );
+
+  res.status(200).json({ success: true, message: "Pitch deck submitted" });
+});
+
 module.exports = {
   getLaunchOverview,
   getLaunchChecklist,
@@ -200,4 +263,8 @@ module.exports = {
   getLaunchSubmission,
   updateLaunchSubmission,
   submitLaunchDetails,
+  getPitchDeck,
+  uploadPitchDeck,
+  deletePitchDocument,
+  submitPitchDeck,
 };
