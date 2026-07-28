@@ -15,8 +15,8 @@ jest.mock("../utils/email", () => ({
   sendOTPEmail: jest.fn().mockResolvedValue(true),
 }));
 
-process.env.ADMIN_API_KEY = "testadmin";
-process.env.JWT_SECRET = "testsecret";
+process.env.ADMIN_API_KEY = "DUMMY_SECRET_FOR_TESTING_ONLY";
+process.env.JWT_SECRET = "DUMMY_SECRET_FOR_TESTING_ONLY";
 
 const testData = [];
 
