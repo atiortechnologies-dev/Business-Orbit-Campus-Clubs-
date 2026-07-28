@@ -5,6 +5,7 @@ const LaunchPitchDocument = require("../models/LaunchPitchDocument");
 const LaunchStage = require("../models/LaunchStage");
 const LaunchSubmission = require("../models/LaunchSubmission");
 const LaunchVerification = require("../models/LaunchVerification");
+const StartupGraduation = require("../models/StartupGraduation");
 const StartupStage = require("../models/StartupStage");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
@@ -370,6 +371,174 @@ const getLaunchEvidence = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: evidence });
 });
 
+// ========= SCREEN 5: LAUNCH VERIFICATION =========
+
+const getLaunchVerification = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const verification = await LaunchVerification.findOne({
+    startup_id: startup._id,
+  })
+    .populate("reviewer_id", "full_name email")
+    .lean();
+
+  if (!verification) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No verification found" });
+  }
+
+  res.status(200).json({ success: true, data: verification });
+});
+
+const getVerificationStatus = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const verification = await LaunchVerification.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      status: verification?.status || "Pending Review",
+      review_notes: verification?.review_notes,
+      requested_changes: verification?.requested_changes,
+    },
+  });
+});
+
+const getVerificationFiles = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const submission = await LaunchSubmission.findOne({
+    startup_id: startup._id,
+  }).lean();
+  const pitchDocs = await LaunchPitchDocument.find({
+    startup_id: startup._id,
+  }).lean();
+  const evidence = await LaunchEvidenceFile.find({
+    startup_id: startup._id,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: { submission, pitchDocs, evidence },
+  });
+});
+
+// ========= SCREEN 6: JOURNEY COMPLETED =========
+
+const getJourneyCompletion = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const graduation = await StartupGraduation.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!graduation) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Graduation not completed" });
+  }
+
+  res.status(200).json({ success: true, data: graduation });
+});
+
+const getGraduationCertificate = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const graduation = await StartupGraduation.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!graduation || !graduation.certificate_url) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Certificate not generated" });
+  }
+
+  res.status(200).json({
+    success: true,
+    data: { certificate_url: graduation.certificate_url },
+  });
+});
+
+const joinAlumniNetwork = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const graduation = await StartupGraduation.findOneAndUpdate(
+    { startup_id: startup._id },
+    { alumni_status: "Joined" },
+    { new: true },
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Joined alumni network",
+    data: graduation,
+  });
+});
+
+const applyForMentor = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const graduation = await StartupGraduation.findOneAndUpdate(
+    { startup_id: startup._id },
+    { mentor_application_submitted: true },
+    { new: true },
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Mentor application submitted",
+    data: graduation,
+  });
+});
+
+const applyForShowcase = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const graduation = await StartupGraduation.findOneAndUpdate(
+    { startup_id: startup._id },
+    { showcase_application_submitted: true },
+    { new: true },
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Showcase application submitted",
+    data: graduation,
+  });
+});
+
+const getJourneyStatistics = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const graduation = await StartupGraduation.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      completion_percentage: 100,
+      journey_duration: graduation?.total_duration || 0,
+      final_rating: graduation?.final_rating || 0,
+      graduation_date: graduation?.graduation_date,
+    },
+  });
+});
+
 module.exports = {
   getLaunchOverview,
   getLaunchChecklist,
@@ -388,4 +557,13 @@ module.exports = {
   deleteLaunchEvidence,
   submitLaunchInsights,
   getLaunchEvidence,
+  getLaunchVerification,
+  getVerificationStatus,
+  getVerificationFiles,
+  getJourneyCompletion,
+  getGraduationCertificate,
+  joinAlumniNetwork,
+  applyForMentor,
+  applyForShowcase,
+  getJourneyStatistics,
 };

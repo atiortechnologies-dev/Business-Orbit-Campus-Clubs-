@@ -74,4 +74,31 @@ router.post(
 );
 router.get("/stages/launch/evidence", launchController.getLaunchEvidence);
 
+// SCREEN 5: LAUNCH VERIFICATION
+
+router.get(
+  "/stages/launch/verification",
+  launchController.getLaunchVerification,
+);
+router.get(
+  "/stages/launch/verification/status",
+  launchController.getVerificationStatus,
+);
+router.get(
+  "/stages/launch/verification/files",
+  launchController.getVerificationFiles,
+);
+
+// SCREEN 6: JOURNEY COMPLETED
+
+router.get("/stages/launch/completion", launchController.getJourneyCompletion);
+router.get(
+  "/stages/launch/certificate",
+  launchController.getGraduationCertificate,
+);
+router.post("/stages/launch/alumni/join", launchController.joinAlumniNetwork);
+router.post("/stages/launch/mentor/apply", launchController.applyForMentor);
+router.post("/stages/launch/showcase/apply", launchController.applyForShowcase);
+router.get("/stages/launch/statistics", launchController.getJourneyStatistics);
+
 module.exports = router;
