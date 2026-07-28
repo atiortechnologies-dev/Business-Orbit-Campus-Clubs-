@@ -4,70 +4,18 @@
  * @architecture Centralizes privileged operations, ensuring that business logic requiring elevated permissions is naturally isolated.
  */
 
+const mongoose = require("mongoose");
+const cascadeService = require("../services/cascadeService");
 const FAQ = require("../models/FAQ");
 const User = require("../models/User");
+const ChapterChangeRequest = require("../models/ChapterChangeRequest");
+const StudentProfile = require("../models/StudentProfile");
 const {
   createFaqSchema,
   updateFaqSchema,
 } = require("../utils/adminValidators");
 
-/**
- * @route   POST /api/admin/faqs
- * @desc    Create a new FAQ
- * @access  Private (Admin)
- */
-exports.createFaq = async (req, res, next) => {
-  try {
-    const validatedData = createFaqSchema.parse(req.body);
-    const faq = await FAQ.create(validatedData);
-    res.status(201).json({ success: true, data: faq });
-  } catch (error) {
-    if (error.name === "ZodError")
-      return res.status(400).json({ success: false, errors: error.errors });
-    next(error);
-  }
-};
-
-/**
- * @route   PUT /api/admin/faqs/:id
- * @desc    Update an existing FAQ
- * @access  Private (Admin)
- */
-exports.updateFaq = async (req, res, next) => {
-  try {
-    const validatedData = updateFaqSchema.parse(req.body);
-    const faq = await FAQ.findByIdAndUpdate(req.params.id, validatedData, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!faq)
-      return res.status(404).json({ success: false, message: "FAQ not found" });
-    res.status(200).json({ success: true, data: faq });
-  } catch (error) {
-    if (error.name === "ZodError")
-      return res.status(400).json({ success: false, errors: error.errors });
-    next(error);
-  }
-};
-
-/**
- * @route   DELETE /api/admin/faqs/:id
- * @desc    Delete an FAQ
- * @access  Private (Admin)
- */
-exports.deleteFaq = async (req, res, next) => {
-  try {
-    const faq = await FAQ.findByIdAndDelete(req.params.id);
-    if (!faq)
-      return res.status(404).json({ success: false, message: "FAQ not found" });
-    res
-      .status(200)
-      .json({ success: true, message: "FAQ deleted successfully" });
-  } catch (error) {
-    next(error);
-  }
-};
+// FAQ CRUD handled by generic resource helpers below
 
 const Statistic = require("../models/Statistic");
 const PartnerLogo = require("../models/PartnerLogo");
@@ -131,6 +79,11 @@ const deleteResource = (Model) => async (req, res, next) => {
   }
 };
 
+// FAQ CRUD
+exports.createFaq = createResource(FAQ, createFaqSchema);
+exports.updateFaq = updateResource(FAQ, updateFaqSchema);
+exports.deleteFaq = deleteResource(FAQ);
+
 // Statistics CRUD
 exports.createStatistic = createResource(Statistic, createStatisticSchema);
 exports.updateStatistic = updateResource(Statistic, updateStatisticSchema);
@@ -175,13 +128,171 @@ exports.deleteFeaturedStartup = deleteResource(FeaturedStartup);
  * @access  Private (Admin)
  */
 exports.deleteUser = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user)
-      return res.status(404).json({ success: false, message: "User not found" });
-    res
-      .status(200)
-      .json({ success: true, message: "User and all associated data deleted successfully" });
+    const user = await User.findById(req.params.id).session(session);
+    if (!user) {
+      await session.abortTransaction();
+      session.endSession();
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    await User.findByIdAndDelete(req.params.id).session(session);
+
+    await session.commitTransaction();
+    res.status(200).json({
+      success: true,
+      message: "User and all associated data deleted successfully",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    next(error);
+  } finally {
+    session.endSession();
+  }
+};
+
+/**
+ * @route   GET /api/admin/chapter-change-requests
+ * @desc    List chapter change requests with optional status filter
+ * @access  Private (Admin)
+ */
+exports.listChapterChangeRequests = async (req, res, next) => {
+  try {
+    const query = {};
+    if (req.query.status) {
+      query.status = req.query.status;
+    }
+
+    const requests = await ChapterChangeRequest.find(query)
+      .populate("student_id", "full_name email")
+      .populate("current_chapter_id", "chapter_name college_name")
+      .populate("requested_chapter_id", "chapter_name college_name")
+      .sort({ created_at: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: requests.length,
+      data: requests,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @route   GET /api/admin/chapter-change-requests/:id
+ * @desc    Get a single chapter change request by ID
+ * @access  Private (Admin)
+ */
+exports.getChapterChangeRequest = async (req, res, next) => {
+  try {
+    const request = await ChapterChangeRequest.findById(req.params.id)
+      .populate("student_id", "full_name email")
+      .populate("current_chapter_id", "chapter_name college_name")
+      .populate("requested_chapter_id", "chapter_name college_name");
+
+    if (!request) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Chapter change request not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: request,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @route   PUT /api/admin/chapter-change-requests/:id/approve
+ * @desc    Approve a chapter change request and update student's chapter atomically
+ * @access  Private (Admin)
+ */
+exports.approveChapterChangeRequest = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const request = await ChapterChangeRequest.findById(req.params.id).session(
+      session,
+    );
+    if (!request) {
+      await session.abortTransaction();
+      session.endSession();
+      return res
+        .status(404)
+        .json({ success: false, message: "Chapter change request not found" });
+    }
+
+    if (request.status !== "pending") {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(400).json({
+        success: false,
+        message: `Request is already ${request.status}`,
+      });
+    }
+
+    request.status = "approved";
+    await request.save({ session });
+
+    await StudentProfile.findOneAndUpdate(
+      { user_id: request.student_id },
+      { chapter_id: request.requested_chapter_id },
+      { session },
+    );
+
+    await session.commitTransaction();
+    res.status(200).json({
+      success: true,
+      message: "Chapter change request approved",
+      data: request,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    next(error);
+  } finally {
+    session.endSession();
+  }
+};
+
+/**
+ * @route   PUT /api/admin/chapter-change-requests/:id/reject
+ * @desc    Reject a chapter change request
+ * @access  Private (Admin)
+ */
+exports.rejectChapterChangeRequest = async (req, res, next) => {
+  try {
+    const request = await ChapterChangeRequest.findById(req.params.id);
+    if (!request) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Chapter change request not found" });
+    }
+
+    if (request.status !== "pending") {
+      return res.status(400).json({
+        success: false,
+        message: `Request is already ${request.status}`,
+      });
+    }
+
+    request.status = "rejected";
+    await request.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Chapter change request rejected",
+      data: request,
+    });
   } catch (error) {
     next(error);
   }

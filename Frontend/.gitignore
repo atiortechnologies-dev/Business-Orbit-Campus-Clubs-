@@ -152,3 +152,6 @@ Working/
 # Claude Code's local dev-server launch config for the browser-preview tool
 # — personal tooling, not a project convention teammates need.
 .claude/
+
+# Agent files
+.agent

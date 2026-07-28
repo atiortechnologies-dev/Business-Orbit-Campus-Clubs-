@@ -37,7 +37,9 @@ try {
     mentor_id: new mongoose.Types.ObjectId(),
     student_id: new mongoose.Types.ObjectId(),
     startup_id: new mongoose.Types.ObjectId(),
-    request_summary: "Need help scaling",
+    problem_statement: "Need help scaling",
+    help_required: "Need help scaling",
+    preferred_time: "Now",
   });
   err = req.validateSync();
   assert.strictEqual(err, undefined, "MentorRequest should validate");
@@ -73,7 +75,7 @@ try {
   });
   err = msg.validateSync();
   assert.strictEqual(err, undefined, "Message should validate");
-  assert.strictEqual(msg.is_read, false);
+  assert.strictEqual(msg.read_at, null);
   console.log("✅ Message model validation passed.");
 
   // Test 6: MentorMeeting

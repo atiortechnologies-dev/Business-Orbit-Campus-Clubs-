@@ -14,6 +14,7 @@ const {
   MEETING_STATUS,
   ASSIGNMENT_STATUS,
 } = require("../constants/statusConstants");
+const mongoose = require("mongoose");
 
 /**
  * @desc    Schedule a new meeting with a startup
@@ -45,31 +46,53 @@ exports.scheduleMeeting = asyncHandler(async (req, res) => {
     });
   }
 
-  // Create the meeting
-  const meeting = await MentorMeeting.create({
-    mentor_id: mentorId,
-    student_id: studentId,
-    startup_id: startupId,
-    date,
-    time,
-    platform,
-    meeting_link: meetingLink,
-    agenda,
-    status: MEETING_STATUS.SCHEDULED,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  // Send notification to student
-  await Notification.create({
-    recipient_id: studentId,
-    title: "New Mentor Meeting Scheduled",
-    message: `A new mentoring session is scheduled for ${date} at ${time}. Platform: ${platform}`,
-    type: "info",
-  });
+  try {
+    // Create the meeting
+    const [meeting] = await MentorMeeting.create(
+      [
+        {
+          mentor_id: mentorId,
+          student_id: studentId,
+          startup_id: startupId,
+          date,
+          time,
+          platform,
+          meeting_link: meetingLink,
+          agenda,
+          status: MEETING_STATUS.SCHEDULED,
+        },
+      ],
+      { session },
+    );
 
-  res.status(201).json({
-    message: "Meeting scheduled successfully",
-    meeting,
-  });
+    // Send notification to student
+    await Notification.create(
+      [
+        {
+          recipient_id: studentId,
+          title: "New Mentor Meeting Scheduled",
+          message: `A new mentoring session is scheduled for ${date} at ${time}. Platform: ${platform}`,
+          type: "info",
+        },
+      ],
+      { session },
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({
+      message: "Meeting scheduled successfully",
+      meeting,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 });
 
 /**
@@ -168,7 +191,6 @@ exports.addMeetingNotes = asyncHandler(async (req, res) => {
   }
 
   if (meeting.status === MEETING_STATUS.COMPLETED) {
-    // TODO (Frontend): Ensure the UI actively guides mentors to save their notes before marking the session as completed to prevent frustrating UX data locks.
     return res
       .status(400)
       .json({ message: "Cannot add notes to a completed meeting. Read-only." });
@@ -220,19 +242,47 @@ exports.completeMeeting = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Meeting is already completed" });
   }
 
-  meeting.status = MEETING_STATUS.COMPLETED;
-  await meeting.save();
+  const notes = await MeetingNotes.findOne({ meeting_id: meeting._id });
+  if (!notes || !notes.mentor_notes) {
+    return res.status(400).json({
+      message: "Cannot complete meeting without saving notes first.",
+    });
+  }
 
-  await ActivityLog.create({
-    user_id: req.user._id,
-    action: "Completed a mentoring session",
-    entity_type: "MentorMeeting",
-    entity_id: meeting._id,
-    description: `Session completed for startup ${meeting.startup_id}`,
-  });
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  res.status(200).json({
-    message: "Meeting marked as completed",
-    meeting,
-  });
+  try {
+    await MentorMeeting.updateOne(
+      { _id: meeting._id },
+      { $set: { status: MEETING_STATUS.COMPLETED } },
+      { session },
+    );
+    meeting.status = MEETING_STATUS.COMPLETED;
+
+    await ActivityLog.create(
+      [
+        {
+          user_id: req.user._id,
+          action: "Completed a mentoring session",
+          entity_type: "MentorMeeting",
+          entity_id: meeting._id,
+          description: `Session completed for startup ${meeting.startup_id}`,
+        },
+      ],
+      { session },
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({
+      message: "Meeting marked as completed",
+      meeting,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 });

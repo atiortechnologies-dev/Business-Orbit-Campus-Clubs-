@@ -1,3 +1,9 @@
+/**
+ * @file profile.controller.js
+ * @description Centralizes profile management for all user roles.
+ * @architecture Dynamically constructs validation schemas based on user role and allows creating/updating role-specific profiles.
+ */
+
 const {
   roleSpecificCompleteSchemas,
   commonProfileFields,
@@ -5,6 +11,7 @@ const {
 const asyncHandler = require("../middlewares/asyncHandler");
 const User = require("../models/User");
 const roleConfig = require("../utils/roleConfig");
+const { hashPassword, comparePassword } = require("../utils/password");
 
 const buildProfileSchema = (role, { partial = false } = {}) => {
   const roleSchema = roleSpecificCompleteSchemas[role];
@@ -31,6 +38,11 @@ const validateBody = (schema, req, res) => {
   return result.data;
 };
 
+/**
+ * @desc    Create a role-specific profile for the authenticated user
+ * @route   POST /api/profiles
+ * @access  Private
+ */
 const createProfile = asyncHandler(async (req, res) => {
   const { role, id: userId, account_status, email_verified } = req.user;
   const config = roleConfig[role];
@@ -101,6 +113,11 @@ const createProfile = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Skip the profile creation step during onboarding
+ * @route   POST /api/profiles/skip
+ * @access  Private
+ */
 const skipProfile = asyncHandler(async (req, res) => {
   const { role, id: userId } = req.user;
   const config = roleConfig[role];
@@ -123,6 +140,11 @@ const skipProfile = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Update the user's role-specific profile
+ * @route   PUT /api/profiles
+ * @access  Private
+ */
 const updateProfile = asyncHandler(async (req, res) => {
   const { role, id: userId } = req.user;
   const config = roleConfig[role];
@@ -151,6 +173,11 @@ const updateProfile = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get the authenticated user's role-specific profile
+ * @route   GET /api/profiles/me
+ * @access  Private
+ */
 const getMyProfile = asyncHandler(async (req, res) => {
   const { role, id: userId } = req.user;
   const config = roleConfig[role];
@@ -165,9 +192,93 @@ const getMyProfile = asyncHandler(async (req, res) => {
   return res.status(200).json({ success: true, data: profile });
 });
 
+/**
+ * @desc    Change user password
+ * @route   PUT /api/profiles/change-password
+ * @access  Private
+ */
+const changePassword = asyncHandler(async (req, res) => {
+  const { current_password, new_password } = req.body;
+  if (!current_password || !new_password) {
+    return res.status(400).json({ success: false, message: "Current and new passwords are required" });
+  }
+  
+  const user = await User.findById(req.user.id).select("+password_hash");
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found" });
+  }
+
+  const isMatch = await comparePassword(current_password, user.password_hash);
+  if (!isMatch) {
+    return res.status(401).json({ success: false, message: "Incorrect current password" });
+  }
+
+  user.password_hash = await hashPassword(new_password);
+  await user.save();
+
+  return res.status(200).json({ success: true, message: "Password updated successfully" });
+});
+
+/**
+ * @desc    Update notification preferences
+ * @route   PUT /api/profiles/notification-preferences
+ * @access  Private
+ */
+const updateNotificationPreferences = asyncHandler(async (req, res) => {
+  const { role, id: userId } = req.user;
+  const config = roleConfig[role];
+  const ProfileModel = config.ProfileModel;
+
+  const profile = await ProfileModel.findOne({ user_id: userId });
+  if (!profile) {
+    return res.status(404).json({ success: false, message: "Profile not found" });
+  }
+
+  if (req.body.notification_preferences) {
+    profile.notification_preferences = {
+      ...profile.notification_preferences,
+      ...req.body.notification_preferences
+    };
+    await profile.save();
+  }
+
+  return res.status(200).json({ success: true, message: "Notification preferences updated", data: profile.notification_preferences });
+});
+
+/**
+ * @desc    Upload profile photo
+ * @route   POST /api/profiles/upload-photo
+ * @access  Private
+ */
+const uploadPhoto = asyncHandler(async (req, res) => {
+  const { role, id: userId } = req.user;
+  const config = roleConfig[role];
+  const ProfileModel = config.ProfileModel;
+  
+  // This is a stub for the actual photo upload logic (e.g. S3 / Cloudinary)
+  const { photo_url } = req.body; // Assume frontend uploads and passes URL, or we handle req.file here
+  
+  if (!photo_url) {
+    return res.status(400).json({ success: false, message: "Photo URL is required" });
+  }
+
+  const profile = await ProfileModel.findOne({ user_id: userId });
+  if (!profile) {
+    return res.status(404).json({ success: false, message: "Profile not found" });
+  }
+
+  profile.profile_photo = photo_url;
+  await profile.save();
+
+  return res.status(200).json({ success: true, message: "Photo uploaded successfully", data: { profile_photo: photo_url } });
+});
+
 module.exports = {
   createProfile,
   skipProfile,
   updateProfile,
   getMyProfile,
+  changePassword,
+  updateNotificationPreferences,
+  uploadPhoto,
 };

@@ -1,8 +1,19 @@
+/**
+ * @file review.controller.js
+ * @description Exposes review feedback to startups.
+ * @architecture Fetches the latest review data and populates reviewer details for transparency.
+ */
+
 const asyncHandler = require("../middlewares/asyncHandler");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 const StageSubmission = require("../models/StageSubmission");
 const Review = require("../models/Review");
 
+/**
+ * @desc    Get the latest review result for the startup's stage submission
+ * @route   GET /api/reviews/result
+ * @access  Private (Student)
+ */
 const getReviewResult = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

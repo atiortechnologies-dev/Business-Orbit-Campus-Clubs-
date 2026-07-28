@@ -25,21 +25,21 @@ beforeAll(async () => {
 
   await mongoose.connect(uri);
 
-  if (mongoose.connection.readyState !== 0) {
+  if (mongoose.connection.readyState !== 0 && mongoose.connection.db) {
     await mongoose.connection.dropDatabase();
   }
 
   // Ensure all indexes are built before tests run to prevent WriteConflicts during transactions
   await Promise.all(
-    Object.values(mongoose.models).map((model) => model.init())
+    Object.values(mongoose.models).map((model) => model.init()),
   );
 });
 
 afterAll(async () => {
   // Wait briefly for any pending operations
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
   if (mongoose.connection.readyState !== 0) {
     await mongoose.connection.dropDatabase();
     await mongoose.disconnect();
   }
-}, 15000); // Increase Jest's afterAll timeout
+}, 15000);

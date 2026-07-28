@@ -31,9 +31,27 @@ const mentorRequestSchema = new mongoose.Schema(
       default: "pending",
       index: true,
     },
-    request_summary: {
+    // Note: Startup Name, Stage, and Industry are not duplicated here to maintain normalization.
+    // They should be populated via the startup_id reference during retrieval.
+    problem_statement: {
       type: String,
       required: true,
+    },
+    help_required: {
+      type: String,
+      required: true,
+    },
+    preferred_meeting_mode: {
+      type: String,
+      enum: ["online", "in-person", "any"],
+      default: "online",
+    },
+    preferred_time: {
+      type: String,
+      required: true,
+    },
+    additional_notes: {
+      type: String,
       trim: true,
     },
   },

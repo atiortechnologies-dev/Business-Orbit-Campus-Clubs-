@@ -1,3 +1,9 @@
+/**
+ * @file Resource.js
+ * @description Mongoose schema for educational and startup resources.
+ * @architecture Implements text indexing on title and description for fast search functionality.
+ */
+
 const mongoose = require("mongoose");
 
 const ResourceSchema = mongoose.Schema(
@@ -32,4 +38,7 @@ const ResourceSchema = mongoose.Schema(
 
 ResourceSchema.index({ title: "text", description: "text" });
 
+/**
+ * @module Resource
+ */
 module.exports = mongoose.model("Resource", ResourceSchema);

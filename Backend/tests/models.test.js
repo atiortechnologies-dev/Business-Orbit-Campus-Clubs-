@@ -37,7 +37,9 @@ describe("Phase 1: Database Models Verification", () => {
       mentor_id: new mongoose.Types.ObjectId(),
       student_id: new mongoose.Types.ObjectId(),
       startup_id: new mongoose.Types.ObjectId(),
-      request_summary: "Need help scaling",
+      problem_statement: "Need help scaling",
+      help_required: "Need help scaling",
+      preferred_time: "Now",
     });
     const err = req.validateSync();
     expect(err).toBeUndefined();
@@ -73,7 +75,7 @@ describe("Phase 1: Database Models Verification", () => {
     });
     const err = msg.validateSync();
     expect(err).toBeUndefined();
-    expect(msg.is_read).toBe(false); // default value
+    expect(msg.read_at).toBe(null); // default value
   });
 
   it("MentorMeeting model should require meeting specifics", () => {

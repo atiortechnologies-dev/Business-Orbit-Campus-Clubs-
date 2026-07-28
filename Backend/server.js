@@ -1,3 +1,8 @@
+/**
+ * @file server.js
+ * @description Main application entry point and route aggregator.
+ * @architecture Initializes the Express application, configures middleware (CORS, error handling), connects to the database, and registers all module routes (auth, student, mentor, company, investor, admin).
+ */
 require("dotenv").config();
 const express = require("express");
 const configureCors = require("./config/cors");
@@ -11,6 +16,9 @@ const submissionRoutes = require("./routes/submission.routes");
 const meetingRoutes = require("./routes/meeting.routes");
 const reviewRoutes = require("./routes/review.routes");
 const validationRoutes = require("./routes/validation.routes");
+const incubatorDiscoveryRoutes = require("./routes/incubatorDiscovery.routes");
+const incubationApplicationRoutes = require("./routes/incubationApplication.routes");
+const studentIncubationRoutes = require("./routes/studentIncubation.routes");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const { createProfileRouter } = require("./routes/profile.routes");
 const {
@@ -22,7 +30,7 @@ const publicRoutes = require("./routes/public.routes");
 const adminRoutes = require("./routes/admin.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const studentRoutes = require("./routes/student.routes");
-const { requireAuth, authorizeRoles } = require("./middlewares/requireAuth");
+const { requireAuth, authorizeRoles, requireActiveAccount } = require("./middlewares/requireAuth");
 
 const stage3StageRoutes = require("./routes/stage3.routes");
 const stage3ProductTypeRoutes = require("./routes/productType.routes");
@@ -59,6 +67,10 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ success: true, message: "Server is healthy" });
 });
 
+const studentFreelancingRoutes = require("./routes/studentFreelancing.routes");
+const companyRoutes = require("./routes/company.routes");
+const investorRoutes = require("./routes/investor.routes");
+const chatRoutes = require("./routes/chat.routes");
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
 
@@ -101,8 +113,72 @@ app.use("/api/student", launchRoutes);
 
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/mentor", requireAuth, authorizeRoles("mentor"), mentorRoutes);
-app.use("/api/student", requireAuth, authorizeRoles("student"), studentRoutes);
+app.use(
+  "/api/mentor",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("mentor"),
+  mentorRoutes,
+);
+app.use(
+  "/api/student",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentRoutes,
+);
+app.use(
+  "/api/student/freelancing",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentFreelancingRoutes,
+);
+app.use("/api/company", companyRoutes);
+app.use("/api/investor", investorRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/incubators", incubatorDiscoveryRoutes);
+app.use(
+  "/api/incubation",
+  requireAuth,
+  requireActiveAccount,
+  incubationApplicationRoutes,
+);
+const studentInvestorRoutes = require("./routes/studentInvestor.routes");
+const studentPitchRoutes = require("./routes/studentPitch.routes");
+const investorPitchRoutes = require("./routes/investorPitch.routes");
+
+app.use(
+  "/api/student/incubation",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentIncubationRoutes,
+);
+
+app.use(
+  "/api/student/investors",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentInvestorRoutes,
+);
+
+app.use(
+  "/api/student/pitches",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("student"),
+  studentPitchRoutes,
+);
+
+app.use(
+  "/api/investor/direct-pitches",
+  requireAuth,
+  requireActiveAccount,
+  authorizeRoles("investor"),
+  investorPitchRoutes,
+);
 
 // Error handling
 app.use(notFound);
@@ -113,10 +189,13 @@ configureSocket(server);
 
 if (require.main === module) {
   server.listen(PORT, () => {
-    console.log(
+    console.info(
       `Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`,
     );
   });
 }
 
+/**
+ * @module server
+ */
 module.exports = { app, server };

@@ -1,12 +1,17 @@
+/**
+ * @file resource.controller.js
+ * @description Manages the platform's resource library.
+ * @architecture Provides endpoints to list resources and includes side-effects like incrementing download counts.
+ */
+
 const asyncHandler = require("../middlewares/asyncHandler");
 const Resource = require("../models/Resource");
 
-//* GET /api/resources
-//  Query params:
-//  ?category=Pitch+Deck   -> filter by category
-//  ?search=business+model -> text search across title + description
-// Both are optional
-
+/**
+ * @desc    List all available resources with optional category and search filters
+ * @route   GET /api/resources
+ * @access  Private (Student)
+ */
 const listResources = asyncHandler(async (req, res) => {
   const { category, search } = req.query;
 
@@ -22,7 +27,11 @@ const listResources = asyncHandler(async (req, res) => {
   });
 });
 
-//* GET /api/resources/:id
+/**
+ * @desc    Get a specific resource by ID and increment its download count
+ * @route   GET /api/resources/:id
+ * @access  Private (Student)
+ */
 const getResourceById = asyncHandler(async (req, res) => {
   const { id } = req.params;
 

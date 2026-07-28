@@ -1,3 +1,9 @@
+/**
+ * @file StartupStage.js
+ * @description Mongoose schema for tracking a startup's progression through their defined lifecycle stages.
+ * @architecture Uses a unique compound index on startup_id and stage_number to prevent duplicate stage entries.
+ */
+
 const mongoose = require("mongoose");
 
 const StartupStageSchema = mongoose.Schema(
@@ -35,4 +41,7 @@ const StartupStageSchema = mongoose.Schema(
 // one startup can have only one stage row ( duplicate stages are not allowed )
 StartupStageSchema.index({ startup_id: 1, stage_number: 1 }, { unique: true });
 
+/**
+ * @module StartupStage
+ */
 module.exports = mongoose.model("StartupStage", StartupStageSchema);
