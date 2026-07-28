@@ -1,3 +1,9 @@
+/**
+ * @file Review.js
+ * @description Mongoose schema for reviewer feedback on stage submissions.
+ * @architecture Links a StageSubmission to a reviewer, holding the decision and qualitative feedback.
+ */
+
 const mongoose = require("mongoose");
 
 const ReviewSchema = mongoose.Schema(
@@ -35,4 +41,7 @@ const ReviewSchema = mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
+/**
+ * @module Review
+ */
 module.exports = mongoose.model("Review", ReviewSchema);

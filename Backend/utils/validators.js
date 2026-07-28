@@ -197,6 +197,7 @@ const investorCompleteFields = z.object({
   investor_type: z.enum(["Angel", "VC", "Corporate"], {
     error: "Investor type must be Angel, VC, or Corporate",
   }),
+  designation: z.string().trim().min(1, "Designation is required").optional(),
   investment_sectors: toArray,
   preferred_startup_stages: toArray,
   investment_range: z.string().trim().optional().or(z.literal("")),
@@ -233,6 +234,7 @@ const submitIdeaSchema = z.object({
     .trim()
     .min(1, "Description is required")
     .max(5000, "Description must be under 5000 characters"),
+  attachment_url: urlOptional,
 });
 
 const saveDraftSchema = z.object({
@@ -245,6 +247,39 @@ const saveDraftSchema = z.object({
     .string()
     .trim()
     .max(5000, "Description must be under 5000 characters")
+    .optional(),
+  attachment_url: urlOptional,
+});
+
+//* Mentor Requests
+const requestMentorSchema = z.object({
+  problem_statement: z
+    .string()
+    .trim()
+    .min(10, "Problem statement must be at least 10 characters"),
+  help_required: z
+    .string()
+    .trim()
+    .min(10, "Help required must be at least 10 characters"),
+  preferred_meeting_mode: z
+    .enum(["online", "in-person", "any"], {
+      error: "Mode must be online, in-person, or any",
+    })
+    .default("online"),
+  preferred_time: z.string().trim().min(1, "Preferred time is required"),
+  additional_notes: z
+    .string()
+    .trim()
+    .max(1000, "Notes must be under 1000 characters")
+    .optional(),
+});
+
+const mentorReviewSchema = z.object({
+  rating: z.number().min(1).max(5, "Rating must be between 1 and 5"),
+  review_text: z
+    .string()
+    .trim()
+    .max(500, "Review cannot exceed 500 characters")
     .optional(),
 });
 
@@ -750,4 +785,6 @@ module.exports = {
   saveLaunchDraftSchema,
   submitLaunchSchema,
   saveLaunchInsightsSchema,
+  requestMentorSchema,
+  mentorReviewSchema,
 };

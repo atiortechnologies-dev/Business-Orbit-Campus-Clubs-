@@ -19,17 +19,22 @@ const messageSchema = new mongoose.Schema(
       required: true,
       index: true,
     },
+    message_type: {
+      type: String,
+      enum: ["text", "file", "image"],
+      default: "text",
+    },
     message: {
       type: String,
       trim: true,
     },
-    attachment: {
+    attachment_url: {
       type: String, // URL/path for uploaded PDF, PPT, DOCX, Images
       trim: true,
     },
-    is_read: {
-      type: Boolean,
-      default: false,
+    read_at: {
+      type: Date,
+      default: null,
     },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },

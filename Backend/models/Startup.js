@@ -28,16 +28,15 @@ const startupSchema = new mongoose.Schema(
       min: 0,
       max: 100,
     },
-    // name: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
-    // stage: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
+    // PRD Investor Journey fields
+    logo: { type: String, default: "" },
+    industry: { type: String, trim: true, default: "" },
+    stage: { type: String, trim: true, default: "" },
+    chapter: { type: String, trim: true, default: "" },
+    description: { type: String, trim: true, default: "" },
+    funding_status: { type: String, trim: true, default: "" },
+    visibility: { type: Boolean, default: false }, // if true, visible to investors
+
     category: {
       type: String,
       // required: true,
@@ -78,12 +77,45 @@ const cascadeService = require("../services/cascadeService");
 
 startupSchema.post("findOneAndDelete", async function (doc) {
   if (doc) {
-    await cascadeService.deleteStartupDependencies(doc._id);
+    const session = this.getOptions().session;
+    await cascadeService.deleteStartupDependencies(doc._id, session);
   }
 });
 
-startupSchema.post("deleteOne", { document: true, query: false }, async function () {
-  await cascadeService.deleteStartupDependencies(this._id);
-});
+startupSchema.post(
+  "deleteOne",
+  { document: true, query: false },
+  async function () {
+    const session = this.$session();
+    await cascadeService.deleteStartupDependencies(this._id, session);
+  },
+);
+
+startupSchema.pre(
+  "deleteOne",
+  { document: false, query: true },
+  async function () {
+    const doc = await this.model
+      .findOne(this.getFilter())
+      .session(this.getOptions().session);
+    if (doc) {
+      this._cascadeStartupId = doc._id;
+    }
+  },
+);
+
+startupSchema.post(
+  "deleteOne",
+  { document: false, query: true },
+  async function () {
+    if (this._cascadeStartupId) {
+      const session = this.getOptions().session;
+      await cascadeService.deleteStartupDependencies(
+        this._cascadeStartupId,
+        session,
+      );
+    }
+  },
+);
 
 module.exports = mongoose.model("Startup", startupSchema);

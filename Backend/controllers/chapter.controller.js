@@ -1,8 +1,19 @@
+/**
+ * @file chapter.controller.js
+ * @description Manages chapter operations for student profiles including statistics and chapter transfers.
+ * @architecture Enforces student role boundaries while pulling aggregated metrics from the Chapter model.
+ */
+
 const asyncHandler = require("../middlewares/asyncHandler");
 const Chapter = require("../models/Chapter");
 const ChapterChangeRequest = require("../models/ChapterChangeRequest");
 const StudentProfile = require("../models/StudentProfile");
 
+/**
+ * @desc    Get the currently assigned chapter for the student
+ * @route   GET /api/chapters/my-chapter
+ * @access  Private (Student)
+ */
 const getMyChapter = asyncHandler(async (req, res) => {
   const profile = await StudentProfile.findOne({
     user_id: req.user.id,
@@ -38,6 +49,11 @@ const getMyChapter = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get statistical data for a specific chapter
+ * @route   GET /api/chapters/:chapterId/stats
+ * @access  Private
+ */
 const getChapterStats = asyncHandler(async (req, res) => {
   const { chapterId } = req.params;
 
@@ -59,6 +75,11 @@ const getChapterStats = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Request a change of assigned chapter
+ * @route   POST /api/chapters/request-change
+ * @access  Private (Student)
+ */
 const requestChapterChange = asyncHandler(async (req, res) => {
   const { reason, requested_chapter_id } = req.body;
 

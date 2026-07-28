@@ -1,11 +1,20 @@
+/**
+ * @file startupProgress.controller.js
+ * @description Tracks and summarizes a startup's progression through various predefined stages.
+ * @architecture Aggregates stage status, completion percentage, and merges database records with static stage definitions.
+ */
+
 const asyncHandler = require("../middlewares/asyncHandler");
 const StageSubmission = require("../models/StageSubmission");
 const StartupStage = require("../models/StartupStage");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 const { STAGE_DEFINITIONS } = require("../utils/stageDefinitions");
 
-//* GET /api/startup/progress
-
+/**
+ * @desc    Get the current progress summary for the startup
+ * @route   GET /api/startup/progress
+ * @access  Private (Student)
+ */
 const getProgress = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -54,7 +63,11 @@ const getProgress = asyncHandler(async (req, res) => {
   });
 });
 
-//* GET /api/startup/progress
+/**
+ * @desc    Get all stages with details for the startup
+ * @route   GET /api/startup/stages
+ * @access  Private (Student)
+ */
 const getStages = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
