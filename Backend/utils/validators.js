@@ -659,6 +659,39 @@ const submitProductSchema = z.object({
 
 const updateProductSchema = submitProductSchema.partial();
 
+// Launch submission validation
+const saveLaunchDraftSchema = z.object({
+  startup_name: z.string().max(200).optional(),
+  product_name: z.string().max(200).optional(),
+  launch_date: z.string().datetime().optional(),
+  industry: z.string().max(100).optional(),
+  team_size: z.number().min(1).optional(),
+  funding_status: z
+    .enum(["Bootstrapped", "Funded", "Seeking Investment", "Other"])
+    .optional(),
+  website_url: z.string().url().optional(),
+  product_url: z.string().url().optional(),
+  app_store_url: z.string().url().optional(),
+  demo_video_url: z.string().url().optional(),
+  description: z.string().max(3000).optional(),
+  notes: z.string().max(2000).optional(),
+  social: z
+    .object({
+      linkedin: z.string().optional(),
+      instagram: z.string().optional(),
+      twitter: z.string().optional(),
+      youtube: z.string().optional(),
+    })
+    .optional(),
+});
+
+const submitLaunchSchema = saveLaunchDraftSchema.extend({
+  startup_name: z.string().min(1).max(200),
+  product_name: z.string().min(1).max(200),
+  launch_date: z.string().datetime(),
+  industry: z.string().min(1).max(100),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -694,4 +727,6 @@ module.exports = {
   updateFeedbackSchema,
   submitProductSchema,
   updateProductSchema,
+  saveLaunchDraftSchema,
+  submitLaunchSchema,
 };
