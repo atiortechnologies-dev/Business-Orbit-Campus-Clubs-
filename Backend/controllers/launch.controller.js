@@ -104,8 +104,100 @@ const startLaunchStage = asyncHandler(async (req, res) => {
   });
 });
 
+// ========= SCREEN 2: LAUNCH SUBMISSION =========
+
+const saveLaunchDraft = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const draftData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  let submission = await LaunchSubmission.findOne({ startup_id: startup._id });
+
+  if (!submission) {
+    submission = new LaunchSubmission({
+      startup_id: startup._id,
+      student_id: userId,
+      ...draftData,
+      draft_status: "Draft",
+    });
+  } else {
+    Object.assign(submission, draftData);
+  }
+
+  await submission.save();
+
+  res.status(201).json({
+    success: true,
+    message: "Draft saved",
+    data: { submission_id: submission.submission_id },
+  });
+});
+
+const getLaunchSubmission = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const submission = await LaunchSubmission.findOne({
+    startup_id: startup._id,
+  }).lean();
+
+  if (!submission) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No submission found" });
+  }
+
+  res.status(200).json({ success: true, data: submission });
+});
+
+const updateLaunchSubmission = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const updateData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const submission = await LaunchSubmission.findOneAndUpdate(
+    { startup_id: startup._id, draft_status: "Draft" },
+    updateData,
+    { new: true },
+  );
+
+  if (!submission) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Submission not found or locked" });
+  }
+
+  res.status(200).json({ success: true, message: "Updated", data: submission });
+});
+
+const submitLaunchDetails = asyncHandler(async (req, res) => {
+  const { id: userId } = req.user;
+  const submitData = req.validatedData;
+  const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
+
+  const submission = await LaunchSubmission.findOneAndUpdate(
+    { startup_id: startup._id },
+    {
+      ...submitData,
+      draft_status: "Submitted",
+      submitted_at: new Date(),
+    },
+    { new: true, upsert: true },
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Launch details submitted",
+    data: { submission_id: submission.submission_id },
+  });
+});
+
 module.exports = {
   getLaunchOverview,
   getLaunchChecklist,
   startLaunchStage,
+  saveLaunchDraft,
+  getLaunchSubmission,
+  updateLaunchSubmission,
+  submitLaunchDetails,
 };
