@@ -13,7 +13,7 @@ const FAQ = require("../models/FAQ");
 const app = express();
 app.use(express.json());
 // Mock environment variable for the test
-process.env.ADMIN_API_KEY = "test-secret-key";
+process.env.ADMIN_API_KEY = "DUMMY_SECRET_FOR_TESTING_ONLY";
 app.use("/api/admin", adminRoutes);
 
 describe("Admin API Routes - Phase 1 (FAQs)", () => {

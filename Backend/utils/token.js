@@ -1,10 +1,22 @@
+/**
+ * @file token.js
+ * @description JWT utility wrapper for generating and validating access and refresh tokens.
+ * @architecture Exposes highly cohesive functions configured via environment variables, ensuring standard expiration and issuer claims.
+ */
+
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "testsecret";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+const JWT_REFRESH_SECRET =
+  process.env.JWT_REFRESH_SECRET || "testrefreshsecret";
 const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "30d";
 
+/**
+ * @desc    Generate a short-lived JWT access token for a user
+ * @param   {Object} user - The user document/object
+ * @returns {string} The signed JWT access token
+ */
 const generateToken = (user) => {
   if (!user._id) {
     throw new Error("User ID is required to generate token");
@@ -24,6 +36,11 @@ const generateToken = (user) => {
   );
 };
 
+/**
+ * @desc    Generate a long-lived JWT refresh token for a user
+ * @param   {Object} user - The user document/object
+ * @returns {string} The signed JWT refresh token
+ */
 const generateRefreshToken = (user) => {
   if (!user._id) {
     throw new Error("User ID is required to generate refresh token");
@@ -43,6 +60,11 @@ const generateRefreshToken = (user) => {
   );
 };
 
+/**
+ * @desc    Verify and decode an access token
+ * @param   {string} token - The access token to verify
+ * @returns {Object} The decoded token payload
+ */
 const verifyToken = (token) => {
   try {
     return jwt.verify(token, JWT_SECRET, {
@@ -58,6 +80,11 @@ const verifyToken = (token) => {
   }
 };
 
+/**
+ * @desc    Verify and decode a refresh token
+ * @param   {string} token - The refresh token to verify
+ * @returns {Object} The decoded token payload
+ */
 const verifyRefreshToken = (token) => {
   try {
     return jwt.verify(token, JWT_REFRESH_SECRET, {
@@ -73,6 +100,11 @@ const verifyRefreshToken = (token) => {
   }
 };
 
+/**
+ * @desc    Decode a token without verifying its signature
+ * @param   {string} token - The token to decode
+ * @returns {Object|null} The decoded token payload or null
+ */
 const decodeToken = (token) => {
   return jwt.decode(token);
 };

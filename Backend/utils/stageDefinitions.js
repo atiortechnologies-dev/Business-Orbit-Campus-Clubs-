@@ -1,3 +1,9 @@
+/**
+ * @file stageDefinitions.js
+ * @description Defines the static template for startup stages.
+ * @architecture An array of stage objects used to initialize a startup's journey when their account is created.
+ */
+
 const STAGE_DEFINITIONS = [
   {
     stage_number: 1,

@@ -124,7 +124,7 @@ exports.getUpcomingMeetings = asyncHandler(async (req, res) => {
 exports.getRecentConversations = asyncHandler(async (req, res) => {
   const mentorId = req.user._id;
 
-  const chatRooms = await getHydratedChatRooms(mentorId, 10);
+  const chatRooms = await getHydratedChatRooms(mentorId, "mentor", 10);
 
   res.status(200).json(chatRooms);
 });

@@ -32,11 +32,15 @@ const mentorProfileSchema = new mongoose.Schema(
     preferred_startup_stages: { type: [String], default: [] },
     availability: { type: String, trim: true, default: "" },
 
+    rating: { type: Number, default: 0, min: 0, max: 5 },
+    total_sessions: { type: Number, default: 0 },
+
     profile_status: {
       type: String,
       enum: ["incomplete", "completed"],
       default: "incomplete",
     },
+    is_visible: { type: Boolean, default: true },
     profile_completed_at: { type: Date, default: null },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },

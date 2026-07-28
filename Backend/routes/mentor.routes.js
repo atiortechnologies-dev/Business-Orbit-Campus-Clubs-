@@ -28,6 +28,7 @@ const {
   getMentorProfile,
   updateMentorProfile,
   uploadProfilePhoto,
+  toggleVisibility,
 } = require("../controllers/mentorProfile.controller");
 
 const {
@@ -36,15 +37,6 @@ const {
   acceptRequest,
   declineRequest,
 } = require("../controllers/mentorRequest.controller");
-
-const {
-  searchChats,
-  getChatRooms,
-  getChatMessages,
-  sendMessage,
-  uploadAttachment,
-  markMessagesRead,
-} = require("../controllers/mentorChat.controller");
 
 const {
   scheduleMeeting,
@@ -70,6 +62,7 @@ router.put(
   updateMentorProfile,
 );
 router.post("/profile/photo", upload.single("file"), uploadProfilePhoto);
+router.patch("/profile/visibility", toggleVisibility);
 
 // Requests & Profiles
 // Note (Extra): MentorAssignment and MentorRequest workflows were added to securely track the lifecycle of mentorships before meetings occur.
@@ -78,26 +71,7 @@ router.get("/student/:studentId/profile", viewStudentProfile);
 router.patch("/requests/:requestId/accept", acceptRequest);
 router.patch("/requests/:requestId/decline", declineRequest);
 
-// Chat
-// Note (Deviation): Generic /api/messages routes were moved to /api/mentor/chats for tighter role-based access control.
-router.get("/chats", getChatRooms);
-router.get(
-  "/chats/search",
-  validateRequest(searchChatsQuerySchema, "query"),
-  searchChats,
-);
-router.get("/chats/:chatId/messages", getChatMessages);
-router.post(
-  "/chats/:chatId/messages",
-  validateRequest(sendMessageSchema, "body"),
-  sendMessage,
-);
-router.post(
-  "/chats/:chatId/attachments",
-  upload.single("file"),
-  uploadAttachment,
-);
-router.patch("/chats/:chatId/read", markMessagesRead);
+// Chat functionality has been moved to /api/chat (Unified Chat API)
 
 // Meetings
 router.post(

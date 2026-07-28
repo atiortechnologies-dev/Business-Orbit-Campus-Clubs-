@@ -1,3 +1,9 @@
+/**
+ * @file ChapterChangeRequest.js
+ * @description Mongoose schema for tracking a student's request to change their chapter.
+ * @architecture Connects a User (student) with their current and requested Chapter, managing state (pending, approved, rejected).
+ */
+
 const mongoose = require("mongoose");
 
 const chapterChangeRequestSchema = new mongoose.Schema(
@@ -28,6 +34,9 @@ const chapterChangeRequestSchema = new mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
+/**
+ * @module ChapterChangeRequest
+ */
 module.exports = mongoose.model(
   "ChapterChangeRequest",
   chapterChangeRequestSchema,

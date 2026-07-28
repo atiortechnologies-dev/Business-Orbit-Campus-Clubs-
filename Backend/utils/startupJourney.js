@@ -1,7 +1,19 @@
+/**
+ * @file startupJourney.js
+ * @description Helper functions for managing the lifecycle of a startup.
+ * @architecture Provides logic to safely initialize a startup's stages and recalculate their overall completion percentage.
+ */
+
 const Startup = require("../models/Startup");
 const StartupStage = require("../models/StartupStage");
 const { STAGE_DEFINITIONS } = require("./stageDefinitions");
 
+/**
+ * @desc    Fetch a startup for a user or create a new one with initialized stages
+ * @param   {string} userId - ID of the student user
+ * @param   {string} defaultStartupName - Default name to use if creating
+ * @returns {Promise<Object>} The startup document
+ */
 const getOrCreateStartup = async (userId, defaultStartupName) => {
   let startup = await Startup.findOne({ student_id: userId });
   if (startup) return startup;
@@ -30,6 +42,11 @@ const getOrCreateStartup = async (userId, defaultStartupName) => {
   return startup;
 };
 
+/**
+ * @desc    Recalculate the overall progress percentage for a startup based on approved stages
+ * @param   {string} startupId - ID of the startup
+ * @returns {Promise<number>} The new progress percentage
+ */
 const recalcProgress = async (startupId) => {
   const total = STAGE_DEFINITIONS.length;
   const approvedCount = await StartupStage.countDocuments({

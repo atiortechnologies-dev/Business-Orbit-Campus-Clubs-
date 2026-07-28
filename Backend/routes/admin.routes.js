@@ -23,6 +23,10 @@ const {
   updateFeaturedStartup,
   deleteFeaturedStartup,
   deleteUser,
+  listChapterChangeRequests,
+  getChapterChangeRequest,
+  approveChapterChangeRequest,
+  rejectChapterChangeRequest,
 } = require("../controllers/admin.controller");
 
 const router = express.Router();
@@ -57,5 +61,11 @@ router.delete("/featured-startups/:id", deleteFeaturedStartup);
 
 // User Management Routes
 router.delete("/users/:id", deleteUser);
+
+// Chapter Change Request Routes
+router.get("/chapter-change-requests", listChapterChangeRequests);
+router.get("/chapter-change-requests/:id", getChapterChangeRequest);
+router.put("/chapter-change-requests/:id/approve", approveChapterChangeRequest);
+router.put("/chapter-change-requests/:id/reject", rejectChapterChangeRequest);
 
 module.exports = router;
