@@ -141,7 +141,6 @@ exports.deleteUser = async (req, res, next) => {
         .json({ success: false, message: "User not found" });
     }
 
-    await cascadeService.deleteUserDependencies(user._id, session);
     await User.findByIdAndDelete(req.params.id).session(session);
 
     await session.commitTransaction();
