@@ -9,6 +9,7 @@ const {
   resetPassword,
   refreshAccessToken,
   getMe,
+  getAllChapters,
 } = require("../controllers/auth.controller");
 const { validateRequest } = require("../middlewares/validateRequest");
 const { protect } = require("../middlewares/authMiddleware");
@@ -22,6 +23,8 @@ const {
   resetPasswordSchema,
   refreshTokenSchema,
 } = require("../utils/validators");
+
+router.get("/get-all-chapter", getAllChapters);
 
 // POST /api/auth/register
 router.post("/register", validateRequest(registerSchema, "body"), register);

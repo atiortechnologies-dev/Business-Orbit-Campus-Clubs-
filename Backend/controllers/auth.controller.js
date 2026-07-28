@@ -19,6 +19,36 @@ const {
 const roleConfig = require("../utils/roleConfig");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { checkEmailSchema } = require("../utils/validators");
+const { assignChapterToStudent } = require("../utils/chapterAssignment");
+const Chapter = require("../models/Chapter");
+
+/**
+ * @desc    Get all college name for selection
+ * @route   POST /api/auth/get-all-chapter
+ * @access  Public
+ */
+const getAllChapters = asyncHandler(async (req, res) => {
+  const chapters = await Chapter.find({ status: "Active" })
+    .select("college_name chapter_name")
+    .sort({ college_name: 1 });
+
+  if (!chapters || chapters.length === 0) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No active chapters found" });
+  }
+
+  // Group by college name for easy use
+  const collegeList = chapters.map((ch) => ({
+    collegeName: ch.college_name,
+    chapterName: ch.chapter_name,
+  }));
+
+  return res.status(200).json({
+    success: true,
+    data: collegeList,
+  });
+});
 
 /**
  * @desc    Register a new user
@@ -53,6 +83,19 @@ const register = asyncHandler(async (req, res) => {
     }
   }
 
+  let chapterId = null;
+
+  if (role === "student") {
+    chapterId = await assignChapterToStudent(profileData.college);
+
+    if (!chapterId) {
+      return res.status(400).json({
+        success: false,
+        message: `No active chapter found for ${profileData.college}. Please contact support.`,
+      });
+    }
+  }
+
   const password_hash = await hashPassword(password);
 
   const session = await mongoose.startSession();
@@ -74,7 +117,11 @@ const register = asyncHandler(async (req, res) => {
 
     // 4. Create Role-Specific Profile
     if (role === "student") {
-      await new StudentProfile({ user_id: user._id, ...profileData }).save({
+      await new StudentProfile({
+        user_id: user._id,
+        chapter_id: chapterId,
+        ...profileData,
+      }).save({
         session,
       });
     } else if (role === "mentor") {
@@ -103,29 +150,43 @@ const register = asyncHandler(async (req, res) => {
     throw transactionError;
   }
 
-  const otp = generateOTP();
-  const verification = new EmailVerification({
-    userId: user._id,
-    otp,
-    expiresAt: Date.now() + 15 * 60 * 1000,
-  });
-  await verification.save();
+  // const otp = generateOTP();
+  // const verification = new EmailVerification({
+  //   userId: user._id,
+  //   otp,
+  //   expiresAt: Date.now() + 15 * 60 * 1000,
+  // });
+  // await verification.save();
 
-  try {
-    await sendOTPEmail(user.email, otp);
-  } catch (error) {
-    console.error("Failed to send verification email:", error);
-  }
+  // try {
+  //   await sendOTPEmail(user.email, otp);
+  // } catch (error) {
+  //   console.error("Failed to send verification email:", error);
+  // }
+
+  let redirectUrl =
+    user.role === "student"
+      ? "/onboarding/welcome"
+      : "/onboarding/verify-email";
+
+  // Generate tokens immediately upon registration so onboarding screens (e.g., Welcome Page)
+  // can make authenticated requests where req.user.id is accessible via auth middleware.
+  const accessToken = generateToken(user);
+  const refreshToken = generateRefreshToken(user);
 
   return res.status(201).json({
     success: true,
     message: "Registration successful. Please verify your email.",
     data: {
-      userId: user._id,
-      role: user.role,
-      account_status: user.account_status,
-      email_verified: user.email_verified,
-      redirect_to: "/email-verification",
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        role: user.role,
+        account_status: user.account_status,
+        email_verified: user.email_verified,
+      },
+      redirect_to: redirectUrl,
     },
   });
 });
@@ -190,11 +251,9 @@ const sendOtp = asyncHandler(async (req, res) => {
   });
   await verification.save();
 
-  try {
-    await sendOTPEmail(user.email, otp);
-  } catch (error) {
-    console.error("Failed to send verification email:", error);
-  }
+  sendOTPEmail(user.email, otp).catch((error) => {
+    console.error("Failed to send verification email in background:", error);
+  });
 
   return res.status(200).json({
     success: true,
@@ -250,6 +309,11 @@ const verifyOtp = asyncHandler(async (req, res) => {
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
 
+  const redirectTo =
+    user.account_status === "active"
+      ? `/onboarding/complete-profile/${user.role}`
+      : "/onboarding/verification-progress";
+
   return res.status(200).json({
     success: true,
     message: "Email verified successfully",
@@ -264,7 +328,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
         email_verified: user.email_verified,
         profile_status: user.profile_status,
       },
-      redirect_to: `/${user.role}-dashboard`,
+      redirect_to: redirectTo,
     },
   });
 });
@@ -318,7 +382,7 @@ const login = asyncHandler(async (req, res) => {
 
   // 6. Redirect to appropriate dashboard (using roleConfig if available)
   const config = roleConfig[user.role];
-  const redirect_to = config ? config.redirectTo : `/${user.role}-dashboard`;
+  const redirect_to = config.loginRedirect;
 
   return res.status(200).json({
     success: true,
@@ -507,4 +571,5 @@ module.exports = {
   resetPassword,
   refreshAccessToken,
   getMe,
+  getAllChapters,
 };

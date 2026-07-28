@@ -43,8 +43,8 @@ const sendOtpSchema = z.object({
 const registerStudentSchema = baseFields.extend({
   role: z.literal("student"),
   college: z.string().trim().min(1, "College is required"),
-  degree: z.string().trim().min(1, "Degree is required"),
-  graduation_year: z.coerce.number().int().min(1900),
+  graduation_year: z.string(),
+  degree: z.string(),
 });
 
 const registerMentorSchema = baseFields.extend({
@@ -52,7 +52,12 @@ const registerMentorSchema = baseFields.extend({
   organization: z.string().trim().min(1, "Organization is required"),
   designation: z.string().trim().min(1, "Designation is required"),
   expertise: z.string().trim().min(1, "Expertise is required"),
-  years_of_experience: z.coerce.number().min(0),
+  years_of_experience: z.enum(
+    ["0-2 years", "3-5 years", "6-10 years", "10+ years"],
+    {
+      errorMap: () => ({ message: "Please select a valid experience range" }),
+    },
+  ),
 });
 
 const registerInvestorSchema = baseFields.extend({
@@ -184,7 +189,7 @@ const commonProfileFields = z.object({
 
 const studentCompleteFields = z.object({
   startup_interests: toArray,
-  areas_of_interest: toArray,
+  // areas_of_interest: toArray,
 });
 
 const mentorCompleteFields = z.object({

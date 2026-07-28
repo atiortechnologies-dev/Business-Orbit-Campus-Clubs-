@@ -8,9 +8,10 @@ const roleConfig = {
   student: {
     ProfileModel: StudentProfile,
     profileFields: ["college", "degree", "graduation_year"],
-    redirectTo: "welcome_to_your_chapter",
+    redirectTo: "/onboarding/welcome",
     initialStatus: "pending_verification",
-    dashboardRedirect: "student_dashboard",
+    dashboardRedirect: "/dashboard",
+    loginRedirect: "/dashboard",
   },
   mentor: {
     ProfileModel: MentorProfile,
@@ -20,9 +21,9 @@ const roleConfig = {
       "expertise",
       "years_of_experience",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
-    dashboardRedirect: "mentor_dashboard",
+    dashboardRedirect: "/mentor",
   },
   investor: {
     ProfileModel: InvestorProfile,
@@ -32,16 +33,16 @@ const roleConfig = {
       "investment_stage",
       "profile_url",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
-    dashboardRedirect: "investor_dashboard",
+    dashboardRedirect: "/investor",
   },
   incubator: {
     ProfileModel: IncubatorProfile,
     profileFields: ["incubator_name", "organization", "city", "website"],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
-    dashboardRedirect: "incubator_dashboard",
+    dashboardRedirect: "/incubator",
   },
   company: {
     ProfileModel: CompanyProfile,
@@ -52,9 +53,9 @@ const roleConfig = {
       "website",
       "contact_person",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
-    dashboardRedirect: "company_dashboard",
+    dashboardRedirect: "/company/dashboard",
   },
 };
 

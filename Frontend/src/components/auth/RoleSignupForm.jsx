@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, CheckCircle2, ArrowRight } from 'lucide-react';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import PasswordStrengthMeter from '@/components/auth/PasswordStrengthMeter';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
+import { registerUser } from "@/api/authApi";
 
 function computeStrength(password) {
   if (!password) return 0;
@@ -16,67 +17,87 @@ function computeStrength(password) {
   return score;
 }
 
-// Shared shell for all 5 role-signup pages (Student/Company/Investor/
-// Mentor/Incubator) — adapted from a fellow intern's 5 near-duplicate
-// signup files (same layout/password/terms/submit flow, only the field
-// list differed per role) and centralized here instead of staying
-// copy-pasted 5 times. See StudentSignup.jsx for how a page supplies its
-// own field list/copy.
-export default function RoleSignupForm({ roleId, title, subtitle, icon, fields }) {
-  const [values, setValues] = useState(() => Object.fromEntries(fields.map((f) => [f.name, ''])));
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+export default function RoleSignupForm({
+  roleId,
+  title,
+  subtitle,
+  icon,
+  fields,
+  isLoadingChapters = false,
+}) {
+  const navigate = useNavigate();
+
+  // Initialize values safely
+  const [values, setValues] = useState(() =>
+    Object.fromEntries(fields.map((f) => [f.name, ""])),
+  );
+
+  // Sync state if fields load dynamically
+  useEffect(() => {
+    setValues((prev) => {
+      const next = { ...prev };
+      fields.forEach((f) => {
+        if (!(f.name in next)) next[f.name] = "";
+      });
+      return next;
+    });
+  }, [fields]);
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const [error, setError] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
-  const updateField = (name) => (e) => setValues((prev) => ({ ...prev, [name]: e.target.value }));
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const updateField = (name) => (e) =>
+    setValues((prev) => ({ ...prev, [name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError("Passwords do not match.");
       return;
     }
     if (!agreed) {
-      setError('Please accept the Terms of Service to continue.');
+      setError("Please accept the Terms of Service to continue.");
       return;
     }
-    setError('');
-    // TODO(backend): POST to Backend/routes/authRoute.js's real
-    // POST /api/auth/register (Backend/utils/validators.js's registerSchema).
-    // Base fields need renaming to match: fullName -> full_name,
-    // confirmPassword -> confirm_password (email/phone/password already
-    // match). role must be sent as the literal roleId string. Each role's
-    // *Signup.jsx FIELDS array has its own comment mapping that role's
-    // fields to the backend's role-specific schema — check those before
-    // wiring this up, three of the five forms are missing fields the
-    // backend actually requires (not just naming mismatches).
-    setSubmitted(true);
-  };
 
-  if (submitted) {
-    return (
-      <div className="flex-1 flex items-center justify-center px-4 py-12 bg-canvas-bg">
-        <Card className="max-w-md w-full text-center py-10">
-          <div className="w-14 h-14 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-5">
-            <CheckCircle2 size={28} strokeWidth={2} className="text-success" />
-          </div>
-          <h1 className="font-poppins font-semibold text-card text-text-heading mb-2">Account Created</h1>
-          <p className="font-inter text-body text-text-body mb-6">
-            Welcome to BOCC, {values.fullName || 'there'}. You can sign in now to get started.
-          </p>
-          <Link to="/login" className="inline-block">
-            <Button variant="primary">
-              Continue to Login
-              <ArrowRight size={16} strokeWidth={2} />
-            </Button>
-          </Link>
-        </Card>
-      </div>
-    );
-  }
+    setError("");
+    setIsLoading(true);
+
+    const payload = {
+      ...values,
+      password,
+      confirm_password: confirmPassword,
+      role: roleId,
+      degree: "BTech",
+    };
+
+    try {
+      const res = await registerUser(payload);
+
+      if (res.data?.accessToken) {
+        localStorage.setItem("accessToken", res.data.accessToken);
+      }
+      if (res.data?.refreshToken) {
+        localStorage.setItem("refreshToken", res.data.refreshToken);
+      }
+
+      // Safe navigation using response payload
+      const redirectTo = res.data?.redirect_to || "/email-verification";
+      navigate(redirectTo);
+    } catch (err) {
+      setError(
+        err.message || "An unexpected error occurred. Please try again.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex-1 flex items-center justify-center px-4 py-12 bg-canvas-bg">
@@ -86,41 +107,64 @@ export default function RoleSignupForm({ roleId, title, subtitle, icon, fields }
             {icon}
           </div>
           <div>
-            <h1 className="font-poppins font-semibold text-card text-text-heading">{title}</h1>
-            <p className="font-inter text-small text-text-muted mt-1">{subtitle}</p>
+            <h1 className="font-poppins font-semibold text-card text-text-heading">
+              {title}
+            </h1>
+            <p className="font-inter text-small text-text-muted mt-1">
+              {subtitle}
+            </p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {fields.map((field) => (
-              <div key={field.name} className={field.colSpan === 2 ? 'sm:col-span-2' : ''}>
-                {field.type === 'select' ? (
+              <div
+                key={field.name}
+                className={field.colSpan === 2 ? "sm:col-span-2" : ""}
+              >
+                {field.type === "select" ? (
                   <div className="flex flex-col gap-1">
-                    <label htmlFor={`${roleId}-${field.name}`} className="text-caption font-medium text-text-heading font-inter">
+                    <label
+                      htmlFor={`${roleId}-${field.name}`}
+                      className="text-caption font-medium text-text-heading font-inter"
+                    >
                       {field.label}
                     </label>
                     <select
                       id={`${roleId}-${field.name}`}
-                      value={values[field.name]}
+                      value={values[field.name] || ""}
                       onChange={updateField(field.name)}
                       required
-                      className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-[44px] px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black"
+                      disabled={
+                        isLoading ||
+                        (field.name === "college" && isLoadingChapters)
+                      }
+                      className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-[44px] px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black disabled:opacity-50"
                     >
-                      <option value="" disabled>Select {field.label.toLowerCase()}</option>
-                      {field.options.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+                      <option value="" disabled>
+                        {field.name === "college" && isLoadingChapters
+                          ? "Loading colleges..."
+                          : `Select ${field.label.toLowerCase()}`}
+                      </option>
+                      {field.options?.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 ) : (
                   <Input
                     id={`${roleId}-${field.name}`}
                     label={field.label}
-                    type={field.type || 'text'}
+                    type={field.type || "text"}
                     placeholder={field.placeholder}
                     helperText={field.helperText}
-                    value={values[field.name]}
+                    value={values[field.name] || ""}
                     onChange={updateField(field.name)}
                     required
+                    disabled={isLoading}
                   />
                 )}
               </div>
@@ -131,58 +175,117 @@ export default function RoleSignupForm({ roleId, title, subtitle, icon, fields }
             <Input
               id={`${roleId}-password`}
               label="Password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="At least 8 characters"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              disabled={isLoading}
               rightSlot={
-                <button type="button" onClick={() => setShowPassword((v) => !v)} aria-label={showPassword ? 'Hide password' : 'Show password'}>
-                  {showPassword ? <EyeOff size={18} strokeWidth={2} /> : <Eye size={18} strokeWidth={2} />}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} strokeWidth={2} />
+                  ) : (
+                    <Eye size={18} strokeWidth={2} />
+                  )}
                 </button>
               }
             />
             <Input
               id={`${roleId}-confirm-password`}
               label="Confirm Password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               placeholder="Re-enter your password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
 
-          {password && <PasswordStrengthMeter strength={computeStrength(password)} />}
+          {password && (
+            <PasswordStrengthMeter strength={computeStrength(password)} />
+          )}
 
           <label className="flex items-start gap-2.5 cursor-pointer pt-1">
             <input
               type="checkbox"
               checked={agreed}
               onChange={() => setAgreed((v) => !v)}
-              className="w-4 h-4 mt-0.5 accent-brand-black shrink-0"
+              disabled={isLoading}
+              className="w-4 h-4 mt-0.5 accent-brand-black shrink-0 disabled:opacity-50"
             />
             <span className="font-inter text-small text-text-body">
-              I agree to the{' '}
-              <Link to="/legal/privacy-policy" className="underline underline-offset-2 hover:text-text-heading">Terms of Service</Link>
-              {' '}and{' '}
-              <Link to="/legal/privacy-policy" className="underline underline-offset-2 hover:text-text-heading">Privacy Policy</Link>.
+              I agree to the{" "}
+              <Link
+                to="/legal/privacy-policy"
+                className="underline underline-offset-2 hover:text-text-heading"
+              >
+                Terms of Service
+              </Link>{" "}
+              and{" "}
+              <Link
+                to="/legal/privacy-policy"
+                className="underline underline-offset-2 hover:text-text-heading"
+              >
+                Privacy Policy
+              </Link>
+              .
             </span>
           </label>
 
-          {error && <p role="alert" className="font-inter text-small text-error">{error}</p>}
+          {error && (
+            <p
+              role="alert"
+              className="font-inter text-small text-error bg-error/10 p-2 rounded-md"
+            >
+              {error}
+            </p>
+          )}
 
-          <Button type="submit" variant="primary" fullWidth>
-            Create Account
-            <ArrowRight size={16} strokeWidth={2} />
+          <Button
+            type="submit"
+            variant="primary"
+            fullWidth
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <Loader2
+                  size={16}
+                  strokeWidth={2}
+                  className="animate-spin mr-2"
+                />
+                Creating Account...
+              </>
+            ) : (
+              <>
+                Create Account
+                <ArrowRight size={16} strokeWidth={2} />
+              </>
+            )}
           </Button>
         </form>
 
         <p className="text-center font-inter text-small text-text-muted mt-6">
-          Already have an account?{' '}
-          <Link to="/login" className="text-text-body underline underline-offset-2 hover:text-text-heading">Login</Link>
-          {' '}·{' '}
-          <Link to="/role-selection" className="text-text-body hover:text-text-heading">Back</Link>
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="text-text-body underline underline-offset-2 hover:text-text-heading"
+          >
+            Login
+          </Link>{" "}
+          ·{" "}
+          <Link
+            to="/role-selection"
+            className="text-text-body hover:text-text-heading"
+          >
+            Back
+          </Link>
         </p>
       </Card>
     </div>
