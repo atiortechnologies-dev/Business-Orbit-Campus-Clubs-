@@ -53,6 +53,31 @@ const IncubationAdmission = require("../models/IncubationAdmission");
 const AdmissionDocument = require("../models/AdmissionDocument");
 const IncubationUpdate = require("../models/IncubationUpdate");
 
+const AtiorAssistanceRequest = require("../models/AtiorAssistanceRequest");
+const CustomerFeedback = require("../models/CustomerFeedback");
+const IncubationVerification = require("../models/IncubationVerification");
+const LaunchEvidenceFile = require("../models/LaunchEvidenceFile");
+const LaunchInsights = require("../models/LaunchInsights");
+const LaunchPitchDocument = require("../models/LaunchPitchDocument");
+const LaunchStage = require("../models/LaunchStage");
+const LaunchSubmission = require("../models/LaunchSubmission");
+const LaunchVerification = require("../models/LaunchVerification");
+const MVPChecklist = require("../models/MVPChecklist");
+const MVPReview = require("../models/MVPReview");
+const MVPReviewMeeting = require("../models/MVPReviewMeeting");
+const MVPSubmission = require("../models/MVPSubmission");
+const MeetingFeedback = require("../models/MeetingFeedback");
+const ProductSubmission = require("../models/ProductSubmission");
+const StartupGraduation = require("../models/StartupGraduation");
+const StartupProduct = require("../models/StartupProduct");
+const TractionMetrics = require("../models/TractionMetrics");
+const TractionReview = require("../models/TractionReview");
+const TractionReviewMeeting = require("../models/TractionReviewMeeting");
+const ValidationChecklistItem = require("../models/ValidationChecklistItem");
+const ValidationEvidence = require("../models/ValidationEvidence");
+const ValidationReport = require("../models/ValidationReport");
+const ValidationSurvey = require("../models/ValidationSurvey");
+
 const mongoose = require("mongoose");
 
 const deleteStartupDependencies = async (startupId, session = null) => {
@@ -169,6 +194,39 @@ const deleteStartupDependencies = async (startupId, session = null) => {
     );
     await IncubationAdmission.deleteMany({ _id: { $in: incAdmIds } }, opts);
   }
+
+  // 7. Delete Validation & Discovery Models
+  await ValidationReport.deleteMany({ startup_id: startupId }, opts);
+  await ValidationSurvey.deleteMany({ startup_id: startupId }, opts);
+  await ValidationChecklistItem.deleteMany({ startup_id: startupId }, opts);
+  await ValidationEvidence.deleteMany({ startup_id: startupId }, opts);
+
+  // 8. Delete MVP & Traction Models
+  await ProductSubmission.deleteMany({ startup_id: startupId }, opts);
+  await MVPChecklist.deleteMany({ startup_id: startupId }, opts);
+  await MVPSubmission.deleteMany({ startup_id: startupId }, opts);
+  await TractionMetrics.deleteMany({ startup_id: startupId }, opts);
+
+  // 9. Delete Launch Models
+  await LaunchStage.deleteMany({ startup_id: startupId }, opts);
+  await LaunchSubmission.deleteMany({ startup_id: startupId }, opts);
+  await LaunchInsights.deleteMany({ startup_id: startupId }, opts);
+  await LaunchVerification.deleteMany({ startup_id: startupId }, opts);
+  await LaunchEvidenceFile.deleteMany({ startup_id: startupId }, opts);
+  await LaunchPitchDocument.deleteMany({ startup_id: startupId }, opts);
+
+  // 10. Delete Reviews & Meetings
+  await MVPReview.deleteMany({ startup_id: startupId }, opts);
+  await MVPReviewMeeting.deleteMany({ startup_id: startupId }, opts);
+  await TractionReview.deleteMany({ startup_id: startupId }, opts);
+  await TractionReviewMeeting.deleteMany({ startup_id: startupId }, opts);
+  await MeetingFeedback.deleteMany({ startup_id: startupId }, opts);
+
+  // 11. Delete Graduation, Products & Misc
+  await StartupGraduation.deleteMany({ startup_id: startupId }, opts);
+  await StartupProduct.deleteMany({ startup_id: startupId }, opts);
+  await CustomerFeedback.deleteMany({ startup_id: startupId }, opts);
+  await AtiorAssistanceRequest.deleteMany({ startup_id: startupId }, opts);
 };
 
 const deleteUserDependencies = async (userId, session = null) => {
