@@ -692,6 +692,26 @@ const submitLaunchSchema = saveLaunchDraftSchema.extend({
   industry: z.string().min(1).max(100),
 });
 
+const saveLaunchInsightsSchema = z.object({
+  launch_date: z.string().datetime().optional(),
+  launch_type: z.enum(["Online", "Physical", "Hybrid"]).optional(),
+  venue: z.string().max(500).optional(),
+  live_product_url: z.string().url().optional(),
+  achievements: z.string().max(2000).optional(),
+  challenges: z.string().max(2000).optional(),
+  event_notes: z.string().max(2000).optional(),
+  special_remarks: z.string().max(1000).optional(),
+  social_media: z
+    .object({
+      linkedin_post: z.string().optional(),
+      instagram_post: z.string().optional(),
+      twitter_post: z.string().optional(),
+      youtube_demo: z.string().optional(),
+      website_announcement: z.string().optional(),
+    })
+    .optional(),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -729,4 +749,5 @@ module.exports = {
   updateProductSchema,
   saveLaunchDraftSchema,
   submitLaunchSchema,
+  saveLaunchInsightsSchema,
 };

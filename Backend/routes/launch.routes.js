@@ -6,6 +6,7 @@ const { validateRequest } = require("../middlewares/validateRequest");
 const {
   saveLaunchDraftSchema,
   submitLaunchSchema,
+  saveLaunchInsightsSchema,
 } = require("../utils/validators");
 
 router.use(protect, requireRole("student"));
@@ -50,5 +51,27 @@ router.post(
   "/stages/launch/pitch-deck/submit",
   launchController.submitPitchDeck,
 );
+
+// SCREEN 4: LAUNCH INSIGHTS
+
+router.get("/stages/launch/insights", launchController.getLaunchInsights);
+router.post(
+  "/stages/launch/insights/save",
+  validateRequest(saveLaunchInsightsSchema),
+  launchController.saveLaunchInsights,
+);
+router.post(
+  "/stages/launch/evidence/upload",
+  launchController.uploadLaunchEvidence,
+);
+router.delete(
+  "/stages/launch/evidence/:fileId",
+  launchController.deleteLaunchEvidence,
+);
+router.post(
+  "/stages/launch/insights/submit",
+  launchController.submitLaunchInsights,
+);
+router.get("/stages/launch/evidence", launchController.getLaunchEvidence);
 
 module.exports = router;
