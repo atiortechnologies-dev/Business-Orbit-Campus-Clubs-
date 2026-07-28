@@ -10,7 +10,7 @@ const adminRoutes = require("../../routes/admin.routes");
 
 const app = express();
 app.use(express.json());
-process.env.ADMIN_API_KEY = "test-secret-key";
+process.env.ADMIN_API_KEY = "DUMMY_SECRET_FOR_TESTING_ONLY";
 app.use("/api/admin", adminRoutes);
 
 describe("Admin Chapter Change Review Lifecycle", () => {
