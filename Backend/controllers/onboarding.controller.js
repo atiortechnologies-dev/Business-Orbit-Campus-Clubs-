@@ -9,26 +9,24 @@ const User = require("../models/User");
 const roleConfig = require("../utils/roleConfig");
 
 /**
- * Works out which screen the frontend should show next, following the
- * "Navigation Logic" flow described in the API spec:
- *
- *   Signup -> (Select College, student only) -> Email Verification
- *          -> Verification Pending -> Approved / Rejected
- *          -> Role Account Profile -> Role Dashboard
+ * Works out which screen or route the frontend should show next:
+ *   Signup -> Email Verification -> Verification Pending -> Approved/Rejected -> Complete Profile -> Dashboard
  */
 const resolveNextScreen = (user) => {
+  // 1. Unverified Email
   if (!user.email_verified) {
     return "email_verification";
   }
 
-  if (user.account_status === "pending_verification") {
+  // 2. Verification Pending States
+  if (
+    user.account_status === "pending_verification" ||
+    user.account_status === "pending_approval"
+  ) {
     return "verification_pending";
   }
 
-  if (user.account_status === "pending_approval") {
-    return "verification_pending";
-  }
-
+  // 3. Rejected or Suspended States
   if (user.account_status === "rejected") {
     return "profile_rejected";
   }
@@ -37,13 +35,18 @@ const resolveNextScreen = (user) => {
     return "account_suspended";
   }
 
-  // account_status === "active" from here on
-  if (user.profile_status === "not_started") {
+  // 4. Account is active -> Check Profile Completion
+  // Handles both 'pending' and 'not_started' default values
+  if (
+    user.profile_status === "pending" ||
+    user.profile_status === "not_started"
+  ) {
     return "complete_profile";
   }
 
+  // 5. Profile Completed or Skipped -> Send to Dashboard
   const config = roleConfig[user.role];
-  return config ? config.dashboardRedirect : "dashboard";
+  return config ? config.dashboardRedirect : "/dashboard";
 };
 
 /**
@@ -52,10 +55,15 @@ const resolveNextScreen = (user) => {
  * @access  Private
  */
 const getOnboardingStatus = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id).select(
+    "email_verified account_status profile_status role",
+  );
+
   if (!user) {
     return res.status(404).json({ success: false, message: "User not found" });
   }
+
+  const nextScreen = resolveNextScreen(user);
 
   return res.status(200).json({
     success: true,
@@ -64,9 +72,18 @@ const getOnboardingStatus = asyncHandler(async (req, res) => {
       account_status: user.account_status,
       profile_completion_status: user.profile_status,
       role: user.role,
-      next_screen: resolveNextScreen(user),
+      next_screen: nextScreen,
+      // Helper field for frontend router
+      redirect_to:
+        nextScreen === "complete_profile"
+          ? `/onboarding/complete-profile/${user.role}`
+          : nextScreen === "verification_pending"
+            ? "/onboarding/verification-progress"
+            : nextScreen === "email_verification"
+              ? "/onboarding/verify-email"
+              : nextScreen,
     },
   });
 });
 
-module.exports = { getOnboardingStatus };
+module.exports = { getOnboardingStatus, resolveNextScreen };

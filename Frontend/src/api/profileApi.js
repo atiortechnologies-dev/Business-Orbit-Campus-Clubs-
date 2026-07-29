@@ -19,3 +19,5 @@ export const updateProfile = (role, profileData) => {
 export const skipProfile = (role) => {
   return api.post(`/${role}/profile/skip`);
 };
+
+export const 

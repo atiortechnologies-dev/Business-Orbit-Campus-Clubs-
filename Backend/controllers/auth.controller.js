@@ -355,7 +355,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.validatedData;
 
-  // 1. Verify email exists and get password_hash
+  // 1. Verify email exists and select password_hash
   const user = await User.findOne({ email }).select("+password_hash");
   if (!user) {
     return res
@@ -373,34 +373,46 @@ const login = asyncHandler(async (req, res) => {
 
   // 3. Check email verification status
   if (!user.email_verified) {
-    return res
-      .status(403)
-      .json({ success: false, message: "Please verify your email" });
+    return res.status(403).json({
+      success: false,
+      message: "Please verify your email address before logging in.",
+      data: { redirect_to: "/onboarding/verify-email" },
+    });
   }
 
   // 4. Check account status
   if (user.account_status === "pending_verification") {
-    return res
-      .status(403)
-      .json({ success: false, message: "Account pending verification" });
-  }
-  if (user.account_status === "rejected") {
-    return res
-      .status(403)
-      .json({ success: false, message: "Account has been rejected" });
+    return res.status(403).json({
+      success: false,
+      message: "Account pending verification",
+      data: { redirect_to: "/onboarding/verification-progress" },
+    });
   }
 
-  // Generate tokens
+  if (user.account_status === "rejected") {
+    return res.status(403).json({
+      success: false,
+      message: "Account application has been rejected",
+      data: { redirect_to: "/onboarding/application-rejected" },
+    });
+  }
+
+  // 5. Generate authentication tokens
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  // 6. Redirect to appropriate dashboard (using roleConfig if available)
+  // 6. Determine target redirect URL dynamically
   const config = roleConfig[user.role];
-  const redirect_to = config.loginRedirect;
+  let redirectTo = config?.dashboardRedirect;
+
+  // Check if user still needs to complete profile onboarding
+  if (user.profile_status === "pending") {
+    redirectTo = `/onboarding/complete-profile/${user.role}`;
+  }
 
   return res.status(200).json({
     success: true,
-    message: "Login Successful",
+    message: "Login successful",
     data: {
       accessToken,
       refreshToken,
@@ -413,7 +425,7 @@ const login = asyncHandler(async (req, res) => {
         email_verified: user.email_verified,
         profile_status: user.profile_status,
       },
-      redirect_to,
+      redirect_to: redirectTo,
     },
   });
 });
@@ -454,7 +466,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
 
   // Send reset email
   try {
-    await sendOTPEmail(user.email, otp, {
+    sendOTPEmail(user.email, otp, {
       subject: "BOCC - Password Reset",
       headerText: "Reset Your Password",
       descriptionText:

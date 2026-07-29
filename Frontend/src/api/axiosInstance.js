@@ -22,14 +22,14 @@ api.interceptors.request.use(
 
 // Response Interceptor: Extract data automatically or handle status code errors
 api.interceptors.response.use(
-  (response) => response.data, // Automatically extracts the backend JSON response
+  (response) => response.data,
   (error) => {
-    // Standardize error message extraction from backend response
-    const message =
-      error.response?.data?.message ||
-      error.message ||
-      "An unexpected error occurred.";
-    return Promise.reject(new Error(message));
+    const customError = new Error(
+      error.response?.data?.message || error.message || "Something went wrong",
+    );
+    customError.response = error.response;
+    customError.data = error.response?.data;
+    return Promise.reject(customError);
   },
 );
 
