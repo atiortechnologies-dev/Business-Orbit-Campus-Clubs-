@@ -1,42 +1,34 @@
-# Phase 3: System Audit Logging Engine
+# Phase 3: Implement Chapter Events Management (ChapterEvent, EventRegistration, APIs for listing and creating events)
 
 ## Context
-- The backend has `protect` and `requireRole` in `authMiddleware.js` for role-based access control.
-- `AuditLog` model already exists from Data Modeling phase.
-- We need to implement AuditLog APIs: paginated list, pulse stream, volume trend, and CSV export.
+- `Backend/models/ChapterEvent.js` and `Backend/models/EventRegistration.js` were updated/created to support events for Chapters.
+- `Backend/controllers/admin/chapter.controller.js` handles chapter admin operations and needs `getChapterEvents` and `createChapterEvent`.
+- `Backend/routes/admin/chapter.routes.js` maps `/api/admin/chapters` endpoints and needs routes for events.
 
 ## Dependency Map
-- `auditLog.routes.js` → imports → `auditLog.controller.js`
-- `auditLog.controller.js` → uses → `AuditLog` model
-- `server.js` → mounts → `auditLog.routes.js`
+- `Backend/controllers/admin/chapter.controller.js` → imports → `Backend/models/ChapterEvent.js`, `Backend/models/EventRegistration.js`, `Backend/models/AuditLog.js`
+- `Backend/routes/admin/chapter.routes.js` → calls → `getChapterEvents`, `createChapterEvent` from `Backend/controllers/admin/chapter.controller.js`
 
 ## Proposed Changes
 
-### Backend/controllers/auditLog.controller.js
+### Chapter Event Controllers
 
-#### [NEW] Backend/controllers/auditLog.controller.js
-- What: Implement four controller functions: `getLogs` (with pagination and filtering by timeframe, module, user), `getPulse` (returns recent activity), `getVolumeTrend` (returns 24-hour log volume histogram), and `exportLogs` (returns CSV output of filtered logs).
-- Why: To satisfy the Audit Log APIs defined in the API contract.
-- Impact: Core logic for the Audit Log module.
+#### [MODIFY] /home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/admin/chapter.controller.js
+- What: Add `getChapterEvents` and `createChapterEvent` controller functions.
+- Why: To list events scheduled by a chapter and to create new chapter events as required by the PRD.
+- Impact: Extends chapter API surface. 
 
-### Backend/routes/auditLog.routes.js
-
-#### [NEW] Backend/routes/auditLog.routes.js
-- What: Define the routes for the audit log endpoints, using `protect` and `requireRole(['admin', 'super_admin'])` for most, and `requireRole(['super_admin'])` for `/export`.
-- Why: To map the endpoints defined in the API contract to their controller functions.
-- Impact: Exposes `/api/admin/audit-log` endpoints. Requires mounting in `server.js`.
-
-### Backend/server.js
-
-#### [MODIFY] Backend/server.js
-- What: Import and mount `auditLog.routes.js` at `/api/admin/audit-log`.
-- Why: To make the new routes accessible.
-- Impact: Global routing layer.
+#### [MODIFY] /home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/routes/admin/chapter.routes.js
+- What: Add `GET /:id/events` mapped to `getChapterEvents` and `POST /:id/events` mapped to `createChapterEvent`.
+- Why: To expose the new event functionalities via the API.
+- Impact: Adds new API routes under `/api/admin/chapters`.
 
 ## DRY Context
-- Reuse `protect` and `requireRole` from `Backend/middlewares/authMiddleware.js`.
-- Reuse `asyncHandler` from `Backend/middlewares/asyncHandler.js`.
+- Use `asyncHandler` middleware for controller functions.
+- Use `formatPaginatedResponse` utility in `chapter.controller.js` for pagination.
+- Use existing `AuditLog` creation pattern for `CHAPTER_EVENT_CREATED`.
 
 ## Risks & Edge Cases
-- Test coverage needs to ensure that the CSV export endpoint is covered and works correctly.
-- Need to parse `timeframe` (e.g. 24h, 7d, 30d) safely in the controllers.
+- `createChapterEvent` must validate that `max_capacity` > 0.
+- Ensure event creation adds an AuditLog.
+- Missing test coverage areas: need Jest tests for these new endpoints.

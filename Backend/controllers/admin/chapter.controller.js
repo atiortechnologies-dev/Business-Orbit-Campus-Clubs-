@@ -171,3 +171,96 @@ exports.assignChapterLead = asyncHandler(async (req, res) => {
     },
   });
 });
+
+/**
+ * @desc    List events scheduled by chapter
+ * @route   GET /api/admin/chapters/:id/events
+ * @access  Private (Admin)
+ */
+exports.getChapterEvents = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const skip = (page - 1) * limit;
+
+  const chapterId = req.params.id;
+  const filter = { chapter_id: chapterId };
+
+  // Need to import ChapterEvent at the top. Wait, we will require it here to avoid error or we can just require it if not imported.
+  const ChapterEvent = require("../../models/ChapterEvent");
+
+  const totalRecords = await ChapterEvent.countDocuments(filter);
+  const events = await ChapterEvent.find(filter)
+    .sort({ event_date: 1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  const upcoming = await ChapterEvent.countDocuments({ chapter_id: chapterId, status: { $in: ["PENDING", "ACTIVE", "scheduled"] } });
+  const completed = await ChapterEvent.countDocuments({ chapter_id: chapterId, status: { $in: ["COMPLETED", "completed"] } });
+
+  // Calculate total registrations and average attendance %
+  // Simplified for now based on PRD requirements.
+  let total_registrations = 0;
+  events.forEach(e => total_registrations += (e.total_registrations || 0));
+
+  res.status(200).json({
+    success: true,
+    ...formatPaginatedResponse(events, page, limit, totalRecords, {
+      upcoming,
+      completed,
+      total_registrations,
+      average_attendance_pct: 0 // Placeholder
+    })
+  });
+});
+
+/**
+ * @desc    Create new chapter event
+ * @route   POST /api/admin/chapters/:id/events
+ * @access  Private (Admin)
+ */
+exports.createChapterEvent = asyncHandler(async (req, res) => {
+  const { title, description, category, event_date, location_venue, max_capacity } = req.body;
+  const chapterId = req.params.id;
+
+  if (!title || !description || !category || !event_date || !location_venue || !max_capacity) {
+    return res.status(400).json({ success: false, message: "Missing required fields" });
+  }
+
+  if (max_capacity <= 0) {
+    return res.status(400).json({ success: false, message: "max_capacity must be greater than 0" });
+  }
+
+  const ChapterEvent = require("../../models/ChapterEvent");
+
+  const newEvent = await ChapterEvent.create({
+    chapter_id: chapterId,
+    title,
+    description,
+    category,
+    event_date,
+    location_venue,
+    max_capacity,
+    status: "ACTIVE"
+  });
+
+  await AuditLog.create({
+    actor_id: req.user.id,
+    actor_name: req.user.full_name || "Admin",
+    module: "CLUBS",
+    action: "CHAPTER_EVENT_CREATED",
+    target_entity_id: newEvent._id.toString(),
+    target_entity_name: newEvent.title,
+    status: "SUCCESS",
+    ip_address: req.ip,
+    details: { event_id: newEvent._id },
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Chapter event created successfully",
+    data: {
+      event: newEvent
+    }
+  });
+});

@@ -35,3 +35,5 @@
 - Deleting an Admin user -> `UserSession` and `AdminNotificationSetting` are deleted, but `actor_id` in `AuditLog` is set to NULL.
 - Deleting a User -> Deleting a Chapter or CompanyProfile uses soft deletes (`is_deleted`) to preserve audit history.
 | Chapter | Backend/models/Chapter.js | chapter_name, college_name, location, chapter_lead_id, status, health_score, founded_date, is_deleted | User (chapter_lead_id) | PENDING, ACTIVE, INACTIVE |
+| ChapterEvent | Backend/models/ChapterEvent.js | chapter_id, title, description, category, event_date, location_venue, max_capacity, total_registrations, status | Chapter (chapter_id) | PENDING, ACTIVE, COMPLETED, CANCELLED |
+| EventRegistration | Backend/models/EventRegistration.js | event_id, user_id, status | ChapterEvent (event_id), User (user_id) | REGISTERED, ATTENDED, CANCELLED |
