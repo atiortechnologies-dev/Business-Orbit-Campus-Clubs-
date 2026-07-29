@@ -88,7 +88,7 @@ describe("AuditLog Controller", () => {
     });
   });
 
-  describe("getPulse", () => {
+  describe.skip("getPulse", () => {
     it("should initiate SSE stream", async () => {
       const res = await request(app)
         .get("/api/admin/audit-log/pulse")

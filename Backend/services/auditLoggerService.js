@@ -1,3 +1,9 @@
+/**
+ * @file auditLoggerService.js
+ * @description Service for generating and storing audit logs.
+ * @architecture Reusable service called across various controllers.
+ */
+
 const AuditLog = require('../models/AuditLog');
 
 /**

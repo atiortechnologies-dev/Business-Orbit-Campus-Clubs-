@@ -1,3 +1,9 @@
+/**
+ * @file settings.routes.js
+ * @description Routes for platform settings, profile, and security.
+ * @architecture Mounted under /api/admin/settings
+ */
+
 const express = require('express');
 const { 
   getSettings, 

@@ -1,3 +1,9 @@
+/**
+ * @file settings.controller.js
+ * @description Controllers for platform and admin settings.
+ * @architecture Interfaces with PlatformSetting, UserSession, User and AdminNotificationSetting models.
+ */
+
 const PlatformSetting = require('../../models/PlatformSetting');
 const AdminNotificationSetting = require('../../models/AdminNotificationSetting');
 const UserSession = require('../../models/UserSession');
@@ -8,6 +14,11 @@ const fs = require('fs');
 const path = require('path');
 const { hashPassword, comparePassword } = require('../../utils/password');
 
+/**
+ * @desc    Get platform settings, admin profile and notifications
+ * @route   GET /api/admin/settings
+ * @access  Private (Admin/Super Admin)
+ */
 exports.getSettings = asyncHandler(async (req, res) => {
   let platformSetting = await PlatformSetting.findOne();
   if (!platformSetting) {
@@ -35,6 +46,11 @@ exports.getSettings = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Update platform settings
+ * @route   PUT /api/admin/settings/platform
+ * @access  Private (Super Admin)
+ */
 exports.updatePlatformSettings = asyncHandler(async (req, res) => {
   const {
     platform_name,
@@ -94,6 +110,11 @@ exports.updatePlatformSettings = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Export platform settings config
+ * @route   GET /api/admin/settings/export-config
+ * @access  Private (Super Admin)
+ */
 exports.exportConfig = asyncHandler(async (req, res) => {
   const platformSetting = await PlatformSetting.findOne().lean();
   res.status(200).json({
@@ -102,6 +123,11 @@ exports.exportConfig = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Update admin profile
+ * @route   PUT /api/admin/settings/profile
+ * @access  Private (Admin/Super Admin)
+ */
 exports.updateProfile = asyncHandler(async (req, res) => {
   const { full_name, phone } = req.body;
   const user = await User.findById(req.user.id);
@@ -132,6 +158,11 @@ exports.updateProfile = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Update admin notifications
+ * @route   PUT /api/admin/settings/notifications
+ * @access  Private (Admin/Super Admin)
+ */
 exports.updateNotifications = asyncHandler(async (req, res) => {
   const { notifications } = req.body; // Array of { event_category, in_app_enabled, email_enabled }
   
@@ -169,6 +200,11 @@ exports.updateNotifications = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get login history for admin
+ * @route   GET /api/admin/settings/login-history
+ * @access  Private (Admin/Super Admin)
+ */
 exports.getLoginHistory = asyncHandler(async (req, res) => {
   const sessions = await UserSession.find({ user_id: req.user.id }).sort({ last_active_at: -1 }).lean();
 
@@ -178,6 +214,11 @@ exports.getLoginHistory = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Logout admin from all devices
+ * @route   POST /api/admin/settings/logout-all-devices
+ * @access  Private (Super Admin)
+ */
 exports.logoutAllDevices = asyncHandler(async (req, res) => {
   // Keeping only the current session, but since we don't pass the current refresh token to this endpoint easily,
   // we just delete all other sessions or all sessions.
@@ -205,6 +246,11 @@ exports.logoutAllDevices = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Change admin password
+ * @route   POST /api/admin/settings/change-password
+ * @access  Private (Admin/Super Admin)
+ */
 exports.changePassword = asyncHandler(async (req, res) => {
   const { current_password, new_password } = req.body;
 
@@ -241,6 +287,11 @@ exports.changePassword = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Download system logs
+ * @route   GET /api/admin/settings/download-system-logs
+ * @access  Private (Super Admin)
+ */
 exports.downloadSystemLogs = asyncHandler(async (req, res) => {
   // In a real app, this would stream the server log file (e.g. pm2 logs or a combined.log from winston)
   // For this assignment, we will just send a dummy log file response.

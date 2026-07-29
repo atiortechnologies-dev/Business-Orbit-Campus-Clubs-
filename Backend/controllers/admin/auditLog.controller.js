@@ -1,6 +1,17 @@
+/**
+ * @file auditLog.controller.js
+ * @description Controllers for querying and exporting audit logs.
+ * @architecture Interfaces with the AuditLog model for system observability.
+ */
+
 const AuditLog = require('../../models/AuditLog');
 const asyncHandler = require('../../middlewares/asyncHandler');
 
+/**
+ * @desc    Get paginated audit logs with filtering
+ * @route   GET /api/admin/audit-log
+ * @access  Private (Admin/Super Admin)
+ */
 exports.getAuditLogs = asyncHandler(async (req, res) => {
   const { timeframe, module, user, page = 1, limit = 20 } = req.query;
 
@@ -47,6 +58,11 @@ exports.getAuditLogs = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get SSE stream of recent audit logs
+ * @route   GET /api/admin/audit-log/pulse
+ * @access  Private (Admin/Super Admin)
+ */
 exports.getPulse = asyncHandler(async (req, res) => {
   res.setHeader('Content-Type', 'text/event-stream');
   res.setHeader('Cache-Control', 'no-cache');
@@ -65,6 +81,11 @@ exports.getPulse = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get volume trend of audit logs (last 24 hours)
+ * @route   GET /api/admin/audit-log/volume-trend
+ * @access  Private (Admin/Super Admin)
+ */
 exports.getVolumeTrend = asyncHandler(async (req, res) => {
   const now = new Date();
   const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
@@ -102,6 +123,11 @@ exports.getVolumeTrend = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Export audit logs as CSV
+ * @route   GET /api/admin/audit-log/export
+ * @access  Private (Admin/Super Admin)
+ */
 exports.exportLogs = asyncHandler(async (req, res) => {
   const { timeframe, module, user } = req.query;
 
