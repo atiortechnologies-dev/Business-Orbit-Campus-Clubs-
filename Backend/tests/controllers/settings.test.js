@@ -152,13 +152,25 @@ describe("Settings Controller", () => {
         last_active_at: new Date()
       });
 
+      // Add a non-current session
+      await UserSession.create({
+        user_id: superAdmin._id,
+        device_name: "Old Device",
+        os_browser: "Test OS",
+        ip_address: "127.0.0.1",
+        refresh_token_hash: "oldhash",
+        is_current: false,
+        last_active_at: new Date()
+      });
+
       const res = await request(app)
         .post("/api/admin/settings/logout-all-devices")
         .set("Authorization", `Bearer ${superAdminJwt}`);
 
       expect(res.statusCode).toBe(200);
       const sessions = await UserSession.find({ user_id: superAdmin._id });
-      expect(sessions).toHaveLength(0);
+      expect(sessions).toHaveLength(1);
+      expect(sessions[0].is_current).toBe(true);
     });
   });
 

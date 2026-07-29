@@ -226,9 +226,8 @@ exports.logoutAllDevices = asyncHandler(async (req, res) => {
   // Assuming the current session token's hash can be passed, but typically we might just clear them.
   // We'll delete all sessions that are not marked as `is_current: true` for simplicity or we should find the one matching req's token.
   
-  // A simplistic approach: delete all sessions for this user. The user will have to login again.
-  // Wait, let's just delete all sessions to be safe, or if we have a way to identify current session, keep it.
-  await UserSession.deleteMany({ user_id: req.user.id });
+  // Preserve the current session by only deleting those not marked as current
+  await UserSession.deleteMany({ user_id: req.user.id, is_current: { $ne: true } });
 
   await logAudit(
     req.user,
