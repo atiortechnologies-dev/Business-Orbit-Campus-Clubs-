@@ -71,25 +71,51 @@ export default function LoginPage() {
           password,
         });
 
-        // Unpack payload from Axios global interceptor
-        const payload = res?.data || res;
+        console.log("LOGIN RESPONSE RAW:", res);
 
-        // Store auth tokens
-        if (payload?.accessToken) {
-          localStorage.setItem("accessToken", payload.accessToken);
-        }
-        if (payload?.refreshToken) {
-          localStorage.setItem("refreshToken", payload.refreshToken);
-        }
-
-        // Redirect to role-specific dashboard (fallback to '/dashboard')
+        // Extract redirect destination from every possible nesting level
         const destination =
-          payload?.redirect_to || res?.redirect_to || "/dashboard";
+          res?.data?.data?.redirect_to ||
+          res?.data?.redirect_to ||
+          res?.redirect_to ||
+          "/dashboard";
 
+        const accessToken =
+          res?.data?.data?.accessToken ||
+          res?.data?.accessToken ||
+          res?.accessToken;
+
+        const refreshToken =
+          res?.data?.data?.refreshToken ||
+          res?.data?.refreshToken ||
+          res?.refreshToken;
+
+        if (accessToken) localStorage.setItem("accessToken", accessToken);
+        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
+        console.log("NAVIGATING TO:", destination);
+
+        // Force navigation
         navigate(destination, { replace: true });
       } catch (err) {
+        console.error("LOGIN ERROR CATCH:", err);
+
+        // Handle 403 or error payloads containing redirect_to
+        const redirectOn403 =
+          err.response?.data?.data?.redirect_to ||
+          err.response?.data?.redirect_to ||
+          err?.data?.redirect_to;
+
+        if (redirectOn403) {
+          console.log("NAVIGATING VIA 403 ERROR TO:", redirectOn403);
+          navigate(redirectOn403, { replace: true });
+          return;
+        }
+
         setApiError(
-          err.message || "Invalid email or password. Please try again.",
+          err.response?.data?.message ||
+            err.message ||
+            "Invalid email or password. Please try again.",
         );
       } finally {
         setIsSubmitting(false);

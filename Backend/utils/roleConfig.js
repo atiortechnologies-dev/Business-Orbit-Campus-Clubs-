@@ -21,7 +21,6 @@ const roleConfig = {
     redirectTo: "/onboarding/welcome",
     initialStatus: "pending_verification",
     dashboardRedirect: "/dashboard",
-    loginRedirect: "/dashboard",
   },
   mentor: {
     ProfileModel: MentorProfile,
