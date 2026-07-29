@@ -12,7 +12,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { getMyChapter, getChapterStats } from "@/api/studentChapterApi";
+import { getMyChapter, getChapterStats } from "@/api/auth/studentChapterApi";
 
 export default function OnboardingWelcomePage() {
   useDocumentTitle("Welcome to Your Chapter — BOCC");

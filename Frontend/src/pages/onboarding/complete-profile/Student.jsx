@@ -6,7 +6,7 @@ import TagInput from "@/components/onboarding/TagInput";
 import CheckboxPills from "@/components/onboarding/CheckboxPills";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { skipProfile, createProfile } from "@/api/profileApi"; // Imported API functions
+import { skipProfile, createProfile } from "@/api/auth/profileApi";
 
 const INTERESTS = [
   "SaaS",

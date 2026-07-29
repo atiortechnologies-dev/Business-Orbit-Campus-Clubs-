@@ -8,7 +8,7 @@ import CheckboxPills from "@/components/onboarding/CheckboxPills";
 import SelectField from "@/components/onboarding/SelectField";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { createProfile, skipProfile } from "@/api/profileApi";
+import { createProfile, skipProfile } from "@/api/auth/profileApi";
 
 const INDUSTRIES = [
   "Technology",

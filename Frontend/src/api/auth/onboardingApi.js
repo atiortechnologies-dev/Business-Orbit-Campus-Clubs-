@@ -1,5 +1,5 @@
 // src/api/onboardingApi.js
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../axiosInstance";
 
 export const getOnboardingStatus = async () => {
   const response = await axiosInstance.get("/onboarding/status");

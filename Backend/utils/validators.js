@@ -230,12 +230,12 @@ const roleSpecificCompleteSchemas = {
 //* Startup Submission:
 const submitIdeaSchema = z.object({
   title: z
-    .string()
+    .string({ required_error: "Title is required" })
     .trim()
     .min(1, "Title is required")
     .max(150, "Title must be under 150 characters"),
   description: z
-    .string()
+    .string({ required_error: "Description is required" })
     .trim()
     .min(1, "Description is required")
     .max(5000, "Description must be under 5000 characters"),

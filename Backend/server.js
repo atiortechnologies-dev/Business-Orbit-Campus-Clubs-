@@ -30,7 +30,11 @@ const publicRoutes = require("./routes/public.routes");
 const adminRoutes = require("./routes/admin.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const studentRoutes = require("./routes/student.routes");
-const { requireAuth, authorizeRoles, requireActiveAccount } = require("./middlewares/requireAuth");
+const {
+  requireAuth,
+  authorizeRoles,
+  requireActiveAccount,
+} = require("./middlewares/requireAuth");
 
 const stage3StageRoutes = require("./routes/stage3.routes");
 const stage3ProductTypeRoutes = require("./routes/productType.routes");
@@ -71,6 +75,7 @@ const studentFreelancingRoutes = require("./routes/studentFreelancing.routes");
 const companyRoutes = require("./routes/company.routes");
 const investorRoutes = require("./routes/investor.routes");
 const chatRoutes = require("./routes/chat.routes");
+
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
 

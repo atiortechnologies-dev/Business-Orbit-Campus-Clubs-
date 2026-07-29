@@ -7,7 +7,7 @@ import CheckboxPills from "@/components/onboarding/CheckboxPills";
 import SelectField from "@/components/onboarding/SelectField";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { createProfile, skipProfile } from "@/api/profileApi";
+import { skipProfile, createProfile } from "@/api/auth/profileApi";
 
 const INVESTMENT_STAGES = ["Idea", "Pre-Seed", "Seed", "Series A+"];
 const INVESTOR_TYPES = ["Angel", "VC", "Corporate"];

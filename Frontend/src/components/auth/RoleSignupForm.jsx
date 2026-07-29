@@ -5,7 +5,7 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
-import { registerUser } from "@/api/authApi";
+import { registerUser } from "@/api/auth/authApi";
 
 function computeStrength(password) {
   if (!password) return 0;
