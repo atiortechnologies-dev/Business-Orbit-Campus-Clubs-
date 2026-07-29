@@ -34,3 +34,4 @@
 ## Cascade Rules
 - Deleting an Admin user -> `UserSession` and `AdminNotificationSetting` are deleted, but `actor_id` in `AuditLog` is set to NULL.
 - Deleting a User -> Deleting a Chapter or CompanyProfile uses soft deletes (`is_deleted`) to preserve audit history.
+| Chapter | Backend/models/Chapter.js | chapter_name, college_name, location, chapter_lead_id, status, health_score, founded_date, is_deleted | User (chapter_lead_id) | PENDING, ACTIVE, INACTIVE |

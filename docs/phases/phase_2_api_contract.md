@@ -1,53 +1,25 @@
-# Phase 2 API Contract: Applications & Document Uploads API
+# Phase 2 API Contract
 
-## POST /api/student/freelancing/applications
-- Auth required: Yes (Student)
-- Request body: { opportunity_id: string (required) }
-- Success: 201 { data: { application: { _id, opportunity_id, student_id, application_status, submitted_at, updated_at } } }
-- Errors: 400 (validation), 401, 404, 409 (duplicate application), 500
+## GET /api/admin/chapters/:id/overview
+- Auth required: Yes (ADMIN or SUPER_ADMIN)
+- Request query: None
+- Success: 200 { message: string, data: { chapter: { id: ObjectId, chapter_name: string, college_name: string, status: string, health_score: number, location: string, chapter_lead_id: ObjectId }, metrics: { total_students: number, active_startups: number, mentors_count: number, upcoming_events: number } } }
+- Errors: 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 500 (Server Error)
 
-## GET /api/student/freelancing/applications
-- Auth required: Yes (Student)
-- Query parameters: status, page, limit
-- Success: 200 { data: { applications: [...], pagination: {...} } }
-- Errors: 401, 500
+## GET /api/admin/chapters/:id/students
+- Auth required: Yes (ADMIN or SUPER_ADMIN)
+- Request query: { page: number (default 1), limit: number (default 10) }
+- Success: 200 { message: string, data: [ { id: ObjectId, name: string, email: string, ... } ], page: number, limit: number, total_records: number, total_pages: number, metrics: { total_students: number, active_startups: number, completion_rate: number, pending_reviews: number } }
+- Errors: 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 500 (Server Error)
 
-## GET /api/student/freelancing/applications/{applicationId}
-- Auth required: Yes (Student)
-- Path parameters: applicationId
-- Success: 200 { data: { application: {...} } }
-- Errors: 401, 404, 500
+## GET /api/admin/chapters/:id/startups
+- Auth required: Yes (ADMIN or SUPER_ADMIN)
+- Request query: { page: number (default 1), limit: number (default 10) }
+- Success: 200 { message: string, data: [ { id: ObjectId, name: string, stage: string, ... } ], page: number, limit: number, total_records: number, total_pages: number, metrics: { total_startups: number, active_startups: number, incubated_count: number, launched_count: number } }
+- Errors: 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 500 (Server Error)
 
-## PUT /api/student/freelancing/applications/{applicationId}
-- Auth required: Yes (Student)
-- Path parameters: applicationId
-- Request body: { resume_url: string, cover_letter: string, portfolio_url: string, availability: string, joining_date: string }
-- Success: 200 { data: { application: {...} } }
-- Errors: 400, 401, 403 (cannot edit submitted), 404, 500
-
-## POST /api/student/freelancing/applications/upload-resume
-- Auth required: Yes (Student)
-- Request type: multipart/form-data
-- Form field: resume (file)
-- Success: 200 { data: { file_url: string, file_name: string } }
-- Errors: 400, 401, 500
-
-## POST /api/student/freelancing/applications/upload-document
-- Auth required: Yes (Student)
-- Request type: multipart/form-data
-- Form field: document (file)
-- Request form fields: document_type (string, required)
-- Success: 200 { data: { document_id: string, file_url: string, file_name: string } }
-- Errors: 400, 401, 500
-
-## POST /api/student/freelancing/applications/{applicationId}/submit
-- Auth required: Yes (Student)
-- Path parameters: applicationId
-- Success: 200 { data: { application: {...} }, message: "Application submitted successfully" }
-- Errors: 400 (validation failed), 401, 403, 404, 500
-
-## DELETE /api/student/freelancing/applications/{applicationId}/withdraw
-- Auth required: Yes (Student)
-- Path parameters: applicationId
-- Success: 200 { message: "Application withdrawn successfully" }
-- Errors: 400, 401, 403, 404, 500
+## PUT /api/admin/chapters/:id/assign-lead
+- Auth required: Yes (ADMIN or SUPER_ADMIN)
+- Request body: { chapter_lead_id: string (required, valid ObjectId) }
+- Success: 200 { message: string, data: { chapter: { id: ObjectId, chapter_lead_id: ObjectId } } }
+- Errors: 400 (Validation Error), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 500 (Server Error)
