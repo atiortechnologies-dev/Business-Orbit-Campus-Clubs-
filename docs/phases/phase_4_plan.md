@@ -1,42 +1,30 @@
-# Phase 4 Plan: Update logoutAllDevices Controller to Preserve Current Session Token
+# Phase 4: Integrate Notifications & Activity Logs for Opportunities and Chapters
 
 ## Context
-- Phase Objective: Update logoutAllDevices controller to preserve the current session token instead of deleting all sessions.
-- Affected Controller: `Backend/controllers/admin/settings.controller.js`
-- Affected Auth Controller (for session management consistency): `Backend/controllers/auth.controller.js`
-- Affected Tests: `Backend/tests/controllers/settings.test.js`
+- The phase adds logging and notifications for Opportunity approval/rejection and Chapter event/lead assignment workflows.
+- `AuditLog` model already has the `OPPORTUNITIES` and `CHAPTERS` modules added.
+- `auditLoggerService.js` provides `logAudit` utility.
+- Notification sending can be handled via existing `notification.controller.js` logic or a new service method.
 
 ## Dependency Map
-- `Backend/routes/admin/settings.routes.js` -> imports `logoutAllDevices` from `Backend/controllers/admin/settings.controller.js`
-- `Backend/controllers/admin/settings.controller.js` -> uses `UserSession` model from `Backend/models/UserSession.js` & `logAudit` service
-- `Backend/controllers/auth.controller.js` -> updates/creates `UserSession` records on login
+- `opportunity.controller.js` → `AuditLog`, `Notification`
+- `chapter.controller.js` → `AuditLog`, `Notification`
 
 ## Proposed Changes
 
-### Settings Controller
-#### [MODIFY] [Backend/controllers/admin/settings.controller.js](file:///home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/admin/settings.controller.js)
-- What: Ensure `logoutAllDevices` preserves the active/current session token (`is_current: true`) while revoking all other session records (`is_current: { $ne: true }`). Include response metadata with `revokedCount`.
-- Why: Fulfills business rule requiring session revocation to invalidate all active sessions except for the current session token.
-- Impact: Fixes session revocation behavior for multi-device admins.
+### Backend/controllers/admin/opportunity.controller.js
+- **What**: In `approveOpportunity`, `rejectOpportunity`, and `requestChanges`, import `logAudit` and write logs to `OPPORTUNITIES` module. Import notification service to notify the opportunity's `company_id`.
+- **Why**: PRD Section 9 and 10 require audit logging and company notification on moderation.
+- **Impact**: Modifies moderation endpoints.
 
-### Auth Controller
-#### [MODIFY] [Backend/controllers/auth.controller.js](file:///home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/auth.controller.js)
-- What: On successful admin login, before creating a new `UserSession` with `is_current: true`, execute `UserSession.updateMany({ user_id: user._id }, { is_current: false })` to ensure only the newly created session is marked as current.
-- Why: Maintains accurate `is_current` state across multiple logins on different devices so `logoutAllDevices` can properly differentiate current vs non-current sessions.
-- Impact: Ensures multi-device logins set proper flags.
-
-### Unit Tests
-#### [MODIFY] [Backend/tests/controllers/settings.test.js](file:///home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/settings.test.js)
-- What: Verify unit test coverage for `logoutAllDevices` to ensure that non-current sessions are deleted, the current session (`is_current: true`) is retained, and audit logging succeeds.
-- Why: Ensures quality and prevents regression.
+### Backend/controllers/admin/chapter.controller.js
+- **What**: In `assignChapterLead`, add `logAudit` for `CHAPTERS` module (`CHAPTER_LEAD_ASSIGNED`). In `createChapterEvent`, add `logAudit` (`CHAPTER_EVENT_CREATED`) and trigger notification to chapter students.
+- **Why**: PRD Sections 9 and 10 require chapter lead and event creation to be logged and students to be notified.
+- **Impact**: Modifies chapter management endpoints.
 
 ## DRY Context
-- Reuses `logAudit` service for audit logging `ALL_SESSIONS_REVOKED`.
-- Reuses Mongoose `UserSession` model.
+- Re-use `logAudit` from `Backend/services/auditLoggerService.js`.
 
 ## Risks & Edge Cases
-- If no session has `is_current: true`, `deleteMany` will retain all sessions if we use `$ne: true`. Ensuring login updates previous sessions to `is_current: false` prevents stale flags.
-
-## Scope Validation Notes
-- Scope checked: All proposed changes target only `logoutAllDevices` and `UserSession` flag management.
-- PRD check: Fully aligns with Section 7 Business Rules ("Sign Out of All Devices immediately invalidates all active sessions for the target admin except for the current session token").
+- Make sure notification creation is non-blocking (don't fail the API if notification fails).
+- Make sure `auditLoggerService` correctly maps the actor/admin making the request.

@@ -7,7 +7,7 @@ const auditLogSchema = new Schema(
     actor_name: { type: String },
     module: {
       type: String,
-      enum: ["SECURITY", "CLUBS", "AUTH", "SYSTEM", "CONTENT"],
+      enum: ["SECURITY", "CLUBS", "AUTH", "SYSTEM", "CONTENT", "OPPORTUNITIES", "CHAPTERS"],
       required: true,
     },
     action: { type: String, required: true },

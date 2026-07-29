@@ -1,6 +1,7 @@
 const { logAudit } = require('../../services/auditLoggerService');
 const FreelanceOpportunity = require('../../models/FreelanceOpportunity');
 const OpportunityNote = require('../../models/OpportunityNote');
+const Notification = require('../../models/Notification');
 const asyncHandler = require('../../middlewares/asyncHandler');
 
 /**
@@ -99,7 +100,7 @@ exports.approveOpportunity = asyncHandler(async (req, res) => {
 
   await logAudit(
     req.user._id,
-    'OpportunityModeration',
+    'OPPORTUNITIES',
     'OPPORTUNITY_APPROVED',
     opportunity._id,
     'FreelanceOpportunity',
@@ -107,6 +108,13 @@ exports.approveOpportunity = asyncHandler(async (req, res) => {
     req.ip || '0.0.0.0',
     { title: opportunity.title }
   );
+
+  await Notification.create({
+    recipient_id: opportunity.company_id,
+    title: "Opportunity Approved",
+    message: `Your opportunity "${opportunity.title}" has been approved.`,
+    type: "success"
+  });
 
   res.status(200).json({
     message: "Opportunity approved successfully",
@@ -137,7 +145,7 @@ exports.rejectOpportunity = asyncHandler(async (req, res) => {
 
   await logAudit(
     req.user._id,
-    'OpportunityModeration',
+    'OPPORTUNITIES',
     'OPPORTUNITY_REJECTED',
     opportunity._id,
     'FreelanceOpportunity',
@@ -145,6 +153,13 @@ exports.rejectOpportunity = asyncHandler(async (req, res) => {
     req.ip || '0.0.0.0',
     { reason }
   );
+
+  await Notification.create({
+    recipient_id: opportunity.company_id,
+    title: "Opportunity Rejected",
+    message: `Your opportunity "${opportunity.title}" was rejected. Feedback: ${reason}`,
+    type: "alert"
+  });
 
   res.status(200).json({
     message: "Opportunity rejected successfully",
@@ -175,7 +190,7 @@ exports.requestChanges = asyncHandler(async (req, res) => {
 
   await logAudit(
     req.user._id,
-    'OpportunityModeration',
+    'OPPORTUNITIES',
     'OPPORTUNITY_CHANGES_REQUESTED',
     opportunity._id,
     'FreelanceOpportunity',
@@ -183,6 +198,13 @@ exports.requestChanges = asyncHandler(async (req, res) => {
     req.ip || '0.0.0.0',
     { changes_requested }
   );
+
+  await Notification.create({
+    recipient_id: opportunity.company_id,
+    title: "Changes Requested",
+    message: `Changes requested for "${opportunity.title}". Notes: ${changes_requested}`,
+    type: "warning"
+  });
 
   res.status(200).json({
     message: "Changes requested successfully",
@@ -238,7 +260,7 @@ exports.bulkApprove = asyncHandler(async (req, res) => {
   // Note: For full audit logging, one might log each approval separately or log a bulk action.
   await logAudit(
     req.user._id,
-    'OpportunityModeration',
+    'OPPORTUNITIES',
     'OPPORTUNITY_BULK_APPROVED',
     req.user._id, // generic target for bulk
     'BulkAction',

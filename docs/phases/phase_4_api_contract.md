@@ -1,26 +1,32 @@
-# Phase 4 API Contract: Logout All Devices (Preserving Current Session)
+# Phase 4 API Contract
 
-## POST /api/admin/settings/logout-all-devices
-- **Auth required**: Yes (JWT Bearer Token, SUPER_ADMIN / ADMIN)
-- **Headers**:
-  - `Authorization`: `Bearer <jwt_token>` (required)
-- **Request Body**: `{}` (None required)
-- **Behavior**:
-  - Identifies target user from `req.user.id` or `req.user._id`.
-  - Obtains current token/session from `req.headers.authorization` or `req.token` or current session identifier.
-  - Revokes/deletes all active `UserSession` records for the user EXCEPT the current session token.
-  - Logs audit entry `ALL_SESSIONS_REVOKED` in `AuditLog`.
-- **Success Response (200 OK)**:
-  ```json
-  {
-    "success": true,
-    "message": "All other devices logged out successfully",
-    "data": {
-      "revokedCount": 2
-    }
-  }
-  ```
-- **Error Responses**:
-  - `401 Unauthorized`: `{ "success": false, "message": "Unauthorized access" }`
-  - `403 Forbidden`: `{ "success": false, "message": "Requires SUPER_ADMIN role" }`
-  - `500 Internal Server Error`: `{ "success": false, "message": "Failed to logout all devices", "error": "..." }`
+## Overview
+Phase 4 ("Integrate Notifications & Activity Logs for Opportunities and Chapters") does not introduce new HTTP API routes. Instead, it involves adding hooks, middlewares, or service calls to existing endpoints (from Phases 1, 2, and 3) to log activity and trigger notifications upon specific state transitions.
+
+## Modified Existing Endpoints
+
+### POST /api/admin/opportunities/{id}/approve
+- **Added Behavior**: 
+  - Writes to `AuditLog` (action: `OPPORTUNITY_APPROVED`, module: `OPPORTUNITIES`).
+  - Triggers notification to the Company (via email/in-app).
+
+### POST /api/admin/opportunities/{id}/reject
+- **Added Behavior**: 
+  - Triggers notification to the Company with feedback details.
+
+### POST /api/admin/opportunities/{id}/request-changes
+- **Added Behavior**: 
+  - Writes to `AuditLog` (action: `OPPORTUNITY_CHANGES_REQUESTED`, module: `OPPORTUNITIES`).
+  - Triggers notification to the Company with admin notes.
+
+### PUT /api/admin/chapters/{id}/assign-lead
+- **Added Behavior**:
+  - Writes to `AuditLog` (action: `CHAPTER_LEAD_ASSIGNED`, module: `CHAPTERS`).
+
+### POST /api/admin/chapters/{id}/events
+- **Added Behavior**:
+  - Writes to `AuditLog` (action: `CHAPTER_EVENT_CREATED`, module: `CHAPTERS`).
+  - Triggers notification to all students in the chapter.
+
+## New API Endpoints
+- **None**.

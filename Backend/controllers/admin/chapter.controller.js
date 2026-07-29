@@ -10,6 +10,7 @@ const StudentProfile = require("../../models/StudentProfile");
 const Startup = require("../../models/Startup");
 const AuditLog = require("../../models/AuditLog");
 const User = require("../../models/User");
+const Notification = require("../../models/Notification");
 const mongoose = require("mongoose");
 
 const formatPaginatedResponse = (data, page, limit, totalRecords, metrics = {}) => ({
@@ -151,7 +152,7 @@ exports.assignChapterLead = asyncHandler(async (req, res) => {
   await AuditLog.create({
     actor_id: req.user.id,
     actor_name: req.user.full_name || "Admin",
-    module: "CLUBS",
+    module: "CHAPTERS",
     action: "CHAPTER_LEAD_ASSIGNED",
     target_entity_id: chapter._id.toString(),
     target_entity_name: chapter.chapter_name,
@@ -247,7 +248,7 @@ exports.createChapterEvent = asyncHandler(async (req, res) => {
   await AuditLog.create({
     actor_id: req.user.id,
     actor_name: req.user.full_name || "Admin",
-    module: "CLUBS",
+    module: "CHAPTERS",
     action: "CHAPTER_EVENT_CREATED",
     target_entity_id: newEvent._id.toString(),
     target_entity_name: newEvent.title,
@@ -255,6 +256,17 @@ exports.createChapterEvent = asyncHandler(async (req, res) => {
     ip_address: req.ip,
     details: { event_id: newEvent._id },
   });
+
+  const students = await StudentProfile.find({ chapter_id: chapterId }).select("user_id").lean();
+  if (students && students.length > 0) {
+    const notifications = students.map(s => ({
+      recipient_id: s.user_id,
+      title: "New Chapter Event",
+      message: `A new event "${newEvent.title}" has been scheduled in your chapter.`,
+      type: "info"
+    }));
+    await Notification.insertMany(notifications);
+  }
 
   res.status(201).json({
     success: true,
