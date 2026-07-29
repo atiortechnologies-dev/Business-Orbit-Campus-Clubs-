@@ -1,57 +1,40 @@
-# Phase 1: Core Platform Configuration & Toggles (PlatformSetting, GET/PUT settings, Maintenance Mode Middleware)
+# Phase 1: Admin Profile, Security & Notifications
 
 ## Context
-- The system requires a central configuration for platform-wide settings (PlatformSetting), a middleware to enforce maintenance mode, and an RBAC middleware for admin authorization.
-- Relevant files found: `Backend/models/PlatformSetting.js` (scaffolded), `Backend/middlewares/authMiddleware.js`.
+- The codebase already contains models for `PlatformSetting`, `AdminNotificationSetting`, and `UserSession`.
+- `settings.controller.js` and `settings.routes.js` exist with partial implementations.
+- A `cascadeService.js` handles user deletion cascades for Admin Notification Settings and User Sessions.
+- `maintenanceMode.js` middleware is implemented.
 
 ## Dependency Map
-- `Backend/routes/admin/settings.routes.js` -> imports -> `Backend/controllers/admin/settings.controller.js`
-- `Backend/routes/admin/settings.routes.js` -> imports -> `Backend/middlewares/authMiddleware.js` (for authentication and role check)
-- `Backend/controllers/admin/settings.controller.js` -> imports -> `Backend/models/PlatformSetting.js`
-- `Backend/server.js` or main router -> imports -> `Backend/middlewares/maintenanceMode.js`
+- `settings.controller.js` → imports → `PlatformSetting`, `UserSession`, `AdminNotificationSetting`
+- `settings.routes.js` → imports → `settings.controller.js`, `authMiddleware.js`
+- `admin.routes.js` → mounts → `settings.routes.js`
 
 ## Proposed Changes
 
-### Maintenance Mode Middleware
+### Settings & Configuration Module
 
-#### [NEW] Backend/middlewares/maintenanceMode.js
-- What: Create a middleware that checks `PlatformSetting.findOne()`. If `maintenance_mode` is true, and the user is not an admin (or route is not under `/api/admin`), return 503.
-- Why: Enforce maintenance mode locking for non-admin platform login requests and routes.
-- Impact: Will be applied globally or to non-admin routes.
+#### [MODIFY] Backend/controllers/admin/settings.controller.js
+- What: Add `updateProfile` (PUT /profile), `updateNotifications` (PUT /notifications), `getLoginHistory` (GET /login-history), `logoutAllDevices` (POST /logout-all-devices), `downloadSystemLogs` (GET /download-system-logs), and `changePassword` (POST /change-password).
+- Why: Required for Screen 16 Admin controls.
+- Impact: Extends existing settings controller. 
 
-### Admin Settings Controller
+#### [MODIFY] Backend/routes/admin/settings.routes.js
+- What: Register new routes for profile, notifications, login history, logout all devices, download system logs, and change password.
+- Why: Expose the new controller methods.
+- Impact: Modifies existing route mappings. Includes necessary validation and auth middlewares.
 
-#### [NEW] Backend/controllers/admin/settings.controller.js
-- What: Implement `getSettings` and `updatePlatformSettings` methods.
-- Why: Fulfill the API contract for `GET /api/admin/settings` and `PUT /api/admin/settings/platform`.
-- Impact: Handles platform configuration changes.
-
-### Admin Settings Routes
-
-#### [NEW] Backend/routes/admin/settings.routes.js
-- What: Define the routes for the settings APIs using `requireRole` middleware.
-- Why: Expose the controller logic.
-- Impact: Will need to be mounted in `Backend/server.js`.
-
-### RBAC Middleware
-
-#### [MODIFY] Backend/middlewares/authMiddleware.js
-- What: Ensure `requireRole` function exists and supports passing an array of allowed roles (e.g. `['SUPER_ADMIN']`).
-- Why: Route protection requirement.
-- Impact: All protected routes using `requireRole`.
-
-### Server / App
-
-#### [MODIFY] Backend/server.js
-- What: Mount `/api/admin/settings` and apply `maintenanceMode` middleware where appropriate.
-- Why: Expose new endpoints and enforce maintenance mode.
-- Impact: Global routing.
+#### [MODIFY] Backend/controllers/auth.controller.js
+- What: Ensure login process registers a `UserSession` record when an admin signs in.
+- Why: `UserSession` is required to list login history and to support multi-device sign-out.
+- Impact: Login creates a session token record.
 
 ## DRY Context
-- Reuse existing authentication middleware for `GET` and `PUT` endpoints.
-- Check `docs/shared_utilities.md` for shared implementations (e.g., RBAC).
+- Re-use existing `requireRole` middleware in `authMiddleware.js`.
+- Re-use `maintenanceMode.js` where applicable.
+- Re-use `asyncHandler` for all new controller methods.
 
 ## Risks & Edge Cases
-- Concurrency: Addressed by last-write-wins (default Mongoose behavior).
-- Missing test coverage: Need to verify 503 response when maintenance mode is active.
-- Ensure SUPER_ADMIN vs ADMIN is properly validated.
+- Change password logic must re-hash password and invalidate old `UserSession` records.
+- Proper test coverage is required for all new controller methods.
