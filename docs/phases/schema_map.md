@@ -5,6 +5,7 @@
 - `SavedOpportunity` -> `User` (student_id), `Opportunity` (opportunity_id)
 - `Application` -> `Opportunity` (opportunity_id), `User` (student_id)
 - `ApplicationDocument` -> `Application` (application_id)
+- `ApplicationStatusHistory` -> `Application` (application_id), `User` (updated_by)
 
 ## Models Scaffolded
 | Model | File | Fields | References | Status Enum |
@@ -13,6 +14,7 @@
 | SavedOpportunity | Backend/models/SavedOpportunity.js | student_id, opportunity_id | User (student_id), Opportunity (opportunity_id) | — |
 | Application | Backend/models/Application.js | opportunity_id, student_id, application_status, resume_url, cover_letter, portfolio_url, availability, joining_date | Opportunity (opportunity_id), User (student_id) | applied, shortlisted, rejected, interviewing, hired, draft, submitted, viewed, interview, selected, withdrawn |
 | ApplicationDocument | Backend/models/ApplicationDocument.js | application_id, document_type, file_name, file_url | Application (application_id) | — |
+| ApplicationStatusHistory | Backend/models/ApplicationStatusHistory.js | application_id, status, updated_by, remarks | Application (application_id), User (updated_by) | draft, submitted, viewed, shortlisted, interview, selected, rejected, withdrawn |
 
 ## Cascade Rules
 - None defined for Phase 1.

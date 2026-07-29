@@ -570,9 +570,11 @@ exports.getApplicationTimeline = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: "Application not found" });
   }
 
-  const timeline = await ApplicantStatus.find({ application_id: applicationId }).sort({ created_at: 1 });
+  const timeline = await ApplicantStatus.find({ application_id: applicationId })
+    .populate("updated_by", "full_name _id")
+    .sort({ created_at: 1 });
   
-  res.status(200).json({ success: true, data: timeline });
+  res.status(200).json({ success: true, data: { timeline } });
 });
 
 /**
@@ -599,7 +601,7 @@ exports.getInterviews = asyncHandler(async (req, res) => {
     })
     .sort({ interview_date: 1 });
 
-  res.status(200).json({ success: true, count: interviews.length, data: interviews });
+  res.status(200).json({ success: true, count: interviews.length, data: { interviews } });
 });
 
 /**
@@ -630,5 +632,5 @@ exports.getApplicationStatusSummary = asyncHandler(async (req, res) => {
     else if (stat === "withdrawn") statusSummary.archived++;
   });
 
-  res.status(200).json({ success: true, data: statusSummary });
+  res.status(200).json({ success: true, data: { counts: statusSummary } });
 });
