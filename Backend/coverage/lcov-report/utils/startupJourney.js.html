@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">26.08% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>6/23</span>
+                <span class='fraction'>0/23</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">30% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/20</span>
+                <span class='fraction'>0/20</span>
             </div>
         
             
@@ -130,22 +130,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -154,6 +142,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -173,27 +173,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * @file startupJourney.js
  * @description Helper functions for managing the lifecycle of a startup.
  * @architecture Provides logic to safely initialize a startup's stages and recalculate their overall completion percentage.
  */
 &nbsp;
-const Startup = require("../models/Startup");
-const StartupStage = require("../models/StartupStage");
-const { STAGE_DEFINITIONS } = require("./stageDefinitions");
+const Startup = <span class="cstat-no" title="statement not covered" >require("../models/Startup");</span>
+const StartupStage = <span class="cstat-no" title="statement not covered" >require("../models/StartupStage");</span>
+const { STAGE_DEFINITIONS } = <span class="cstat-no" title="statement not covered" >require("./stageDefinitions");</span>
 &nbsp;
 /**
  * @desc    Fetch a startup for a user or create a new one with initialized stages
@@ -201,7 +201,7 @@ const { STAGE_DEFINITIONS } = require("./stageDefinitions");
  * @param   {string} defaultStartupName - Default name to use if creating
  * @returns {Promise&lt;Object&gt;} The startup document
  */
-const getOrCreateStartup = <span class="fstat-no" title="function not covered" >as</span>ync (userId, defaultStartupName) =&gt; {
+const getOrCreateStartup = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (userId, defaultStartupName) =&gt; {</span>
   let startup = <span class="cstat-no" title="statement not covered" >await Startup.findOne({ student_id: userId });</span>
 <span class="cstat-no" title="statement not covered" >  if (startup) <span class="cstat-no" title="statement not covered" >return startup;</span></span>
 &nbsp;
@@ -234,7 +234,7 @@ const getOrCreateStartup = <span class="fstat-no" title="function not covered" >
  * @param   {string} startupId - ID of the startup
  * @returns {Promise&lt;number&gt;} The new progress percentage
  */
-const recalcProgress = <span class="fstat-no" title="function not covered" >as</span>ync (startupId) =&gt; {
+const recalcProgress = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (startupId) =&gt; {</span>
   const total = <span class="cstat-no" title="statement not covered" >STAGE_DEFINITIONS.length;</span>
   const approvedCount = <span class="cstat-no" title="statement not covered" >await StartupStage.countDocuments({</span>
     startup_id: startupId,
@@ -245,7 +245,7 @@ const recalcProgress = <span class="fstat-no" title="function not covered" >as</
 <span class="cstat-no" title="statement not covered" >  return progress_percentage;</span>
 };
 &nbsp;
-module.exports = { getOrCreateStartup, recalcProgress };
+<span class="cstat-no" title="statement not covered" >module.exports = { getOrCreateStartup, recalcProgress };</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -253,7 +253,7 @@ module.exports = { getOrCreateStartup, recalcProgress };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-29T21:24:25.640Z
+                at 2026-07-29T21:37:35.413Z
             </div>
         <script src="../prettify.js"></script>
         <script>
