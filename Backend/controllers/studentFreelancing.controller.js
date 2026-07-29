@@ -49,7 +49,8 @@ exports.listOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort({ created_at: -1 })
     .skip(startIndex)
-    .limit(limit);
+    .limit(limit)
+    .lean();
 
   res.status(200).json({
     success: true,
@@ -96,7 +97,8 @@ exports.searchOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort({ score: { $meta: "textScore" } })
     .skip(startIndex)
-    .limit(limit);
+    .limit(limit)
+    .lean();
 
   res.status(200).json({
     success: true,
@@ -155,7 +157,8 @@ exports.filterOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort(sortObj)
     .skip(startIndex)
-    .limit(limit);
+    .limit(limit)
+    .lean();
 
   res.status(200).json({
     success: true,
@@ -185,7 +188,7 @@ exports.getOpportunityDetails = asyncHandler(async (req, res) => {
     _id: opportunityId,
     status: { $in: ["open", "active"] },
     company_id: { $in: activeCompanyIds },
-  }).populate("company_id", "full_name email");
+  }).populate("company_id", "full_name email").lean();
 
   if (!opportunity) {
     return res.status(404).json({
