@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1785359205067" clover="3.2.0">
-  <project timestamp="1785359205067" name="All files">
+<coverage generated="1785359668298" clover="3.2.0">
+  <project timestamp="1785359668298" name="All files">
     <metrics statements="3650" coveredstatements="940" conditionals="1561" coveredconditionals="89" methods="398" coveredmethods="40" elements="5609" coveredelements="1069" complexity="0" loc="3650" ncloc="3650" packages="4" files="61" classes="61"/>
     <package name="controllers">
       <metrics statements="3239" coveredstatements="727" conditionals="1420" coveredconditionals="64" methods="331" coveredmethods="24"/>
@@ -2687,25 +2687,25 @@
         <line num="569" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="570" count="0" type="stmt"/>
         <line num="573" count="1" type="stmt"/>
-        <line num="575" count="1" type="stmt"/>
-        <line num="583" count="1" type="stmt"/>
-        <line num="584" count="1" type="stmt"/>
-        <line num="587" count="1" type="stmt"/>
-        <line num="588" count="1" type="stmt"/>
+        <line num="577" count="1" type="stmt"/>
+        <line num="585" count="1" type="stmt"/>
+        <line num="586" count="1" type="stmt"/>
+        <line num="589" count="1" type="stmt"/>
         <line num="590" count="1" type="stmt"/>
-        <line num="602" count="1" type="stmt"/>
-        <line num="610" count="1" type="stmt"/>
-        <line num="611" count="1" type="stmt"/>
+        <line num="592" count="1" type="stmt"/>
+        <line num="604" count="1" type="stmt"/>
+        <line num="612" count="1" type="stmt"/>
         <line num="613" count="1" type="stmt"/>
         <line num="615" count="1" type="stmt"/>
-        <line num="624" count="1" type="stmt"/>
-        <line num="625" count="1" type="stmt"/>
-        <line num="626" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="627" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="628" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="617" count="1" type="stmt"/>
+        <line num="626" count="1" type="stmt"/>
+        <line num="627" count="1" type="stmt"/>
+        <line num="628" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="629" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="630" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="633" count="1" type="stmt"/>
+        <line num="631" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="632" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="635" count="1" type="stmt"/>
       </file>
       <file name="studentIncubation.controller.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/studentIncubation.controller.js">
         <metrics statements="117" coveredstatements="20" conditionals="67" coveredconditionals="0" methods="11" coveredmethods="0"/>

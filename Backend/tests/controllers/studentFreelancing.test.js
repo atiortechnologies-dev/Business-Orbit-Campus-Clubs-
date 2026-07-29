@@ -368,7 +368,7 @@ describe("Student Freelancing Controller", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.total).toBe(1);
+      expect(res.body.data.counts.total).toBe(1);
     });
   });
 
@@ -404,7 +404,7 @@ describe("Student Freelancing Controller", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(Array.isArray(res.body.data.timeline)).toBe(true);
     });
   });
 
@@ -416,7 +416,7 @@ describe("Student Freelancing Controller", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(Array.isArray(res.body.data.interviews)).toBe(true);
     });
   });
 
