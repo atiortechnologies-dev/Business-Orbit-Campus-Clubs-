@@ -69,7 +69,14 @@ exports.updatePlatformSettings = asyncHandler(async (req, res) => {
   }
 
   if (platform_name !== undefined) platformSetting.platform_name = platform_name;
-  if (logo_url !== undefined) platformSetting.logo_url = logo_url;
+  
+  // Handle file upload from s3Upload middleware
+  if (req.file) {
+    platformSetting.logo_url = req.file.location || `/uploads/${req.file.filename}`;
+  } else if (logo_url !== undefined) {
+    platformSetting.logo_url = logo_url;
+  }
+
   if (support_email !== undefined) platformSetting.support_email = support_email;
   if (timezone !== undefined) platformSetting.timezone = timezone;
   if (allow_new_registrations !== undefined) platformSetting.allow_new_registrations = allow_new_registrations;
@@ -129,7 +136,7 @@ exports.exportConfig = asyncHandler(async (req, res) => {
  * @access  Private (Admin/Super Admin)
  */
 exports.updateProfile = asyncHandler(async (req, res) => {
-  const { full_name, phone } = req.body;
+  const { full_name, phone, designation, avatar_url } = req.body;
   const user = await User.findById(req.user.id);
   
   if (!user) {
@@ -138,6 +145,14 @@ exports.updateProfile = asyncHandler(async (req, res) => {
 
   if (full_name !== undefined) user.full_name = full_name;
   if (phone !== undefined) user.phone = phone;
+  if (designation !== undefined) user.designation = designation;
+  
+  // Handle file upload from s3Upload middleware
+  if (req.file) {
+    user.avatar_url = req.file.location || `/uploads/${req.file.filename}`;
+  } else if (avatar_url !== undefined) {
+    user.avatar_url = avatar_url;
+  }
 
   await user.save();
 
@@ -220,14 +235,20 @@ exports.getLoginHistory = asyncHandler(async (req, res) => {
  * @access  Private (Super Admin)
  */
 exports.logoutAllDevices = asyncHandler(async (req, res) => {
-  // Keeping only the current session, but since we don't pass the current refresh token to this endpoint easily,
-  // we just delete all other sessions or all sessions.
-  // The PRD says: "Sign out of all active devices immediately invalidates all active sessions except for the current session token"
-  // Assuming the current session token's hash can be passed, but typically we might just clear them.
-  // We'll delete all sessions that are not marked as `is_current: true` for simplicity or we should find the one matching req's token.
+  const { refreshToken } = req.body;
   
-  // Preserve the current session by only deleting those not marked as current
-  await UserSession.deleteMany({ user_id: req.user.id, is_current: { $ne: true } });
+  if (!refreshToken) {
+    return res.status(400).json({ success: false, message: 'Refresh token is required to identify and preserve the current session' });
+  }
+
+  const crypto = require('crypto');
+  const refresh_token_hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+
+  // Preserve the current session by only deleting those that do not match the current refresh token hash
+  await UserSession.deleteMany({ 
+    user_id: req.user.id, 
+    refresh_token_hash: { $ne: refresh_token_hash } 
+  });
 
   await logAudit(
     req.user,
@@ -241,7 +262,7 @@ exports.logoutAllDevices = asyncHandler(async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: 'All devices logged out successfully'
+    message: 'All other devices logged out successfully'
   });
 });
 

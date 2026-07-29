@@ -131,7 +131,7 @@ describe("Settings Controller", () => {
   });
 
   describe("logoutAllDevices", () => {
-    it("should logout all devices as super admin", async () => {
+    it("should logout all devices except current as super admin", async () => {
       const superAdmin = await User.create({
         full_name: "Super Admin",
         email: "superadmin@example.com",
@@ -141,13 +141,17 @@ describe("Settings Controller", () => {
         email_verified: true,
       });
       const superAdminJwt = generateToken(superAdmin, "superadmin@example.com");
+      
+      const currentRefreshToken = "current-refresh-token-123";
+      const crypto = require("crypto");
+      const currentHash = crypto.createHash('sha256').update(currentRefreshToken).digest('hex');
 
       await UserSession.create({
         user_id: superAdmin._id,
         device_name: "Test Device",
         os_browser: "Test OS",
         ip_address: "127.0.0.1",
-        refresh_token_hash: "hash",
+        refresh_token_hash: currentHash,
         is_current: true,
         last_active_at: new Date()
       });
@@ -165,12 +169,32 @@ describe("Settings Controller", () => {
 
       const res = await request(app)
         .post("/api/admin/settings/logout-all-devices")
-        .set("Authorization", `Bearer ${superAdminJwt}`);
+        .set("Authorization", `Bearer ${superAdminJwt}`)
+        .send({ refreshToken: currentRefreshToken });
 
       expect(res.statusCode).toBe(200);
       const sessions = await UserSession.find({ user_id: superAdmin._id });
       expect(sessions).toHaveLength(1);
-      expect(sessions[0].is_current).toBe(true);
+      expect(sessions[0].refresh_token_hash).toBe(currentHash);
+    });
+    
+    it("should fail if no refreshToken is provided", async () => {
+      const superAdmin = await User.create({
+        full_name: "Super Admin 2",
+        email: "superadmin2@example.com",
+        password_hash: "hashedpass",
+        role: "super_admin",
+        account_status: "active",
+        email_verified: true,
+      });
+      const superAdminJwt = generateToken(superAdmin, "superadmin2@example.com");
+
+      const res = await request(app)
+        .post("/api/admin/settings/logout-all-devices")
+        .set("Authorization", `Bearer ${superAdminJwt}`);
+
+      expect(res.statusCode).toBe(400);
+      expect(res.body.success).toBe(false);
     });
   });
 

@@ -17,7 +17,7 @@ process.env.ADMIN_API_KEY = "DUMMY_SECRET_FOR_TESTING_ONLY";
 app.use("/api/admin", adminRoutes);
 
 describe("Admin API Routes - Phase 1 (FAQs)", () => {
-  const validApiKey = "test-secret-key";
+  const validApiKey = "DUMMY_SECRET_FOR_TESTING_ONLY";
 
   describe("Middleware (adminAuth)", () => {
     it("should return 401 if no API key provided", async () => {
@@ -113,7 +113,7 @@ describe("Admin API Routes - Phase 1 (FAQs)", () => {
 const PartnerLogo = require("../models/PartnerLogo");
 
 describe("Admin API Routes - Phase 2 (PartnerLogos via Generic CRUD)", () => {
-  const validApiKey = "test-secret-key";
+  const validApiKey = "DUMMY_SECRET_FOR_TESTING_ONLY";
 
   describe("POST /api/admin/partner-logos", () => {
     it("should successfully create a PartnerLogo", async () => {

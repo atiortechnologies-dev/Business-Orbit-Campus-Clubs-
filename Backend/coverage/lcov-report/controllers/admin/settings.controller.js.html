@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/90</span>
+                <span class='fraction'>0/95</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/52</span>
+                <span class='fraction'>0/54</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/81</span>
+                <span class='fraction'>0/86</span>
             </div>
         
             
@@ -367,7 +367,12 @@
 <a name='L302'></a><a href='#L302'>302</a>
 <a name='L303'></a><a href='#L303'>303</a>
 <a name='L304'></a><a href='#L304'>304</a>
-<a name='L305'></a><a href='#L305'>305</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -589,15 +594,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -893,15 +903,20 @@ const { hashPassword, comparePassword } = <span class="cstat-no" title="statemen
  * @access  Private (Super Admin)
  */
 <span class="cstat-no" title="statement not covered" >exports.logoutAllDevices = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {</span>
-  // Keeping only the current session, but since we don't pass the current refresh token to this endpoint easily,
-  // we just delete all other sessions or all sessions.
-  // The PRD says: "Sign out of all active devices immediately invalidates all active sessions except for the current session token"
-  // Assuming the current session token's hash can be passed, but typically we might just clear them.
-  // We'll delete all sessions that are not marked as `is_current: true` for simplicity or we should find the one matching req's token.
+  const { refreshToken } = <span class="cstat-no" title="statement not covered" >req.body;</span>
   
-  // A simplistic approach: delete all sessions for this user. The user will have to login again.
-  // Wait, let's just delete all sessions to be safe, or if we have a way to identify current session, keep it.
-<span class="cstat-no" title="statement not covered" >  await UserSession.deleteMany({ user_id: req.user.id });</span>
+<span class="cstat-no" title="statement not covered" >  if (!refreshToken) {</span>
+<span class="cstat-no" title="statement not covered" >    return res.status(400).json({ success: false, message: 'Refresh token is required to identify and preserve the current session' });</span>
+  }
+&nbsp;
+  const crypto = <span class="cstat-no" title="statement not covered" >require('crypto');</span>
+  const refresh_token_hash = <span class="cstat-no" title="statement not covered" >crypto.createHash('sha256').update(refreshToken).digest('hex');</span>
+&nbsp;
+  // Preserve the current session by only deleting those that do not match the current refresh token hash
+<span class="cstat-no" title="statement not covered" >  await UserSession.deleteMany({ </span>
+    user_id: req.user.id, 
+    refresh_token_hash: { $ne: refresh_token_hash } 
+  });
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  await logAudit(</span>
     req.user,
@@ -915,7 +930,7 @@ const { hashPassword, comparePassword } = <span class="cstat-no" title="statemen
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  res.status(200).json({</span>
     success: true,
-    message: 'All devices logged out successfully'
+    message: 'All other devices logged out successfully'
   });
 });
 &nbsp;
@@ -982,7 +997,7 @@ const { hashPassword, comparePassword } = <span class="cstat-no" title="statemen
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-29T21:37:35.413Z
+                at 2026-07-29T22:13:13.601Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -305,7 +305,7 @@ describe("Integration Tests & Narrative Capture", () => {
 
       const res = await request(app)
         .post("/api/admin/faqs")
-        .set("x-api-key", "testadmin")
+        .set("x-api-key", "DUMMY_SECRET_FOR_TESTING_ONLY")
         .send(payload);
 
       const faqDoc = await mongoose.connection
@@ -338,7 +338,7 @@ describe("Integration Tests & Narrative Capture", () => {
       };
       await request(app)
         .post("/api/admin/faqs")
-        .set("x-api-key", "testadmin")
+        .set("x-api-key", "DUMMY_SECRET_FOR_TESTING_ONLY")
         .send(payload);
 
       const res = await request(app).get("/api/public/faqs?pageType=Student");

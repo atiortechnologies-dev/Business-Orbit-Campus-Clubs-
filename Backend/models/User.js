@@ -26,6 +26,14 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
+    avatar_url: {
+      type: String,
+      trim: true,
+    },
+    designation: {
+      type: String,
+      trim: true,
+    },
     password_hash: {
       type: String,
       required: true,

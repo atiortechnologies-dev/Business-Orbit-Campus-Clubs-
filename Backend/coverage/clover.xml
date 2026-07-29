@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1785361055665" clover="3.2.0">
-  <project timestamp="1785361055665" name="All files">
-    <metrics statements="3888" coveredstatements="119" conditionals="1707" coveredconditionals="4" methods="425" coveredmethods="2" elements="6020" coveredelements="125" complexity="0" loc="3888" ncloc="3888" packages="5" files="65" classes="65"/>
+<coverage generated="1785363193801" clover="3.2.0">
+  <project timestamp="1785363193801" name="All files">
+    <metrics statements="3915" coveredstatements="62" conditionals="1725" coveredconditionals="4" methods="429" coveredmethods="5" elements="6069" coveredelements="71" complexity="0" loc="3915" ncloc="3915" packages="5" files="66" classes="66"/>
     <package name="controllers">
-      <metrics statements="3312" coveredstatements="26" conditionals="1472" coveredconditionals="0" methods="340" coveredmethods="0"/>
+      <metrics statements="3312" coveredstatements="44" conditionals="1472" coveredconditionals="1" methods="340" coveredmethods="4"/>
       <file name="activityLog.controller.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/activityLog.controller.js">
         <metrics statements="11" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="1" coveredmethods="0"/>
         <line num="7" count="0" type="stmt"/>
@@ -19,20 +19,20 @@
         <line num="39" count="0" type="stmt"/>
       </file>
       <file name="admin.controller.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/admin.controller.js">
-        <metrics statements="114" coveredstatements="0" conditionals="22" coveredconditionals="0" methods="11" coveredmethods="0"/>
-        <line num="7" count="0" type="stmt"/>
-        <line num="8" count="0" type="stmt"/>
-        <line num="9" count="0" type="stmt"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="11" count="0" type="stmt"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="16" count="0" type="stmt"/>
-        <line num="20" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="23" count="0" type="stmt"/>
-        <line num="33" count="0" type="stmt"/>
-        <line num="36" count="0" type="stmt"/>
+        <metrics statements="114" coveredstatements="44" conditionals="22" coveredconditionals="1" methods="11" coveredmethods="4"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="9" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="20" count="1" type="stmt"/>
+        <line num="21" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="23" count="1" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="36" count="5" type="stmt"/>
         <line num="37" count="0" type="stmt"/>
         <line num="38" count="0" type="stmt"/>
         <line num="39" count="0" type="stmt"/>
@@ -40,7 +40,7 @@
         <line num="42" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="43" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
-        <line num="48" count="0" type="stmt"/>
+        <line num="48" count="5" type="stmt"/>
         <line num="49" count="0" type="stmt"/>
         <line num="50" count="0" type="stmt"/>
         <line num="51" count="0" type="stmt"/>
@@ -50,44 +50,44 @@
         <line num="61" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="62" count="0" type="stmt"/>
         <line num="63" count="0" type="stmt"/>
-        <line num="67" count="0" type="stmt"/>
+        <line num="67" count="5" type="stmt"/>
         <line num="68" count="0" type="stmt"/>
         <line num="69" count="0" type="stmt"/>
         <line num="70" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="71" count="0" type="stmt"/>
         <line num="74" count="0" type="stmt"/>
         <line num="78" count="0" type="stmt"/>
-        <line num="83" count="0" type="stmt"/>
-        <line num="84" count="0" type="stmt"/>
-        <line num="85" count="0" type="stmt"/>
-        <line num="88" count="0" type="stmt"/>
-        <line num="89" count="0" type="stmt"/>
-        <line num="90" count="0" type="stmt"/>
-        <line num="93" count="0" type="stmt"/>
-        <line num="97" count="0" type="stmt"/>
-        <line num="101" count="0" type="stmt"/>
-        <line num="104" count="0" type="stmt"/>
-        <line num="108" count="0" type="stmt"/>
-        <line num="112" count="0" type="stmt"/>
-        <line num="115" count="0" type="stmt"/>
-        <line num="119" count="0" type="stmt"/>
-        <line num="123" count="0" type="stmt"/>
-        <line num="130" count="0" type="stmt"/>
-        <line num="131" count="0" type="stmt"/>
-        <line num="132" count="0" type="stmt"/>
-        <line num="134" count="0" type="stmt"/>
-        <line num="135" count="0" type="stmt"/>
-        <line num="136" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="83" count="1" type="stmt"/>
+        <line num="84" count="1" type="stmt"/>
+        <line num="85" count="1" type="stmt"/>
+        <line num="88" count="1" type="stmt"/>
+        <line num="89" count="1" type="stmt"/>
+        <line num="90" count="1" type="stmt"/>
+        <line num="93" count="1" type="stmt"/>
+        <line num="97" count="1" type="stmt"/>
+        <line num="101" count="1" type="stmt"/>
+        <line num="104" count="1" type="stmt"/>
+        <line num="108" count="1" type="stmt"/>
+        <line num="112" count="1" type="stmt"/>
+        <line num="115" count="1" type="stmt"/>
+        <line num="119" count="1" type="stmt"/>
+        <line num="123" count="1" type="stmt"/>
+        <line num="130" count="1" type="stmt"/>
+        <line num="131" count="2" type="stmt"/>
+        <line num="132" count="2" type="stmt"/>
+        <line num="134" count="2" type="stmt"/>
+        <line num="135" count="2" type="stmt"/>
+        <line num="136" count="2" type="cond" truecount="1" falsecount="1"/>
         <line num="137" count="0" type="stmt"/>
         <line num="138" count="0" type="stmt"/>
         <line num="139" count="0" type="stmt"/>
-        <line num="144" count="0" type="stmt"/>
+        <line num="144" count="2" type="stmt"/>
         <line num="146" count="0" type="stmt"/>
         <line num="147" count="0" type="stmt"/>
-        <line num="152" count="0" type="stmt"/>
-        <line num="153" count="0" type="stmt"/>
-        <line num="155" count="0" type="stmt"/>
-        <line num="164" count="0" type="stmt"/>
+        <line num="152" count="2" type="stmt"/>
+        <line num="153" count="2" type="stmt"/>
+        <line num="155" count="2" type="stmt"/>
+        <line num="164" count="1" type="stmt"/>
         <line num="165" count="0" type="stmt"/>
         <line num="166" count="0" type="stmt"/>
         <line num="167" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -95,14 +95,14 @@
         <line num="171" count="0" type="stmt"/>
         <line num="177" count="0" type="stmt"/>
         <line num="183" count="0" type="stmt"/>
-        <line num="192" count="0" type="stmt"/>
+        <line num="192" count="1" type="stmt"/>
         <line num="193" count="0" type="stmt"/>
         <line num="194" count="0" type="stmt"/>
         <line num="199" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="200" count="0" type="stmt"/>
         <line num="205" count="0" type="stmt"/>
         <line num="210" count="0" type="stmt"/>
-        <line num="219" count="0" type="stmt"/>
+        <line num="219" count="1" type="stmt"/>
         <line num="220" count="0" type="stmt"/>
         <line num="221" count="0" type="stmt"/>
         <line num="223" count="0" type="stmt"/>
@@ -123,7 +123,7 @@
         <line num="260" count="0" type="stmt"/>
         <line num="261" count="0" type="stmt"/>
         <line num="263" count="0" type="stmt"/>
-        <line num="272" count="0" type="stmt"/>
+        <line num="272" count="1" type="stmt"/>
         <line num="273" count="0" type="stmt"/>
         <line num="274" count="0" type="stmt"/>
         <line num="275" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -244,24 +244,24 @@
         <line num="215" count="0" type="stmt"/>
       </file>
       <file name="auth.controller.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/auth.controller.js">
-        <metrics statements="164" coveredstatements="26" conditionals="71" coveredconditionals="0" methods="10" coveredmethods="0"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="13" count="1" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
-        <line num="15" count="1" type="stmt"/>
-        <line num="16" count="1" type="stmt"/>
-        <line num="17" count="1" type="stmt"/>
-        <line num="19" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="25" count="1" type="stmt"/>
-        <line num="26" count="1" type="stmt"/>
-        <line num="27" count="1" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
-        <line num="35" count="1" type="stmt"/>
+        <metrics statements="164" coveredstatements="0" conditionals="71" coveredconditionals="0" methods="10" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="13" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
+        <line num="15" count="0" type="stmt"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="25" count="0" type="stmt"/>
+        <line num="26" count="0" type="stmt"/>
+        <line num="27" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="35" count="0" type="stmt"/>
         <line num="36" count="0" type="stmt"/>
         <line num="37" count="0" type="stmt"/>
         <line num="39" count="0" type="stmt"/>
@@ -303,7 +303,7 @@
         <line num="126" count="0" type="stmt"/>
         <line num="128" count="0" type="stmt"/>
         <line num="131" count="0" type="stmt"/>
-        <line num="149" count="1" type="stmt"/>
+        <line num="149" count="0" type="stmt"/>
         <line num="150" count="0" type="stmt"/>
         <line num="151" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="152" count="0" type="stmt"/>
@@ -311,7 +311,7 @@
         <line num="162" count="0" type="stmt"/>
         <line num="163" count="0" type="stmt"/>
         <line num="165" count="0" type="stmt"/>
-        <line num="177" count="1" type="stmt"/>
+        <line num="177" count="0" type="stmt"/>
         <line num="178" count="0" type="stmt"/>
         <line num="180" count="0" type="stmt"/>
         <line num="181" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -326,7 +326,7 @@
         <line num="205" count="0" type="stmt"/>
         <line num="207" count="0" type="stmt"/>
         <line num="210" count="0" type="stmt"/>
-        <line num="221" count="1" type="stmt"/>
+        <line num="221" count="0" type="stmt"/>
         <line num="222" count="0" type="stmt"/>
         <line num="224" count="0" type="stmt"/>
         <line num="225" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -343,7 +343,7 @@
         <line num="260" count="0" type="stmt"/>
         <line num="261" count="0" type="stmt"/>
         <line num="263" count="0" type="stmt"/>
-        <line num="287" count="1" type="stmt"/>
+        <line num="287" count="0" type="stmt"/>
         <line num="288" count="0" type="stmt"/>
         <line num="291" count="0" type="stmt"/>
         <line num="292" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -366,7 +366,7 @@
         <line num="344" count="0" type="stmt"/>
         <line num="345" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="347" count="0" type="stmt"/>
-        <line num="372" count="1" type="stmt"/>
+        <line num="372" count="0" type="stmt"/>
         <line num="373" count="0" type="stmt"/>
         <line num="375" count="0" type="stmt"/>
         <line num="376" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -379,7 +379,7 @@
         <line num="403" count="0" type="stmt"/>
         <line num="410" count="0" type="stmt"/>
         <line num="413" count="0" type="stmt"/>
-        <line num="425" count="1" type="stmt"/>
+        <line num="425" count="0" type="stmt"/>
         <line num="426" count="0" type="stmt"/>
         <line num="428" count="0" type="stmt"/>
         <line num="429" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -393,7 +393,7 @@
         <line num="457" count="0" type="stmt"/>
         <line num="458" count="0" type="stmt"/>
         <line num="460" count="0" type="stmt"/>
-        <line num="471" count="1" type="stmt"/>
+        <line num="471" count="0" type="stmt"/>
         <line num="472" count="0" type="stmt"/>
         <line num="474" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="475" count="0" type="stmt"/>
@@ -403,12 +403,12 @@
         <line num="484" count="0" type="stmt"/>
         <line num="487" count="0" type="stmt"/>
         <line num="489" count="0" type="stmt"/>
-        <line num="503" count="1" type="stmt"/>
+        <line num="503" count="0" type="stmt"/>
         <line num="504" count="0" type="stmt"/>
         <line num="505" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="506" count="0" type="stmt"/>
         <line num="509" count="0" type="stmt"/>
-        <line num="524" count="1" type="stmt"/>
+        <line num="524" count="0" type="stmt"/>
       </file>
       <file name="chapter.controller.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/chapter.controller.js">
         <metrics statements="39" coveredstatements="0" conditionals="24" coveredconditionals="0" methods="3" coveredmethods="0"/>
@@ -3441,7 +3441,7 @@
       </file>
     </package>
     <package name="controllers.admin">
-      <metrics statements="154" coveredstatements="0" conditionals="86" coveredconditionals="0" methods="17" coveredmethods="0"/>
+      <metrics statements="159" coveredstatements="0" conditionals="88" coveredconditionals="0" methods="17" coveredmethods="0"/>
       <file name="auditLog.controller.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/admin/auditLog.controller.js">
         <metrics statements="73" coveredstatements="0" conditionals="34" coveredconditionals="0" methods="8" coveredmethods="0"/>
         <line num="7" count="0" type="stmt"/>
@@ -3519,7 +3519,7 @@
         <line num="182" count="0" type="stmt"/>
       </file>
       <file name="settings.controller.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/controllers/admin/settings.controller.js">
-        <metrics statements="81" coveredstatements="0" conditionals="52" coveredconditionals="0" methods="9" coveredmethods="0"/>
+        <metrics statements="86" coveredstatements="0" conditionals="54" coveredconditionals="0" methods="9" coveredmethods="0"/>
         <line num="7" count="0" type="stmt"/>
         <line num="8" count="0" type="stmt"/>
         <line num="9" count="0" type="stmt"/>
@@ -3580,52 +3580,58 @@
         <line num="209" count="0" type="stmt"/>
         <line num="211" count="0" type="stmt"/>
         <line num="222" count="0" type="stmt"/>
-        <line num="231" count="0" type="stmt"/>
+        <line num="223" count="0" type="stmt"/>
+        <line num="225" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="226" count="0" type="stmt"/>
+        <line num="229" count="0" type="stmt"/>
+        <line num="230" count="0" type="stmt"/>
         <line num="233" count="0" type="stmt"/>
-        <line num="243" count="0" type="stmt"/>
-        <line num="254" count="0" type="stmt"/>
-        <line num="255" count="0" type="stmt"/>
-        <line num="257" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="258" count="0" type="stmt"/>
-        <line num="261" count="0" type="stmt"/>
+        <line num="238" count="0" type="stmt"/>
+        <line num="248" count="0" type="stmt"/>
+        <line num="259" count="0" type="stmt"/>
+        <line num="260" count="0" type="stmt"/>
+        <line num="262" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="263" count="0" type="stmt"/>
-        <line num="264" count="0" type="cond" truecount="0" falsecount="2"/>
-        <line num="265" count="0" type="stmt"/>
+        <line num="266" count="0" type="stmt"/>
         <line num="268" count="0" type="stmt"/>
-        <line num="269" count="0" type="stmt"/>
-        <line num="272" count="0" type="stmt"/>
+        <line num="269" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="270" count="0" type="stmt"/>
+        <line num="273" count="0" type="stmt"/>
         <line num="274" count="0" type="stmt"/>
-        <line num="284" count="0" type="stmt"/>
-        <line num="295" count="0" type="stmt"/>
-        <line num="299" count="0" type="stmt"/>
-        <line num="301" count="0" type="stmt"/>
-        <line num="302" count="0" type="stmt"/>
-        <line num="303" count="0" type="stmt"/>
+        <line num="277" count="0" type="stmt"/>
+        <line num="279" count="0" type="stmt"/>
+        <line num="289" count="0" type="stmt"/>
+        <line num="300" count="0" type="stmt"/>
+        <line num="304" count="0" type="stmt"/>
+        <line num="306" count="0" type="stmt"/>
+        <line num="307" count="0" type="stmt"/>
+        <line num="308" count="0" type="stmt"/>
       </file>
     </package>
     <package name="middlewares">
-      <metrics statements="101" coveredstatements="15" conditionals="53" coveredconditionals="0" methods="18" coveredmethods="2"/>
+      <metrics statements="123" coveredstatements="6" conditionals="69" coveredconditionals="3" methods="22" coveredmethods="1"/>
       <file name="adminAuth.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/middlewares/adminAuth.js">
-        <metrics statements="6" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="1" coveredmethods="0"/>
-        <line num="11" count="0" type="stmt"/>
-        <line num="12" count="0" type="stmt"/>
-        <line num="14" count="0" type="cond" truecount="0" falsecount="4"/>
-        <line num="15" count="0" type="stmt"/>
-        <line num="21" count="0" type="stmt"/>
-        <line num="24" count="0" type="stmt"/>
+        <metrics statements="7" coveredstatements="6" conditionals="4" coveredconditionals="3" methods="1" coveredmethods="1"/>
+        <line num="11" count="1" type="stmt"/>
+        <line num="12" count="2" type="stmt"/>
+        <line num="13" count="2" type="stmt"/>
+        <line num="15" count="2" type="cond" truecount="3" falsecount="1"/>
+        <line num="16" count="0" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
       </file>
       <file name="asyncHandler.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/middlewares/asyncHandler.js">
-        <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>
-        <line num="7" count="11" type="stmt"/>
+        <metrics statements="3" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
         <line num="8" count="0" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
       </file>
       <file name="authMiddleware.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/middlewares/authMiddleware.js">
-        <metrics statements="34" coveredstatements="7" conditionals="16" coveredconditionals="0" methods="4" coveredmethods="0"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
+        <metrics statements="34" coveredstatements="0" conditionals="16" coveredconditionals="0" methods="4" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
         <line num="15" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="17" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="18" count="0" type="stmt"/>
@@ -3638,12 +3644,12 @@
         <line num="38" count="0" type="stmt"/>
         <line num="44" count="0" type="stmt"/>
         <line num="53" count="0" type="stmt"/>
-        <line num="60" count="1" type="stmt"/>
+        <line num="60" count="0" type="stmt"/>
         <line num="61" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="62" count="0" type="cond" truecount="0" falsecount="4"/>
         <line num="63" count="0" type="stmt"/>
         <line num="68" count="0" type="stmt"/>
-        <line num="74" count="1" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
         <line num="75" count="0" type="stmt"/>
         <line num="77" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="78" count="0" type="stmt"/>
@@ -3655,11 +3661,11 @@
         <line num="96" count="0" type="stmt"/>
         <line num="102" count="0" type="stmt"/>
         <line num="108" count="0" type="stmt"/>
-        <line num="111" count="1" type="stmt"/>
+        <line num="111" count="0" type="stmt"/>
       </file>
       <file name="errorHandler.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/middlewares/errorHandler.js">
-        <metrics statements="13" coveredstatements="3" conditionals="10" coveredconditionals="0" methods="3" coveredmethods="0"/>
-        <line num="7" count="1" type="stmt"/>
+        <metrics statements="13" coveredstatements="0" conditionals="10" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
         <line num="8" count="0" type="stmt"/>
         <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="11" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -3669,9 +3675,9 @@
         <line num="20" count="0" type="stmt"/>
         <line num="27" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="28" count="0" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
+        <line num="34" count="0" type="stmt"/>
         <line num="35" count="0" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
       </file>
       <file name="maintenanceMode.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/middlewares/maintenanceMode.js">
         <metrics statements="10" coveredstatements="0" conditionals="6" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -3715,17 +3721,41 @@
         <line num="82" count="0" type="stmt"/>
         <line num="85" count="0" type="stmt"/>
       </file>
+      <file name="s3Upload.middleware.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/middlewares/s3Upload.middleware.js">
+        <metrics statements="21" coveredstatements="0" conditionals="16" coveredconditionals="0" methods="4" coveredmethods="0"/>
+        <line num="1" count="0" type="stmt"/>
+        <line num="2" count="0" type="stmt"/>
+        <line num="3" count="0" type="stmt"/>
+        <line num="4" count="0" type="stmt"/>
+        <line num="5" count="0" type="stmt"/>
+        <line num="8" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="19" count="0" type="stmt"/>
+        <line num="20" count="0" type="cond" truecount="0" falsecount="4"/>
+        <line num="21" count="0" type="stmt"/>
+        <line num="24" count="0" type="stmt"/>
+        <line num="31" count="0" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="36" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="40" count="0" type="stmt"/>
+        <line num="45" count="0" type="stmt"/>
+        <line num="46" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="47" count="0" type="stmt"/>
+        <line num="49" count="0" type="stmt"/>
+        <line num="54" count="0" type="stmt"/>
+      </file>
       <file name="validateRequest.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/middlewares/validateRequest.js">
-        <metrics statements="9" coveredstatements="3" conditionals="5" coveredconditionals="0" methods="3" coveredmethods="1"/>
-        <line num="8" count="1" type="cond" truecount="0" falsecount="1"/>
-        <line num="9" count="8" type="stmt"/>
+        <metrics statements="9" coveredstatements="0" conditionals="5" coveredconditionals="0" methods="3" coveredmethods="0"/>
+        <line num="8" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="9" count="0" type="stmt"/>
         <line num="10" count="0" type="stmt"/>
         <line num="12" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="13" count="0" type="stmt"/>
         <line num="18" count="0" type="stmt"/>
         <line num="25" count="0" type="stmt"/>
         <line num="26" count="0" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
       </file>
     </package>
     <package name="middlewares.validators">
@@ -3763,21 +3793,21 @@
       </file>
     </package>
     <package name="utils">
-      <metrics statements="299" coveredstatements="78" conditionals="96" coveredconditionals="4" methods="46" coveredmethods="0"/>
+      <metrics statements="299" coveredstatements="12" conditionals="96" coveredconditionals="0" methods="46" coveredmethods="0"/>
       <file name="adminValidators.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/adminValidators.js">
-        <metrics statements="12" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="7" count="0" type="stmt"/>
-        <line num="10" count="0" type="stmt"/>
-        <line num="22" count="0" type="stmt"/>
-        <line num="25" count="0" type="stmt"/>
-        <line num="36" count="0" type="stmt"/>
-        <line num="39" count="0" type="stmt"/>
-        <line num="50" count="0" type="stmt"/>
-        <line num="53" count="0" type="stmt"/>
-        <line num="62" count="0" type="stmt"/>
-        <line num="65" count="0" type="stmt"/>
-        <line num="74" count="0" type="stmt"/>
-        <line num="76" count="0" type="stmt"/>
+        <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="10" count="1" type="stmt"/>
+        <line num="22" count="1" type="stmt"/>
+        <line num="25" count="1" type="stmt"/>
+        <line num="36" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="53" count="1" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="65" count="1" type="stmt"/>
+        <line num="74" count="1" type="stmt"/>
+        <line num="76" count="1" type="stmt"/>
       </file>
       <file name="email.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/email.js">
         <metrics statements="18" coveredstatements="0" conditionals="9" coveredconditionals="0" methods="3" coveredmethods="0"/>
@@ -3801,18 +3831,18 @@
         <line num="111" count="0" type="stmt"/>
       </file>
       <file name="password.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/password.js">
-        <metrics statements="11" coveredstatements="5" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="14" count="1" type="stmt"/>
+        <metrics statements="11" coveredstatements="0" conditionals="2" coveredconditionals="0" methods="2" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="14" count="0" type="stmt"/>
         <line num="15" count="0" type="stmt"/>
-        <line num="29" count="1" type="stmt"/>
+        <line num="29" count="0" type="stmt"/>
         <line num="30" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="31" count="0" type="stmt"/>
         <line num="32" count="0" type="stmt"/>
         <line num="34" count="0" type="stmt"/>
         <line num="35" count="0" type="stmt"/>
-        <line num="39" count="1" type="stmt"/>
-        <line num="41" count="1" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="41" count="0" type="stmt"/>
       </file>
       <file name="reviewProcessing.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/reviewProcessing.js">
         <metrics statements="30" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="1" coveredmethods="0"/>
@@ -3848,14 +3878,14 @@
         <line num="82" count="0" type="stmt"/>
       </file>
       <file name="roleConfig.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/roleConfig.js">
-        <metrics statements="7" coveredstatements="7" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="8" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="10" count="1" type="stmt"/>
-        <line num="11" count="1" type="stmt"/>
-        <line num="17" count="1" type="stmt"/>
-        <line num="71" count="1" type="stmt"/>
+        <metrics statements="7" coveredstatements="0" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="8" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="10" count="0" type="stmt"/>
+        <line num="11" count="0" type="stmt"/>
+        <line num="17" count="0" type="stmt"/>
+        <line num="71" count="0" type="stmt"/>
       </file>
       <file name="socket.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/socket.js">
         <metrics statements="29" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="8" coveredmethods="0"/>
@@ -3918,21 +3948,21 @@
         <line num="61" count="0" type="stmt"/>
       </file>
       <file name="token.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/token.js">
-        <metrics statements="32" coveredstatements="11" conditionals="20" coveredconditionals="4" methods="5" coveredmethods="0"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="9" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="10" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="12" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="13" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="20" count="1" type="stmt"/>
+        <metrics statements="32" coveredstatements="0" conditionals="20" coveredconditionals="0" methods="5" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="9" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="10" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="12" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="13" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="20" count="0" type="stmt"/>
         <line num="21" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="22" count="0" type="stmt"/>
         <line num="25" count="0" type="stmt"/>
-        <line num="44" count="1" type="stmt"/>
+        <line num="44" count="0" type="stmt"/>
         <line num="45" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="46" count="0" type="stmt"/>
         <line num="49" count="0" type="stmt"/>
-        <line num="68" count="1" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
         <line num="69" count="0" type="stmt"/>
         <line num="70" count="0" type="stmt"/>
         <line num="74" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -3940,7 +3970,7 @@
         <line num="76" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="77" count="0" type="stmt"/>
         <line num="79" count="0" type="stmt"/>
-        <line num="88" count="1" type="stmt"/>
+        <line num="88" count="0" type="stmt"/>
         <line num="89" count="0" type="stmt"/>
         <line num="90" count="0" type="stmt"/>
         <line num="94" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -3948,9 +3978,9 @@
         <line num="96" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="97" count="0" type="stmt"/>
         <line num="99" count="0" type="stmt"/>
-        <line num="108" count="1" type="stmt"/>
+        <line num="108" count="0" type="stmt"/>
         <line num="109" count="0" type="stmt"/>
-        <line num="112" count="1" type="stmt"/>
+        <line num="112" count="0" type="stmt"/>
       </file>
       <file name="uploadService.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/uploadService.js">
         <metrics statements="17" coveredstatements="0" conditionals="4" coveredconditionals="0" methods="3" coveredmethods="0"/>
@@ -4019,28 +4049,28 @@
         <line num="145" count="0" type="stmt"/>
       </file>
       <file name="validators.js" path="/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/utils/validators.js">
-        <metrics statements="78" coveredstatements="55" conditionals="14" coveredconditionals="0" methods="14" coveredmethods="0"/>
-        <line num="7" count="1" type="stmt"/>
-        <line num="9" count="1" type="stmt"/>
-        <line num="20" count="1" type="stmt"/>
-        <line num="28" count="1" type="stmt"/>
-        <line num="39" count="1" type="stmt"/>
-        <line num="43" count="1" type="stmt"/>
-        <line num="50" count="1" type="stmt"/>
-        <line num="58" count="1" type="stmt"/>
-        <line num="66" count="1" type="stmt"/>
-        <line num="74" count="1" type="stmt"/>
-        <line num="84" count="1" type="stmt"/>
+        <metrics statements="78" coveredstatements="0" conditionals="14" coveredconditionals="0" methods="14" coveredmethods="0"/>
+        <line num="7" count="0" type="stmt"/>
+        <line num="9" count="0" type="stmt"/>
+        <line num="20" count="0" type="stmt"/>
+        <line num="28" count="0" type="stmt"/>
+        <line num="39" count="0" type="stmt"/>
+        <line num="43" count="0" type="stmt"/>
+        <line num="50" count="0" type="stmt"/>
+        <line num="58" count="0" type="stmt"/>
+        <line num="66" count="0" type="stmt"/>
+        <line num="74" count="0" type="stmt"/>
+        <line num="84" count="0" type="stmt"/>
         <line num="92" count="0" type="stmt"/>
-        <line num="97" count="1" type="stmt"/>
-        <line num="101" count="1" type="stmt"/>
-        <line num="105" count="1" type="stmt"/>
+        <line num="97" count="0" type="stmt"/>
+        <line num="101" count="0" type="stmt"/>
+        <line num="105" count="0" type="stmt"/>
         <line num="112" count="0" type="stmt"/>
-        <line num="117" count="1" type="stmt"/>
-        <line num="125" count="1" type="stmt"/>
-        <line num="130" count="1" type="stmt"/>
-        <line num="135" count="1" type="stmt"/>
-        <line num="141" count="1" type="stmt"/>
+        <line num="117" count="0" type="stmt"/>
+        <line num="125" count="0" type="stmt"/>
+        <line num="130" count="0" type="stmt"/>
+        <line num="135" count="0" type="stmt"/>
+        <line num="141" count="0" type="stmt"/>
         <line num="143" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="144" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="145" count="0" type="stmt"/>
@@ -4052,52 +4082,52 @@
         <line num="153" count="0" type="stmt"/>
         <line num="155" count="0" type="stmt"/>
         <line num="158" count="0" type="stmt"/>
-        <line num="163" count="1" type="stmt"/>
+        <line num="163" count="0" type="stmt"/>
         <line num="170" count="0" type="stmt"/>
         <line num="178" count="0" type="stmt"/>
-        <line num="185" count="1" type="stmt"/>
-        <line num="190" count="1" type="stmt"/>
-        <line num="196" count="1" type="stmt"/>
-        <line num="206" count="1" type="stmt"/>
-        <line num="213" count="1" type="stmt"/>
-        <line num="217" count="1" type="stmt"/>
-        <line num="226" count="1" type="stmt"/>
-        <line num="240" count="1" type="stmt"/>
-        <line num="255" count="1" type="stmt"/>
-        <line num="277" count="1" type="stmt"/>
-        <line num="287" count="1" type="stmt"/>
-        <line num="309" count="1" type="stmt"/>
-        <line num="330" count="1" type="stmt"/>
-        <line num="355" count="1" type="stmt"/>
-        <line num="382" count="1" type="stmt"/>
-        <line num="409" count="1" type="stmt"/>
-        <line num="419" count="1" type="stmt"/>
-        <line num="438" count="1" type="stmt"/>
-        <line num="452" count="1" type="stmt"/>
+        <line num="185" count="0" type="stmt"/>
+        <line num="190" count="0" type="stmt"/>
+        <line num="196" count="0" type="stmt"/>
+        <line num="206" count="0" type="stmt"/>
+        <line num="213" count="0" type="stmt"/>
+        <line num="217" count="0" type="stmt"/>
+        <line num="226" count="0" type="stmt"/>
+        <line num="240" count="0" type="stmt"/>
+        <line num="255" count="0" type="stmt"/>
+        <line num="277" count="0" type="stmt"/>
+        <line num="287" count="0" type="stmt"/>
+        <line num="309" count="0" type="stmt"/>
+        <line num="330" count="0" type="stmt"/>
+        <line num="355" count="0" type="stmt"/>
+        <line num="382" count="0" type="stmt"/>
+        <line num="409" count="0" type="stmt"/>
+        <line num="419" count="0" type="stmt"/>
+        <line num="438" count="0" type="stmt"/>
+        <line num="452" count="0" type="stmt"/>
         <line num="455" count="0" type="stmt"/>
-        <line num="463" count="1" type="stmt"/>
+        <line num="463" count="0" type="stmt"/>
         <line num="476" count="0" type="stmt"/>
         <line num="490" count="0" type="stmt"/>
-        <line num="505" count="1" type="stmt"/>
-        <line num="533" count="1" type="stmt"/>
+        <line num="505" count="0" type="stmt"/>
+        <line num="533" count="0" type="stmt"/>
         <line num="556" count="0" type="stmt"/>
-        <line num="569" count="1" type="stmt"/>
-        <line num="594" count="1" type="stmt"/>
+        <line num="569" count="0" type="stmt"/>
+        <line num="594" count="0" type="stmt"/>
         <line num="613" count="0" type="stmt"/>
-        <line num="618" count="1" type="stmt"/>
-        <line num="620" count="1" type="stmt"/>
-        <line num="640" count="1" type="stmt"/>
-        <line num="643" count="1" type="stmt"/>
+        <line num="618" count="0" type="stmt"/>
+        <line num="620" count="0" type="stmt"/>
+        <line num="640" count="0" type="stmt"/>
+        <line num="643" count="0" type="stmt"/>
         <line num="653" count="0" type="stmt"/>
         <line num="663" count="0" type="stmt"/>
         <line num="668" count="0" type="stmt"/>
-        <line num="677" count="1" type="stmt"/>
-        <line num="679" count="1" type="stmt"/>
-        <line num="695" count="1" type="stmt"/>
-        <line num="698" count="1" type="stmt"/>
-        <line num="723" count="1" type="stmt"/>
-        <line num="730" count="1" type="stmt"/>
-        <line num="750" count="1" type="stmt"/>
+        <line num="677" count="0" type="stmt"/>
+        <line num="679" count="0" type="stmt"/>
+        <line num="695" count="0" type="stmt"/>
+        <line num="698" count="0" type="stmt"/>
+        <line num="723" count="0" type="stmt"/>
+        <line num="730" count="0" type="stmt"/>
+        <line num="750" count="0" type="stmt"/>
       </file>
     </package>
   </project>
