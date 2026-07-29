@@ -1,37 +1,17 @@
-# Phase 1 API Contract: Database Setup and Core Opportunities API
+## PUT /api/admin/settings/platform
+- Auth required: Yes (SUPER_ADMIN)
+- Request body: { platform_name: string, logo_url: string, support_email: string, timezone: string, allow_new_registrations: boolean, require_email_verification: boolean, maintenance_mode: boolean, public_profiles_visible: boolean }
+- Success: 200 { success: boolean, message: string, data: { platformSetting: object } }
+- Errors: 400 (validation), 401 (unauthorized), 403 (forbidden), 500 (server error)
 
-## GET /api/student/freelancing/opportunities
-- Auth required: Yes (Student)
-- Query parameters: page, limit
-- Success: 200 { data: { opportunities: [ { _id, title, company_id, type, work_mode, experience_level, location, salary_range, created_at, application_deadline, description } ], pagination: { total, page, pages } } }
-- Errors: 401 (Unauthorized), 500 (Server Error)
+## GET /api/admin/settings
+- Auth required: Yes (ADMIN, SUPER_ADMIN)
+- Request body: None
+- Success: 200 { success: boolean, data: { platformSetting: object } }
+- Errors: 401 (unauthorized), 403 (forbidden), 500 (server error)
 
-## GET /api/student/freelancing/opportunities/search
-- Auth required: Yes (Student)
-- Query parameters: q (search string), page, limit
-- Success: 200 { data: { opportunities: [...], pagination: {...} } }
-- Errors: 401, 500
-
-## POST /api/student/freelancing/opportunities/filter
-- Auth required: Yes (Student)
-- Request body: { type: [string] (optional), work_mode: [string] (optional), industry: [string] (optional), experience_level: [string] (optional), sort: string (latest, deadline, relevance) (optional), page: number (optional), limit: number (optional) }
-- Success: 200 { data: { opportunities: [...], pagination: {...} } }
-- Errors: 400 (Bad Request), 401, 500
-
-## GET /api/student/freelancing/opportunities/{opportunityId}/details
-- Auth required: Yes (Student)
-- Path parameters: opportunityId
-- Success: 200 { data: { opportunity: { _id, title, description, responsibilities, required_skills, eligibility_criteria, preferred_qualifications, location, duration, salary_stipend, application_deadline, company_id: { _id, companyName, logo, industry, websiteUrl, description } } } }
-- Errors: 401, 404 (Not Found), 500
-
-## POST /api/student/freelancing/opportunities/{opportunityId}/save
-- Auth required: Yes (Student)
-- Path parameters: opportunityId
-- Success: 200 { message: "Opportunity saved successfully" }
-- Errors: 400, 401, 404, 409 (Already saved), 500
-
-## DELETE /api/student/freelancing/opportunities/{opportunityId}/save
-- Auth required: Yes (Student)
-- Path parameters: opportunityId
-- Success: 200 { message: "Opportunity unsaved successfully" }
-- Errors: 401, 404, 500
+## GET /api/admin/settings/export-config
+- Auth required: Yes (SUPER_ADMIN)
+- Request body: None
+- Success: 200 { success: boolean, data: { config: object } }
+- Errors: 401 (unauthorized), 403 (forbidden), 500 (server error)
