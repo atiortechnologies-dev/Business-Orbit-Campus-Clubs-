@@ -1,25 +1,42 @@
-# Phase 3: Application Tracking & Management API
+# Phase 3: System Audit Logging Engine
 
 ## Context
-- The backend already contains implementations for most of the Application Tracking APIs in `Backend/controllers/studentFreelancing.controller.js` and `companyApplication.controller.js`.
-- The routes `GET /applications/status`, `GET /applications/interviews`, and `GET /applications/:applicationId/timeline` are already defined in `Backend/routes/studentFreelancing.routes.js`.
+- The backend has `protect` and `requireRole` in `authMiddleware.js` for role-based access control.
+- `AuditLog` model already exists from Data Modeling phase.
+- We need to implement AuditLog APIs: paginated list, pulse stream, volume trend, and CSV export.
 
 ## Dependency Map
-- `studentFreelancing.routes.js` → imports → `studentFreelancing.controller.js`
-- `studentFreelancing.controller.js` → uses → `ApplicantStatus`, `Application`, `ApplicationInterview` models.
+- `auditLog.routes.js` → imports → `auditLog.controller.js`
+- `auditLog.controller.js` → uses → `AuditLog` model
+- `server.js` → mounts → `auditLog.routes.js`
 
 ## Proposed Changes
 
-### Backend/controllers/studentFreelancing.controller.js
+### Backend/controllers/auditLog.controller.js
 
-#### MODIFY Backend/controllers/studentFreelancing.controller.js
-- What: Update `getApplicationTimeline` to populate the `updated_by` field (select `full_name` or `name` and `_id`) so the frontend can display who made the status change. Format the response data to match `{ data: { timeline: [...] } }`.
-- What: Update `getApplicationStatusSummary` and `getInterviews` to format responses perfectly matching the API contract `{ data: { counts: {...} } }` and `{ data: { interviews: [...] } }`.
-- Why: To align with the Phase 3 API Contract and provide complete data to the frontend for tracking.
-- Impact: Minimal. Only affects the response shape of these three student application tracking GET endpoints.
+#### [NEW] Backend/controllers/auditLog.controller.js
+- What: Implement four controller functions: `getLogs` (with pagination and filtering by timeframe, module, user), `getPulse` (returns recent activity), `getVolumeTrend` (returns 24-hour log volume histogram), and `exportLogs` (returns CSV output of filtered logs).
+- Why: To satisfy the Audit Log APIs defined in the API contract.
+- Impact: Core logic for the Audit Log module.
+
+### Backend/routes/auditLog.routes.js
+
+#### [NEW] Backend/routes/auditLog.routes.js
+- What: Define the routes for the audit log endpoints, using `protect` and `requireRole(['admin', 'super_admin'])` for most, and `requireRole(['super_admin'])` for `/export`.
+- Why: To map the endpoints defined in the API contract to their controller functions.
+- Impact: Exposes `/api/admin/audit-log` endpoints. Requires mounting in `server.js`.
+
+### Backend/server.js
+
+#### [MODIFY] Backend/server.js
+- What: Import and mount `auditLog.routes.js` at `/api/admin/audit-log`.
+- Why: To make the new routes accessible.
+- Impact: Global routing layer.
 
 ## DRY Context
-- We are reusing `studentFreelancing.controller.js` and existing models (`ApplicantStatus.js`, `ApplicationInterview.js`). No new files need to be created.
+- Reuse `protect` and `requireRole` from `Backend/middlewares/authMiddleware.js`.
+- Reuse `asyncHandler` from `Backend/middlewares/asyncHandler.js`.
 
 ## Risks & Edge Cases
-- Test coverage needs to ensure that the tracking endpoints are covered.
+- Test coverage needs to ensure that the CSV export endpoint is covered and works correctly.
+- Need to parse `timeframe` (e.g. 24h, 7d, 30d) safely in the controllers.

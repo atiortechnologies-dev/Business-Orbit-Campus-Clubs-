@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.23% </span>
+                <span class="strong">52.94% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/17</span>
+                <span class='fraction'>9/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/4</span>
+                <span class='fraction'>1/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>0/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.23% </span>
+                <span class="strong">52.94% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/17</span>
+                <span class='fraction'>9/17</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -170,11 +170,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -183,7 +183,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -194,8 +194,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -244,12 +244,12 @@ const uploadDir = path.join(__dirname, "../../assets/uploads");
 &nbsp;
 // Configure local disk storage
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
+  destination: <span class="fstat-no" title="function not covered" >fu</span>nction (req, file, cb) {
+<span class="cstat-no" title="statement not covered" >    cb(null, uploadDir);</span>
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
+  filename: <span class="fstat-no" title="function not covered" >fu</span>nction (req, file, cb) {
+    const uniqueSuffix = <span class="cstat-no" title="statement not covered" >Date.now() + "-" + Math.round(Math.random() * 1e9);</span>
+<span class="cstat-no" title="statement not covered" >    cb(</span>
       null,
       file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname),
     );
@@ -257,8 +257,8 @@ const storage = multer.diskStorage({
 });
 &nbsp;
 // File filter to restrict allowed types (Images, PDF, PPT, DOCX)
-const fileFilter = (req, file, cb) =&gt; {
-  const allowedMimeTypes = [
+const fileFilter = <span class="fstat-no" title="function not covered" >(r</span>eq, file, cb) =&gt; {
+  const allowedMimeTypes = <span class="cstat-no" title="statement not covered" >[</span>
     "image/jpeg",
     "image/png",
     "image/gif",
@@ -269,9 +269,9 @@ const fileFilter = (req, file, cb) =&gt; {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   ];
 &nbsp;
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else <span class="missing-if-branch" title="else path not taken" >E</span>{
+<span class="cstat-no" title="statement not covered" >  if (allowedMimeTypes.includes(file.mimetype)) {</span>
+<span class="cstat-no" title="statement not covered" >    cb(null, true);</span>
+  } else {
 <span class="cstat-no" title="statement not covered" >    cb(</span>
       new Error(
         "Invalid file type. Only JPG, PNG, GIF, PDF, PPT, and DOCX are allowed.",
@@ -295,7 +295,7 @@ module.exports = upload;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-29T21:15:34.115Z
+                at 2026-07-29T21:24:25.640Z
             </div>
         <script src="../prettify.js"></script>
         <script>

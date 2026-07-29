@@ -14,6 +14,9 @@ const EmailVerification = require("../models/EmailVerification");
 const PasswordReset = require("../models/PasswordReset");
 const ActivityLog = require("../models/ActivityLog");
 const Notification = require("../models/Notification");
+const UserSession = require("../models/UserSession");
+const AdminNotificationSetting = require("../models/AdminNotificationSetting");
+const AuditLog = require("../models/AuditLog");
 
 const MentorRequest = require("../models/MentorRequest");
 const MentorAssignment = require("../models/MentorAssignment");
@@ -253,6 +256,9 @@ const deleteUserDependencies = async (userId, session = null) => {
   await PasswordReset.deleteMany({ user_id: userId }, opts);
   await ActivityLog.deleteMany({ user_id: userId }, opts);
   await Notification.deleteMany({ recipient_id: userId }, opts);
+  await UserSession.deleteMany({ user_id: userId }, opts);
+  await AdminNotificationSetting.deleteMany({ user_id: userId }, opts);
+  await AuditLog.updateMany({ actor_id: userId }, { $set: { actor_id: null } }, opts);
 
   // 3. Delete Mentor Relations (as mentor or student)
   await MentorRequest.deleteMany(

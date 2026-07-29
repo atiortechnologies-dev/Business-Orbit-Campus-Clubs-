@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const EmailVerification = require("../models/EmailVerification");
 const PasswordReset = require("../models/PasswordReset");
+const UserSession = require("../models/UserSession");
 
 const StudentProfile = require("../models/StudentProfile");
 const MentorProfile = require("../models/MentorProfile");
@@ -324,6 +325,20 @@ const login = asyncHandler(async (req, res) => {
   // Generate tokens
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
+
+  if (user.role === 'admin' || user.role === 'super_admin') {
+    const crypto = require('crypto');
+    const refresh_token_hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+    await UserSession.create({
+      user_id: user._id,
+      device_name: req.headers['user-agent'] || 'Unknown Device',
+      os_browser: 'Unknown OS/Browser', // In a real app we would parse user-agent
+      ip_address: req.ip || req.connection?.remoteAddress || 'Unknown IP',
+      refresh_token_hash,
+      is_current: true,
+      last_active_at: new Date()
+    });
+  }
 
   // 6. Redirect to appropriate dashboard (using roleConfig if available)
   const config = roleConfig[user.role];

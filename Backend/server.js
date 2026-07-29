@@ -54,9 +54,14 @@ const app = express();
 
 const PORT = process.env.PORT || 4000;
 
+const maintenanceMode = require("./middlewares/maintenanceMode");
+const settingsRoutes = require("./routes/admin/settings.routes");
+const auditLogRoutes = require("./routes/admin/auditLog.routes");
+
 // Middlewares
 app.use(configureCors());
 app.use(express.json());
+app.use(maintenanceMode);
 
 // Routes
 app.get("/", (req, res) => {
@@ -112,6 +117,8 @@ app.use("/api/student", tractionRoutes);
 app.use("/api/student", launchRoutes);
 
 app.use("/api/public", publicRoutes);
+app.use("/api/admin/settings", settingsRoutes);
+app.use("/api/admin/audit-log", auditLogRoutes);
 app.use("/api/admin", adminRoutes);
 app.use(
   "/api/mentor",
