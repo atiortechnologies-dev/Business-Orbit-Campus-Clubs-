@@ -1,4 +1,4 @@
-import api from "./axiosInstance";
+import api from "../axiosInstance";
 
 /**
  * Fetch the logged-in student's chapter profile

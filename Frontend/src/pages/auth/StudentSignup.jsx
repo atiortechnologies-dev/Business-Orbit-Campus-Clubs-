@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { GraduationCap } from "lucide-react";
 import RoleSignupForm from "@/components/auth/RoleSignupForm";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { getAllChapters } from "@/api/authApi";
+import { getAllChapters } from "@/api/auth/authApi";
 
 const BASE_FIELDS = [
   { name: "full_name", label: "Full Name", placeholder: "e.g. Alex Chen" },

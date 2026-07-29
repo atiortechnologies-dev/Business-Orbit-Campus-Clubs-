@@ -14,7 +14,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import Logo from "@/components/ui/Logo";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { loginUser } from "@/api/authApi";
+import { loginUser } from "@/api/auth/authApi";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

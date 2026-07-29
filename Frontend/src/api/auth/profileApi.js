@@ -1,4 +1,4 @@
-import api from "./axiosInstance";
+import api from "../axiosInstance";
 
 // GET profile
 export const getMyProfile = (role) => {

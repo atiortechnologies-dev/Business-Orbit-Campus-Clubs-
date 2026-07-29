@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { getOnboardingStatus } from "@/api/onboardingApi";
+import { getOnboardingStatus } from "@/api/auth/onboardingApi";
 
 const STEPS = [
   { title: "Profile", status: "done" },

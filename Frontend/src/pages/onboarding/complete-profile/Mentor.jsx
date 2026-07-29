@@ -8,7 +8,7 @@ import RadioPills from "@/components/onboarding/RadioPills";
 import SelectField from "@/components/onboarding/SelectField";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { createProfile, skipProfile } from "@/api/profileApi";
+import { skipProfile, createProfile } from "@/api/auth/profileApi";
 
 const EXPERIENCE_RANGES = ["0-2 years", "3-5 years", "6-10 years", "10+ years"];
 const INDUSTRIES = [

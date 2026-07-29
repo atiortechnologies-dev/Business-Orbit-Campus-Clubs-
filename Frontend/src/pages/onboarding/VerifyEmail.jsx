@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, RefreshCw, Loader2, AlertCircle } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { sendOtp, verifyOtp, getMe } from "@/api/authApi"; // 1. Imported getMe
+import { sendOtp, verifyOtp, getMe } from "@/api/auth/authApi";
 
 const OTP_LENGTH = 6;
 const RESEND_TIMEOUT = 45;
