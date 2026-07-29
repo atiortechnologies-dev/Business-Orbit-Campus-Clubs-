@@ -9,9 +9,12 @@ const Schema = mongoose.Schema;
 
 const opportunityNoteSchema = new Schema(
   {
-    opportunity_id: { type: Schema.Types.ObjectId, ref: "Opportunity", required: true, index: true },
+    opportunity_id: { type: Schema.Types.ObjectId, ref: "FreelanceOpportunity", required: true, index: true },
     author_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    content: { type: String, required: true },
+    note_text: { type: String, required: true },
+    
+    // Legacy field
+    content: { type: String },
   },
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );

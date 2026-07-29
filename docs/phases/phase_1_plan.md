@@ -1,40 +1,39 @@
-# Phase 1: Admin Profile, Security & Notifications
+# Phase 1: Implement Opportunity Moderation Core
 
 ## Context
-- The codebase already contains models for `PlatformSetting`, `AdminNotificationSetting`, and `UserSession`.
-- `settings.controller.js` and `settings.routes.js` exist with partial implementations.
-- A `cascadeService.js` handles user deletion cascades for Admin Notification Settings and User Sessions.
-- `maintenanceMode.js` middleware is implemented.
+- The codebase already contains basic Admin routing in `Backend/routes/admin.routes.js`.
+- The `FreelanceOpportunity` and `OpportunityNote` models have been scaffolded with the new batch 2 requirements.
+- We need to create a dedicated controller and router for opportunity moderation.
+- A centralized Audit Logger service exists but we must also ensure audit logs are created for state transitions.
 
 ## Dependency Map
-- `settings.controller.js` → imports → `PlatformSetting`, `UserSession`, `AdminNotificationSetting`
-- `settings.routes.js` → imports → `settings.controller.js`, `authMiddleware.js`
-- `admin.routes.js` → mounts → `settings.routes.js`
+- `Backend/routes/admin.routes.js` -> imports -> `opportunity.routes.js`
+- `Backend/routes/admin/opportunity.routes.js` -> imports -> `opportunity.controller.js`, `authMiddleware.js`
+- `Backend/controllers/admin/opportunity.controller.js` -> imports -> `FreelanceOpportunity`, `OpportunityNote`, `AuditLog`, etc.
 
 ## Proposed Changes
 
-### Settings & Configuration Module
+### Opportunity Moderation API
 
-#### [MODIFY] Backend/controllers/admin/settings.controller.js
-- What: Add `updateProfile` (PUT /profile), `updateNotifications` (PUT /notifications), `getLoginHistory` (GET /login-history), `logoutAllDevices` (POST /logout-all-devices), `downloadSystemLogs` (GET /download-system-logs), and `changePassword` (POST /change-password).
-- Why: Required for Screen 16 Admin controls.
-- Impact: Extends existing settings controller. 
+#### [NEW] Backend/controllers/admin/opportunity.controller.js
+- What: Implement API logic for `getOpportunities` (GET /api/admin/opportunities), `getOpportunityDetails` (GET /api/admin/opportunities/:id), `approveOpportunity` (POST /api/admin/opportunities/:id/approve), `rejectOpportunity` (POST /api/admin/opportunities/:id/reject), `requestChanges` (POST /api/admin/opportunities/:id/request-changes), `addNote` (POST /api/admin/opportunities/:id/notes), and `bulkApprove` (POST /api/admin/opportunities/bulk-approve).
+- Why: Full CRUD and state transition logic required by Screen 9 and 10 of PRD.
+- Impact: Creates new controller.
 
-#### [MODIFY] Backend/routes/admin/settings.routes.js
-- What: Register new routes for profile, notifications, login history, logout all devices, download system logs, and change password.
-- Why: Expose the new controller methods.
-- Impact: Modifies existing route mappings. Includes necessary validation and auth middlewares.
+#### [NEW] Backend/routes/admin/opportunity.routes.js
+- What: Register routes mapped to `opportunity.controller.js`.
+- Why: Provide the HTTP endpoints.
+- Impact: Creates new routes file.
 
-#### [MODIFY] Backend/controllers/auth.controller.js
-- What: Ensure login process registers a `UserSession` record when an admin signs in.
-- Why: `UserSession` is required to list login history and to support multi-device sign-out.
-- Impact: Login creates a session token record.
+#### [MODIFY] Backend/routes/admin.routes.js
+- What: Mount `opportunity.routes.js` under `/opportunities`.
+- Why: Make the new endpoints accessible via `/api/admin/opportunities`.
+- Impact: Adds router middleware.
 
 ## DRY Context
-- Re-use existing `requireRole` middleware in `authMiddleware.js`.
-- Re-use `maintenanceMode.js` where applicable.
-- Re-use `asyncHandler` for all new controller methods.
+- Use existing `adminAuth` middleware.
+- Create `AuditLog` records for `OPPORTUNITY_APPROVED`, `OPPORTUNITY_CHANGES_REQUESTED`, `OPPORTUNITY_REJECTED`.
 
 ## Risks & Edge Cases
-- Change password logic must re-hash password and invalidate old `UserSession` records.
-- Proper test coverage is required for all new controller methods.
+- Test coverage must mock the database responses and verify pagination, audit logging, and correct status changes.
+- Ensure only valid enum transitions occur (DRAFT -> PENDING -> ACTIVE, etc).

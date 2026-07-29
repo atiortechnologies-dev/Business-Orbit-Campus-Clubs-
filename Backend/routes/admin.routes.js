@@ -57,6 +57,11 @@ router.delete("/success-stories/:id", deleteSuccessStory);
 // FeaturedStartup Routes
 router.post("/featured-startups", createFeaturedStartup);
 router.put("/featured-startups/:id", updateFeaturedStartup);
+
+// Opportunity Moderation Routes
+const opportunityRoutes = require('./admin/opportunity.routes');
+router.use('/opportunities', opportunityRoutes);
+
 router.delete("/featured-startups/:id", deleteFeaturedStartup);
 
 // User Management Routes
