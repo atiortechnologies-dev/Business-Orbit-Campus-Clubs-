@@ -18,24 +18,40 @@ const { getOrCreateStartup } = require("../utils/startupJourney");
  * @access  Private (Student)
  */
 const getDashboard = asyncHandler(async (req, res) => {
-  const { id: userId, account_status, email_verified } = req.user;
+  const { id: userId, role, account_status, email_verified } = req.user;
+
+  console.log("userId", userId);
 
   if (!email_verified) {
-    return res
-      .status(403)
-      .json({ success: false, message: "Please verify your email first" });
-  }
-  if (account_status !== "active") {
-    return res
-      .status(403)
-      .json({ success: false, message: "Your account is not yet approved" });
+    return res.status(403).json({
+      success: false,
+      message: "Please verify your email first",
+      data: { redirect_to: "/onboarding/verify-email" },
+    });
   }
 
-  const profile = await StudentProfile.findOne({ user_id: userId });
+  if (account_status !== "active") {
+    return res.status(403).json({
+      success: false,
+      message: "Your account is not yet approved",
+      data: {
+        redirect_to:
+          account_status === "rejected"
+            ? "/onboarding/application-rejected"
+            : "/onboarding/verification-progress",
+      },
+    });
+  }
+
+  let profile = await StudentProfile.findOne({ user_id: userId });
   if (!profile) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Student profile not found" });
+    return res.status(403).json({
+      success: false,
+      message: "Please complete your student profile first",
+      data: {
+        redirect_to: `/onboarding/complete-profile/${role || "student"}`,
+      },
+    });
   }
 
   const startup = await getOrCreateStartup(userId, `${req.user.id}'s Startup`);
@@ -79,7 +95,7 @@ const getDashboard = asyncHandler(async (req, res) => {
   });
 });
 
-// GET /api/student/profile
+// GET /api/student/profile-details
 const getStudentProfile = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -107,9 +123,9 @@ const getStudentProfile = asyncHandler(async (req, res) => {
         id: user._id,
         full_name: user.full_name,
         email: user.email,
+        phone: user.phone,
       },
       profile: profile || {
-        phone: "",
         bio: "",
         skills: [],
         college: "",
@@ -130,7 +146,7 @@ const getStudentProfile = asyncHandler(async (req, res) => {
   });
 });
 
-// PUT /api/student/profile
+// PUT /api/student/profile-details
 const updateProfile = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const updateData = req.validatedData;

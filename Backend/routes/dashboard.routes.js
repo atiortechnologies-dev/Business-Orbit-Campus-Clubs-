@@ -25,8 +25,15 @@ router.use(protect, requireRole("student"));
 
 router.get("/dashboard", getDashboard);
 
-router.get("/profile", getStudentProfile);
-router.put("/profile", validateRequest(updateProfileSchema), updateProfile);
+// GET /api/student/profile-details
+router.get("/profile-details", getStudentProfile);
+// PUT /api/student/profile-details
+router.put(
+  "/profile-details",
+  validateRequest(updateProfileSchema),
+  updateProfile,
+);
+
 router.get("/startup", getStartup);
 router.put("/startup", validateRequest(updateStartupSchema), updateStartup);
 

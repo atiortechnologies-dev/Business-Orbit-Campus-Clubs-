@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   GraduationCap,
   UserPlus,
@@ -7,46 +7,46 @@ import {
   Rocket,
   Building2,
   ArrowRight,
-} from 'lucide-react';
-import Button from '@/components/ui/Button';
-import RoleCard from '@/components/auth/RoleCard';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+} from "lucide-react";
+import Button from "@/components/ui/Button";
+import RoleCard from "@/components/auth/RoleCard";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const ROLES = [
   {
-    id: 'student',
-    title: 'Student',
-    description: 'Join campus clubs and accelerate your...',
+    id: "student",
+    title: "Student",
+    description: "Join campus clubs and accelerate your...",
     icon: <GraduationCap size={26} strokeWidth={2} />,
   },
   {
-    id: 'mentor',
-    title: 'Mentor',
-    description: 'Share your expertise and guide the next...',
+    id: "mentor",
+    title: "Mentor",
+    description: "Share your expertise and guide the next...",
     icon: <UserPlus size={26} strokeWidth={2} />,
   },
   {
-    id: 'investor',
-    title: 'Investor',
-    description: 'Discover high-potential...',
+    id: "investor",
+    title: "Investor",
+    description: "Discover high-potential...",
     icon: <Briefcase size={26} strokeWidth={2} />,
   },
   {
-    id: 'incubator',
-    title: 'Incubator',
-    description: 'Manage campus ecosystems and...',
+    id: "incubator",
+    title: "Incubator",
+    description: "Manage campus ecosystems and...",
     icon: <Rocket size={26} strokeWidth={2} />,
   },
   {
-    id: 'company',
-    title: 'Company',
-    description: 'Partner with campus clubs for talent and...',
+    id: "company",
+    title: "Company",
+    description: "Partner with campus clubs for talent and...",
     icon: <Building2 size={26} strokeWidth={2} />,
   },
 ];
 
 export default function RoleSelectionPage() {
-  useDocumentTitle('Choose Your Role — BOCC');
+  useDocumentTitle("Choose Your Role — BOCC");
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
 
@@ -57,7 +57,6 @@ export default function RoleSelectionPage() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 bg-canvas-bg">
       <div className="w-full max-w-4xl flex flex-col items-center gap-8">
-
         <div className="flex flex-col items-center gap-2.5">
           <div className="flex items-center gap-1.5" aria-hidden="true">
             {Array.from({ length: 5 }, (_, i) => (
@@ -72,7 +71,9 @@ export default function RoleSelectionPage() {
         </div>
 
         <div className="flex flex-col items-center gap-3 text-center">
-          <h1 className="text-section font-semibold text-text-heading font-poppins">Choose Your Role</h1>
+          <h1 className="text-section font-semibold text-text-heading font-poppins">
+            Choose Your Role
+          </h1>
           <p className="text-body font-normal text-text-body max-w-lg leading-relaxed font-inter">
             Select the persona that best describes your participation in the
             Business Orbit Campus Clubs network.
@@ -93,9 +94,9 @@ export default function RoleSelectionPage() {
               <label
                 key={role.id}
                 className={[
-                  'relative block cursor-pointer rounded-md',
-                  'focus-within:outline focus-within:outline-2 focus-within:outline-brand-black focus-within:outline-offset-2',
-                ].join(' ')}
+                  "relative block cursor-pointer rounded-md",
+                  "focus-within:outline-2 focus-within:outline-brand-black focus-within:outline-offset-2",
+                ].join(" ")}
               >
                 <input
                   type="radio"
@@ -122,7 +123,9 @@ export default function RoleSelectionPage() {
             type="button"
             disabled={!selected}
             onClick={handleContinue}
-            aria-label={selected ? `Continue as ${selected}` : 'Select a role to continue'}
+            aria-label={
+              selected ? `Continue as ${selected}` : "Select a role to continue"
+            }
           >
             Continue
             <ArrowRight size={14} strokeWidth={2} aria-hidden="true" />
@@ -130,14 +133,14 @@ export default function RoleSelectionPage() {
         </div>
 
         <p className="text-small font-normal text-text-muted text-center font-inter">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link
             to="/login"
             className="text-text-body underline underline-offset-2 hover:text-text-heading transition-all duration-150 ease-linear"
           >
             Login
-          </Link>
-          {' '}·{' '}
+          </Link>{" "}
+          ·{" "}
           <Link
             to="/landing"
             className="text-text-body hover:text-text-heading transition-all duration-150 ease-linear"
@@ -145,7 +148,6 @@ export default function RoleSelectionPage() {
             Back to Home
           </Link>
         </p>
-
       </div>
     </div>
   );

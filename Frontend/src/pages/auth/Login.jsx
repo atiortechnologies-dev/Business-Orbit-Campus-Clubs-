@@ -132,7 +132,7 @@ export default function LoginPage() {
       >
         <svg
           viewBox="0 0 400 300"
-          className="w-full aspect-[4/3] rounded-lg"
+          className="w-full aspect-4/3 rounded-lg"
           role="img"
           aria-label="Illustration of campus clubs orbiting a central hub"
         >
@@ -265,7 +265,7 @@ export default function LoginPage() {
         </Link>
 
         <div className="flex-1 flex flex-col items-center justify-center gap-5 py-6">
-          <div className="w-full max-w-[546px] flex flex-col items-center gap-5">
+          <div className="w-full max-w-136 flex flex-col items-center gap-5">
             <Logo variant="mark" size={28} />
 
             <div className="text-center flex flex-col gap-1.5">
