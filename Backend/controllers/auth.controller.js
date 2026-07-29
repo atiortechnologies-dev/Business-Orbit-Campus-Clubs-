@@ -273,6 +273,7 @@ const sendOtp = asyncHandler(async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "If an account exists, an OTP has been sent.",
+    otp: otp,
   });
 });
 

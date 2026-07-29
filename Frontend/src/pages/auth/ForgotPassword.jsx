@@ -112,7 +112,7 @@ export default function ForgotPasswordPage() {
               {/* Recovery Request Illustration */}
               <svg
                 viewBox="0 0 500 200"
-                className="w-full aspect-[5/2] rounded-lg"
+                className="w-full aspect-5/2 rounded-lg"
                 role="img"
                 aria-label="Illustration of an email being sent with an account recovery key"
               >

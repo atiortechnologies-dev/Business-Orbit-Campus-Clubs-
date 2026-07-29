@@ -79,7 +79,7 @@ export default function VerificationProgressPage() {
   return (
     <div className="flex-1 flex items-center justify-center px-4 py-12 bg-canvas-bg">
       <div className="w-full max-w-lg bg-surface-white border border-border-subtle rounded-xl shadow-card p-8">
-        <div className="aspect-[3/1] rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex items-center justify-center gap-2 mb-6">
+        <div className="aspect-3/1 rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex items-center justify-center gap-2 mb-6">
           <Clock3 size={22} strokeWidth={2} className="text-text-muted" />
           <span className="font-inter text-caption font-semibold uppercase tracking-wider text-text-muted">
             Awaiting Verification
