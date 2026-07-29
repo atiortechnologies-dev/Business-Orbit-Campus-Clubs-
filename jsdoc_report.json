@@ -1,8 +1,8 @@
 {
   "summary": {
-    "totalFiles": 181,
-    "filesWithFileJSDoc": 137,
-    "filesWithFunctionJSDoc": 137,
+    "totalFiles": 182,
+    "filesWithFileJSDoc": 138,
+    "filesWithFunctionJSDoc": 138,
     "filesMissingFileJSDoc": 44,
     "filesMissingFunctionJSDoc": 44
   },
@@ -58,6 +58,7 @@
     "models/Application.js",
     "models/ApplicationDocument.js",
     "models/ApplicationInterview.js",
+    "models/ApplicationStatusHistory.js",
     "models/ApplicationTimeline.js",
     "models/Chapter.js",
     "models/ChapterChangeRequest.js",
@@ -243,6 +244,7 @@
     "models/Application.js",
     "models/ApplicationDocument.js",
     "models/ApplicationInterview.js",
+    "models/ApplicationStatusHistory.js",
     "models/ApplicationTimeline.js",
     "models/Chapter.js",
     "models/ChapterChangeRequest.js",

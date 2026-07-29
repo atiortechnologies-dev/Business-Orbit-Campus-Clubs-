@@ -1,20 +1,12 @@
 # Database Schema Map
 
 ## Entity Relationship Overview
-- `Opportunity` -> `User` (company_id)
-- `SavedOpportunity` -> `User` (student_id), `Opportunity` (opportunity_id)
-- `Application` -> `Opportunity` (opportunity_id), `User` (student_id)
-- `ApplicationDocument` -> `Application` (application_id)
-- `ApplicationStatusHistory` -> `Application` (application_id), `User` (updated_by)
+PlatformSetting -> No foreign keys. It acts as a singleton for system-wide configs.
 
 ## Models Scaffolded
 | Model | File | Fields | References | Status Enum |
 |-------|------|--------|------------|-------------|
-| Opportunity | Backend/models/Opportunity.js | company_id, title, type, work_mode, industry, experience_level, description, responsibilities, required_skills, eligibility_criteria, preferred_qualifications, location, duration, salary_stipend, salary_range, application_deadline, status | User (company_id) | draft, open, active, closed |
-| SavedOpportunity | Backend/models/SavedOpportunity.js | student_id, opportunity_id | User (student_id), Opportunity (opportunity_id) | — |
-| Application | Backend/models/Application.js | opportunity_id, student_id, application_status, resume_url, cover_letter, portfolio_url, availability, joining_date | Opportunity (opportunity_id), User (student_id) | applied, shortlisted, rejected, interviewing, hired, draft, submitted, viewed, interview, selected, withdrawn |
-| ApplicationDocument | Backend/models/ApplicationDocument.js | application_id, document_type, file_name, file_url | Application (application_id) | — |
-| ApplicationStatusHistory | Backend/models/ApplicationStatusHistory.js | application_id, status, updated_by, remarks | Application (application_id), User (updated_by) | draft, submitted, viewed, shortlisted, interview, selected, rejected, withdrawn |
+| PlatformSetting | Backend/models/PlatformSetting.js | platform_name, logo_url, support_email, timezone, allow_new_registrations, require_email_verification, maintenance_mode, public_profiles_visible | — | — |
 
 ## Cascade Rules
-- None defined for Phase 1.
+- None needed for PlatformSetting.
