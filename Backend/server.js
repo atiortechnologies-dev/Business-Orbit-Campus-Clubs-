@@ -76,6 +76,8 @@ const companyRoutes = require("./routes/company.routes");
 const investorRoutes = require("./routes/investor.routes");
 const chatRoutes = require("./routes/chat.routes");
 
+const adminDashboardRoutes = require("./routes/adminDashboard.routes");
+
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
 
@@ -115,6 +117,9 @@ app.use("/api/student", tractionRoutes);
 
 // launch satge routes
 app.use("/api/student", launchRoutes);
+
+// admin
+app.use("/api/admin", adminDashboardRoutes);
 
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
