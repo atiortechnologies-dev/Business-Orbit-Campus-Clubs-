@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Download, Zap, Clock, CheckCircle, XCircle, Calendar, ArrowRight } from 'lucide-react';
+import { Download, Zap, Clock, CheckCircle, XCircle, Calendar, ArrowRight, Filter, RotateCcw } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
@@ -18,9 +19,33 @@ const SUBMISSIONS = [
 const PRIORITY_VARIANT = { High: 'error', Medium: 'warning', Low: 'neutral' };
 const STATUS_VARIANT = { Pending: 'info', 'Under Review': 'warning' };
 
+const STAGE_OPTIONS = ['All Stages', 'Idea', 'Validation', 'MVP', 'Traction'];
+const STATUS_OPTIONS = ['All Statuses', 'Pending', 'Under Review'];
+const CHAPTER_OPTIONS = ['All Chapters', ...new Set(SUBMISSIONS.map((s) => s.chapter))];
+
 export default function ReviewQueuePage() {
   useDocumentTitle('Stage Approval Queue — BOCC Admin');
   const navigate = useNavigate();
+
+  const [stageFilter, setStageFilter] = useState('All Stages');
+  const [statusFilter, setStatusFilter] = useState('All Statuses');
+  const [chapterFilter, setChapterFilter] = useState('All Chapters');
+  const [dateFilter, setDateFilter] = useState('');
+
+  const visibleSubmissions = SUBMISSIONS.filter((s) => {
+    if (stageFilter !== 'All Stages' && s.stage !== stageFilter) return false;
+    if (statusFilter !== 'All Statuses' && s.status !== statusFilter) return false;
+    if (chapterFilter !== 'All Chapters' && s.chapter !== chapterFilter) return false;
+    if (dateFilter && s.date !== dateFilter) return false;
+    return true;
+  });
+
+  function handleResetFilters() {
+    setStageFilter('All Stages');
+    setStatusFilter('All Statuses');
+    setChapterFilter('All Chapters');
+    setDateFilter('');
+  }
 
   const columns = [
     {
@@ -84,9 +109,9 @@ export default function ReviewQueuePage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <ComingSoon label="Bulk Action" position="bottom" inline>
+          <ComingSoon label="Bulk Actions" position="bottom" inline>
             <span className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small">
-              <Zap size={14} strokeWidth={2} /> Bulk Action
+              <Zap size={14} strokeWidth={2} /> Bulk Actions
             </span>
           </ComingSoon>
           <button
@@ -100,7 +125,7 @@ export default function ReviewQueuePage() {
               { key: 'reviewer', label: 'Reviewer' },
               { key: 'priority', label: 'Priority' },
               { key: 'status', label: 'Status' },
-            ], SUBMISSIONS)}
+            ], visibleSubmissions)}
             className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small hover:bg-canvas-bg transition-colors"
           >
             <Download size={14} strokeWidth={2} /> Export CSV
@@ -115,14 +140,56 @@ export default function ReviewQueuePage() {
         <StatCard label="Meetings Pending" value="09" icon={<Calendar size={18} strokeWidth={2} />} subtext="Next: 14:00 PM" />
       </div>
 
+      <div className="bg-canvas-bg border border-border-subtle rounded-lg p-4 mb-6 flex flex-wrap items-center gap-3">
+        <span className="flex items-center gap-1.5 font-poppins font-semibold text-caption uppercase tracking-wider text-text-muted shrink-0">
+          <Filter size={14} strokeWidth={2} /> Filters
+        </span>
+        <select
+          value={stageFilter}
+          onChange={(e) => setStageFilter(e.target.value)}
+          className="bg-surface-white border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
+        >
+          {STAGE_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
+        </select>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-surface-white border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
+        >
+          {STATUS_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
+        </select>
+        <select
+          value={chapterFilter}
+          onChange={(e) => setChapterFilter(e.target.value)}
+          className="bg-surface-white border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
+        >
+          {CHAPTER_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
+        </select>
+        <input
+          type="date"
+          value={dateFilter}
+          onChange={(e) => setDateFilter(e.target.value)}
+          className="bg-surface-white border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
+        />
+        <button
+          type="button"
+          onClick={handleResetFilters}
+          className="ml-auto flex items-center gap-1.5 font-inter font-medium text-small text-text-muted hover:text-text-heading transition-colors"
+        >
+          <RotateCcw size={14} strokeWidth={2} /> Reset
+        </button>
+      </div>
+
       <DataTable
         columns={columns}
-        rows={SUBMISSIONS}
-        onRowClick={() => navigate('/admin/reviews/detail')}
-        emptyMessage="No submissions in the queue."
+        rows={visibleSubmissions}
+        onRowClick={(row) => navigate(row.stage === 'Idea' ? '/admin/reviews/ideation' : '/admin/reviews/detail')}
+        emptyMessage="No submissions match the current filters."
       />
       <div className="flex justify-between items-center mt-4">
-        <span className="font-inter text-small text-text-muted">Showing 1-4 of 42 submissions</span>
+        <span className="font-inter text-small text-text-muted">
+          Showing {visibleSubmissions.length} of {SUBMISSIONS.length} submissions
+        </span>
       </div>
     </AdminShell>
   );

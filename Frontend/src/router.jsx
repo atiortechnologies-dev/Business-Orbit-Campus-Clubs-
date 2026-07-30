@@ -75,12 +75,16 @@ const ApplyConfirmation = lazy(() => import('@/pages/freelancing/ApplyConfirmati
 const MyApplications = lazy(() => import('@/pages/freelancing/MyApplications'));
 const AdminDashboard = lazy(() => import('@/pages/admin/Admin'));
 const VerificationQueue = lazy(() => import('@/pages/admin/VerificationQueue'));
-const VerificationDetail = lazy(() => import('@/pages/admin/VerificationDetail'));
-const VerificationDecision = lazy(() => import('@/pages/admin/VerificationDecision'));
+const StudentVerification = lazy(() => import('@/pages/admin/StudentVerification'));
+const MentorVerification = lazy(() => import('@/pages/admin/MentorVerification'));
+const InvestorVerification = lazy(() => import('@/pages/admin/InvestorVerification'));
+const IncubatorVerification = lazy(() => import('@/pages/admin/IncubatorVerification'));
+const CompanyVerification = lazy(() => import('@/pages/admin/CompanyVerification'));
 const ReviewQueue = lazy(() => import('@/pages/admin/ReviewQueue'));
 const ReviewDetail = lazy(() => import('@/pages/admin/ReviewDetail'));
 const ReviewWorkspace = lazy(() => import('@/pages/admin/ReviewWorkspace'));
 const ReviewOutcome = lazy(() => import('@/pages/admin/ReviewOutcome'));
+const IdeationReview = lazy(() => import('@/pages/admin/IdeationReview'));
 const ScheduleMeeting = lazy(() => import('@/pages/admin/ScheduleMeeting'));
 const AuditLog = lazy(() => import('@/pages/admin/AuditLog'));
 const AnnouncementsDashboard = lazy(() => import('@/pages/admin/AnnouncementsDashboard'));
@@ -256,12 +260,16 @@ export const router = createBrowserRouter([
   { path: '/freelancing/applications', element: withSuspense(MyApplications) },
   { path: '/admin', element: withSuspense(AdminDashboard) },
   { path: '/admin/verification', element: withSuspense(VerificationQueue) },
-  { path: '/admin/verification/detail', element: withSuspense(VerificationDetail) },
-  { path: '/admin/verification/decision', element: withSuspense(VerificationDecision) },
+  { path: '/admin/verification/student', element: withSuspense(StudentVerification) },
+  { path: '/admin/verification/mentor', element: withSuspense(MentorVerification) },
+  { path: '/admin/verification/investor', element: withSuspense(InvestorVerification) },
+  { path: '/admin/verification/incubator', element: withSuspense(IncubatorVerification) },
+  { path: '/admin/verification/company', element: withSuspense(CompanyVerification) },
   { path: '/admin/reviews', element: withSuspense(ReviewQueue) },
   { path: '/admin/reviews/detail', element: withSuspense(ReviewDetail) },
   { path: '/admin/reviews/workspace', element: withSuspense(ReviewWorkspace) },
   { path: '/admin/reviews/outcome', element: withSuspense(ReviewOutcome) },
+  { path: '/admin/reviews/ideation', element: withSuspense(IdeationReview) },
   { path: '/admin/reviews/schedule-meeting', element: withSuspense(ScheduleMeeting) },
   { path: '/admin/audit-log', element: withSuspense(AuditLog) },
   { path: '/admin/announcements', element: withSuspense(AnnouncementsDashboard) },
