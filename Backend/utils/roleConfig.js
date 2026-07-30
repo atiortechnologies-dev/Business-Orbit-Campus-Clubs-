@@ -1,15 +1,26 @@
-const StudentProfile = require("../model/StudentProfile");
-const MentorProfile = require("../model/MentorProfile");
-const InvestorProfile = require("../model/InvestorProfile");
-const IncubatorProfile = require("../model/IncubatorProfile");
-const CompanyProfile = require("../model/CompanyProfile");
+/**
+ * @file roleConfig.js
+ * @description Centralized configuration mapping user roles to their respective profile models, fields, and routing logic.
+ * @architecture Acts as a lookup dictionary used dynamically during onboarding and profile creation.
+ */
 
+const StudentProfile = require("../models/StudentProfile");
+const MentorProfile = require("../models/MentorProfile");
+const InvestorProfile = require("../models/InvestorProfile");
+const IncubatorProfile = require("../models/IncubatorProfile");
+const CompanyProfile = require("../models/CompanyProfile");
+
+/**
+ * @constant {Object} roleConfig
+ * @description Maps role strings to their specific profile model and required configuration details.
+ */
 const roleConfig = {
   student: {
     ProfileModel: StudentProfile,
     profileFields: ["college", "degree", "graduation_year"],
-    redirectTo: "welcome_to_your_chapter",
+    redirectTo: "/onboarding/welcome",
     initialStatus: "pending_verification",
+    dashboardRedirect: "/dashboard",
   },
   mentor: {
     ProfileModel: MentorProfile,
@@ -19,8 +30,9 @@ const roleConfig = {
       "expertise",
       "years_of_experience",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
+    dashboardRedirect: "/mentor",
   },
   investor: {
     ProfileModel: InvestorProfile,
@@ -30,14 +42,16 @@ const roleConfig = {
       "investment_stage",
       "profile_url",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
+    dashboardRedirect: "/investor",
   },
   incubator: {
     ProfileModel: IncubatorProfile,
     profileFields: ["incubator_name", "organization", "city", "website"],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
+    dashboardRedirect: "/incubator",
   },
   company: {
     ProfileModel: CompanyProfile,
@@ -48,8 +62,9 @@ const roleConfig = {
       "website",
       "contact_person",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
+    dashboardRedirect: "/company/dashboard",
   },
 };
 

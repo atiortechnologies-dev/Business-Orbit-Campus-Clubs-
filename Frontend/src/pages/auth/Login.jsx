@@ -1,108 +1,212 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
   Mail,
   Lock,
   Eye,
   EyeOff,
-} from 'lucide-react';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import Logo from '@/components/ui/Logo';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Logo from "@/components/ui/Logo";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { loginUser } from "@/api/auth/authApi";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function validateField(name, value) {
-  if (name === 'email') {
-    if (!value.trim()) return 'Email address is required.';
-    if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email address.';
+  if (name === "email") {
+    if (!value.trim()) return "Email address is required.";
+    if (!EMAIL_RE.test(value.trim())) return "Enter a valid email address.";
   }
-  if (name === 'password') {
-    if (!value) return 'Password is required.';
-    if (value.length < 8) return 'Password must be at least 8 characters.';
+  if (name === "password") {
+    if (!value) return "Password is required.";
+    if (value.length < 8) return "Password must be at least 8 characters.";
   }
-  return '';
+  return "";
 }
 
 export default function LoginPage() {
-  useDocumentTitle('Login — BOCC');
+  useDocumentTitle("Login — BOCC");
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState("");
 
   function handleBlur(name, value) {
     setTouched((t) => ({ ...t, [name]: true }));
     setErrors((e) => ({ ...e, [name]: validateField(name, value) }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setApiError("");
+
     const fields = { email, password };
     const allTouched = { email: true, password: true };
     const newErrors = Object.fromEntries(
-      Object.entries(fields).map(([k, v]) => [k, validateField(k, v)])
+      Object.entries(fields).map(([k, v]) => [k, validateField(k, v)]),
     );
     setTouched(allTouched);
     setErrors(newErrors);
 
     const valid = Object.values(newErrors).every((err) => !err);
+
     if (valid) {
-      // TODO(backend): replace with a real POST /api/auth/login call.
-      // On success the API should establish a session; this redirect to
-      // /dashboard stays the same. On failure, surface the API's error via
-      // the existing `errors` state instead of assuming success like now.
-      navigate('/dashboard');
+      try {
+        setIsSubmitting(true);
+
+        const res = await loginUser({
+          email: email.trim(),
+          password,
+        });
+
+        console.log("LOGIN RESPONSE RAW:", res);
+
+        // Extract redirect destination from every possible nesting level
+        const destination =
+          res?.data?.data?.redirect_to ||
+          res?.data?.redirect_to ||
+          res?.redirect_to ||
+          "/dashboard";
+
+        const accessToken =
+          res?.data?.data?.accessToken ||
+          res?.data?.accessToken ||
+          res?.accessToken;
+
+        const refreshToken =
+          res?.data?.data?.refreshToken ||
+          res?.data?.refreshToken ||
+          res?.refreshToken;
+
+        if (accessToken) localStorage.setItem("accessToken", accessToken);
+        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
+        console.log("NAVIGATING TO:", destination);
+
+        // Force navigation
+        navigate(destination, { replace: true });
+      } catch (err) {
+        console.error("LOGIN ERROR CATCH:", err);
+
+        // Handle 403 or error payloads containing redirect_to
+        const redirectOn403 =
+          err.response?.data?.data?.redirect_to ||
+          err.response?.data?.redirect_to ||
+          err?.data?.redirect_to;
+
+        if (redirectOn403) {
+          console.log("NAVIGATING VIA 403 ERROR TO:", redirectOn403);
+          navigate(redirectOn403, { replace: true });
+          return;
+        }
+
+        setApiError(
+          err.response?.data?.message ||
+            err.message ||
+            "Invalid email or password. Please try again.",
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   }
 
   return (
     <div className="flex-1 grid lg:grid-cols-[44%_56%]">
-
+      {/* Left Hero Section */}
       <section
         className="hidden lg:flex flex-col gap-8 pl-20 pr-4 pt-10 pb-14 bg-canvas-bg"
         aria-labelledby="hero-heading"
       >
-        {/* Custom illustration — abstract "orbit" motif: a central hub with
-            campus clubs orbiting it, themed entirely with design tokens so
-            it adapts to light/dark like every other element on this page.
-            This one's specific to Login (it's literally the brand name) —
-            ForgotPassword and ResetPassword each get their own motif tied
-            to what's actually happening on THOSE screens (an envelope+key
-            "request in flight," a shield+keyhole "secured" state) rather
-            than reusing this one for generic auth-flow consistency, which
-            read as irrelevant on a password-recovery screen. All of them
-            share the same geometric line-art language (Dashboard's idea
-            spark, Startup Journey's path, MVP Overview's assembling blocks
-            included) even though each motif itself is bespoke per screen. */}
         <svg
           viewBox="0 0 400 300"
-          className="w-full aspect-[4/3] rounded-lg"
+          className="w-full aspect-4/3 rounded-lg"
           role="img"
           aria-label="Illustration of campus clubs orbiting a central hub"
         >
-          <ellipse cx="200" cy="150" rx="170" ry="70" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-8 200 150)" />
-          <ellipse cx="200" cy="150" rx="130" ry="100" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(12 200 150)" />
-          <ellipse cx="200" cy="150" rx="90" ry="130" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" transform="rotate(-15 200 150)" />
+          <ellipse
+            cx="200"
+            cy="150"
+            rx="170"
+            ry="70"
+            fill="none"
+            stroke="var(--color-border-subtle)"
+            strokeWidth="1.5"
+            transform="rotate(-8 200 150)"
+          />
+          <ellipse
+            cx="200"
+            cy="150"
+            rx="130"
+            ry="100"
+            fill="none"
+            stroke="var(--color-border-subtle)"
+            strokeWidth="1.5"
+            transform="rotate(12 200 150)"
+          />
+          <ellipse
+            cx="200"
+            cy="150"
+            rx="90"
+            ry="130"
+            fill="none"
+            stroke="var(--color-border-subtle)"
+            strokeWidth="1.5"
+            transform="rotate(-15 200 150)"
+          />
 
           <circle cx="200" cy="150" r="26" fill="var(--color-brand-black)" />
           <circle cx="200" cy="150" r="9" fill="var(--color-accent-neon)" />
 
-          <circle cx="332" cy="128" r="10" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+          <circle
+            cx="332"
+            cy="128"
+            r="10"
+            fill="var(--color-surface-white)"
+            stroke="var(--color-brand-black)"
+            strokeWidth="1.5"
+          />
           <circle cx="332" cy="128" r="3" fill="var(--color-accent-neon)" />
 
-          <circle cx="88" cy="185" r="8" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+          <circle
+            cx="88"
+            cy="185"
+            r="8"
+            fill="var(--color-surface-white)"
+            stroke="var(--color-brand-black)"
+            strokeWidth="1.5"
+          />
           <circle cx="88" cy="185" r="2.5" fill="var(--color-accent-neon)" />
 
-          <circle cx="255" cy="245" r="7" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+          <circle
+            cx="255"
+            cy="245"
+            r="7"
+            fill="var(--color-surface-white)"
+            stroke="var(--color-brand-black)"
+            strokeWidth="1.5"
+          />
 
-          <circle cx="140" cy="45" r="6" fill="var(--color-surface-white)" stroke="var(--color-brand-black)" strokeWidth="1.5" />
+          <circle
+            cx="140"
+            cy="45"
+            r="6"
+            fill="var(--color-surface-white)"
+            stroke="var(--color-brand-black)"
+            strokeWidth="1.5"
+          />
 
           <circle cx="60" cy="90" r="4" fill="var(--color-border-subtle)" />
           <circle cx="330" cy="220" r="4" fill="var(--color-border-subtle)" />
@@ -118,8 +222,9 @@ export default function LoginPage() {
           </h1>
           <p className="text-body font-normal text-text-body font-inter">
             Join Business Orbit Campus Clubs (BOCC) to bridge the gap between
-            academic innovation and global industry standard. Connect with mentors,
-            investors, and fellow entrepreneurs to launch your professional journey.
+            academic innovation and global industry standard. Connect with
+            mentors, investors, and fellow entrepreneurs to launch your
+            professional journey.
           </p>
         </div>
 
@@ -145,6 +250,7 @@ export default function LoginPage() {
         </div>
       </section>
 
+      {/* Right Login Form Section */}
       <section
         className="flex flex-col px-4 sm:px-8 lg:px-12 pt-8 pb-14 bg-canvas-bg"
         aria-labelledby="login-heading"
@@ -159,16 +265,14 @@ export default function LoginPage() {
         </Link>
 
         <div className="flex-1 flex flex-col items-center justify-center gap-5 py-6">
-          <div className="w-full max-w-[546px] flex flex-col items-center gap-5">
-
-            {/* BOCC mark above heading — PublicNav already renders the
-                horizontal lockup above this page, so this is a secondary
-                instance (no `priority`) sized to match the small
-                decorative-icon role it replaces, not a header-scale logo. */}
+          <div className="w-full max-w-136 flex flex-col items-center gap-5">
             <Logo variant="mark" size={28} />
 
             <div className="text-center flex flex-col gap-1.5">
-              <h2 id="login-heading" className="text-card font-medium text-text-heading font-poppins">
+              <h2
+                id="login-heading"
+                className="text-card font-medium text-text-heading font-poppins"
+              >
                 Welcome Back
               </h2>
               <p className="text-body font-normal text-text-body font-inter">
@@ -183,6 +287,13 @@ export default function LoginPage() {
                 noValidate
                 aria-label="Login form"
               >
+                {apiError && (
+                  <div className="w-full p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
+                    <AlertCircle size={16} className="shrink-0" />
+                    <span>{apiError}</span>
+                  </div>
+                )}
+
                 <Input
                   id="login-email"
                   label="Email Address"
@@ -190,27 +301,31 @@ export default function LoginPage() {
                   placeholder="name@campusclub.com"
                   autoComplete="username"
                   value={email}
+                  disabled={isSubmitting}
                   onChange={(e) => setEmail(e.target.value)}
-                  onBlur={() => handleBlur('email', email)}
-                  error={touched.email ? errors.email : ''}
+                  onBlur={() => handleBlur("email", email)}
+                  error={touched.email ? errors.email : ""}
                   leftSlot={<Mail size={15} strokeWidth={2} />}
                 />
 
                 <Input
                   id="login-password"
                   label="Password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   value={password}
+                  disabled={isSubmitting}
                   onChange={(e) => setPassword(e.target.value)}
-                  onBlur={() => handleBlur('password', password)}
-                  error={touched.password ? errors.password : ''}
+                  onBlur={() => handleBlur("password", password)}
+                  error={touched.password ? errors.password : ""}
                   leftSlot={<Lock size={15} strokeWidth={2} />}
                   rightSlot={
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
                       className="text-text-muted hover:text-text-heading transition-all duration-150 ease-linear focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-black rounded p-0.5"
                     >
                       {showPassword ? (
@@ -233,6 +348,7 @@ export default function LoginPage() {
                         id="remember-me"
                         name="remember-me"
                         checked={rememberMe}
+                        disabled={isSubmitting}
                         onChange={(e) => setRememberMe(e.target.checked)}
                         className="peer appearance-none w-4 h-4 rounded-sm border border-border-subtle bg-transparent checked:bg-accent-neon checked:border-border-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-black transition-all duration-150 ease-linear cursor-pointer"
                       />
@@ -244,7 +360,11 @@ export default function LoginPage() {
                         strokeWidth="4"
                         aria-hidden="true"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </div>
                     Remember me
@@ -257,8 +377,20 @@ export default function LoginPage() {
                   </Link>
                 </div>
 
-                <Button variant="primary" fullWidth type="submit">
-                  Login to Account
+                <Button
+                  variant="primary"
+                  fullWidth
+                  type="submit"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <span className="inline-flex items-center gap-2">
+                      <Loader2 size={16} className="animate-spin" />
+                      Logging in...
+                    </span>
+                  ) : (
+                    "Login to Account"
+                  )}
                 </Button>
 
                 <div className="flex items-center gap-3" role="separator">
@@ -273,7 +405,8 @@ export default function LoginPage() {
                   variant="outline"
                   fullWidth
                   type="button"
-                  onClick={() => navigate('/role-selection')}
+                  disabled={isSubmitting}
+                  onClick={() => navigate("/role-selection")}
                 >
                   Create an Account
                 </Button>
@@ -281,14 +414,14 @@ export default function LoginPage() {
             </Card>
 
             <p className="text-small font-normal text-center text-text-muted font-inter">
-              By logging in, you agree to our{' '}
+              By logging in, you agree to our{" "}
               <Link
                 to="/legal/privacy-policy"
                 className="text-text-body hover:text-text-heading underline underline-offset-2 transition-all duration-150 ease-linear"
               >
                 Terms of Service
-              </Link>{' '}
-              and{' '}
+              </Link>{" "}
+              and{" "}
               <Link
                 to="/legal/privacy-policy"
                 className="text-text-body hover:text-text-heading underline underline-offset-2 transition-all duration-150 ease-linear"
@@ -300,7 +433,6 @@ export default function LoginPage() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }
