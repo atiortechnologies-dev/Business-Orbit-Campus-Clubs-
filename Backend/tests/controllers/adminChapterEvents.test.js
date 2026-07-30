@@ -20,6 +20,20 @@ app.use((req, res, next) => {
 const chapterRoutes = require("../../routes/admin/chapter.routes");
 app.use("/api/admin/chapters", chapterRoutes);
 
+// Mock mongoose
+jest.mock("mongoose", () => {
+  const actualMongoose = jest.requireActual("mongoose");
+  return {
+    ...actualMongoose,
+    startSession: jest.fn().mockResolvedValue({
+      startTransaction: jest.fn(),
+      commitTransaction: jest.fn(),
+      abortTransaction: jest.fn(),
+      endSession: jest.fn(),
+    }),
+  };
+});
+
 // Mock models
 jest.mock("../../models/ChapterEvent", () => ({
   countDocuments: jest.fn(),
@@ -56,8 +70,8 @@ describe("Admin Chapter Events API", () => {
 
   describe("POST /api/admin/chapters/:id/events", () => {
     it("should create a new chapter event successfully", async () => {
-      ChapterEvent.create.mockResolvedValue({ _id: "event123", title: "Startup Mixer" });
-      AuditLog.create.mockResolvedValue({});
+      ChapterEvent.create.mockResolvedValue([{ _id: "event123", title: "Startup Mixer" }]);
+      AuditLog.create.mockResolvedValue([{}]);
 
       const response = await request(app)
         .post(`/api/admin/chapters/chap1/events`)

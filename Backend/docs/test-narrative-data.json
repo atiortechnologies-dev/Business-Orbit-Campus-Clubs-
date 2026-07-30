@@ -1,0 +1,253 @@
+[
+  {
+    "journey": "User Onboarding",
+    "sceneDesc": "A student opens the signup form and submits a valid registration request.",
+    "req": {
+      "role": "student",
+      "full_name": "John Doe",
+      "email": "john@example.com",
+      "password": "Password123!",
+      "confirm_password": "Password123!",
+      "college": "Test University",
+      "degree": "B.Tech",
+      "graduation_year": 2025
+    },
+    "res": {
+      "status": 201,
+      "body": {
+        "success": true,
+        "message": "Registration successful. Please verify your email.",
+        "data": {
+          "userId": "6a6b8723220b3ebb159cc96d",
+          "role": "student",
+          "account_status": "pending_verification",
+          "email_verified": false,
+          "redirect_to": "/email-verification"
+        }
+      }
+    },
+    "dbState": {
+      "user": {
+        "email": "john@example.com",
+        "role": "student",
+        "account_status": "pending_verification",
+        "email_verified": false
+      },
+      "profileCreated": false,
+      "otpCreated": true
+    }
+  },
+  {
+    "journey": "User Onboarding",
+    "sceneDesc": "A student submits an invalid email and missing required fields.",
+    "req": {
+      "role": "student",
+      "email": "not-an-email"
+    },
+    "res": {
+      "status": 400,
+      "body": {
+        "success": false,
+        "message": "Validation failed",
+        "errors": [
+          {
+            "field": "full_name",
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "field": "email",
+            "message": "Invalid email format"
+          },
+          {
+            "field": "password",
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "field": "confirm_password",
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "field": "college",
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "field": "degree",
+            "message": "Invalid input: expected string, received undefined"
+          },
+          {
+            "field": "graduation_year",
+            "message": "Invalid input: expected number, received NaN"
+          }
+        ]
+      }
+    },
+    "dbState": {
+      "usersCount": 0
+    }
+  },
+  {
+    "journey": "User Onboarding",
+    "sceneDesc": "The student receives an OTP and submits it to verify their account.",
+    "req": {
+      "email": "jane@example.com",
+      "otp": "123456"
+    },
+    "res": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "message": "Email verified successfully",
+        "data": {
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNmI4NzQwMjIwYjNlYmIxNTljYzk3MCIsInJvbGUiOiJzdHVkZW50IiwiZW1haWwiOiJqYW5lQGV4YW1wbGUuY29tIiwiaWF0IjoxNzg1NDMxODczLCJleHAiOjE3ODYwMzY2NzMsImlzcyI6ImJjb2MtYmFja2VuZCJ9.fdIKP2-mYepSy8kKG3odYlaVcBgm64SZ1hN7PGKa_Bc",
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNmI4NzQwMjIwYjNlYmIxNTljYzk3MCIsInJvbGUiOiJzdHVkZW50IiwidHlwZSI6InJlZnJlc2giLCJpYXQiOjE3ODU0MzE4NzMsImV4cCI6MTc4ODAyMzg3MywiaXNzIjoiYmNvYy1iYWNrZW5kIn0.Dozy2N2Ce27c7VnM7GHpYdv7-_a3PAi1KGs16UDFLiQ",
+          "user": {
+            "id": "6a6b8740220b3ebb159cc970",
+            "email": "jane@example.com",
+            "role": "student",
+            "account_status": "active",
+            "email_verified": true,
+            "profile_status": "not_started"
+          },
+          "redirect_to": "/student-dashboard"
+        }
+      }
+    },
+    "dbState": {
+      "user": {
+        "email_verified": true,
+        "account_status": "active"
+      }
+    }
+  },
+  {
+    "journey": "User Login",
+    "sceneDesc": "The verified student logs into the platform.",
+    "req": {
+      "email": "bob@example.com",
+      "password": "Password123!"
+    },
+    "res": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "hasToken": false
+      }
+    },
+    "dbState": {}
+  },
+  {
+    "journey": "User Login",
+    "sceneDesc": "A user attempts to log in before verifying their email.",
+    "req": {
+      "email": "alice@example.com",
+      "password": "Password123!"
+    },
+    "res": {
+      "status": 403,
+      "body": {
+        "success": false,
+        "message": "Please verify your email"
+      }
+    },
+    "dbState": {}
+  },
+  {
+    "journey": "Content Management",
+    "sceneDesc": "An unauthorized user attempts to create an FAQ without an API key.",
+    "req": {
+      "question": "What?",
+      "answer": "This",
+      "pageType": "Student"
+    },
+    "res": {
+      "status": 401,
+      "body": {
+        "success": false,
+        "message": "Unauthorized: Invalid or missing Admin API Key"
+      }
+    },
+    "dbState": {
+      "faqsCount": 0
+    }
+  },
+  {
+    "journey": "Content Management",
+    "sceneDesc": "An admin submits a valid FAQ creation request.",
+    "req": {
+      "question": "What is Business Orbit?",
+      "answer": "A club",
+      "pageType": "Student"
+    },
+    "res": {
+      "status": 201,
+      "body": {
+        "success": true,
+        "data": {
+          "question": "What is Business Orbit?",
+          "answer": "A club",
+          "pageType": "Student",
+          "_id": "6a6b8780220b3ebb159cc979",
+          "createdAt": "2026-07-30T17:18:56.718Z",
+          "updatedAt": "2026-07-30T17:18:56.718Z",
+          "__v": 0
+        }
+      }
+    },
+    "dbState": {
+      "faqDoc": {
+        "question": "What is Business Orbit?",
+        "pageType": "Student"
+      }
+    }
+  },
+  {
+    "journey": "Browsing Landing Pages",
+    "sceneDesc": "A student visits the landing page to view FAQs.",
+    "req": {
+      "query": {
+        "pageType": "Student"
+      }
+    },
+    "res": {
+      "status": 200,
+      "body": {
+        "success": true,
+        "count": 1
+      }
+    },
+    "dbState": {}
+  },
+  {
+    "journey": "Public Enquiry",
+    "sceneDesc": "A visitor submits a partnership enquiry form.",
+    "req": {
+      "companyName": "Test Corp",
+      "contactPerson": "Mr. Test",
+      "email": "test@corp.com",
+      "message": "I want to partner with Business Orbit"
+    },
+    "res": {
+      "status": 201,
+      "body": {
+        "success": true,
+        "message": "Enquiry submitted successfully",
+        "data": {
+          "companyName": "Test Corp",
+          "contactPerson": "Mr. Test",
+          "email": "test@corp.com",
+          "message": "I want to partner with Business Orbit",
+          "_id": "6a6b879f220b3ebb159cc97b",
+          "createdAt": "2026-07-30T17:19:27.652Z",
+          "updatedAt": "2026-07-30T17:19:27.652Z",
+          "__v": 0
+        }
+      }
+    },
+    "dbState": {
+      "enquiryDoc": {
+        "companyName": "Test Corp",
+        "status": "Pending"
+      }
+    }
+  }
+]

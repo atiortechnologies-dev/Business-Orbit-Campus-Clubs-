@@ -429,7 +429,7 @@ describe("Student Freelancing Controller", () => {
         .set("Authorization", `Bearer ${studentToken}`)
         .send({
           opportunity_id: opp2._id,
-          resume_url: "initial"
+          resume_url: "http://example.com/initial.pdf"
         });
       appId = res.body.data._id;
     });
