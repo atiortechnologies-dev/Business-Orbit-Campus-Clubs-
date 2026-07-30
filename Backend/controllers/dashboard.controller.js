@@ -20,8 +20,6 @@ const { getOrCreateStartup } = require("../utils/startupJourney");
 const getDashboard = asyncHandler(async (req, res) => {
   const { id: userId, role, account_status, email_verified } = req.user;
 
-  console.log("userId", userId);
-
   if (!email_verified) {
     return res.status(403).json({
       success: false,

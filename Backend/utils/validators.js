@@ -752,6 +752,23 @@ const saveLaunchInsightsSchema = z.object({
     .optional(),
 });
 
+// =========== Admin ============
+const createAnnouncementSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(150, "Title cannot exceed 150 characters"),
+  short_summary: z.string().max(250, "Summary cannot exceed 250 characters"),
+  body_content: z.string().min(50, "Content must be at least 50 words"),
+  target_audience: z
+    .array(z.string())
+    .min(1, "At least one target audience required"),
+  priority: z
+    .enum(["Normal", "Important", "Critical"])
+    .optional()
+    .default("Normal"),
+});
+
 module.exports = {
   registerSchema,
   checkEmailSchema,
@@ -792,4 +809,5 @@ module.exports = {
   saveLaunchInsightsSchema,
   requestMentorSchema,
   mentorReviewSchema,
+  createAnnouncementSchema,
 };
