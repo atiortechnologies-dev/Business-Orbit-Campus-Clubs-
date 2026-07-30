@@ -1,24 +1,43 @@
-import { Rocket } from 'lucide-react';
-import RoleSignupForm from '@/components/auth/RoleSignupForm';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { Rocket } from "lucide-react";
+import RoleSignupForm from "@/components/auth/RoleSignupForm";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
-// Backend/utils/validators.js's incubatorFields expects: incubator_name
-// (companyName here is a rename), city (campus here is a rename), website
-// (matches, optional both sides). organization is also required by the
-// backend and isn't collected by this form at all — the incubator's
-// parent org/institution is a distinct field from the incubator's own
-// name, and needs to be added here for registration to work.
 const FIELDS = [
-  { name: 'fullName', label: 'Full Name', placeholder: 'e.g. Sarah Jenkins' },
-  { name: 'email', label: 'Email', type: 'email', placeholder: 'you@incubator.com' },
-  { name: 'phone', label: 'Phone', type: 'tel', placeholder: '+1 (555) 000-0000' },
-  { name: 'companyName', label: 'Company Name', placeholder: 'e.g. BOCC Incubator' },
-  { name: 'campus', label: 'Campus / Location', placeholder: 'e.g. San Francisco, CA' },
-  { name: 'website', label: 'Website', type: 'url', placeholder: 'https://...', colSpan: 2 },
+  { name: "full_name", label: "Full Name", placeholder: "e.g. Sarah Jenkins" },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "you@incubator.com",
+  },
+  {
+    name: "phone",
+    label: "Phone",
+    type: "tel",
+    placeholder: "+1 (555) 000-0000",
+  },
+  {
+    name: "incubator_name",
+    label: "Incubator Name",
+    placeholder: "e.g. BOCC Innovation Hub",
+  },
+  {
+    name: "organization",
+    label: "Parent Organization / Institution",
+    placeholder: "e.g. Stanford University",
+  },
+  { name: "city", label: "City / Location", placeholder: "e.g. San Francisco" },
+  {
+    name: "website",
+    label: "Website (Optional)",
+    type: "url",
+    placeholder: "https://...",
+    colSpan: 2,
+  },
 ];
 
 export default function IncubatorSignupPage() {
-  useDocumentTitle('Incubator Sign Up — BOCC');
+  useDocumentTitle("Incubator Sign Up — BOCC");
   return (
     <RoleSignupForm
       roleId="incubator"

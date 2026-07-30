@@ -1,6 +1,10 @@
-const { z } = require("zod");
+/**
+ * @file validators.js
+ * @description Provides common validation schemas and helper functions (e.g., using Joi or Zod) for standard user inputs.
+ * @architecture Extracts request validation rules out of controllers and routes, promoting reusability and cleaner request handlers.
+ */
 
-const currentYear = new Date().getFullYear();
+const { z } = require("zod");
 
 const passwordSchema = z
   .string()
@@ -27,77 +31,69 @@ const baseFields = z.object({
     .trim()
     .min(4, "Full name must be at least 2 characters"),
   email: z.string().trim().toLowerCase().email("Invalid email format"),
-  phone: z
-    .string()
-    .trim()
-    .regex(/^\+?[0-9]{7,15}$/, "Invalid phone number")
-    .optional(),
+  phone: z.string().trim().optional(), // added since main contained it but there is no frontend implementation for it
   password: passwordSchema,
   confirm_password: z.string(),
 });
 
-// Role Specific fields
-const studentFields = z.object({
+const sendOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+});
+
+const registerStudentSchema = baseFields.extend({
   role: z.literal("student"),
-  college: z.string().trim().min(2, "College name is required"),
-  degree: z.string().trim().min(2, "Degree is required"),
-  graduation_year: z.coerce
-    .number()
-    .int()
-    .min(currentYear - 6, "Invalid graduation year")
-    .max(currentYear + 6, "Invalid graduation year"),
+  college: z.string().trim().min(1, "College is required"),
+  graduation_year: z.string(),
+  degree: z.string(),
 });
 
-const mentorFields = z.object({
+const registerMentorSchema = baseFields.extend({
   role: z.literal("mentor"),
-  organization: z.string().trim().min(2, "Organization is required"),
-  designation: z.string().trim().min(2, "Designation is required"),
-  expertise: z.string().trim().min(2, "Expertise / domain is required"),
-  years_of_experience: z.coerce
-    .number()
-    .min(0)
-    .max(60, "Invalid years of experience"),
+  organization: z.string().trim().min(1, "Organization is required"),
+  designation: z.string().trim().min(1, "Designation is required"),
+  expertise: z.string().trim().min(1, "Expertise is required"),
+  years_of_experience: z.enum(
+    ["0-2 years", "3-5 years", "6-10 years", "10+ years"],
+    {
+      errorMap: () => ({ message: "Please select a valid experience range" }),
+    },
+  ),
 });
 
-const investorFields = z.object({
+const registerInvestorSchema = baseFields.extend({
   role: z.literal("investor"),
-  organization: z
-    .string()
-    .trim()
-    .min(4, "Organization / fund name is required"),
-  investment_focus: z.string().trim().min(2, "Investment focus is required"),
-  investment_stage: z.string().trim().min(2, "Investment stage is required"),
+  organization: z.string().trim().min(1, "Organization is required"),
+  investment_focus: z.string().trim().min(1, "Investment focus is required"),
+  investment_stage: z.string().trim().min(1, "Investment stage is required"),
   profile_url: urlOptional,
 });
 
-const incubatorFields = z.object({
+const registerIncubatorSchema = baseFields.extend({
   role: z.literal("incubator"),
-  incubator_name: z.string().trim().min(4, "Incubator name is required"),
-  organization: z.string().trim().min(4, "Organization is required"),
-  city: z.string().trim().min(4, "City/location is required"),
+  incubator_name: z.string().trim().min(1, "Incubator name is required"),
+  organization: z.string().trim().min(1, "Organization is required"),
+  city: z.string().trim().min(1, "City is required"),
   website: urlOptional,
 });
 
-const companyFields = z.object({
+const registerCompanySchema = baseFields.extend({
   role: z.literal("company"),
-  company_name: z.string().trim().min(2, "Company name is required"),
-  industry: z.string().trim().min(2, "Industry is required"),
+  company_name: z.string().trim().min(1, "Company name is required"),
+  industry: z.string().trim().min(1, "Industry is required"),
   company_size: z.string().trim().min(1, "Company size is required"),
-  website: z.string().trim().url("Invalid URL format"),
-  contact_person: z.string().trim().min(2, "Contact person is required"),
+  contact_person: z.string().trim().min(1, "Contact person is required"),
+  website: z.string().url("Invalid URL format").trim(),
 });
 
-const roleSpecificUnion = z.discriminatedUnion("role", [
-  studentFields,
-  mentorFields,
-  investorFields,
-  incubatorFields,
-  companyFields,
-]);
-
 // Full registration = common fields + role specific field
-const registerSchema = baseFields
-  .and(roleSpecificUnion)
+const registerSchema = z
+  .discriminatedUnion("role", [
+    registerStudentSchema,
+    registerMentorSchema,
+    registerInvestorSchema,
+    registerIncubatorSchema,
+    registerCompanySchema,
+  ])
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",
     path: ["confirm_password"],
@@ -107,4 +103,711 @@ const checkEmailSchema = z.object({
   email: z.string().trim().toLowerCase().email("Invalid email format"),
 });
 
-module.exports = { registerSchema, checkEmailSchema };
+const forgotPasswordSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+});
+
+const resetPasswordSchema = z
+  .object({
+    email: z.string().trim().toLowerCase().email("Invalid email format"),
+    reset_token: z.string().trim().min(6, "Reset token is required"),
+    new_password: passwordSchema,
+    confirm_password: z.string(),
+  })
+  .refine((data) => data.new_password === data.confirm_password, {
+    message: "Passwords do not match",
+    path: ["confirm_password"],
+  });
+
+const contactEnquirySchema = z.object({
+  companyName: z.string().min(2, "Company Name is required"),
+  contactPerson: z.string().min(2, "Contact Person is required"),
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+  phone: z.string().trim().optional(),
+  message: z.string().min(10, "Message must be at least 10 characters long"),
+});
+
+const verifyOtpSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+  otp: z.string().trim().length(6, "OTP must be 6 digits"),
+});
+
+const loginSchema = z.object({
+  email: z.string().trim().toLowerCase().email("Invalid email format"),
+  password: z.string().min(1, "Password is required"),
+});
+
+const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1, "Refresh token is required"),
+});
+
+//* Onboarding schema
+
+const toArray = z.preprocess(
+  (val) => {
+    if (Array.isArray(val)) return val;
+    if (typeof val === "string") {
+      const trimmed = val.trim();
+      if (!trimmed) return [];
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (error) {
+        console.error(error);
+      }
+      return trimmed
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    return val;
+  },
+  z.array(z.string().trim().min(1)),
+);
+
+const commonProfileFields = z.object({
+  bio: z
+    .string()
+    .trim()
+    .min(10, "Bio must be at least 10 characters")
+    .max(1000, "Bio must be under 1000 characters"),
+  skills: toArray.refine(
+    (arr) => arr.length > 0,
+    "At least one skill/interest is required",
+  ),
+  linkedin_url: z
+    .string()
+    .trim()
+    .url("Invalid LinkedIn URL")
+    .refine(
+      (url) => url.includes("linkedin.com"),
+      "Must be a linkedin.com URL",
+    ),
+  portfolio_url: urlOptional,
+  profile_photo: z.string().trim().optional().or(z.literal("")),
+});
+
+const studentCompleteFields = z.object({
+  startup_interests: toArray,
+  // areas_of_interest: toArray,
+});
+
+const mentorCompleteFields = z.object({
+  mentoring_domains: toArray,
+  preferred_startup_stages: toArray,
+  availability: z.string().trim().optional().or(z.literal("")),
+});
+
+const investorCompleteFields = z.object({
+  investor_type: z.enum(["Angel", "VC", "Corporate"], {
+    error: "Investor type must be Angel, VC, or Corporate",
+  }),
+  designation: z.string().trim().min(1, "Designation is required").optional(),
+  investment_sectors: toArray,
+  preferred_startup_stages: toArray,
+  investment_range: z.string().trim().optional().or(z.literal("")),
+});
+
+const incubatorCompleteFields = z.object({
+  organization_type: z.string().trim().min(2, "Organization type is required"),
+  supported_startup_domains: toArray,
+  services_offered: toArray,
+  contact_person: z.string().trim().min(2, "Contact person is required"),
+});
+
+const companyCompleteFields = z.object({
+  hiring_domains: toArray,
+});
+
+const roleSpecificCompleteSchemas = {
+  student: studentCompleteFields,
+  mentor: mentorCompleteFields,
+  investor: investorCompleteFields,
+  incubator: incubatorCompleteFields,
+  company: companyCompleteFields,
+};
+
+//* Startup Submission:
+const submitIdeaSchema = z.object({
+  title: z
+    .string({ required_error: "Title is required" })
+    .trim()
+    .min(1, "Title is required")
+    .max(150, "Title must be under 150 characters"),
+  description: z
+    .string({ required_error: "Description is required" })
+    .trim()
+    .min(1, "Description is required")
+    .max(5000, "Description must be under 5000 characters"),
+  attachment_url: urlOptional,
+});
+
+const saveDraftSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .max(150, "Title must be under 150 characters")
+    .optional(),
+  description: z
+    .string()
+    .trim()
+    .max(5000, "Description must be under 5000 characters")
+    .optional(),
+  attachment_url: urlOptional,
+});
+
+//* Mentor Requests
+const requestMentorSchema = z.object({
+  problem_statement: z
+    .string()
+    .trim()
+    .min(10, "Problem statement must be at least 10 characters"),
+  help_required: z
+    .string()
+    .trim()
+    .min(10, "Help required must be at least 10 characters"),
+  preferred_meeting_mode: z
+    .enum(["online", "in-person", "any"], {
+      error: "Mode must be online, in-person, or any",
+    })
+    .default("online"),
+  preferred_time: z.string().trim().min(1, "Preferred time is required"),
+  additional_notes: z
+    .string()
+    .trim()
+    .max(1000, "Notes must be under 1000 characters")
+    .optional(),
+});
+
+const mentorReviewSchema = z.object({
+  rating: z.number().min(1).max(5, "Rating must be between 1 and 5"),
+  review_text: z
+    .string()
+    .trim()
+    .max(500, "Review cannot exceed 500 characters")
+    .optional(),
+});
+
+// Survey validators
+const createSurveySchema = z.object({
+  survey_title: z
+    .string()
+    .min(1, "Survey title is required")
+    .max(200, "Survey title must be less than 200 characters"),
+  responses_count: z
+    .number()
+    .min(0, "Responses count cannot be negative")
+    .optional()
+    .default(0),
+  interviews_count: z
+    .number()
+    .min(0, "Interviews count cannot be negative")
+    .optional()
+    .default(0),
+  findings: z
+    .string()
+    .max(5000, "Findings must be less than 5000 characters")
+    .optional()
+    .default(""),
+});
+
+const updateSurveySchema = z.object({
+  survey_title: z
+    .string()
+    .min(1, "Survey title is required")
+    .max(200, "Survey title must be less than 200 characters")
+    .optional(),
+  responses_count: z
+    .number()
+    .min(0, "Responses count cannot be negative")
+    .optional(),
+  interviews_count: z
+    .number()
+    .min(0, "Interviews count cannot be negative")
+    .optional(),
+  findings: z
+    .string()
+    .max(5000, "Findings must be less than 5000 characters")
+    .optional(),
+  status: z.enum(["draft", "completed"]).optional(),
+});
+
+const uploadEvidenceSchema = z.object({
+  file_name: z
+    .string()
+    .min(1, "File name is required")
+    .max(255, "File name is too long"),
+  file_type: z
+    .enum([
+      "survey_results",
+      "interview_notes",
+      "photo",
+      "video",
+      "research_document",
+      "pdf",
+      "spreadsheet",
+      "other",
+    ])
+    .optional()
+    .default("other"),
+  file_size: z
+    .number()
+    .min(1, "File size must be greater than 0")
+    .max(50 * 1024 * 1024, "File size cannot exceed 50MB"),
+});
+
+// Validation report validators
+const submitValidationReportSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(200, "Title must be less than 200 characters"),
+  summary: z
+    .string()
+    .min(10, "Summary must be at least 10 characters")
+    .max(5000, "Summary must be less than 5000 characters"),
+  key_findings: z
+    .string()
+    .max(3000, "Key findings must be less than 3000 characters")
+    .optional()
+    .default(""),
+  problem_validated: z.boolean().optional().default(false),
+  market_size_estimate: z
+    .string()
+    .max(200, "Market size estimate must be less than 200 characters")
+    .optional()
+    .default(""),
+  next_steps: z
+    .string()
+    .max(1000, "Next steps must be less than 1000 characters")
+    .optional()
+    .default(""),
+});
+
+const updateValidationReportSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(200, "Title must be less than 200 characters")
+    .optional(),
+  summary: z
+    .string()
+    .min(10, "Summary must be at least 10 characters")
+    .max(5000, "Summary must be less than 5000 characters")
+    .optional(),
+  key_findings: z
+    .string()
+    .max(3000, "Key findings must be less than 3000 characters")
+    .optional(),
+  problem_validated: z.boolean().optional(),
+  market_size_estimate: z
+    .string()
+    .max(200, "Market size estimate must be less than 200 characters")
+    .optional(),
+  next_steps: z
+    .string()
+    .max(1000, "Next steps must be less than 1000 characters")
+    .optional(),
+});
+
+// Meeting reschedule validator (for student)
+const requestMeetingRescheduleSchema = z.object({
+  reschedule_reason: z
+    .string()
+    .min(5, "Reason must be at least 5 characters")
+    .max(500, "Reason must be less than 500 characters")
+    .optional()
+    .default(""),
+});
+
+// update profile schema
+const updateProfileSchema = z.object({
+  full_name: z
+    .string()
+    .max(100, "Name must be less than 100 characters")
+    .optional(),
+  phone: z.string().max(20, "Phone must be less than 20 characters").optional(),
+  bio: z.string().max(1000, "Bio must be less than 1000 characters").optional(),
+  skills: z.array(z.string()).optional(),
+  college: z.string().max(150, "College name too long").optional(),
+  degree: z.string().max(100, "Degree name too long").optional(),
+  graduation_year: z
+    .number()
+    .min(2000, "Graduation year must be 2000 or later")
+    .max(2050, "Graduation year must be before 2050")
+    .optional(),
+  linkedin_url: z.string().url("Invalid LinkedIn URL").optional().default(""),
+  portfolio_url: z.string().url("Invalid portfolio URL").optional().default(""),
+});
+
+const updateStartupSchema = z.object({
+  startup_name: z
+    .string()
+    .min(1, "Startup name required")
+    .max(150, "Startup name too long"),
+  tagline: z.string().max(200, "Tagline too long").optional().default(""),
+  industry: z.string().max(100, "Industry too long").optional().default(""),
+  problem_statement: z
+    .string()
+    .max(2000, "Problem statement too long")
+    .optional()
+    .default(""),
+});
+
+const selectProductTypeSchema = z.object({
+  product_type: z
+    .enum(["Digital", "Physical"])
+    .refine((val) => val !== null, "Product type is required"),
+  product_description: z
+    .string()
+    .max(1000, "Description too long")
+    .optional()
+    .default(""),
+});
+
+const assistanceRequestSchema = z.object({
+  assistance_type: z
+    .enum([
+      "Full Development",
+      "Frontend Development",
+      "Backend Development",
+      "Mobile Development",
+      "Design",
+      "DevOps & Deployment",
+      "Database Design",
+      "API Integration",
+      "Other",
+    ])
+    .refine((val) => val !== null, "Assistance type is required"),
+
+  project_description: z
+    .string()
+    .min(10, "Description must be at least 10 characters")
+    .max(3000, "Description must be less than 3000 characters"),
+
+  technologies: z
+    .array(z.string().min(1))
+    .min(1, "At least one technology required")
+    .max(20, "Maximum 20 technologies allowed"),
+
+  timeline: z
+    .enum(["1-2 weeks", "3-4 weeks", "1-2 months", "2+ months"])
+    .refine((val) => val !== null, "Timeline is required"),
+
+  budget: z
+    .number()
+    .min(0, "Budget cannot be negative")
+    .optional()
+    .default(null),
+
+  additional_notes: z
+    .string()
+    .max(1000, "Notes too long")
+    .optional()
+    .default(""),
+});
+
+const updateAssistanceRequestSchema = z.object({
+  assistance_type: z
+    .enum([
+      "Full Development",
+      "Frontend Development",
+      "Backend Development",
+      "Mobile Development",
+      "Design",
+      "DevOps & Deployment",
+      "Database Design",
+      "API Integration",
+      "Other",
+    ])
+    .optional(),
+
+  project_description: z.string().min(10).max(3000).optional(),
+
+  technologies: z.array(z.string()).optional(),
+
+  timeline: z
+    .enum(["1-2 weeks", "3-4 weeks", "1-2 months", "2+ months"])
+    .optional(),
+
+  budget: z.number().min(0).optional(),
+
+  additional_notes: z.string().max(1000).optional(),
+});
+
+const mvpSubmissionSchema = z
+  .object({
+    title: z
+      .string()
+      .min(5, "Title must be at least 5 characters")
+      .max(200, "Title must be under 200 characters"),
+
+    description: z
+      .string()
+      .min(20, "Description must be at least 20 characters")
+      .max(3000, "Description must be under 3000 characters"),
+
+    github_url: urlOptional,
+    live_url: urlOptional,
+    figma_url: urlOptional,
+    documentation_url: urlOptional,
+    pitch_deck_url: urlOptional,
+    demo_video_url: urlOptional,
+
+    notes: z.string().max(1000, "Notes too long").optional(),
+  })
+  .refine(
+    (data) =>
+      !!(
+        data.github_url ||
+        data.live_url ||
+        data.figma_url ||
+        data.documentation_url ||
+        data.pitch_deck_url ||
+        data.demo_video_url
+      ),
+    {
+      message: "At least one deliverable link is required",
+    },
+  );
+
+const updateMVPSubmissionSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(200, "Title must be under 200 characters")
+    .optional(),
+
+  description: z
+    .string()
+    .min(20, "Description must be at least 20 characters")
+    .max(3000, "Description must be under 3000 characters")
+    .optional(),
+
+  github_url: urlOptional,
+  live_url: urlOptional,
+  figma_url: urlOptional,
+  documentation_url: urlOptional,
+  pitch_deck_url: urlOptional,
+  demo_video_url: urlOptional,
+
+  notes: z.string().max(1000, "Notes too long").optional(),
+});
+
+// incubation stage
+
+const submitIncubationSchema = z.object({
+  incubator_name: z
+    .string()
+    .min(3, "Incubator name required")
+    .max(200, "Name too long"),
+
+  cohort_name: z
+    .string()
+    .min(1, "Cohort name required")
+    .max(200, "Cohort name too long"),
+
+  joining_date: z.string().datetime("Invalid date format"),
+
+  start_date: z.string().datetime("Invalid date format"),
+
+  expected_completion_date: z.string().datetime("Invalid date format"),
+
+  program_type: z
+    .enum(["Pre-incubation", "Incubation", "Acceleration", "Scale-up"])
+    .refine((val) => val !== null, "Program type required"),
+
+  notes: z.string().max(1000, "Notes too long").optional().default(""),
+});
+
+const updateIncubationSchema = submitIncubationSchema.partial();
+
+const submitMetricsSchema = z.object({
+  total_users: z.number().min(0, "Total users cannot be negative"),
+  active_users: z.number().min(0, "Active users cannot be negative"),
+  monthly_growth_rate: z.number().min(0).max(100),
+  conversion_rate: z.number().min(0).max(100),
+  retention_rate: z.number().min(0).max(100),
+  revenue: z.number().min(0).optional().default(0),
+  acquisition_channels: z
+    .object({
+      organic: z.number().min(0).optional().default(0),
+      social_media: z.number().min(0).optional().default(0),
+      referrals: z.number().min(0).optional().default(0),
+      paid_marketing: z.number().min(0).optional().default(0),
+      events: z.number().min(0).optional().default(0),
+      other: z.number().min(0).optional().default(0),
+    })
+    .optional(),
+  notes: z.string().max(2000).optional().default(""),
+});
+
+const updateMetricsSchema = submitMetricsSchema.partial();
+
+// Customer feedback validation
+const submitFeedbackSchema = z.object({
+  customer_name: z.string().max(100).optional().default("Anonymous"),
+  customer_type: z
+    .enum([
+      "Early Adopter",
+      "Regular User",
+      "Beta Tester",
+      "Enterprise",
+      "Other",
+    ])
+    .refine((val) => val !== null, "Customer type required"),
+  feedback_source: z
+    .enum([
+      "Direct Interview",
+      "Survey",
+      "Email",
+      "Social Media",
+      "Support Ticket",
+      "Other",
+    ])
+    .refine((val) => val !== null, "Feedback source required"),
+  rating: z
+    .number()
+    .min(1)
+    .max(5)
+    .refine((val) => val !== null, "Rating required"),
+  feedback_summary: z
+    .string()
+    .min(10, "Feedback too short")
+    .max(2000, "Feedback too long"),
+  improvement_notes: z.string().max(1000).optional().default(""),
+  is_important: z.boolean().optional().default(false),
+});
+
+const updateFeedbackSchema = submitFeedbackSchema.partial();
+
+const submitProductSchema = z.object({
+  product_version: z
+    .string()
+    .min(1, "Version required")
+    .max(50, "Version too long"),
+  update_summary: z
+    .string()
+    .min(20, "Summary too short")
+    .max(2000, "Summary too long"),
+  demo_url: z.string().url("Invalid demo URL").optional(),
+  repository_url: z.string().url("Invalid repository URL").optional(),
+  product_url: z.string().url("Invalid product URL").optional(),
+  presentation_url: z.string().url("Invalid product URL").optional(),
+  demo_video_url: z.string().url("Invalid product URL").optional(),
+});
+
+const updateProductSchema = submitProductSchema.partial();
+
+// Launch submission validation
+const saveLaunchDraftSchema = z.object({
+  startup_name: z.string().max(200).optional(),
+  product_name: z.string().max(200).optional(),
+  launch_date: z.string().datetime().optional(),
+  industry: z.string().max(100).optional(),
+  team_size: z.number().min(1).optional(),
+  funding_status: z
+    .enum(["Bootstrapped", "Funded", "Seeking Investment", "Other"])
+    .optional(),
+  website_url: z.string().url().optional(),
+  product_url: z.string().url().optional(),
+  app_store_url: z.string().url().optional(),
+  demo_video_url: z.string().url().optional(),
+  description: z.string().max(3000).optional(),
+  notes: z.string().max(2000).optional(),
+  social: z
+    .object({
+      linkedin: z.string().optional(),
+      instagram: z.string().optional(),
+      twitter: z.string().optional(),
+      youtube: z.string().optional(),
+    })
+    .optional(),
+});
+
+const submitLaunchSchema = saveLaunchDraftSchema.extend({
+  startup_name: z.string().min(1).max(200),
+  product_name: z.string().min(1).max(200),
+  launch_date: z.string().datetime(),
+  industry: z.string().min(1).max(100),
+});
+
+const saveLaunchInsightsSchema = z.object({
+  launch_date: z.string().datetime().optional(),
+  launch_type: z.enum(["Online", "Physical", "Hybrid"]).optional(),
+  venue: z.string().max(500).optional(),
+  live_product_url: z.string().url().optional(),
+  achievements: z.string().max(2000).optional(),
+  challenges: z.string().max(2000).optional(),
+  event_notes: z.string().max(2000).optional(),
+  special_remarks: z.string().max(1000).optional(),
+  social_media: z
+    .object({
+      linkedin_post: z.string().optional(),
+      instagram_post: z.string().optional(),
+      twitter_post: z.string().optional(),
+      youtube_demo: z.string().optional(),
+      website_announcement: z.string().optional(),
+    })
+    .optional(),
+});
+
+// =========== Admin ============
+const createAnnouncementSchema = z.object({
+  title: z
+    .string()
+    .min(5, "Title must be at least 5 characters")
+    .max(150, "Title cannot exceed 150 characters"),
+  short_summary: z.string().max(250, "Summary cannot exceed 250 characters"),
+  body_content: z.string().min(50, "Content must be at least 50 words"),
+  target_audience: z
+    .array(z.string())
+    .min(1, "At least one target audience required"),
+  priority: z
+    .enum(["Normal", "Important", "Critical"])
+    .optional()
+    .default("Normal"),
+});
+
+module.exports = {
+  registerSchema,
+  checkEmailSchema,
+  sendOtpSchema,
+  verifyOtpSchema,
+  loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  contactEnquirySchema,
+  refreshTokenSchema,
+  commonProfileFields,
+  roleSpecificCompleteSchemas,
+  submitIdeaSchema,
+  saveDraftSchema,
+  createSurveySchema,
+  updateSurveySchema,
+  uploadEvidenceSchema,
+  submitValidationReportSchema,
+  updateValidationReportSchema,
+  requestMeetingRescheduleSchema,
+  updateProfileSchema,
+  updateStartupSchema,
+  selectProductTypeSchema,
+  assistanceRequestSchema,
+  updateAssistanceRequestSchema,
+  mvpSubmissionSchema,
+  updateMVPSubmissionSchema,
+  submitIncubationSchema,
+  updateIncubationSchema,
+  submitMetricsSchema,
+  updateMetricsSchema,
+  submitFeedbackSchema,
+  updateFeedbackSchema,
+  submitProductSchema,
+  updateProductSchema,
+  saveLaunchDraftSchema,
+  submitLaunchSchema,
+  saveLaunchInsightsSchema,
+  requestMentorSchema,
+  mentorReviewSchema,
+  createAnnouncementSchema,
+};

@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Shield, Eye, EyeOff } from 'lucide-react';
-import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
-import Input from '@/components/ui/Input';
-import PasswordStrengthMeter from '@/components/auth/PasswordStrengthMeter';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Lock, Shield, Eye, EyeOff } from "lucide-react";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 function computeStrength(password) {
   if (!password) return 0;
@@ -22,7 +22,7 @@ function EyeToggle({ show, onToggle }) {
     <button
       type="button"
       onClick={onToggle}
-      aria-label={show ? 'Hide password' : 'Show password'}
+      aria-label={show ? "Hide password" : "Show password"}
       className="text-text-muted hover:text-text-heading transition-all duration-150 ease-linear focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-black rounded p-0.5"
     >
       {show ? (
@@ -35,21 +35,21 @@ function EyeToggle({ show, onToggle }) {
 }
 
 export default function ResetPasswordPage() {
-  useDocumentTitle('Reset Password — BOCC');
+  useDocumentTitle("Reset Password — BOCC");
   const navigate = useNavigate();
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [confirmError, setConfirmError] = useState('');
+  const [confirmError, setConfirmError] = useState("");
   const [confirmTouched, setConfirmTouched] = useState(false);
 
   const strength = computeStrength(newPassword);
 
   function validateConfirm(value) {
-    if (!value) return 'Please confirm your password.';
-    if (value !== newPassword) return 'Passwords do not match.';
-    return '';
+    if (!value) return "Please confirm your password.";
+    if (value !== newPassword) return "Passwords do not match.";
+    return "";
   }
 
   function handleConfirmBlur() {
@@ -75,7 +75,7 @@ export default function ResetPasswordPage() {
       // call, sending newPassword (and whatever reset token got the user
       // here). On success this redirect to /login stays the same; on
       // failure, surface the API's error via confirmError instead.
-      navigate('/login');
+      navigate("/login");
     }
   }
 
@@ -83,7 +83,6 @@ export default function ResetPasswordPage() {
     <div className="flex-1 flex flex-col items-center justify-center px-4 py-10 bg-canvas-bg">
       <div className="w-full max-w-sm">
         <Card className="p-8 flex flex-col gap-6">
-
           {/* Custom illustration — "secured" motif: a shield with a keyhole,
               accent-neon lit up. Distinct from ForgotPassword's envelope
               (that's the "request in flight" moment; this is the "new
@@ -95,12 +94,26 @@ export default function ResetPasswordPage() {
               Card's own reactive background, not on the shield's fill. */}
           <svg
             viewBox="0 0 500 200"
-            className="w-full aspect-[5/2] rounded-lg"
+            className="w-full aspect-5/2 rounded-lg"
             role="img"
             aria-label="Illustration of a shield with a keyhole, representing a secured account"
           >
-            <circle cx="250" cy="105" r="85" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
-            <circle cx="250" cy="105" r="65" fill="none" stroke="var(--color-border-subtle)" strokeWidth="1.5" />
+            <circle
+              cx="250"
+              cy="105"
+              r="85"
+              fill="none"
+              stroke="var(--color-border-subtle)"
+              strokeWidth="1.5"
+            />
+            <circle
+              cx="250"
+              cy="105"
+              r="65"
+              fill="none"
+              stroke="var(--color-border-subtle)"
+              strokeWidth="1.5"
+            />
 
             <path
               d="M250 45 L300 63 L300 105 Q300 143 250 165 Q200 143 200 105 L200 63 Z"
@@ -108,7 +121,10 @@ export default function ResetPasswordPage() {
             />
 
             <circle cx="250" cy="93" r="13" fill="var(--color-accent-neon)" />
-            <polygon points="242,102 258,102 251,130 249,130" fill="var(--color-accent-neon)" />
+            <polygon
+              points="242,102 258,102 251,130 249,130"
+              fill="var(--color-accent-neon)"
+            />
 
             <circle cx="110" cy="60" r="3" fill="var(--color-border-subtle)" />
             <circle cx="395" cy="150" r="3" fill="var(--color-border-subtle)" />
@@ -116,7 +132,9 @@ export default function ResetPasswordPage() {
           </svg>
 
           <div className="flex flex-col gap-2 text-center">
-            <h1 className="text-card font-medium text-text-heading font-poppins">Reset Password</h1>
+            <h1 className="text-card font-medium text-text-heading font-poppins">
+              Reset Password
+            </h1>
             <p className="text-body font-normal text-text-body font-inter leading-relaxed">
               Secure your account by choosing a strong, unique password that you
               haven&apos;t used before.
@@ -133,7 +151,7 @@ export default function ResetPasswordPage() {
               <Input
                 id="new-password"
                 label="New Password"
-                type={showNew ? 'text' : 'password'}
+                type={showNew ? "text" : "password"}
                 placeholder="At least 8 characters"
                 autoComplete="new-password"
                 value={newPassword}
@@ -150,14 +168,15 @@ export default function ResetPasswordPage() {
                   transition-colors on each segment (PasswordStrengthMeter.jsx) */}
               <PasswordStrengthMeter strength={strength} />
               <p className="text-small font-normal text-text-muted font-inter">
-                Use uppercase letters, numbers, and symbols for maximum security.
+                Use uppercase letters, numbers, and symbols for maximum
+                security.
               </p>
             </div>
 
             <Input
               id="confirm-password"
               label="Confirm Password"
-              type={showConfirm ? 'text' : 'password'}
+              type={showConfirm ? "text" : "password"}
               placeholder="Repeat your new password"
               autoComplete="new-password"
               value={confirmPassword}
@@ -168,7 +187,7 @@ export default function ResetPasswordPage() {
                 }
               }}
               onBlur={handleConfirmBlur}
-              error={confirmTouched ? confirmError : ''}
+              error={confirmTouched ? confirmError : ""}
               leftSlot={<Shield size={15} strokeWidth={2} />}
               rightSlot={
                 <EyeToggle
@@ -191,7 +210,6 @@ export default function ResetPasswordPage() {
               Return to Login
             </Link>
           </p>
-
         </Card>
       </div>
     </div>
