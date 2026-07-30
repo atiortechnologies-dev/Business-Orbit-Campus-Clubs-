@@ -4,6 +4,7 @@
  * @architecture Provides logic to safely initialize a startup's stages and recalculate their overall completion percentage.
  */
 
+const mongoose = require("mongoose");
 const Startup = require("../models/Startup");
 const StartupStage = require("../models/StartupStage");
 const { STAGE_DEFINITIONS } = require("./stageDefinitions");
@@ -18,26 +19,38 @@ const getOrCreateStartup = async (userId, defaultStartupName) => {
   let startup = await Startup.findOne({ student_id: userId });
   if (startup) return startup;
 
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    startup = await Startup.create({
+    const [newStartup] = await Startup.create([{
       student_id: userId,
       startup_name: defaultStartupName,
       current_stage: 1,
       progress_percentage: 0,
-    });
+    }], { session });
+
+    startup = newStartup;
+
+    const stageRows = STAGE_DEFINITIONS.map((def) => ({
+      startup_id: startup._id,
+      stage_number: def.stage_number,
+      stage_name: def.stage_name,
+      status: def.stage_number === 1 ? "active" : "locked",
+      started_at: def.stage_number === 1 ? new Date() : null,
+    }));
+    await StartupStage.insertMany(stageRows, { session });
+
+    await session.commitTransaction();
+    session.endSession();
   } catch (err) {
-    if (err.code === 11000) return Startup.findOne({ student_id: userId });
+    await session.abortTransaction();
+    session.endSession();
+    if (err.code === 11000) {
+      return Startup.findOne({ student_id: userId });
+    }
     throw err;
   }
-
-  const stageRows = STAGE_DEFINITIONS.map((def) => ({
-    startup_id: startup._id,
-    stage_number: def.stage_number,
-    stage_name: def.stage_name,
-    status: def.stage_number === 1 ? "active" : "locked",
-    started_at: def.stage_number === 1 ? new Date() : null,
-  }));
-  await StartupStage.insertMany(stageRows);
 
   return startup;
 };

@@ -14,9 +14,14 @@ const chapterSchema = new mongoose.Schema(
     mission: { type: String, trim: true, default: "" },
     status: {
       type: String,
-      enum: ["Active", "Inactive"],
-      default: "Active",
+      enum: ["Active", "Inactive", "PENDING", "ACTIVE", "INACTIVE"],
+      default: "ACTIVE",
     },
+    location: { type: String, trim: true },
+    chapter_lead_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    health_score: { type: Number, default: 100 },
+    founded_date: { type: Date },
+    is_deleted: { type: Boolean, default: false },
 
     // Chapter Statistics
     total_members: { type: Number, default: 0, min: 0 },

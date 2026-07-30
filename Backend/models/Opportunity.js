@@ -40,11 +40,24 @@ const opportunitySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    responsibilities: {
+      type: String,
+    },
     required_skills: {
       type: [String],
       default: [],
     },
+    eligibility_criteria: {
+      type: String,
+    },
+    preferred_qualifications: {
+      type: String,
+    },
     location: {
+      type: String,
+      trim: true,
+    },
+    duration: {
       type: String,
       trim: true,
     },

@@ -26,20 +26,26 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 
   if (mongoose.connection.readyState !== 0 && mongoose.connection.db) {
-    await mongoose.connection.dropDatabase();
+    const collections = await mongoose.connection.db.collections();
+    for (let collection of collections) {
+      await collection.deleteMany({});
+    }
   }
 
   // Ensure all indexes are built before tests run to prevent WriteConflicts during transactions
   await Promise.all(
     Object.values(mongoose.models).map((model) => model.init()),
   );
-});
+}, 60000);
 
 afterAll(async () => {
   // Wait briefly for any pending operations
   await new Promise((resolve) => setTimeout(resolve, 500));
-  if (mongoose.connection.readyState !== 0) {
-    await mongoose.connection.dropDatabase();
+  if (mongoose.connection.readyState !== 0 && mongoose.connection.db) {
+    const collections = await mongoose.connection.db.collections();
+    for (let collection of collections) {
+      await collection.deleteMany({});
+    }
     await mongoose.disconnect();
   }
-}, 15000);
+}, 60000);

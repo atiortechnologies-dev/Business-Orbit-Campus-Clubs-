@@ -167,25 +167,38 @@ exports.listMentors = asyncHandler(async (req, res, next) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const startIndex = (page - 1) * limit;
 
-  // Find all active mentor users first to apply proper DB-level pagination
-  const activeMentorUsers = await User.find({
-    role: "mentor",
-    account_status: "active",
-  }).select("_id");
-  const activeMentorIds = activeMentorUsers.map((u) => u._id);
+  const pipeline = [
+    { $match: { profile_status: "completed", is_visible: true } },
+    {
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "_id",
+        as: "user_id"
+      }
+    },
+    { $unwind: "$user_id" },
+    { $match: { "user_id.role": "mentor", "user_id.account_status": "active" } }
+  ];
 
-  const query = {
-    profile_status: "completed",
-    is_visible: true,
-    user_id: { $in: activeMentorIds },
-  };
+  const totalResult = await MentorProfile.aggregate([...pipeline, { $count: "total" }]);
+  const total = totalResult.length > 0 ? totalResult[0].total : 0;
 
-  const total = await MentorProfile.countDocuments(query);
-  const mentors = await MentorProfile.find(query)
-    .populate("user_id", "full_name email")
-    .skip(startIndex)
-    .limit(limit)
-    .sort({ rating: -1, total_sessions: -1 });
+  const mentors = await MentorProfile.aggregate([
+    ...pipeline,
+    { $sort: { rating: -1, total_sessions: -1 } },
+    { $skip: startIndex },
+    { $limit: limit },
+    {
+      $addFields: {
+        user_id: {
+          _id: "$user_id._id",
+          full_name: "$user_id.full_name",
+          email: "$user_id.email"
+        }
+      }
+    }
+  ]);
 
   res.status(200).json({
     success: true,

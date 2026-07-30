@@ -49,7 +49,8 @@ exports.listOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort({ created_at: -1 })
     .skip(startIndex)
-    .limit(limit);
+    .limit(limit)
+    .lean();
 
   res.status(200).json({
     success: true,
@@ -96,7 +97,8 @@ exports.searchOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort({ score: { $meta: "textScore" } })
     .skip(startIndex)
-    .limit(limit);
+    .limit(limit)
+    .lean();
 
   res.status(200).json({
     success: true,
@@ -155,7 +157,8 @@ exports.filterOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort(sortObj)
     .skip(startIndex)
-    .limit(limit);
+    .limit(limit)
+    .lean();
 
   res.status(200).json({
     success: true,
@@ -185,7 +188,7 @@ exports.getOpportunityDetails = asyncHandler(async (req, res) => {
     _id: opportunityId,
     status: { $in: ["open", "active"] },
     company_id: { $in: activeCompanyIds },
-  }).populate("company_id", "full_name email");
+  }).populate("company_id", "full_name email").lean();
 
   if (!opportunity) {
     return res.status(404).json({
@@ -567,9 +570,11 @@ exports.getApplicationTimeline = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: "Application not found" });
   }
 
-  const timeline = await ApplicantStatus.find({ application_id: applicationId }).sort({ created_at: 1 });
+  const timeline = await ApplicantStatus.find({ application_id: applicationId })
+    .populate("updated_by", "full_name _id")
+    .sort({ created_at: 1 });
   
-  res.status(200).json({ success: true, data: timeline });
+  res.status(200).json({ success: true, data: { timeline } });
 });
 
 /**
@@ -596,7 +601,7 @@ exports.getInterviews = asyncHandler(async (req, res) => {
     })
     .sort({ interview_date: 1 });
 
-  res.status(200).json({ success: true, count: interviews.length, data: interviews });
+  res.status(200).json({ success: true, count: interviews.length, data: { interviews } });
 });
 
 /**
@@ -627,5 +632,5 @@ exports.getApplicationStatusSummary = asyncHandler(async (req, res) => {
     else if (stat === "withdrawn") statusSummary.archived++;
   });
 
-  res.status(200).json({ success: true, data: statusSummary });
+  res.status(200).json({ success: true, data: { counts: statusSummary } });
 });

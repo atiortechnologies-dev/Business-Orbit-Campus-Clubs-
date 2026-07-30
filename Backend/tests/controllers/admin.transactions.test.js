@@ -88,7 +88,7 @@ describe("Admin Transactional User Deletion", () => {
   it("should securely delete user and all dependencies in a transaction", async () => {
     const res = await request(app)
       .delete(`/api/admin/users/${studentUser._id}`)
-      .set("x-api-key", "test-secret-key");
+      .set("x-api-key", "DUMMY_SECRET_FOR_TESTING_ONLY");
 
     expect(res.statusCode).toEqual(200);
 
@@ -111,7 +111,7 @@ describe("Admin Transactional User Deletion", () => {
 
     const res = await request(app)
       .delete(`/api/admin/users/${studentUser._id}`)
-      .set("x-api-key", "test-secret-key");
+      .set("x-api-key", "DUMMY_SECRET_FOR_TESTING_ONLY");
 
     expect(res.statusCode).toEqual(500); // Because next(error) will eventually return 500
 
