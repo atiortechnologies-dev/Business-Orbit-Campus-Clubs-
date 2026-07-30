@@ -168,15 +168,27 @@ exports.listChapterChangeRequests = async (req, res, next) => {
       query.status = req.query.status;
     }
 
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+
+    const total = await ChapterChangeRequest.countDocuments(query);
     const requests = await ChapterChangeRequest.find(query)
       .populate("student_id", "full_name email")
       .populate("current_chapter_id", "chapter_name college_name")
       .populate("requested_chapter_id", "chapter_name college_name")
-      .sort({ created_at: -1 });
+      .sort({ created_at: -1 })
+      .skip(startIndex)
+      .limit(limit);
 
     res.status(200).json({
       success: true,
       count: requests.length,
+      pagination: {
+        total,
+        page,
+        limit,
+      },
       data: requests,
     });
   } catch (error) {

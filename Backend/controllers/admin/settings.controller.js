@@ -235,7 +235,7 @@ exports.getLoginHistory = asyncHandler(async (req, res) => {
  * @access  Private (Super Admin)
  */
 exports.logoutAllDevices = asyncHandler(async (req, res) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.body?.refreshToken;
   
   if (!refreshToken) {
     return res.status(400).json({ success: false, message: 'Refresh token is required to identify and preserve the current session' });

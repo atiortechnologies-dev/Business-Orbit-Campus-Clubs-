@@ -35,6 +35,17 @@ jest.mock("../../models/AuditLog", () => ({
   create: jest.fn(),
 }));
 
+jest.mock("../../models/StudentProfile", () => ({
+  find: jest.fn().mockReturnThis(),
+  select: jest.fn().mockReturnThis(),
+  lean: jest.fn().mockResolvedValue([{ user_id: "student123" }]),
+}));
+
+jest.mock("../../models/Notification", () => ({
+  insertMany: jest.fn(),
+}));
+
+
 const ChapterEvent = require("../../models/ChapterEvent");
 const AuditLog = require("../../models/AuditLog");
 

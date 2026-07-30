@@ -6,6 +6,7 @@ const OpportunityNote = require('../../models/OpportunityNote');
 
 jest.mock('../../models/FreelanceOpportunity');
 jest.mock('../../models/OpportunityNote');
+jest.mock('../../models/Notification');
 jest.mock('../../services/auditLoggerService', () => ({
   logAudit: jest.fn()
 }));

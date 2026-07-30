@@ -8,6 +8,7 @@ const asyncHandler = require("../../middlewares/asyncHandler");
 const Chapter = require("../../models/Chapter");
 const StudentProfile = require("../../models/StudentProfile");
 const Startup = require("../../models/Startup");
+const ChapterEvent = require("../../models/ChapterEvent");
 const AuditLog = require("../../models/AuditLog");
 const User = require("../../models/User");
 const Notification = require("../../models/Notification");
@@ -232,47 +233,57 @@ exports.createChapterEvent = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: "max_capacity must be greater than 0" });
   }
 
-  const ChapterEvent = require("../../models/ChapterEvent");
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  const newEvent = await ChapterEvent.create({
-    chapter_id: chapterId,
-    title,
-    description,
-    category,
-    event_date,
-    location_venue,
-    max_capacity,
-    status: "ACTIVE"
-  });
+  try {
+    const [newEvent] = await ChapterEvent.create([{
+      chapter_id: chapterId,
+      title,
+      description,
+      category,
+      event_date,
+      location_venue,
+      max_capacity,
+      status: "ACTIVE"
+    }], { session });
 
-  await AuditLog.create({
-    actor_id: req.user.id,
-    actor_name: req.user.full_name || "Admin",
-    module: "CHAPTERS",
-    action: "CHAPTER_EVENT_CREATED",
-    target_entity_id: newEvent._id.toString(),
-    target_entity_name: newEvent.title,
-    status: "SUCCESS",
-    ip_address: req.ip,
-    details: { event_id: newEvent._id },
-  });
+    await AuditLog.create([{
+      actor_id: req.user.id,
+      actor_name: req.user.full_name || "Admin",
+      module: "CHAPTERS",
+      action: "CHAPTER_EVENT_CREATED",
+      target_entity_id: newEvent._id.toString(),
+      target_entity_name: newEvent.title,
+      status: "SUCCESS",
+      ip_address: req.ip,
+      details: { event_id: newEvent._id },
+    }], { session });
 
-  const students = await StudentProfile.find({ chapter_id: chapterId }).select("user_id").lean();
-  if (students && students.length > 0) {
-    const notifications = students.map(s => ({
-      recipient_id: s.user_id,
-      title: "New Chapter Event",
-      message: `A new event "${newEvent.title}" has been scheduled in your chapter.`,
-      type: "info"
-    }));
-    await Notification.insertMany(notifications);
-  }
-
-  res.status(201).json({
-    success: true,
-    message: "Chapter event created successfully",
-    data: {
-      event: newEvent
+    const students = await StudentProfile.find({ chapter_id: chapterId }).select("user_id").lean();
+    if (students && students.length > 0) {
+      const notifications = students.map(s => ({
+        recipient_id: s.user_id,
+        title: "New Chapter Event",
+        message: `A new event "${newEvent.title}" has been scheduled in your chapter.`,
+        type: "info"
+      }));
+      await Notification.insertMany(notifications, { session });
     }
-  });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({
+      success: true,
+      message: "Chapter event created successfully",
+      data: {
+        event: newEvent
+      }
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error;
+  }
 });
