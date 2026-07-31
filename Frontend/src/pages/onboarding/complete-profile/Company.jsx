@@ -9,6 +9,7 @@ import SelectField from "@/components/onboarding/SelectField";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { createProfile, skipProfile } from "@/api/auth/profileApi";
+import { uploadToCloudinary } from "@/api/uploadApi";
 
 const INDUSTRIES = [
   "Technology",
@@ -40,6 +41,7 @@ export default function CompleteProfileCompany() {
   useDocumentTitle("Complete Your Profile — BOCC");
   const navigate = useNavigate();
 
+  const [selectedFile, setSelectedFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [companyName, setCompanyName] = useState("");
   const [industry, setIndustry] = useState("");
@@ -63,7 +65,10 @@ export default function CompleteProfileCompany() {
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
-    if (file) setLogoPreview(URL.createObjectURL(file));
+    if (file) {
+      setSelectedFile(file);
+      setLogoPreview(URL.createObjectURL(file)); // Show local instant preview
+    }
   };
 
   const toggleOpportunity = (type) =>
@@ -75,18 +80,31 @@ export default function CompleteProfileCompany() {
     setError("");
     setIsSubmitting(true);
 
-    // Formats body to match commonProfileFields + companyCompleteFields Zod schema
-    const formData = {
-      bio: bio.trim(),
-      skills: studentSkills, // Satisfies commonProfileFields skills requirement
-      linkedin_url: linkedin.trim(),
-      portfolio_url: website.trim(),
-      profile_photo: "",
-      // Role-specific field matching companyCompleteFields
-      hiring_domains: hiringCategories,
-    };
-
     try {
+      let photoUrl = "";
+
+      // 1. Upload photo via signed Cloudinary request if selected
+      if (selectedFile) {
+        photoUrl = await uploadToCloudinary(selectedFile, "company_logos");
+      }
+
+      // 2. Formats body to match commonProfileFields + companyCompleteFields Zod schema
+      const formData = {
+        company_name: companyName.trim(),
+        industry,
+        company_size: companySize,
+        bio: bio.trim(),
+        skills: studentSkills, // Satisfies commonProfileFields skills requirement
+        linkedin_url: linkedin.trim(),
+        portfolio_url: website.trim(),
+        profile_photo: photoUrl,
+        attachment_url: photoUrl,
+        // Role-specific fields matching companyCompleteFields
+        hiring_domains: hiringCategories,
+        opportunity_types: opportunityTypes,
+      };
+
+      // 3. Persist profile via MongoDB backend
       const res = await createProfile(ROLE, formData);
       setSaved(true);
 

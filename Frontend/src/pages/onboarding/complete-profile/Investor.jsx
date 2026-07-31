@@ -8,6 +8,7 @@ import SelectField from "@/components/onboarding/SelectField";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { skipProfile, createProfile } from "@/api/auth/profileApi";
+import { uploadToCloudinary } from "@/api/uploadApi";
 
 const INVESTMENT_STAGES = ["Idea", "Pre-Seed", "Seed", "Series A+"];
 const INVESTOR_TYPES = ["Angel", "VC", "Corporate"];
@@ -18,6 +19,7 @@ export default function CompleteProfileInvestor() {
   useDocumentTitle("Complete Your Profile — BOCC");
   const navigate = useNavigate();
 
+  const [selectedFile, setSelectedFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [firm, setFirm] = useState("");
   const [designation, setDesignation] = useState("");
@@ -36,7 +38,10 @@ export default function CompleteProfileInvestor() {
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    if (file) setPhotoPreview(URL.createObjectURL(file));
+    if (file) {
+      setSelectedFile(file);
+      setPhotoPreview(URL.createObjectURL(file)); // Show local instant preview
+    }
   };
 
   const toggleStage = (stage) =>
@@ -48,21 +53,33 @@ export default function CompleteProfileInvestor() {
     setError("");
     setIsSubmitting(true);
 
-    // Mapped to commonProfileFields + investorCompleteFields Zod schema
-    const formData = {
-      bio: bio.trim(),
-      skills: industries, // Satisfies commonProfileFields skills requirement
-      linkedin_url: linkedin.trim(),
-      portfolio_url: portfolio.trim(),
-      profile_photo: "",
-      // Role-specific fields matching investorCompleteFields
-      investor_type: investorType,
-      investment_sectors: industries,
-      preferred_startup_stages: stages,
-      investment_range: investmentRange.trim(),
-    };
-
     try {
+      let photoUrl = "";
+
+      // 1. Upload photo via signed Cloudinary request if chosen
+      if (selectedFile) {
+        photoUrl = await uploadToCloudinary(selectedFile, "investor_profiles");
+      }
+
+      // 2. Mapped to commonProfileFields + investorCompleteFields Zod schema
+      const formData = {
+        organization: firm.trim(),
+        designation: designation.trim(),
+        bio: bio.trim(),
+        skills: industries, // Satisfies commonProfileFields skills requirement
+        linkedin_url: linkedin.trim(),
+        portfolio_url: portfolio.trim(),
+        profile_photo: photoUrl,
+        attachment_url: photoUrl,
+        // Role-specific fields matching investorCompleteFields
+        investor_type: investorType,
+        investment_sectors: industries,
+        preferred_startup_stages: stages,
+        investment_range: investmentRange.trim(),
+        geographic_preference: geoPreference.trim(),
+      };
+
+      // 3. Persist profile via MongoDB backend
       const res = await createProfile(ROLE, formData);
       setSaved(true);
 

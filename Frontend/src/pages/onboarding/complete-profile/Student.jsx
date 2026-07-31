@@ -7,6 +7,7 @@ import CheckboxPills from "@/components/onboarding/CheckboxPills";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { skipProfile, createProfile } from "@/api/auth/profileApi";
+import { uploadToCloudinary } from "@/api/uploadApi";
 
 const INTERESTS = [
   "SaaS",
@@ -23,6 +24,7 @@ export default function CompleteProfileStudent() {
   useDocumentTitle("Complete Your Profile — BOCC");
   const navigate = useNavigate();
 
+  const [selectedFile, setSelectedFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [bio, setBio] = useState("");
   const [skills, setSkills] = useState(["Fintech", "Leadership"]);
@@ -36,7 +38,10 @@ export default function CompleteProfileStudent() {
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    if (file) setPhotoPreview(URL.createObjectURL(file));
+    if (file) {
+      setSelectedFile(file);
+      setPhotoPreview(URL.createObjectURL(file)); // Show local instant preview
+    }
   };
 
   const toggleInterest = (interest) =>
@@ -50,17 +55,26 @@ export default function CompleteProfileStudent() {
     setError("");
     setIsSubmitting(true);
 
-    const formData = {
-      bio: bio.trim(),
-      skills,
-      linkedin_url: linkedin.trim(),
-      portfolio_url: website.trim(),
-      profile_photo: "", // Can be extended for image uploads
-      startup_interests: interests,
-    };
-
     try {
-      // Use updateProfile or createProfile based on backend controller mapping
+      let photoUrl = "";
+
+      // 1. Upload photo to Cloudinary using signed request if selected
+      if (selectedFile) {
+        photoUrl = await uploadToCloudinary(selectedFile, "student_profiles");
+      }
+
+      // 2. Construct form payload with Cloudinary URL
+      const formData = {
+        bio: bio.trim(),
+        skills,
+        linkedin_url: linkedin.trim(),
+        portfolio_url: website.trim(),
+        profile_photo: photoUrl,
+        attachment_url: photoUrl, // Pass URL here if required by your schema
+        startup_interests: interests,
+      };
+
+      // 3. Save profile to MongoDB via backend API
       const res = await createProfile(ROLE, formData);
 
       setSaved(true);
@@ -68,7 +82,6 @@ export default function CompleteProfileStudent() {
       const destination =
         res?.data?.redirect_to || res?.redirect_to || `/${ROLE}-dashboard`;
 
-      // Redirect directly or keep submitting true so form is locked
       setTimeout(() => {
         navigate(destination, { replace: true });
       }, 800);

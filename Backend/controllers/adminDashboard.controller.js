@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-assignment */
 const asyncHandler = require("../middlewares/asyncHandler");
 const Announcement = require("../models/Announcement");
 const CompanyProfile = require("../models/CompanyProfile");

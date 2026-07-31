@@ -9,6 +9,7 @@ import SelectField from "@/components/onboarding/SelectField";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { createProfile, skipProfile } from "@/api/auth/profileApi";
+import { uploadToCloudinary } from "@/api/uploadApi";
 
 const ORG_TYPES = [
   "University Affiliated",
@@ -32,6 +33,7 @@ export default function CompleteProfileIncubator() {
   useDocumentTitle("Complete Your Profile — BOCC");
   const navigate = useNavigate();
 
+  const [selectedFile, setSelectedFile] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [incubatorName, setIncubatorName] = useState("");
   const [orgType, setOrgType] = useState("Independent / Private");
@@ -48,7 +50,10 @@ export default function CompleteProfileIncubator() {
 
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
-    if (file) setLogoPreview(URL.createObjectURL(file));
+    if (file) {
+      setSelectedFile(file);
+      setLogoPreview(URL.createObjectURL(file)); // Show local instant preview
+    }
   };
 
   const toggleService = (service) =>
@@ -62,21 +67,31 @@ export default function CompleteProfileIncubator() {
     setError("");
     setIsSubmitting(true);
 
-    // Mapped to commonProfileFields + incubatorCompleteFields Zod schema
-    const formData = {
-      bio: bio.trim(),
-      skills: domains, // Satisfies commonProfileFields skills array requirement
-      linkedin_url: linkedin.trim(),
-      portfolio_url: website.trim(),
-      profile_photo: "",
-      // Role-specific fields matching incubatorCompleteFields
-      organization_type: orgType,
-      supported_startup_domains: domains,
-      services_offered: services,
-      contact_person: contactPerson.trim() || "Primary Contact",
-    };
-
     try {
+      let photoUrl = "";
+
+      // 1. Upload photo via signed Cloudinary request if selected
+      if (selectedFile) {
+        photoUrl = await uploadToCloudinary(selectedFile, "incubator_profiles");
+      }
+
+      // 2. Mapped to commonProfileFields + incubatorCompleteFields Zod schema
+      const formData = {
+        incubator_name: incubatorName.trim(),
+        organization_type: orgType,
+        bio: bio.trim(),
+        skills: domains, // Satisfies commonProfileFields skills requirement
+        linkedin_url: linkedin.trim(),
+        portfolio_url: website.trim(),
+        profile_photo: photoUrl,
+        attachment_url: photoUrl,
+        // Role-specific fields matching incubatorCompleteFields
+        supported_startup_domains: domains,
+        services_offered: services,
+        contact_person: contactPerson.trim() || "Primary Contact",
+      };
+
+      // 3. Persist profile via MongoDB backend
       const res = await createProfile(ROLE, formData);
       setSaved(true);
 
