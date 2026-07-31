@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, FileText, LineChart } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
 import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
+import api from '@/api/axiosInstance';
 
 const TRUST_ROW = [
   { value: '500+', label: 'Student Startups' },
@@ -10,6 +11,16 @@ const TRUST_ROW = [
 ];
 
 export default function Hero() {
+  const handleDownloadDeck = () => {
+    api.get('/documents/partnership-deck')
+      .then(res => {
+        if (res.data?.url) {
+          window.open(res.data.url, '_blank', 'noopener,noreferrer');
+        }
+      })
+      .catch(err => console.error('Failed to fetch partnership deck', err));
+  };
+
   return (
     <section id="hero" className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -36,10 +47,10 @@ export default function Hero() {
               Become a Partner
               <ArrowRight size={16} strokeWidth={2} className="transition-transform group-hover:translate-x-1" />
             </Link>
-            <ComingSoon label="View Partnership Deck" position="top" inline className="inline-flex items-center gap-2 bg-surface-white text-text-heading font-poppins font-semibold text-small px-6 py-3.5 rounded-lg border border-border-subtle">
+            <button onClick={handleDownloadDeck} className="inline-flex items-center gap-2 bg-surface-white text-text-heading font-poppins font-semibold text-small px-6 py-3.5 rounded-lg border border-border-subtle hover:bg-canvas-bg transition-colors cursor-pointer">
               <FileText size={16} strokeWidth={2} />
               View Partnership Deck
-            </ComingSoon>
+            </button>
           </div>
 
           <div className="flex items-center gap-6 mt-6 pt-6 border-t border-border-subtle">

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Users,
   Rocket,
@@ -20,6 +20,7 @@ import AdminShell from '@/components/admin/AdminShell';
 import StatCard from '@/components/ui/StatCard';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import api from '@/api/axiosInstance';
 
 const USER_DISTRIBUTION = [
   { label: 'Students', pct: 65 },
@@ -86,6 +87,28 @@ export default function AdminDashboardPage() {
   useDocumentTitle('BOCC Command Center — Admin Dashboard');
   const [funnelView, setFunnelView] = useState('Daily');
   const [criticalActions, setCriticalActions] = useState(INITIAL_CRITICAL_ACTIONS);
+  const [overview, setOverview] = useState(null);
+  const [updates, setUpdates] = useState(ACTIVITY_STREAM);
+
+  useEffect(() => {
+    api.get('/overview')
+      .then(res => setOverview(res.data))
+      .catch(err => console.error('Failed to fetch overview', err));
+      
+    api.get('/updates')
+      .then(res => {
+        if (res.data?.updates && res.data.updates.length > 0) {
+          // map icons based on type if possible, otherwise use RefreshCw
+          const mappedUpdates = res.data.updates.map(u => ({
+            icon: RefreshCw,
+            text: u.message || u.text || 'System Update',
+            time: u.time || 'Recently',
+          }));
+          setUpdates(mappedUpdates);
+        }
+      })
+      .catch(err => console.error('Failed to fetch updates', err));
+  }, []);
 
   const funnel = FUNNEL_VIEWS[funnelView];
   const funnelMax = funnel[0].value;
@@ -98,17 +121,17 @@ export default function AdminDashboardPage() {
   return (
     <AdminShell>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard label="Total Users" value="12,482" icon={<Users size={18} strokeWidth={2} />} subtext="+8.4% this month" trendDirection="up" />
-        <StatCard label="Active Startups" value="456" icon={<Rocket size={18} strokeWidth={2} />} subtext="92% engagement" />
+        <StatCard label="Total Users" value={overview?.totalUsers || "12,482"} icon={<Users size={18} strokeWidth={2} />} subtext="+8.4% this month" trendDirection="up" />
+        <StatCard label="Active Startups" value={overview?.activeStartups || "456"} icon={<Rocket size={18} strokeWidth={2} />} subtext="92% engagement" />
         <StatCard
           label="Pending Verifications"
-          value="24"
+          value={overview?.pendingVerifications || "24"}
           icon={<ShieldAlert size={18} strokeWidth={2} />}
           subtext="8 critical alerts"
           trendDirection="down"
           className="border-error/40"
         />
-        <StatCard label="Investor Capital" value="$24.8M" icon={<DollarSign size={18} strokeWidth={2} />} subtext="Tracked across all rounds" />
+        <StatCard label="Investor Capital" value={overview?.investorCapital || "$24.8M"} icon={<DollarSign size={18} strokeWidth={2} />} subtext="Tracked across all rounds" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
@@ -228,8 +251,8 @@ export default function AdminDashboardPage() {
             <h3 className="font-poppins font-semibold text-card text-text-heading">Activity Stream</h3>
           </div>
           <div className="divide-y divide-border-subtle">
-            {ACTIVITY_STREAM.map(({ icon: Icon, text, time }) => (
-              <div key={text} className="px-6 py-4 flex items-center gap-3">
+            {updates.map(({ icon: Icon, text, time }, i) => (
+              <div key={i} className="px-6 py-4 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center text-text-muted shrink-0">
                   <Icon size={16} strokeWidth={2} />
                 </div>
