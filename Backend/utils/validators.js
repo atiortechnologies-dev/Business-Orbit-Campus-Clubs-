@@ -239,6 +239,26 @@ const submitIdeaSchema = z.object({
     .trim()
     .min(1, "Description is required")
     .max(5000, "Description must be under 5000 characters"),
+  solution: z
+    .string()
+    .trim()
+    .max(5000, "Solution must be under 5000 characters")
+    .optional(),
+  target_audience: z
+    .string()
+    .trim()
+    .max(2000, "Target audience must be under 2000 characters")
+    .optional(),
+  value_proposition: z
+    .string()
+    .trim()
+    .max(2000, "Value proposition must be under 2000 characters")
+    .optional(),
+  competitors: z
+    .string()
+    .trim()
+    .max(2000, "Competitors field must be under 2000 characters")
+    .optional(),
   attachment_url: urlOptional,
 });
 
@@ -252,6 +272,26 @@ const saveDraftSchema = z.object({
     .string()
     .trim()
     .max(5000, "Description must be under 5000 characters")
+    .optional(),
+  solution: z
+    .string()
+    .trim()
+    .max(5000, "Solution must be under 5000 characters")
+    .optional(),
+  target_audience: z
+    .string()
+    .trim()
+    .max(2000, "Target audience must be under 2000 characters")
+    .optional(),
+  value_proposition: z
+    .string()
+    .trim()
+    .max(2000, "Value proposition must be under 2000 characters")
+    .optional(),
+  competitors: z
+    .string()
+    .trim()
+    .max(2000, "Competitors field must be under 2000 characters")
     .optional(),
   attachment_url: urlOptional,
 });

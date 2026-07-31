@@ -16,7 +16,7 @@ const getActiveStage = async (startupId) => {
 
 /**
  * @desc    Submit an idea or deliverable for the active stage
- * @route   POST /api/submissions
+ * @route   POST /api/submissions/submit
  * @access  Private (Student)
  */
 const submitIdea = asyncHandler(async (req, res) => {
@@ -24,8 +24,12 @@ const submitIdea = asyncHandler(async (req, res) => {
   const {
     title,
     description,
+    solution,
+    target_audience,
+    value_proposition,
+    competitors,
     attachment_url: reqAttachmentUrl,
-  } = req.validatedData;
+  } = req.validatedData || req.body;
 
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
   const activeStage = await getActiveStage(startup._id);
@@ -68,6 +72,10 @@ const submitIdea = asyncHandler(async (req, res) => {
     if (submission) {
       submission.title = title;
       submission.description = description;
+      submission.solution = solution || "";
+      submission.target_audience = target_audience || "";
+      submission.value_proposition = value_proposition || "";
+      submission.competitors = competitors || "";
       submission.attachment_url = attachment_url;
     } else {
       submission = new StageSubmission({
@@ -75,21 +83,21 @@ const submitIdea = asyncHandler(async (req, res) => {
         stage_id: activeStage._id,
         title,
         description,
+        solution: solution || "",
+        target_audience: target_audience || "",
+        value_proposition: value_proposition || "",
+        competitors: competitors || "",
         attachment_url,
       });
     }
 
     submission.status = "pending_review";
     submission.submitted_at = new Date();
-    // By leaving reviewer_id undefined/null, this submission explicitly falls into the "Unassigned" global queue.
-    // Admins can later claim and assign reviewers via a separate assignment endpoint.
 
     await submission.save({ session });
 
     activeStage.status = "submitted";
     await activeStage.save({ session });
-
-    // Notification creation for (reviewer)
 
     await session.commitTransaction();
 
@@ -112,7 +120,7 @@ const submitIdea = asyncHandler(async (req, res) => {
 
 /**
  * @desc    Save a draft of an idea or deliverable for the active stage
- * @route   POST /api/submissions/draft
+ * @route   PUT /api/submissions/save-draft
  * @access  Private (Student)
  */
 const saveDraft = asyncHandler(async (req, res) => {
@@ -120,8 +128,12 @@ const saveDraft = asyncHandler(async (req, res) => {
   const {
     title,
     description,
+    solution,
+    target_audience,
+    value_proposition,
+    competitors,
     attachment_url: reqAttachmentUrl,
-  } = req.validatedData;
+  } = req.validatedData || req.body;
 
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
   const activeStage = await getActiveStage(startup._id);
@@ -133,8 +145,7 @@ const saveDraft = asyncHandler(async (req, res) => {
     });
   }
 
-  // Can't touch a draft if this stage already has something under
-  // review/approved — same edit-lock rule as submitIdea.
+  // Edit lock rule
   const blockingSubmission = await StageSubmission.findOne({
     stage_id: activeStage._id,
     status: { $in: ["pending_review", "approved"] },
@@ -150,6 +161,7 @@ const saveDraft = asyncHandler(async (req, res) => {
     stage_id: activeStage._id,
     status: "draft",
   });
+
   const attachment_url =
     reqAttachmentUrl !== undefined
       ? reqAttachmentUrl
@@ -158,6 +170,11 @@ const saveDraft = asyncHandler(async (req, res) => {
   if (draft) {
     if (title !== undefined) draft.title = title;
     if (description !== undefined) draft.description = description;
+    if (solution !== undefined) draft.solution = solution;
+    if (target_audience !== undefined) draft.target_audience = target_audience;
+    if (value_proposition !== undefined)
+      draft.value_proposition = value_proposition;
+    if (competitors !== undefined) draft.competitors = competitors;
     if (reqAttachmentUrl !== undefined) draft.attachment_url = reqAttachmentUrl;
   } else {
     draft = new StageSubmission({
@@ -165,6 +182,10 @@ const saveDraft = asyncHandler(async (req, res) => {
       stage_id: activeStage._id,
       title: title || "Untitled draft",
       description: description || "",
+      solution: solution || "",
+      target_audience: target_audience || "",
+      value_proposition: value_proposition || "",
+      competitors: competitors || "",
       attachment_url: attachment_url || "",
       status: "draft",
     });
@@ -180,50 +201,49 @@ const saveDraft = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Get the submission status for the active stage
- * @route   GET /api/submissions/status
+ * @desc    Get the submission status for the current active/submitted stage
+ * @route   GET /api/submissions/submission-status
  * @access  Private (Student)
  */
 const getSubmissionStatus = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
-  const activeStage = await getActiveStage(startup._id);
 
-  if (!activeStage) {
-    return res.status(404).json({ success: false, message: "No active stage" });
+  const currentStage = await StartupStage.findOne({
+    startup_id: startup._id,
+    status: { $in: ["active", "submitted", "approved", "rejected"] },
+  }).sort({ stage_number: 1 });
+
+  if (!currentStage) {
+    return res
+      .status(404)
+      .json({ success: false, message: "No stage found for startup" });
   }
 
   const submission = await StageSubmission.findOne({
-    stage_id: activeStage._id,
+    stage_id: currentStage._id,
   }).sort({ createdAt: -1 });
-  if (!submission) {
-    return res.status(404).json({
-      success: false,
-      message: "No submission found for the current stage",
-    });
-  }
-
-  const nextSteps =
-    submission.status === "draft"
-      ? "Finish and submit your idea for review."
-      : submission.status === "pending_review"
-        ? "Wait for your review meeting to be scheduled."
-        : submission.status === "approved"
-          ? "Your next stage has been unlocked."
-          : "Review the feedback and resubmit.";
 
   return res.status(200).json({
     success: true,
     data: {
-      submissionId: submission._id,
-      title: submission.title,
-      description: submission.description,
-      attachment_url: submission.attachment_url,
-      submissionDate: submission.submitted_at,
-      currentStatus: submission.status,
-      expectedReviewTimelineDays: 7, // temporary
-      nextSteps,
+      stageStatus: currentStage.status,
+      hasSubmitted: submission ? submission.status !== "draft" : false,
+      submission: submission
+        ? {
+            id: submission._id,
+            title: submission.title,
+            description: submission.description,
+            solution: submission.solution || "",
+            target_audience: submission.target_audience || "",
+            value_proposition: submission.value_proposition || "",
+            competitors: submission.competitors || "",
+            attachment_url: submission.attachment_url || "",
+            status: submission.status,
+            submitted_at: submission.submitted_at,
+          }
+        : null,
     },
   });
 });

@@ -10,9 +10,12 @@ import "@fontsource/poppins/700.css";
 import "./index.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { router } from "@/router";
+import { AuthProvider } from "./context/AuthContext";
 
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
-    <RouterProvider router={router} />
-  </ThemeProvider>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </ThemeProvider>,
 );
