@@ -101,11 +101,15 @@ src/
     incubator/                 Incubator.jsx, Applications.jsx,
                                ApplicationReview.jsx, Messages.jsx, Settings.jsx
     admin/                    Admin.jsx (dashboard), VerificationQueue.jsx →
-                               VerificationDetail.jsx → VerificationDecision.jsx
-                               (one pipeline), ReviewQueue.jsx → ReviewDetail.jsx
-                               → ReviewWorkspace.jsx → ReviewOutcome.jsx (a
-                               second pipeline, with ScheduleMeeting.jsx
-                               branching off ReviewDetail), AuditLog.jsx,
+                               one screen per signup role (MentorVerification.jsx,
+                               InvestorVerification.jsx, IncubatorVerification.jsx,
+                               CompanyVerification.jsx, StudentVerification.jsx —
+                               one pipeline), ReviewQueue.jsx → ReviewDetail.jsx
+                               → ReviewWorkspace.jsx → ReviewOutcome.jsx (generic
+                               review pipeline for Validation/MVP/Traction/Launch)
+                               or → IdeationReview.jsx (Idea-stage only, a
+                               dedicated single-page workspace), with
+                               ScheduleMeeting.jsx reachable from both, AuditLog.jsx,
                                AnnouncementsDashboard.jsx → CreateAnnouncement.jsx
                                → PreviewAnnouncement.jsx → AnnouncementPublished.jsx
                                (a third pipeline), ChapterManagement.jsx →

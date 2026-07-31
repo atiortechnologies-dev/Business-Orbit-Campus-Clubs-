@@ -167,16 +167,26 @@ const ApplyConfirmation = lazy(
 const MyApplications = lazy(() => import("@/pages/freelancing/MyApplications"));
 const AdminDashboard = lazy(() => import("@/pages/admin/Admin"));
 const VerificationQueue = lazy(() => import("@/pages/admin/VerificationQueue"));
-const VerificationDetail = lazy(
-  () => import("@/pages/admin/VerificationDetail"),
+const StudentVerification = lazy(
+  () => import("@/pages/admin/StudentVerification"),
 );
-const VerificationDecision = lazy(
-  () => import("@/pages/admin/VerificationDecision"),
+const MentorVerification = lazy(
+  () => import("@/pages/admin/MentorVerification"),
+);
+const InvestorVerification = lazy(
+  () => import("@/pages/admin/InvestorVerification"),
+);
+const IncubatorVerification = lazy(
+  () => import("@/pages/admin/IncubatorVerification"),
+);
+const CompanyVerification = lazy(
+  () => import("@/pages/admin/CompanyVerification"),
 );
 const ReviewQueue = lazy(() => import("@/pages/admin/ReviewQueue"));
 const ReviewDetail = lazy(() => import("@/pages/admin/ReviewDetail"));
 const ReviewWorkspace = lazy(() => import("@/pages/admin/ReviewWorkspace"));
 const ReviewOutcome = lazy(() => import("@/pages/admin/ReviewOutcome"));
+const IdeationReview = lazy(() => import("@/pages/admin/IdeationReview"));
 const ScheduleMeeting = lazy(() => import("@/pages/admin/ScheduleMeeting"));
 const AuditLog = lazy(() => import("@/pages/admin/AuditLog"));
 const AnnouncementsDashboard = lazy(
@@ -347,12 +357,24 @@ export const router = createBrowserRouter([
       { path: "/admin", element: withSuspense(AdminDashboard) },
       { path: "/admin/verification", element: withSuspense(VerificationQueue) },
       {
-        path: "/admin/verification/detail",
-        element: withSuspense(VerificationDetail),
+        path: "/admin/verification/student",
+        element: withSuspense(StudentVerification),
       },
       {
-        path: "/admin/verification/decision",
-        element: withSuspense(VerificationDecision),
+        path: "/admin/verification/mentor",
+        element: withSuspense(MentorVerification),
+      },
+      {
+        path: "/admin/verification/investor",
+        element: withSuspense(InvestorVerification),
+      },
+      {
+        path: "/admin/verification/incubator",
+        element: withSuspense(IncubatorVerification),
+      },
+      {
+        path: "/admin/verification/company",
+        element: withSuspense(CompanyVerification),
       },
       { path: "/admin/reviews", element: withSuspense(ReviewQueue) },
       { path: "/admin/reviews/detail", element: withSuspense(ReviewDetail) },
@@ -361,6 +383,10 @@ export const router = createBrowserRouter([
         element: withSuspense(ReviewWorkspace),
       },
       { path: "/admin/reviews/outcome", element: withSuspense(ReviewOutcome) },
+      {
+        path: "/admin/reviews/ideation",
+        element: withSuspense(IdeationReview),
+      },
       {
         path: "/admin/reviews/schedule-meeting",
         element: withSuspense(ScheduleMeeting),

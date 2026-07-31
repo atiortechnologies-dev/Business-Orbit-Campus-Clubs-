@@ -151,15 +151,20 @@ export default function ReviewDetailPage() {
           <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
             <h3 className="font-poppins font-semibold text-body text-text-heading mb-4">Quick Information</h3>
             <div className="flex items-center justify-center mb-4">
-              <svg viewBox="0 0 100 100" className="w-28 h-28 -rotate-90">
-                <circle cx="50" cy="50" r="44" fill="none" stroke="var(--color-border-subtle)" strokeWidth="10" />
-                <circle
-                  cx="50" cy="50" r="44" fill="none" stroke="var(--color-brand-black)" strokeWidth="10"
-                  strokeDasharray={`${2 * Math.PI * 44}`}
-                  strokeDashoffset={`${2 * Math.PI * 44 * (1 - 0.6)}`}
-                  strokeLinecap="round"
-                />
-                <text x="50" y="50" textAnchor="middle" dominantBaseline="middle" className="rotate-90" style={{ transform: 'rotate(90deg)', transformOrigin: '50px 50px', fill: 'var(--color-text-heading)', fontSize: '18px', fontWeight: 700, fontFamily: 'Poppins' }}>
+              <svg viewBox="0 0 100 100" className="w-28 h-28">
+                {/* Only the ring rotates, so the dasharray starts filling at
+                    12 o'clock instead of SVG's default 3 o'clock start —
+                    the text stays out of this group so it renders upright. */}
+                <g className="-rotate-90 origin-center">
+                  <circle cx="50" cy="50" r="44" fill="none" stroke="var(--color-border-subtle)" strokeWidth="10" />
+                  <circle
+                    cx="50" cy="50" r="44" fill="none" stroke="var(--color-brand-black)" strokeWidth="10"
+                    strokeDasharray={`${2 * Math.PI * 44}`}
+                    strokeDashoffset={`${2 * Math.PI * 44 * (1 - 0.6)}`}
+                    strokeLinecap="round"
+                  />
+                </g>
+                <text x="50" y="50" textAnchor="middle" dominantBaseline="middle" style={{ fill: 'var(--color-text-heading)', fontSize: '18px', fontWeight: 700, fontFamily: 'Poppins' }}>
                   60%
                 </text>
               </svg>

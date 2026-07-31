@@ -58,7 +58,12 @@ export default function ScheduleMeetingPage() {
         <ChevronRight size={14} strokeWidth={2} />
         <span className="text-text-heading font-semibold">Schedule Review Meeting</span>
       </nav>
-      <h1 className="font-poppins font-semibold text-page text-text-heading mb-8">Schedule Review Meeting</h1>
+      <div className="mb-8">
+        <h1 className="font-poppins font-semibold text-page text-text-heading">Schedule Review Meeting</h1>
+        <p className="font-inter text-body text-text-body mt-1">
+          Configure session details and invite the founding team for a performance review.
+        </p>
+      </div>
 
       {scheduled && (
         <div className="mb-6 p-4 rounded-lg border border-success/30 bg-success/10 text-success font-inter text-small">
@@ -162,7 +167,10 @@ export default function ScheduleMeetingPage() {
 
         <div className="lg:col-span-5 space-y-6">
           <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
-            <h3 className="font-poppins font-semibold text-body text-text-heading mb-4">October 2024</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-poppins font-semibold text-body text-text-heading">Availability Calendar</h3>
+              <span className="font-inter text-caption text-text-muted">October 2024</span>
+            </div>
             <div className="grid grid-cols-7 gap-1 text-center mb-2">
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
                 <span key={i} className="font-inter text-caption text-text-muted">{d}</span>
