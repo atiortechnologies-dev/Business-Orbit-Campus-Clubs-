@@ -6,6 +6,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { supportApi } from '@/api/supportApi';
 
 const CATEGORIES = ['Technical Issue', 'Startup Journey', 'Account Management', 'Billing & Invoices'];
 const PRIORITIES = ['Low', 'Medium', 'High'];
@@ -30,10 +31,19 @@ export default function RaiseSupportTicketPage() {
 
   const canSubmit = form.subject.trim().length > 0 && form.description.trim().length > 0;
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!canSubmit) return;
-    // TODO(backend): POST /api/support/tickets { subject, category, priority, description }, redirect to its detail page.
-    navigate('/support/tickets');
+    try {
+      await supportApi.requestAssistance({
+        subject: form.subject,
+        category: form.category,
+        priority,
+        description: form.description
+      });
+      navigate('/support');
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

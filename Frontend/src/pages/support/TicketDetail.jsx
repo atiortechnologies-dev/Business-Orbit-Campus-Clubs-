@@ -5,6 +5,7 @@ import DashboardShell from '@/components/dashboard/DashboardShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { supportApi } from '@/api/supportApi';
 
 // Ticket viewed from the student's own DashboardShell — `mine` marks the
 // student's own messages (right-aligned), not the agent's.
@@ -46,11 +47,18 @@ export default function TicketDetailPage() {
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [reply, setReply] = useState('');
 
-  const handleSendReply = () => {
+  const handleSendReply = async () => {
     if (reply.trim() === '') return;
-    setMessages((prev) => [...prev, { id: prev.length + 1, author: 'Alex Rivera (You)', time: 'Now', mine: true, text: reply.trim() }]);
-    setReply('');
-    // TODO(backend): POST /api/support/tickets/:id/replies with the reply text.
+    try {
+      // Mocking requestId to 123 for now since route doesn't pass it yet
+      await supportApi.updateAssistance('123', {
+        reply: reply.trim()
+      });
+      setMessages((prev) => [...prev, { id: prev.length + 1, author: 'Alex Rivera (You)', time: 'Now', mine: true, text: reply.trim() }]);
+      setReply('');
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

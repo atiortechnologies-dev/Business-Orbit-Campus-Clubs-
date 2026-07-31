@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Plus, Search, MoreVertical } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
@@ -6,16 +6,9 @@ import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { supportApi } from '@/api/supportApi';
 
 const TABS = ['Open', 'In Progress', 'Resolved', 'Closed'];
-
-const TICKETS = [
-  { id: 'TIC-9482', subject: 'Cloud Deployment sync failure', category: 'Technical', priority: 'High', created: 'Oct 24, 2023', status: 'Open', assignee: 'Alex Rivera' },
-  { id: 'TIC-9475', subject: 'Missing invoice for Q3 period', category: 'Billing', priority: 'Medium', created: 'Oct 23, 2023', status: 'Open', assignee: 'Sarah Chen' },
-  { id: 'TIC-9461', subject: 'Mentor session calendar not syncing', category: 'Technical', priority: 'Medium', created: 'Oct 20, 2023', status: 'In Progress', assignee: 'Jordan Smith' },
-  { id: 'TIC-9450', subject: 'Unable to download acceptance letter', category: 'Technical', priority: 'Low', created: 'Oct 15, 2023', status: 'Resolved', assignee: 'Sarah Chen' },
-  { id: 'TIC-9432', subject: 'Duplicate charge on subscription', category: 'Billing', priority: 'High', created: 'Oct 10, 2023', status: 'Resolved', assignee: 'Alex Rivera' },
-];
 
 const PRIORITY_DOT = { High: 'bg-brand-black', Medium: 'bg-border-subtle', Low: 'bg-border-subtle' };
 const STATUS_VARIANT = { Open: 'neutral', 'In Progress': 'info', Resolved: 'success', Closed: 'neutral' };
@@ -24,7 +17,7 @@ const COLUMNS = [
   {
     key: 'id',
     label: 'Ticket ID',
-    render: (t) => <Link to="/support/tickets/detail" className="font-inter text-caption text-text-heading hover:underline">#{t.id}</Link>,
+    render: (t) => <Link to="/support/tickets/detail" className="font-inter text-caption text-text-heading hover:underline">#{t.id || t._id?.substring(0, 8)}</Link>,
   },
   {
     key: 'subject',
@@ -38,22 +31,22 @@ const COLUMNS = [
     label: 'Priority',
     render: (t) => (
       <div className="flex items-center gap-2">
-        <span className={`w-2 h-2 rounded-full ${PRIORITY_DOT[t.priority]}`} />
+        <span className={`w-2 h-2 rounded-full ${PRIORITY_DOT[t.priority] || 'bg-border-subtle'}`} />
         <span className="font-inter text-caption text-text-body">{t.priority}</span>
       </div>
     ),
   },
-  { key: 'created', label: 'Created', className: 'text-text-muted' },
-  { key: 'status', label: 'Status', render: (t) => <Badge variant={STATUS_VARIANT[t.status]}>{t.status}</Badge> },
+  { key: 'createdAt', label: 'Created', className: 'text-text-muted', render: (t) => new Date(t.createdAt).toLocaleDateString() },
+  { key: 'status', label: 'Status', render: (t) => <Badge variant={STATUS_VARIANT[t.status] || 'neutral'}>{t.status}</Badge> },
   {
     key: 'assignee',
     label: 'Assigned To',
     render: (t) => (
       <div className="flex items-center gap-2">
         <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[10px] text-text-muted shrink-0">
-          {t.assignee.split(' ').map((n) => n[0]).join('')}
+          {(t.assignee || 'Unassigned').split(' ').map((n) => n[0]).join('')}
         </div>
-        <span className="font-inter text-caption text-text-body">{t.assignee}</span>
+        <span className="font-inter text-caption text-text-body">{t.assignee || 'Unassigned'}</span>
       </div>
     ),
   },
@@ -72,8 +65,21 @@ const COLUMNS = [
 export default function SupportDashboardPage() {
   useDocumentTitle('My Support Tickets — BOCC');
   const [activeTab, setActiveTab] = useState('Open');
+  const [tickets, setTickets] = useState([]);
+  
+  useEffect(() => {
+    async function fetchTickets() {
+      try {
+        const res = await supportApi.getAssistanceStatus();
+        setTickets(res.data || res || []);
+      } catch (err) {
+        console.error("Failed to fetch tickets:", err);
+      }
+    }
+    fetchTickets();
+  }, []);
 
-  const visible = TICKETS.filter((t) => t.status === activeTab);
+  const visible = tickets.filter((t) => t.status === activeTab);
 
   return (
     <DashboardShell pageId="support-dashboard">

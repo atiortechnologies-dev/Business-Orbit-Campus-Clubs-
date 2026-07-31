@@ -17,6 +17,7 @@ import DashboardShell from "@/components/dashboard/DashboardShell";
 import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getStudentProfile, updateProfile } from "@/api/dashboardApi";
+import * as studentChapterApi from "@/api/auth/studentChapterApi";
 
 export default function SettingsPage() {
   useDocumentTitle("Settings — BOCC");
@@ -246,6 +247,20 @@ export default function SettingsPage() {
               <p className="font-inter text-small text-text-muted">
                 {form.college || "College"} · {form.branch || "Branch"}
               </p>
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    await studentChapterApi.requestChapterChange({ reason: "Requested from settings" });
+                    alert("Chapter change requested!");
+                  } catch(e) {
+                    alert("Error requesting chapter change");
+                  }
+                }}
+                className="mt-2 text-small text-brand-black underline hover:text-text-muted transition-colors"
+              >
+                Request Chapter Change
+              </button>
               <Link
                 to="/build-startup/journey"
                 className="mt-4 w-full border border-border-subtle text-text-heading py-2 rounded-md hover:bg-canvas-bg transition-colors font-poppins font-semibold text-small"
