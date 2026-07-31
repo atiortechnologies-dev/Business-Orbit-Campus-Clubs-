@@ -1,4 +1,4 @@
-import api from "../axiosInstance";
+import api from "./axiosInstance";
 
 // POST /watchlist
 export const addToWatchlist = async (startupId) => {

@@ -65,3 +65,11 @@ export const getIncubationVerificationResult = async () => {
   const res = await api.get("/incubation-verification/result");
   return res?.data || res;
 };
+
+export const getStageProgression = () => {
+  return api.get('/stage-progression');
+};
+
+export const acceptIncubationOffer = (applicationId, termsAccepted) => {
+  return api.post('/student/incubation/accept-offer', { application_id: applicationId, terms_accepted: termsAccepted });
+};

@@ -24,3 +24,11 @@ export const getMvpReview = async () => {
   const res = await api.get("/mvp/review");
   return res?.data || res;
 };
+
+export const setProductType = (payload) => {
+  return api.post('/startup/product-type', payload);
+};
+
+export const getProductType = () => {
+  return api.get('/startup/product-type');
+};

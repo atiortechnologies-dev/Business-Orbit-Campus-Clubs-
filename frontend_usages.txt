@@ -1,4 +1,36 @@
+Frontend/src/components/landing/Contact.jsx:15:    api.post('/enquiries', { email, message })
+Frontend/src/components/landing/incubator/Hero.jsx:15:    api.get('/documents/partnership-deck')
+Frontend/src/components/landing/incubator/InstitutionalValue.jsx:17:    api.get('/documents/partnership-deck')
+Frontend/src/pages/admin/Admin.jsx:94:    api.get('/overview')
+Frontend/src/pages/admin/Admin.jsx:98:    api.get('/updates')
+Frontend/src/pages/admin/VerificationDecision.jsx:42:    api.post('/notes', { entityId: 'USR-88219', text: draft.trim() })
+Frontend/src/pages/admin/OpportunityReview.jsx:192:                    api.post('/notes', { entityId: 'OP-8821', text: notes })
+Frontend/src/pages/incubator/ApplicationReview.jsx:282:                    api.post('/notes', { entityId: 'app-2024-089', text: notes })
+Frontend/src/pages/incubator/Messages.jsx:107:        const response = await api.get('/conversations/search', { params: { q: searchQuery } });
+Frontend/src/pages/incubator/Messages.jsx:124:      api.patch(`/read/${activeConv}`).catch((err) => console.error('Failed to mark read:', err));
+Frontend/src/pages/investor/Investor.jsx:41:      api.get('/watchlist/statistics').catch(() => null),
+Frontend/src/pages/investor/Investor.jsx:42:      api.get('/recommendations').catch(() => null)
 Frontend/src/pages/investor/PitchDeck.jsx:78:      const res = await api.post('/chat/conversations', { targetId: startupId });
+Frontend/src/pages/journey/ideation/ReviewMeeting.jsx:16:    api.get('/evaluations/rubric/ideation')
+Frontend/src/pages/journey/launch/LaunchStage.jsx:34:    api.get('/stages/launch/statistics')
+Frontend/src/pages/journey/launch/LaunchStage.jsx:40:    api.post(endpoint, { startupId: 'current-startup-id' })
+Frontend/src/pages/journey/traction/CustomerFeedbackUpload.jsx:50:    api.delete(`/traction/submission/document/${docId}`)
+Frontend/src/pages/journey/traction/TractionReviewMeeting.jsx:55:    api.get('/evaluations/rubric/traction')
+Frontend/src/pages/journey/traction/TractionStage.jsx:56:    api.get('/stages/traction/progress')
+Frontend/src/pages/mentor/Chats.jsx:78:        const response = await api.get('/conversations/search', { params: { q: threadSearch } });
+Frontend/src/pages/mentor/Chats.jsx:94:      api.patch(`/read/${activeThreadId}`).catch((err) => console.error('Failed to mark read:', err));
+Frontend/src/pages/mentor/Meetings.jsx:62:      api.get(`/meeting/feedback?meetingId=${selectedMeetingId}`)
+Frontend/src/pages/mentor/Meetings.jsx:86:    api.post('/notes', { entityId: `meeting-${selectedMeetingId}`, text: mentorNotes, outcome })
+Frontend/src/pages/mentor/Meetings.jsx:95:    api.post('/meeting/reschedule', { meetingId: selectedMeetingId, type: 'follow-up' })
+Frontend/src/pages/incubators/IncubationConfirmed.jsx:17:    api.get('/acceptance')
+Frontend/src/pages/incubators/IncubationConfirmed.jsx:31:    api.get('/admission-documents')
+Frontend/src/pages/incubators/MyIncubation.jsx:34:    api.get('/admission-documents')
+Frontend/src/pages/investors/InvestorConversation.jsx:24:    api.patch('/read/t2').catch((err) => console.error('Failed to mark chat as read:', err));
+Frontend/src/pages/mentors/ChatConversation.jsx:23:    api.patch('/read/t1').catch((err) => console.error('Failed to mark chat as read:', err));
+Frontend/src/pages/mentors/ChatInbox.jsx:26:        const response = await api.get('/conversations/search', { params: { q: searchQuery } });
+Frontend/src/pages/mentors/MentorshipRequest.jsx:47:    api.post('/request-meeting', { ...form, mentorId: 'm1' })
+Frontend/src/pages/Notifications.jsx:101:    api.get("/notifications")
+Frontend/src/pages/Notifications.jsx:127:    api.patch("/notifications/mark-read")
 Frontend/src/api/admin/adminAnnouncementApi.js:5:  const res = await api.get("/admin/announcements", { params });
 Frontend/src/api/admin/adminAnnouncementApi.js:11:  const res = await api.post("/admin/announcements", payload);
 Frontend/src/api/admin/adminApi.js:4:  getSettings: () => api.get("/admin/settings"),
@@ -30,10 +62,14 @@ Frontend/src/api/auth/authApi.js:28:  return api.post("/auth/reset-password", da
 Frontend/src/api/auth/authApi.js:32:  return api.post("/auth/refresh-token", { refreshToken });
 Frontend/src/api/auth/authApi.js:36:  return api.get("/auth/me");
 Frontend/src/api/auth/authApi.js:40:  return api.get("/auth/get-all-chapter");
+Frontend/src/api/auth/authApi.js:44:  return api.get("/public/auth-redirects");
 Frontend/src/api/auth/profileApi.js:5:  return api.get(`/${role}/profile`);
 Frontend/src/api/auth/profileApi.js:10:  return api.post(`/${role}/profile`, profileData);
 Frontend/src/api/auth/profileApi.js:15:  return api.put(`/${role}/profile`, profileData);
 Frontend/src/api/auth/profileApi.js:20:  return api.post(`/${role}/profile/skip`);
+Frontend/src/api/auth/profileApi.js:25:  return api.put(`/profiles/notification-preferences`, preferences);
+Frontend/src/api/auth/profileApi.js:30:  return api.delete(`/users/${userId}`);
+Frontend/src/api/auth/profileApi.js:35:  return api.post(`/${role}/profile/upload-photo`, photoData);
 Frontend/src/api/auth/studentChapterApi.js:8:  return api.get("/student/chapter");
 Frontend/src/api/auth/studentChapterApi.js:17:  return api.get(`/chapter/${chapterId}/stats`);
 Frontend/src/api/auth/studentChapterApi.js:25:  return api.post("/request-chapter-change", data);
@@ -50,6 +86,7 @@ Frontend/src/api/dashboardApi.js:41:  const res = await api.get("/activity-log",
 Frontend/src/api/startup/startupApi.js:5:  const res = await api.get("/startup/progress");
 Frontend/src/api/startup/startupApi.js:11:  const res = await api.get("/startup/stages");
 Frontend/src/api/startup/startupApi.js:17:  const res = await api.post("/startups/filter", filters);
+Frontend/src/api/startup/startupApi.js:22:  return api.get('/stages/progress');
 Frontend/src/api/startup/submissionApi.js:5:  const res = await api.post("/startup/submit", submissionData);
 Frontend/src/api/startup/submissionApi.js:11:  const res = await api.put("/startup/save-draft", draftData);
 Frontend/src/api/startup/submissionApi.js:17:  const res = await api.get("/startup/submission-status");
@@ -66,6 +103,8 @@ Frontend/src/api/startup/incubationApi.js:47:  const res = await api.get("/incub
 Frontend/src/api/startup/incubationApi.js:53:  const res = await api.get("/incubation-verification/timeline");
 Frontend/src/api/startup/incubationApi.js:59:  const res = await api.get("/incubation-verification/documents");
 Frontend/src/api/startup/incubationApi.js:65:  const res = await api.get("/incubation-verification/result");
+Frontend/src/api/startup/incubationApi.js:70:  return api.get('/stage-progression');
+Frontend/src/api/startup/incubationApi.js:74:  return api.post('/student/incubation/accept-offer', { application_id: applicationId, terms_accepted: termsAccepted });
 Frontend/src/api/startup/tractionApi.js:4:  const res = await api.post("/traction/metrics", payload);
 Frontend/src/api/startup/tractionApi.js:9:  const res = await api.get("/traction/metrics");
 Frontend/src/api/startup/tractionApi.js:14:  const res = await api.put(`/traction/metrics/${metricId}`, payload);
@@ -87,6 +126,8 @@ Frontend/src/api/startup/mvpApi.js:9:  const res = await api.get("/stages/mvp/ch
 Frontend/src/api/startup/mvpApi.js:14:  const res = await api.get("/mvp/meeting");
 Frontend/src/api/startup/mvpApi.js:19:  const res = await api.post("/mvp/reschedule", payload);
 Frontend/src/api/startup/mvpApi.js:24:  const res = await api.get("/mvp/review");
+Frontend/src/api/startup/mvpApi.js:29:  return api.post('/startup/product-type', payload);
+Frontend/src/api/startup/mvpApi.js:33:  return api.get('/startup/product-type');
 Frontend/src/api/startup/launchApi.js:4:  const res = await api.get("/stages/launch/pitch-deck");
 Frontend/src/api/startup/launchApi.js:9:  const res = await api.post("/stages/launch/pitch-deck/upload", formData, {
 Frontend/src/api/startup/launchApi.js:18:  const res = await api.delete(`/stages/launch/pitch-deck/${documentId}`);
@@ -102,6 +143,12 @@ Frontend/src/api/startup/launchApi.js:67:  const res = await api.get("/stages/la
 Frontend/src/api/startup/launchApi.js:72:  const res = await api.get("/stages/launch/verification/files");
 Frontend/src/api/startup/launchApi.js:77:  const res = await api.get("/stages/launch/completion");
 Frontend/src/api/startup/launchApi.js:82:  const res = await api.get("/stages/launch/certificate");
+Frontend/src/api/startup/validationApi.js:3:export const getSurveys = () => api.get('/surveys');
+Frontend/src/api/startup/validationApi.js:4:export const createSurvey = (data) => api.post('/surveys', data);
+Frontend/src/api/startup/validationApi.js:5:export const updateSurvey = (surveyId, data) => api.put(`/surveys/${surveyId}`, data);
+Frontend/src/api/startup/validationApi.js:6:export const deleteSurvey = (surveyId) => api.delete(`/surveys/${surveyId}`);
+Frontend/src/api/startup/validationApi.js:8:export const submitValidationReport = (payload) => api.post('/report/submit', payload);
+Frontend/src/api/startup/validationApi.js:9:export const getMeetingFeedback = () => api.get('/meeting/feedback');
 Frontend/src/api/investorApi.js:5:  const res = await api.post("/watchlist", { startupId });
 Frontend/src/api/investorApi.js:11:  const res = await api.delete(`/watchlist/${startupId}`);
 Frontend/src/api/investorApi.js:17:  const res = await api.get("/watchlist");

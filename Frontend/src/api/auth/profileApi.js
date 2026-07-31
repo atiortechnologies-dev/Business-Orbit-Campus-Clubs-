@@ -19,3 +19,19 @@ export const updateProfile = (role, profileData) => {
 export const skipProfile = (role) => {
   return api.post(`/${role}/profile/skip`);
 };
+
+// PUT notification preferences
+export const updateNotificationPreferences = (preferences) => {
+  return api.put(`/profiles/notification-preferences`, preferences);
+};
+
+// DELETE my account
+export const deleteMyAccount = (userId) => {
+  return api.delete(`/users/${userId}`);
+};
+
+// POST profile photo
+export const uploadProfilePhoto = (role, photoData) => {
+  return api.post(`/${role}/profile/upload-photo`, photoData);
+};
+

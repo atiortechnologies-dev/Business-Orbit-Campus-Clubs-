@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Laptop2, Package, Check, ChevronRight, ArrowRight } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { setProductType } from '@/api/startup/mvpApi';
 
 const OPTIONS = [
   {
@@ -26,9 +27,18 @@ export default function ChooseProductTypePage() {
   const navigate = useNavigate();
   const [selected, setSelected] = useState(null);
 
-  const handleContinue = () => {
-    // TODO(backend): persist the chosen product type against the student's venture record.
-    navigate('/build-startup/journey/mvp/submit');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleContinue = async () => {
+    try {
+      setIsSubmitting(true);
+      await setProductType({ type: selected });
+      navigate('/build-startup/journey/mvp/submit');
+    } catch (err) {
+      console.error(err);
+      alert("Failed to save product type. Please try again.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -85,12 +95,12 @@ export default function ChooseProductTypePage() {
 
       <button
         type="button"
-        disabled={!selected}
+        disabled={!selected || isSubmitting}
         onClick={handleContinue}
         className="inline-flex items-center gap-2 bg-action-bg text-action-text px-8 py-3 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-body disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:opacity-40"
       >
-        Continue
-        <ArrowRight size={18} strokeWidth={2} />
+        {isSubmitting ? "Saving..." : "Continue"}
+        {!isSubmitting && <ArrowRight size={18} strokeWidth={2} />}
       </button>
     </DashboardShell>
   );

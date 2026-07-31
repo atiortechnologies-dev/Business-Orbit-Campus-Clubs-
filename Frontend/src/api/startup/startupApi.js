@@ -17,3 +17,7 @@ export const filterStartups = async (filters) => {
   const res = await api.post("/startups/filter", filters);
   return res?.data || res;
 };
+
+export const getStagesProgress = () => {
+  return api.get('/stages/progress');
+};

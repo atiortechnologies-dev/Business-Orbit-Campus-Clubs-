@@ -18,6 +18,7 @@ import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getStudentProfile, updateProfile } from "@/api/dashboardApi";
 import * as studentChapterApi from "@/api/auth/studentChapterApi";
+import { deleteMyAccount, updateNotificationPreferences } from "@/api/auth/profileApi";
 
 export default function SettingsPage() {
   useDocumentTitle("Settings — BOCC");
@@ -39,6 +40,13 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [userId, setUserId] = useState(null);
+  const [notificationPrefs, setNotificationPrefs] = useState({
+    email: true,
+    inApp: true
+  });
+  const [prefsSaving, setPrefsSaving] = useState(false);
 
   const [photoUrl, setPhotoUrl] = useState(null);
   const [passwordOpen, setPasswordOpen] = useState(false);
@@ -63,6 +71,14 @@ export default function SettingsPage() {
 
         const userObj = data?.user || {};
         const profileObj = data?.profile || {};
+
+        setUserId(userObj?._id || userObj?.id || null);
+        if (profileObj?.notification_preferences) {
+          setNotificationPrefs({
+            email: profileObj.notification_preferences.email ?? true,
+            inApp: profileObj.notification_preferences.inApp ?? true,
+          });
+        }
 
         setForm({
           fullName: userObj?.full_name || "",
@@ -117,10 +133,40 @@ export default function SettingsPage() {
     }, 1500);
   };
 
-  const handleDeleteConfirm = () => {
-    setDeleteOpen(false);
-    setDeleteConfirmText("");
-    setDeleteRequested(true);
+  const handleDeleteConfirm = async () => {
+    if (!userId) {
+      alert("Unable to determine user ID.");
+      return;
+    }
+    try {
+      await deleteMyAccount(userId);
+      setDeleteOpen(false);
+      setDeleteConfirmText("");
+      setDeleteRequested(true);
+      // Optional: redirect or logout could happen here
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete account. Please try again later.");
+    }
+  };
+
+  const handleTogglePref = async (key) => {
+    const newPrefs = { ...notificationPrefs, [key]: !notificationPrefs[key] };
+    setNotificationPrefs(newPrefs);
+    try {
+      setPrefsSaving(true);
+      await updateNotificationPreferences(newPrefs);
+    } catch (err) {
+      console.error(err);
+      // Revert on failure
+      setNotificationPrefs({ ...notificationPrefs });
+      alert("Failed to update notification preferences.");
+    } finally {
+      setPrefsSaving(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -548,6 +594,37 @@ export default function SettingsPage() {
                 )}
               </div>
             </div>
+
+            <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-poppins font-semibold text-body text-text-heading">
+                  Notification Preferences
+                </h3>
+                {prefsSaving && <Loader2 size={16} className="animate-spin text-text-muted" />}
+              </div>
+              <div className="space-y-4">
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <div>
+                    <p className="font-inter font-semibold text-small text-text-heading group-hover:text-brand-black transition-colors">Email Alerts</p>
+                    <p className="font-inter text-caption text-text-muted">Receive updates, meeting reminders, and reports via email.</p>
+                  </div>
+                  <div className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-black focus-visible:ring-offset-2 ${notificationPrefs.email ? 'bg-brand-black' : 'bg-gray-200'}`} onClick={() => handleTogglePref('email')}>
+                    <span aria-hidden="true" className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notificationPrefs.email ? 'translate-x-2' : '-translate-x-2'}`} />
+                  </div>
+                </label>
+                <div className="h-px bg-border-subtle w-full" />
+                <label className="flex items-center justify-between cursor-pointer group">
+                  <div>
+                    <p className="font-inter font-semibold text-small text-text-heading group-hover:text-brand-black transition-colors">In-App Notifications</p>
+                    <p className="font-inter text-caption text-text-muted">Get alerts directly within the BOCC platform dashboard.</p>
+                  </div>
+                  <div className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-black focus-visible:ring-offset-2 ${notificationPrefs.inApp ? 'bg-brand-black' : 'bg-gray-200'}`} onClick={() => handleTogglePref('inApp')}>
+                    <span aria-hidden="true" className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notificationPrefs.inApp ? 'translate-x-2' : '-translate-x-2'}`} />
+                  </div>
+                </label>
+              </div>
+            </div>
+
 
             <div className="flex justify-end gap-3">
               <button

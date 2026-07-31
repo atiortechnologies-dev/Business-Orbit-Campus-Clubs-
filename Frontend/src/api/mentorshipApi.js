@@ -10,4 +10,6 @@ export const mentorshipApi = {
   scheduleMeeting: (data) => axiosInstance.post('/mentorship/meetings', data),
   filterMentors: (filters) => axiosInstance.post('/mentors/filter', filters),
   getMentorshipRequestStatus: () => axiosInstance.get('/mentorship/request-status'),
+  uploadMentorPhoto: (formData) => axiosInstance.post('/mentor/profile/photo', formData),
+  toggleMentorVisibility: () => axiosInstance.patch('/mentor/profile/visibility'),
 };

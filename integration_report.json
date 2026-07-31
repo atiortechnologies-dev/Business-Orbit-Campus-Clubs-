@@ -1,8 +1,8 @@
 {
   "totalBackendRoutes": 327,
-  "totalFrontendStrings": 234,
-  "integratedRoutesCount": 290,
-  "missingInFrontendCount": 37,
+  "totalFrontendStrings": 266,
+  "integratedRoutesCount": 322,
+  "missingInFrontendCount": 5,
   "integratedRoutes": [
     {
       "method": "POST",
@@ -34,6 +34,10 @@
     },
     {
       "method": "GET",
+      "path": "/conversations/search"
+    },
+    {
+      "method": "GET",
       "path": "/messages/:chatId"
     },
     {
@@ -43,6 +47,10 @@
     {
       "method": "POST",
       "path": "/upload/:chatId"
+    },
+    {
+      "method": "PATCH",
+      "path": "/read/:chatId"
     },
     {
       "method": "POST",
@@ -214,6 +222,10 @@
     },
     {
       "method": "GET",
+      "path": "/recommendations"
+    },
+    {
+      "method": "GET",
       "path": "/pitches"
     },
     {
@@ -243,6 +255,18 @@
     {
       "method": "DELETE",
       "path": "/watchlist/:startupId"
+    },
+    {
+      "method": "GET",
+      "path": "/watchlist/statistics"
+    },
+    {
+      "method": "POST",
+      "path": "/notes"
+    },
+    {
+      "method": "POST",
+      "path": "/request-meeting"
     },
     {
       "method": "POST",
@@ -405,6 +429,22 @@
       "path": "/stages/launch/certificate"
     },
     {
+      "method": "POST",
+      "path": "/stages/launch/alumni/join"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/mentor/apply"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/showcase/apply"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/statistics"
+    },
+    {
       "method": "GET",
       "path": "/"
     },
@@ -431,6 +471,14 @@
     {
       "method": "PUT",
       "path": "/profile"
+    },
+    {
+      "method": "POST",
+      "path": "/profile/photo"
+    },
+    {
+      "method": "PATCH",
+      "path": "/profile/visibility"
     },
     {
       "method": "GET",
@@ -501,6 +549,14 @@
       "path": "/status"
     },
     {
+      "method": "POST",
+      "path": "/startup/product-type"
+    },
+    {
+      "method": "GET",
+      "path": "/startup/product-type"
+    },
+    {
       "method": "GET",
       "path": "/"
     },
@@ -515,6 +571,10 @@
     {
       "method": "PUT",
       "path": "/change-password"
+    },
+    {
+      "method": "GET",
+      "path": "/auth-redirects"
     },
     {
       "method": "GET",
@@ -535,6 +595,14 @@
     {
       "method": "GET",
       "path": "/success-stories"
+    },
+    {
+      "method": "POST",
+      "path": "/enquiries"
+    },
+    {
+      "method": "GET",
+      "path": "/documents/partnership-deck"
     },
     {
       "method": "GET",
@@ -710,6 +778,22 @@
     },
     {
       "method": "GET",
+      "path": "/updates"
+    },
+    {
+      "method": "GET",
+      "path": "/acceptance"
+    },
+    {
+      "method": "POST",
+      "path": "/accept-offer"
+    },
+    {
+      "method": "GET",
+      "path": "/admission-documents"
+    },
+    {
+      "method": "GET",
       "path": "/onboarding"
     },
     {
@@ -767,6 +851,10 @@
     {
       "method": "GET",
       "path": "/stages/traction"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/traction/progress"
     },
     {
       "method": "POST",
@@ -866,11 +954,35 @@
     },
     {
       "method": "GET",
+      "path": "/stages/progress"
+    },
+    {
+      "method": "GET",
+      "path": "/overview"
+    },
+    {
+      "method": "GET",
       "path": "/status"
     },
     {
       "method": "GET",
       "path": "/checklist"
+    },
+    {
+      "method": "GET",
+      "path": "/surveys"
+    },
+    {
+      "method": "POST",
+      "path": "/surveys"
+    },
+    {
+      "method": "PUT",
+      "path": "/surveys/:surveyId"
+    },
+    {
+      "method": "DELETE",
+      "path": "/surveys/:surveyId"
     },
     {
       "method": "POST",
@@ -893,12 +1005,28 @@
       "path": "/report"
     },
     {
+      "method": "POST",
+      "path": "/report/submit"
+    },
+    {
       "method": "GET",
       "path": "/meeting"
     },
     {
+      "method": "POST",
+      "path": "/meeting/reschedule"
+    },
+    {
+      "method": "GET",
+      "path": "/meeting/feedback"
+    },
+    {
       "method": "GET",
       "path": "/result"
+    },
+    {
+      "method": "GET",
+      "path": "/stage-progression"
     },
     {
       "method": "POST",
@@ -1167,62 +1295,6 @@
   ],
   "missingInFrontend": [
     {
-      "method": "GET",
-      "path": "/conversations/search"
-    },
-    {
-      "method": "PATCH",
-      "path": "/read/:chatId"
-    },
-    {
-      "method": "GET",
-      "path": "/recommendations"
-    },
-    {
-      "method": "GET",
-      "path": "/watchlist/statistics"
-    },
-    {
-      "method": "POST",
-      "path": "/notes"
-    },
-    {
-      "method": "POST",
-      "path": "/request-meeting"
-    },
-    {
-      "method": "POST",
-      "path": "/stages/launch/alumni/join"
-    },
-    {
-      "method": "POST",
-      "path": "/stages/launch/mentor/apply"
-    },
-    {
-      "method": "POST",
-      "path": "/stages/launch/showcase/apply"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/statistics"
-    },
-    {
-      "method": "POST",
-      "path": "/profile/photo"
-    },
-    {
-      "method": "PATCH",
-      "path": "/profile/visibility"
-    },
-    {
-      "method": "POST",
-      "path": "/startup/product-type"
-    },
-    {
-      "method": "GET",
-      "path": "/startup/product-type"
-    },
-    {
       "method": "POST",
       "path": "/upload-photo"
     },
@@ -1235,80 +1307,8 @@
       "path": "/skip"
     },
     {
-      "method": "GET",
-      "path": "/auth-redirects"
-    },
-    {
-      "method": "POST",
-      "path": "/enquiries"
-    },
-    {
-      "method": "GET",
-      "path": "/documents/partnership-deck"
-    },
-    {
-      "method": "GET",
-      "path": "/updates"
-    },
-    {
-      "method": "GET",
-      "path": "/acceptance"
-    },
-    {
-      "method": "POST",
-      "path": "/accept-offer"
-    },
-    {
-      "method": "GET",
-      "path": "/admission-documents"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/traction/progress"
-    },
-    {
       "method": "DELETE",
       "path": "/traction/submission/document/:documentId"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/progress"
-    },
-    {
-      "method": "GET",
-      "path": "/overview"
-    },
-    {
-      "method": "GET",
-      "path": "/surveys"
-    },
-    {
-      "method": "POST",
-      "path": "/surveys"
-    },
-    {
-      "method": "PUT",
-      "path": "/surveys/:surveyId"
-    },
-    {
-      "method": "DELETE",
-      "path": "/surveys/:surveyId"
-    },
-    {
-      "method": "POST",
-      "path": "/report/submit"
-    },
-    {
-      "method": "POST",
-      "path": "/meeting/reschedule"
-    },
-    {
-      "method": "GET",
-      "path": "/meeting/feedback"
-    },
-    {
-      "method": "GET",
-      "path": "/stage-progression"
     },
     {
       "method": "DELETE",
@@ -1350,11 +1350,13 @@
     "/investor",
     "/investor/pitch-decks",
     "/signup/incubator",
+    "/enquiries",
     "/landing",
     "/signup/student",
     "/signup/mentor",
     "/signup/investor",
     "/signup/company",
+    "/documents/partnership-deck",
     "/landing/mentor",
     "/landing/investor",
     "/landing/companies",
@@ -1364,6 +1366,8 @@
     "/mentor/chats",
     "/mentor/meetings",
     "/mentor/profile",
+    "/overview",
+    "/updates",
     "/admin/announcements/create",
     "/admin/chapters/detail",
     "/admin/opportunities/review",
@@ -1372,6 +1376,7 @@
     "/admin/reviews/workspace",
     "/admin/reviews/detail",
     "/admin/reviews/outcome",
+    "/notes",
     "/admin/verification/decision",
     "/admin/verification/detail",
     "/forgot-password",
@@ -1380,11 +1385,15 @@
     "/company/post-opportunity/step-3",
     "/company/post-opportunity/step-4",
     "/incubator/applications/review",
+    "/conversations/search",
+    "/watchlist/statistics",
+    "/recommendations",
     "/chat/conversations",
     "/build-startup/journey/ideation/submit",
     "/build-startup/journey/ideation/review-meeting",
     "/build-startup/journey/ideation/review-result",
     "/build-startup/journey/ideation/resources",
+    "/evaluations/rubric/ideation",
     "/build-startup/journey/ideation",
     "/build-startup/journey/validation",
     "/build-startup/journey/ideation/confirmation",
@@ -1393,6 +1402,10 @@
     "/build-startup/journey/launch/verification",
     "/build-startup/journey/launch/submission",
     "/build-startup/journey/launch/pitch-deck",
+    "/stages/launch/statistics",
+    "/stages/launch/alumni/join",
+    "/stages/launch/mentor/apply",
+    "/stages/launch/showcase/apply",
     "/build-startup/journey/mvp/submit",
     "/build-startup/journey/mvp",
     "/build-startup/journey/mvp/incubation-verification",
@@ -1402,12 +1415,15 @@
     "/build-startup/journey/mvp/incubation-proof",
     "/build-startup/journey/traction/product-submission",
     "/build-startup/journey/traction/review",
+    "/evaluations/rubric/traction",
     "/build-startup/journey/traction/acquisition-tracker",
     "/build-startup/journey/traction/feedback-upload",
+    "/stages/traction/progress",
     "/build-startup/journey/validation/report-submission",
     "/build-startup/journey/validation/survey-tracker",
     "/build-startup/journey/validation/confirmation",
     "/build-startup/journey/validation/evidence-upload",
+    "/meeting/reschedule",
     "/onboarding/verification-progress",
     "/onboarding/verify-email",
     "/freelancing/applications",
@@ -1415,18 +1431,24 @@
     "/freelancing/opportunity",
     "/freelancing/apply",
     "/incubators/profile",
+    "/acceptance",
+    "/admission-documents",
     "/incubators/confirmed",
     "/incubators/apply",
+    "/read/t2",
     "/mentors/messages",
     "/investors/profile",
     "/investors/send-pitch",
     "/investors/chat",
+    "/read/t1",
     "/mentors/profile",
     "/mentors/chat",
     "/mentors/request",
+    "/request-meeting",
     "/support/raise-ticket",
     "/support/tickets/detail",
     "/support/tickets",
+    "/notifications/mark-read",
     "/reset-password",
     "/onboarding/welcome",
     "/onboarding/application-rejected",
@@ -1470,6 +1492,7 @@
     "/auth/refresh-token",
     "/auth/me",
     "/auth/get-all-chapter",
+    "/public/auth-redirects",
     "/onboarding/status",
     "/student/chapter",
     "/request-chapter-change",
@@ -1482,6 +1505,7 @@
     "/startup/progress",
     "/startup/stages",
     "/startups/filter",
+    "/stages/progress",
     "/startup/submit",
     "/startup/save-draft",
     "/startup/submission-status",
@@ -1498,6 +1522,8 @@
     "/incubation-verification/timeline",
     "/incubation-verification/documents",
     "/incubation-verification/result",
+    "/stage-progression",
+    "/student/incubation/accept-offer",
     "/traction/metrics",
     "/traction/submission",
     "/traction/review/status",
@@ -1513,6 +1539,7 @@
     "/mvp/meeting",
     "/mvp/reschedule",
     "/mvp/review",
+    "/startup/product-type",
     "/stages/launch/pitch-deck",
     "/stages/launch/pitch-deck/upload",
     "/stages/launch/pitch-deck/submit",
@@ -1526,6 +1553,9 @@
     "/stages/launch/verification/files",
     "/stages/launch/completion",
     "/stages/launch/certificate",
+    "/surveys",
+    "/report/submit",
+    "/meeting/feedback",
     "/watchlist",
     "/dashboard/stats",
     "/pitches",
@@ -1536,6 +1566,8 @@
     "/mentorship/meetings",
     "/mentors/filter",
     "/mentorship/request-status",
+    "/mentor/profile/photo",
+    "/mentor/profile/visibility",
     "/assistance/request",
     "/assistance/status",
     "/applications/filter",
@@ -1552,11 +1584,20 @@
     "/opportunities/filter"
   ],
   "apiCallsSample": [
+    "Frontend/src/components/landing/Contact.jsx:4:import api from '@/api/axiosInstance';",
+    "Frontend/src/components/landing/incubator/Hero.jsx:5:import api from '@/api/axiosInstance';",
+    "Frontend/src/components/landing/incubator/Hero.jsx:21:      .catch(err => console.error('Failed to fetch partnership deck', err));",
+    "Frontend/src/components/landing/incubator/InstitutionalValue.jsx:4:import api from '@/api/axiosInstance';",
+    "Frontend/src/components/landing/incubator/InstitutionalValue.jsx:23:      .catch(err => console.error('Failed to fetch partnership deck', err));",
     "Frontend/src/components/ui/Logo.jsx:52:        fetchPriority={priority ? 'high' : 'auto'}",
     "Frontend/src/components/ui/Logo.jsx:78:      fetchPriority={priority ? 'high' : 'auto'}",
+    "Frontend/src/pages/admin/Admin.jsx:23:import api from '@/api/axiosInstance';",
+    "Frontend/src/pages/admin/Admin.jsx:96:      .catch(err => console.error('Failed to fetch overview', err));",
+    "Frontend/src/pages/admin/Admin.jsx:110:      .catch(err => console.error('Failed to fetch updates', err));",
     "Frontend/src/pages/admin/AuditLog.jsx:27:  const { auditLogs, pulse, volumeTrend, fetchAuditLogs, isLoadingLogs } = useAdminDashboard();",
     "Frontend/src/pages/admin/AuditLog.jsx:33:    fetchAuditLogs();",
     "Frontend/src/pages/admin/AuditLog.jsx:34:  }, [fetchAuditLogs]);",
+    "Frontend/src/pages/admin/VerificationDecision.jsx:9:import api from '@/api/axiosInstance';",
     "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:50:  const fetchAnnouncementsData = useCallback(async () => {",
     "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:71:    fetchAnnouncementsData();",
     "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:72:  }, [fetchAnnouncementsData]);",
@@ -1565,13 +1606,22 @@
     "Frontend/src/pages/admin/ChapterChangeRequests.jsx:27:      fetchRequests();",
     "Frontend/src/pages/admin/ChapterChangeRequests.jsx:36:      fetchRequests();",
     "Frontend/src/pages/admin/ChapterChangeRequests.jsx:46:      fetchRequests();",
+    "Frontend/src/pages/admin/OpportunityReview.jsx:10:import api from '@/api/axiosInstance';",
     "Frontend/src/pages/auth/StudentSignup.jsx:47:    const fetchChapters = async () => {",
     "Frontend/src/pages/auth/StudentSignup.jsx:67:    fetchChapters();",
+    "Frontend/src/pages/incubator/ApplicationReview.jsx:15:import api from '@/api/axiosInstance';",
     "Frontend/src/pages/incubator/Applications.jsx:82:    const fetchApps = async () => {",
     "Frontend/src/pages/incubator/Applications.jsx:95:        console.error(\"Failed to fetch applications\", err);",
     "Frontend/src/pages/incubator/Applications.jsx:100:    fetchApps();",
+    "Frontend/src/pages/incubator/Messages.jsx:2:import api from '@/api/axiosInstance';",
+    "Frontend/src/pages/incubator/Messages.jsx:105:    const fetchConversations = async () => {",
+    "Frontend/src/pages/incubator/Messages.jsx:115:        console.error('Failed to fetch conversations:', error);",
+    "Frontend/src/pages/incubator/Messages.jsx:118:    const timeoutId = setTimeout(fetchConversations, 300);",
     "Frontend/src/pages/investor/IncomingPitchDecks.jsx:20:    // Calling filterPitches with empty filter to fetch all initially,",
+    "Frontend/src/pages/investor/Investor.jsx:11:import api from '@/api/axiosInstance';",
     "Frontend/src/pages/investor/PitchDeck.jsx:8:import api from '@/api/axiosInstance';",
+    "Frontend/src/pages/journey/ideation/ReviewMeeting.jsx:6:import api from '@/api/axiosInstance';",
+    "Frontend/src/pages/journey/ideation/ReviewMeeting.jsx:18:      .catch(err => console.error('Failed to fetch ideation rubric:', err));",
     "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:32:    fetchData();",
     "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:35:  const fetchData = async () => {",
     "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:42:      console.error('Failed to fetch pitch deck data', err);",
@@ -1579,28 +1629,10 @@
     "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:66:      fetchData();",
     "Frontend/src/pages/journey/launch/LaunchProofUpload.jsx:54:    const fetchData = async () => {",
     "Frontend/src/pages/journey/launch/LaunchProofUpload.jsx:70:    fetchData();",
+    "Frontend/src/pages/journey/launch/LaunchStage.jsx:5:import api from '@/api/axiosInstance';",
+    "Frontend/src/pages/journey/launch/LaunchStage.jsx:36:      .catch(err => console.error('Failed to fetch launch stats:', err));",
     "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:58:  const { submitLaunch, saveLaunchDraft, fetchLaunchSubmission, launchSubmission, isLoading: isContextLoading } = useIncubation();",
     "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:63:    fetchLaunchSubmission();",
-    "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:64:  }, [fetchLaunchSubmission]);",
-    "Frontend/src/pages/journey/launch/LaunchVerificationReview.jsx:54:    const fetchData = async () => {",
-    "Frontend/src/pages/journey/launch/LaunchVerificationReview.jsx:68:    fetchData();",
-    "Frontend/src/pages/journey/mvp/IncubationVerificationReview.jsx:49:    const fetchData = async () => {",
-    "Frontend/src/pages/journey/mvp/IncubationVerificationReview.jsx:62:        console.error(\"Error fetching incubation verification details\", err);",
-    "Frontend/src/pages/journey/mvp/IncubationVerificationReview.jsx:67:    fetchData();",
-    "Frontend/src/pages/mentor/Mentor.jsx:23:    async function fetchData() {",
-    "Frontend/src/pages/mentor/Mentor.jsx:34:        console.error('Failed to fetch mentor dashboard data', err);",
-    "Frontend/src/pages/mentor/Mentor.jsx:39:    fetchData();",
-    "Frontend/src/pages/onboarding/VerificationProgress.jsx:61:      console.error(\"Failed to fetch onboarding status:\", err);",
-    "Frontend/src/pages/onboarding/Welcome.jsx:29:    const fetchChapterAndStats = async () => {",
-    "Frontend/src/pages/onboarding/Welcome.jsx:51:    fetchChapterAndStats();",
-    "Frontend/src/pages/freelancing/FreelancingOpportunities.jsx:45:    async function fetchOpportunities() {",
-    "Frontend/src/pages/freelancing/FreelancingOpportunities.jsx:52:        console.error(\"Error fetching opportunities:\", err);",
-    "Frontend/src/pages/freelancing/FreelancingOpportunities.jsx:57:    fetchOpportunities();",
-    "Frontend/src/pages/freelancing/MyApplications.jsx:35:    const fetchApplications = async () => {",
-    "Frontend/src/pages/freelancing/MyApplications.jsx:43:        console.error('Error fetching application statuses', err);",
-    "Frontend/src/pages/freelancing/MyApplications.jsx:48:    fetchApplications();",
-    "Frontend/src/pages/mentors/MentorDirectory.jsx:28:    async function fetchFiltered() {",
-    "Frontend/src/pages/mentors/MentorDirectory.jsx:45:    fetchFiltered();",
-    "Frontend/src/pages/support/SupportDashboard.jsx:71:    async function fetchTickets() {"
+    "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:64:  }, [fetchLaunchSubmission]);"
   ]
 }
