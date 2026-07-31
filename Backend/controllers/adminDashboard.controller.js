@@ -3,7 +3,11 @@ const Announcement = require("../models/Announcement");
 const CompanyProfile = require("../models/CompanyProfile");
 const IncubatorProfile = require("../models/IncubatorProfile");
 const InvestorProfile = require("../models/InvestorProfile");
+const Meeting = require("../models/Meeting");
 const MentorProfile = require("../models/MentorProfile");
+const StageSubmission = require("../models/StageSubmission");
+const Startup = require("../models/Startup");
+const StartupStage = require("../models/StartupStage");
 const StudentProfile = require("../models/StudentProfile");
 const User = require("../models/User");
 
@@ -205,10 +209,355 @@ const handleVerificationDecision = asyncHandler(async (req, res) => {
   });
 });
 
+// --- startup verification ---
+
+/**
+ * @desc    Get all stage submissions for Review Queue + Top Stat Cards
+ * @route   GET /api/admin/reviews
+ * @access  Private (Admin only)
+ */
+const getReviewQueue = asyncHandler(async (req, res) => {
+  // 1. Fetch submissions that are pending review
+  const submissions = await StageSubmission.find({ status: "pending_review" })
+    .populate({
+      path: "startup_id",
+      select:
+        "startup_name chapter current_stage progress_percentage student_id",
+      populate: { path: "student_id", select: "full_name email" },
+    })
+    .populate("stage_id", "stage_number stage_name status")
+    .sort({ submitted_at: -1 });
+
+  // 2. Compute dynamic Stat Cards metrics
+  const pendingCount = await StageSubmission.countDocuments({
+    status: "pending_review",
+  });
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const approvedToday = await StageSubmission.countDocuments({
+    status: "approved",
+    updated_at: { $gte: startOfToday },
+  });
+
+  const rejectedToday = await StageSubmission.countDocuments({
+    status: "rejected",
+    updated_at: { $gte: startOfToday },
+  });
+
+  // Format array for the frontend table
+  const formattedSubmissions = submissions.map((sub) => {
+    const startup = sub.startup_id || {};
+    const student = startup.student_id || {};
+    const stage = sub.stage_id || {};
+
+    return {
+      id: sub._id,
+      startupId: startup._id,
+      name: sub.title || "Untitled Startup",
+      founder: student.full_name || "N/A",
+      chapter: startup.chapter || "Main Chapter",
+      stage: stage.stage_name || `Stage ${startup.current_stage || 1}`,
+      stageNumber: stage.stage_number || startup.current_stage || 1,
+      date: sub.submitted_at
+        ? sub.submitted_at.toISOString().split("T")[0]
+        : sub.created_at.toISOString().split("T")[0],
+      status: sub.status === "pending_review" ? "Pending" : sub.status,
+    };
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      stats: {
+        pendingReviews: pendingCount,
+        approvedToday,
+        rejectedToday,
+        meetingsPending: 0,
+      },
+      submissions: formattedSubmissions,
+    },
+  });
+});
+
+/**
+ * @desc    Get detailed submission + startup info for Ideation Workspace Review
+ * @route   GET /api/admin/reviews/:submissionId
+ * @access  Private (Admin only)
+ */
+const getSubmissionDetail = asyncHandler(async (req, res) => {
+  const { submissionId } = req.params;
+
+  const submission = await StageSubmission.findById(submissionId)
+    .populate({
+      path: "startup_id",
+      select:
+        "startup_name chapter current_stage progress_percentage student_id logo description",
+      populate: { path: "student_id", select: "full_name email phone" },
+    })
+    .populate("stage_id");
+
+  if (!submission) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Submission not found" });
+  }
+
+  const startup = submission.startup_id;
+
+  // Fetch all stages for the startup journey timeline
+  const allStages = await StartupStage.find({ startup_id: startup._id }).sort({
+    stage_number: 1,
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      submission: {
+        id: submission._id,
+        title: submission.title,
+        description: submission.description, // Problem Statement
+        solution: submission.solution, // Proposed Solution
+        targetAudience: submission.target_audience,
+        valueProposition: submission.value_proposition,
+        competitors: submission.competitors,
+        attachmentUrl: submission.attachment_url,
+        status: submission.status,
+        submittedAt: submission.submitted_at || submission.created_at,
+      },
+      startup: {
+        id: startup._id,
+        name: submission.title,
+        founder: startup.student_id?.full_name || "N/A",
+        email: startup.student_id?.email || "N/A",
+        phone: startup.student_id?.phone || "N/A",
+        chapter: startup.chapter || "N/A",
+        currentStage: startup.current_stage,
+        progressPercentage: startup.progress_percentage || 20,
+      },
+      journeyStages: allStages.map((stg) => ({
+        stageNumber: stg.stage_number,
+        label: stg.stage_name,
+        status: stg.status, // 'locked' | 'active' | 'submitted' | 'approved' | 'rejected'
+      })),
+    },
+  });
+});
+
+/**
+ * @desc    Approve or Request Changes on a Stage Submission
+ * @route   POST /api/admin/reviews/:submissionId/decision
+ * @access  Private (Admin only)
+ */
+const handleSubmissionDecision = asyncHandler(async (req, res) => {
+  const { submissionId } = req.params;
+  const { decision, remarks, changesText } = req.body; // 'approve' | 'request_changes'
+
+  const submission = await StageSubmission.findById(submissionId);
+  if (!submission) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Submission not found" });
+  }
+
+  if (decision === "approve") {
+    submission.status = "approved";
+    if (remarks) submission.request_changes = remarks;
+    await submission.save();
+  } else if (decision === "request_changes") {
+    submission.status = "request_changes";
+    submission.request_changes = changesText || remarks || "";
+    await submission.save();
+
+    // Set stage back to 'active' so student can interact with it on their dashboard
+    await StartupStage.findByIdAndUpdate(submission.stage_id, {
+      status: "active",
+    });
+  } else {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid decision option" });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: `Submission ${
+      decision === "approve" ? "approved" : "reverted to draft for revision"
+    }`,
+    data: {
+      id: submission._id,
+      status: submission.status,
+      request_changes: submission.request_changes,
+    },
+  });
+});
+
+/**
+ * @desc    Get pre-scheduling context (verifies idea/submission approval)
+ * @route   GET /api/admin/meetings/prepare
+ * @access  Private (Admin only)
+ */
+const getMeetingPrepareContext = asyncHandler(async (req, res) => {
+  const { submissionId, startupId } = req.query;
+
+  let submission = null;
+  let startup = null;
+
+  if (submissionId) {
+    submission = await StageSubmission.findById(submissionId).populate({
+      path: "startup_id",
+      populate: { path: "student_id", select: "full_name email" },
+    });
+
+    if (!submission) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Submission not found" });
+    }
+
+    startup = submission.startup_id;
+
+    // Strict Rule: Ideas/Submissions MUST be approved before scheduling
+    if (submission.status !== "approved") {
+      return res.status(403).json({
+        success: false,
+        message: "Meetings can only be scheduled for approved submissions.",
+        submissionStatus: submission.status,
+      });
+    }
+  } else if (startupId) {
+    startup = await Startup.findById(startupId).populate(
+      "student_id",
+      "full_name email",
+    );
+
+    // Check if at least one submission is approved for this startup
+    const approvedSub = await StageSubmission.findOne({
+      startup_id: startupId,
+      status: "approved",
+    });
+
+    if (!approvedSub) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "No approved submissions found for this startup. Idea must be approved first.",
+      });
+    }
+  } else {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing submissionId or startupId" });
+  }
+
+  // Fetch available reviewers (Mentors, Admins, Incubators)
+  const reviewers = await User.find({
+    role: { $in: ["admin", "mentor"] },
+  }).select("_id full_name role");
+
+  // Fetch upcoming scheduled meetings for sidebar display
+  const upcomingMeetings = await Meeting.find({ status: "scheduled" })
+    .populate("startup_id", "startup_name")
+    .populate("reviewer_id", "full_name")
+    .sort({ meeting_date: 1 })
+    .limit(5);
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      startup: {
+        id: startup._id,
+        name: startup.startup_name,
+        founder: startup.student_id?.full_name || "N/A",
+        email: startup.student_id?.email || "N/A",
+      },
+      reviewers: reviewers.map((r) => ({
+        id: r._id,
+        name: r.full_name,
+        role: r.role,
+      })),
+      upcomingMeetings: upcomingMeetings.map((m) => ({
+        id: m._id,
+        startup: m.startup_id?.startup_name || "Unknown",
+        reviewer: m.reviewer_id?.full_name || "Assigned Reviewer",
+        time: new Date(m.meeting_date).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        date: new Date(m.meeting_date).toISOString().split("T")[0],
+      })),
+    },
+  });
+});
+
+/**
+ * @desc    Schedule a new review meeting
+ * @route   POST /api/admin/meetings/schedule
+ * @access  Private (Admin only)
+ */
+const scheduleMeeting = asyncHandler(async (req, res) => {
+  const {
+    startup_id,
+    reviewer_id,
+    meeting_date,
+    meeting_time,
+    duration,
+    platform,
+    agenda,
+  } = req.body;
+
+  if (!startup_id || !meeting_date || !meeting_time) {
+    return res.status(400).json({
+      success: false,
+      message: "Startup, meeting date, and meeting time are required",
+    });
+  }
+
+  // Double check startup approval condition
+  const approvedSubmission = await StageSubmission.findOne({
+    startup_id,
+    status: "approved",
+  });
+
+  if (!approvedSubmission) {
+    return res.status(403).json({
+      success: false,
+      message: "Cannot schedule meeting. Startup idea has not been approved.",
+    });
+  }
+
+  // Combine date and time strings into a Date object
+  const combinedDateTime = new Date(`${meeting_date}T${meeting_time}:00`);
+
+  const meeting = new Meeting({
+    startup_id,
+    reviewer_id: reviewer_id || req.user.id, // Fallback to current logged-in admin
+    meeting_date: combinedDateTime,
+    duration: duration || "60 minutes",
+    platform: platform || "Google Meet",
+    agenda: agenda || "",
+    status: "scheduled",
+  });
+
+  await meeting.save();
+
+  return res.status(201).json({
+    success: true,
+    message: "Meeting scheduled successfully",
+    data: meeting,
+  });
+});
+
 module.exports = {
   getAnnouncements,
   createAnnouncement,
   getVerificationUsers,
   getUserVerificationDetail,
   handleVerificationDecision,
+  getReviewQueue,
+  getSubmissionDetail,
+  handleSubmissionDecision,
+  getMeetingPrepareContext,
+  scheduleMeeting,
 };

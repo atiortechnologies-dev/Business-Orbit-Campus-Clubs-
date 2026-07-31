@@ -52,14 +52,19 @@ const StageSubmissionSchema = mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["draft", "pending_review", "approved", "rejected"],
+      enum: [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "request_changes",
+      ],
       default: "draft",
     },
-    // assigned_reviewer_id: {
-    //     type: ObjectId,
-    //     ref: "User",
-    //     default: null
-    // },
+    request_changes: {
+      type: String,
+      default: "",
+    },
     submitted_at: {
       type: Date,
       default: null,

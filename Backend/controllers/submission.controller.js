@@ -58,10 +58,10 @@ const submitIdea = asyncHandler(async (req, res) => {
   session.startTransaction();
 
   try {
-    // Reuse an existing draft for this stage if one exists, otherwise create fresh.
+    // Reuse an existing draft OR rejected submission (revision) for this stage if one exists.
     let submission = await StageSubmission.findOne({
       stage_id: activeStage._id,
-      status: "draft",
+      status: { $in: ["draft", "request_changes"] },
     }).session(session);
 
     const attachment_url =
@@ -77,6 +77,8 @@ const submitIdea = asyncHandler(async (req, res) => {
       submission.value_proposition = value_proposition || "";
       submission.competitors = competitors || "";
       submission.attachment_url = attachment_url;
+      // Clear past feedback when resubmitting
+      submission.request_changes = "";
     } else {
       submission = new StageSubmission({
         startup_id: startup._id,
@@ -159,7 +161,7 @@ const saveDraft = asyncHandler(async (req, res) => {
 
   let draft = await StageSubmission.findOne({
     stage_id: activeStage._id,
-    status: "draft",
+    status: { $in: ["draft", "rejected"] },
   });
 
   const attachment_url =
@@ -242,6 +244,7 @@ const getSubmissionStatus = asyncHandler(async (req, res) => {
             attachment_url: submission.attachment_url || "",
             status: submission.status,
             submitted_at: submission.submitted_at,
+            request_changes: submission.request_changes || "",
           }
         : null,
     },

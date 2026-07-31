@@ -31,4 +31,22 @@ router.post(
   adminDashboardController.handleVerificationDecision,
 );
 
+// --- startup verification ---
+
+router.get("/reviews", adminDashboardController.getReviewQueue);
+router.get(
+  "/reviews/:submissionId",
+  adminDashboardController.getSubmissionDetail,
+);
+router.post(
+  "/reviews/:submissionId/decision",
+  adminDashboardController.handleSubmissionDecision,
+);
+
+router.get(
+  "/meetings/prepare",
+  adminDashboardController.getMeetingPrepareContext,
+);
+router.post("/meetings/schedule", adminDashboardController.scheduleMeeting);
+
 module.exports = router;

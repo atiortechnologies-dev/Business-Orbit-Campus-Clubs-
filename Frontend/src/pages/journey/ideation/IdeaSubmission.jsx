@@ -8,6 +8,7 @@ import {
   Clock,
   ExternalLink,
   Link2,
+  MessageSquareWarning,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -85,6 +86,7 @@ export default function IdeaSubmissionPage() {
   const [savingDraft, setSavingDraft] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [requestChangesText, setRequestChangesText] = useState("");
 
   useEffect(() => {
     async function loadStatus() {
@@ -110,11 +112,19 @@ export default function IdeaSubmissionPage() {
             attachmentUrl: sub.attachment_url || "",
           });
 
-          // Lock form if already submitted
+          // Lock form ONLY if undergoing review or approved
           if (
             ["pending_review", "submitted", "approved"].includes(sub.status)
           ) {
             setIsReadOnly(true);
+          } else {
+            // Unlock form for editing if in 'draft' or requested changes state
+            setIsReadOnly(false);
+          }
+
+          // Capture revision request notes from admin
+          if (sub.request_changes || sub.requestChanges) {
+            setRequestChangesText(sub.request_changes || sub.requestChanges);
           }
         }
       } catch (err) {
@@ -220,7 +230,26 @@ export default function IdeaSubmissionPage() {
           : "Complete the following sections to detail your startup's core proposition. This data will be used for your Stage 1 review."}
       </p>
 
-      {/* Lock Banner for already submitted status */}
+      {/* Banner for Admin Revision Request */}
+      {requestChangesText && (
+        <div className="max-w-3xl mb-6 p-4 bg-warning/10 border border-warning/30 text-warning rounded-lg flex items-start gap-3">
+          <MessageSquareWarning size={20} className="shrink-0 mt-0.5" />
+          <div>
+            <p className="font-poppins font-semibold text-small">
+              Action Required: Changes Requested by Reviewer
+            </p>
+            <p className="font-inter text-small text-text-body mt-1 leading-relaxed bg-surface-white/60 p-3 rounded border border-warning/20">
+              "{requestChangesText}"
+            </p>
+            <p className="font-inter text-caption text-text-muted mt-2">
+              Please revise the form fields below based on the reviewer's
+              feedback and resubmit your idea.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Lock Banner for locked statuses */}
       {isReadOnly && (
         <div className="max-w-3xl mb-6 p-4 bg-warning/10 border border-warning/30 text-warning rounded-lg flex items-center gap-3">
           <Clock size={20} className="shrink-0" />
