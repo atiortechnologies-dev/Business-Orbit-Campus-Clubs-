@@ -21,8 +21,10 @@ export const skipProfile = (role) => {
 };
 
 // PUT notification preferences
-export const updateNotificationPreferences = (preferences) => {
-  return api.put(`/profiles/notification-preferences`, preferences);
+export const updateNotificationPreferences = (role, preferences) => {
+  return api.put(`/${role}/profile/notification-preferences`, {
+    notification_preferences: preferences,
+  });
 };
 
 // DELETE my account
@@ -35,3 +37,7 @@ export const uploadProfilePhoto = (role, photoData) => {
   return api.post(`/${role}/profile/upload-photo`, photoData);
 };
 
+// PUT change password
+export const changePassword = (role, passwords) => {
+  return api.put(`/${role}/profile/change-password`, passwords);
+};

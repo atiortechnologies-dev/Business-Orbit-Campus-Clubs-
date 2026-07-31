@@ -14,9 +14,13 @@ exports.getAllInvestors = async (req, res, next) => {
   try {
     const investors = await InvestorProfile.find({ account_status: "approved" })
       .populate("user_id", "full_name email")
-      .select("user_id organization investment_range investment_sectors investment_stage investor_type profile_photo location");
-    
-    res.status(200).json({ success: true, count: investors.length, data: investors });
+      .select(
+        "user_id organization investment_range investment_sectors investment_stage investor_type profile_photo location",
+      );
+
+    res
+      .status(200)
+      .json({ success: true, count: investors.length, data: investors });
   } catch (error) {
     next(error);
   }
@@ -30,26 +34,36 @@ exports.searchInvestors = async (req, res, next) => {
   try {
     const { keyword } = req.query;
     if (!keyword) {
-      return res.status(400).json({ success: false, message: "Keyword query parameter is required" });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Keyword query parameter is required",
+        });
     }
 
     const regex = new RegExp(keyword, "i");
 
     // First find matching users
-    const users = await User.find({ role: "investor", full_name: regex }).select("_id");
+    const users = await User.find({
+      role: "investor",
+      full_name: regex,
+    }).select("_id");
     const userIds = users.map((u) => u._id);
 
     // Then find investor profiles matching org OR user_id
     const investors = await InvestorProfile.find({
       account_status: "approved",
-      $or: [
-        { organization: regex },
-        { user_id: { $in: userIds } }
-      ]
-    }).populate("user_id", "full_name email")
-      .select("user_id organization investment_range investment_sectors investment_stage investor_type profile_photo location");
+      $or: [{ organization: regex }, { user_id: { $in: userIds } }],
+    })
+      .populate("user_id", "full_name email")
+      .select(
+        "user_id organization investment_range investment_sectors investment_stage investor_type profile_photo location",
+      );
 
-    res.status(200).json({ success: true, count: investors.length, data: investors });
+    res
+      .status(200)
+      .json({ success: true, count: investors.length, data: investors });
   } catch (error) {
     next(error);
   }
@@ -62,7 +76,7 @@ exports.searchInvestors = async (req, res, next) => {
 exports.filterInvestors = async (req, res, next) => {
   try {
     const { sectors, stage, type, min_funding } = req.body;
-    
+
     let query = { account_status: "approved" };
 
     if (sectors && sectors.length > 0) {
@@ -81,9 +95,13 @@ exports.filterInvestors = async (req, res, next) => {
 
     const investors = await InvestorProfile.find(query)
       .populate("user_id", "full_name email")
-      .select("user_id organization investment_range investment_sectors investment_stage investor_type profile_photo location");
-    
-    res.status(200).json({ success: true, count: investors.length, data: investors });
+      .select(
+        "user_id organization investment_range investment_sectors investment_stage investor_type profile_photo location",
+      );
+
+    res
+      .status(200)
+      .json({ success: true, count: investors.length, data: investors });
   } catch (error) {
     next(error);
   }
@@ -96,12 +114,19 @@ exports.filterInvestors = async (req, res, next) => {
 exports.getInvestorById = async (req, res, next) => {
   try {
     const { investorId } = req.params;
-    
-    const investor = await InvestorProfile.findOne({ user_id: investorId, account_status: "approved" })
-      .populate("user_id", "full_name email");
-      
+
+    const investor = await InvestorProfile.findOne({
+      user_id: investorId,
+      account_status: "approved",
+    }).populate("user_id", "full_name email");
+
     if (!investor) {
-      return res.status(404).json({ success: false, message: "Investor not found or not approved" });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Investor not found or not approved",
+        });
     }
 
     res.status(200).json({ success: true, data: investor });
@@ -117,15 +142,28 @@ exports.getInvestorById = async (req, res, next) => {
 exports.getInvestorPortfolio = async (req, res, next) => {
   try {
     const { investorId } = req.params;
-    
-    const investor = await InvestorProfile.findOne({ user_id: investorId, account_status: "approved" })
-      .select("portfolio_details");
-      
+
+    const investor = await InvestorProfile.findOne({
+      user_id: investorId,
+      account_status: "approved",
+    }).select("portfolio_details");
+
     if (!investor) {
-      return res.status(404).json({ success: false, message: "Investor not found or not approved" });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Investor not found or not approved",
+        });
     }
 
-    res.status(200).json({ success: true, portfolio: investor.portfolio_details || "No portfolio details available." });
+    res
+      .status(200)
+      .json({
+        success: true,
+        portfolio:
+          investor.portfolio_details || "No portfolio details available.",
+      });
   } catch (error) {
     next(error);
   }

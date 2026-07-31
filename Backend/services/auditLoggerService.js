@@ -4,7 +4,7 @@
  * @architecture Reusable service called across various controllers.
  */
 
-const AuditLog = require('../models/AuditLog');
+const AuditLog = require("../models/AuditLog");
 
 /**
  * Logs an administrative or system action.
@@ -25,12 +25,12 @@ exports.logAudit = async (
   targetEntityName,
   status,
   ipAddress,
-  details
+  details,
 ) => {
   try {
     await AuditLog.create({
       actor_id: actor ? actor._id : null,
-      actor_name: actor ? (actor.full_name || actor.name) : 'System',
+      actor_name: actor ? actor.full_name || actor.name : "System",
       module,
       action,
       target_entity_id: targetEntityId || null,
@@ -40,6 +40,6 @@ exports.logAudit = async (
       details: details || {},
     });
   } catch (error) {
-    console.error('Audit Logger Error:', error);
+    console.error("Audit Logger Error:", error);
   }
 };

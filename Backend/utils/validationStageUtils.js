@@ -1,3 +1,8 @@
+/**
+ * @file validationStageUtils.js
+ * @description Utility functions for managing the validation stage metrics and progress.
+ * @architecture Provides helper methods used by controllers to calculate validation checklist completion and overall stage progress.
+ */
 const StartupStage = require("../models/StartupStage");
 const ValidationChecklistItem = require("../models/ValidationChecklistItem");
 const ValidationEvidence = require("../models/ValidationEvidence");
@@ -142,6 +147,11 @@ const updateChecklistItem = async (startupId, itemName, isCompleted = true) => {
   }
 };
 
+/**
+ * @desc    Utility functions for validation stage tracking
+ * @route   N/A
+ * @access  Internal
+ */
 module.exports = {
   isStage1Approved,
   getChecklistProgress,

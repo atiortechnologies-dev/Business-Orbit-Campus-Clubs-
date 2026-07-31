@@ -403,17 +403,20 @@ const login = asyncHandler(async (req, res) => {
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  if (user.role === 'admin' || user.role === 'super_admin') {
-    const crypto = require('crypto');
-    const refresh_token_hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+  if (user.role === "admin" || user.role === "super_admin") {
+    const crypto = require("crypto");
+    const refresh_token_hash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
     await UserSession.create({
       user_id: user._id,
-      device_name: req.headers['user-agent'] || 'Unknown Device',
-      os_browser: 'Unknown OS/Browser', // In a real app we would parse user-agent
-      ip_address: req.ip || req.connection?.remoteAddress || 'Unknown IP',
+      device_name: req.headers["user-agent"] || "Unknown Device",
+      os_browser: "Unknown OS/Browser", // In a real app we would parse user-agent
+      ip_address: req.ip || req.connection?.remoteAddress || "Unknown IP",
       refresh_token_hash,
       is_current: true,
-      last_active_at: new Date()
+      last_active_at: new Date(),
     });
   }
 

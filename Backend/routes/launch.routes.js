@@ -1,5 +1,15 @@
+/**
+ * @file launch.routes.js
+ * @description Routes for the launch stage operations.
+ * @architecture Defines API endpoints for launch overview, submission, pitch deck upload, insights, and completion.
+ */
 const express = require("express");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
+/**
+ * @desc    Launch routing module
+ * @route   /api/launch
+ * @access  Private (Student)
+ */
 const router = express.Router();
 const launchController = require("../controllers/launch.controller");
 const { validateRequest } = require("../middlewares/validateRequest");

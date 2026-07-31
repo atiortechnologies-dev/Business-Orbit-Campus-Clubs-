@@ -73,7 +73,11 @@ export default function CompleteProfileInvestor() {
         navigate(destination, { replace: true });
       }, 800);
     } catch (err) {
-      setError(err.message || "Failed to save profile. Please try again.");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to save profile. Please try again.",
+      );
       setIsSubmitting(false);
     }
   };
@@ -89,7 +93,11 @@ export default function CompleteProfileInvestor() {
 
       navigate(destination, { replace: true });
     } catch (err) {
-      setError(err.message || "Failed to skip profile completion.");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to skip profile completion.",
+      );
       setIsSubmitting(false);
     }
   };

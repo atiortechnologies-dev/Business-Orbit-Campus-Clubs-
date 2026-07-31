@@ -15,6 +15,7 @@ import {
   Building2,
   Briefcase,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import ComingSoon from "@/components/ui/ComingSoon";
@@ -36,6 +37,7 @@ export default function DashboardPage() {
   const [dashboardData, setDashboardData] = useState(null);
   const [activityLog, setActivityLog] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     async function fetchDashboardData() {
@@ -58,6 +60,12 @@ export default function DashboardPage() {
 
         if (redirectDestination) {
           navigate(redirectDestination, { replace: true });
+        } else {
+          setErrorMsg(
+            err?.response?.data?.message ||
+              err?.message ||
+              "Failed to load dashboard data. Please try again.",
+          );
         }
       } finally {
         setLoading(false);
@@ -76,6 +84,12 @@ export default function DashboardPage() {
         className="grid grid-cols-1 md:grid-cols-12"
         style={{ gap: "var(--spacing-gutter)" }}
       >
+        {errorMsg && (
+          <div className="md:col-span-12 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 mb-2">
+            <AlertCircle size={16} className="shrink-0" />
+            <span>{errorMsg}</span>
+          </div>
+        )}
         <section className="md:col-span-12 lg:col-span-8 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col md:flex-row items-center gap-8">
           <div className="flex-1 space-y-4 text-center md:text-left">
             <h3 className="text-text-heading font-poppins font-semibold text-page flex items-center gap-2">
@@ -345,7 +359,10 @@ export default function DashboardPage() {
           <div className="space-y-4">
             {activityLog.length > 0 ? (
               activityLog.map((log, index) => (
-                <div key={log._id || index} className="flex items-start gap-4 pb-4 border-b border-divider-line last:border-0 last:pb-0">
+                <div
+                  key={log._id || index}
+                  className="flex items-start gap-4 pb-4 border-b border-divider-line last:border-0 last:pb-0"
+                >
                   <div className="w-2 h-2 rounded-full bg-accent-neon mt-2 shrink-0" />
                   <div>
                     <p className="text-text-body font-inter font-normal text-body">

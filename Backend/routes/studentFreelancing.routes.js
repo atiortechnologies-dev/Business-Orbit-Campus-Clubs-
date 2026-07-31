@@ -8,7 +8,6 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../utils/uploadService");
 
-
 const { requireAuth, authorizeRoles } = require("../middlewares/requireAuth");
 const {
   listOpportunities,
@@ -27,8 +26,7 @@ const {
   withdrawApplication,
   getApplicationTimeline,
   getInterviews,
-  getApplicationStatusSummary
-
+  getApplicationStatusSummary,
 } = require("../controllers/studentFreelancing.controller");
 
 // Apply auth and role middlewares to all routes in this file
@@ -62,8 +60,6 @@ router.post("/opportunities/:opportunityId/save", saveOpportunity);
 // @desc    Remove a saved opportunity
 router.delete("/opportunities/:opportunityId/save", unsaveOpportunity);
 
-
-
 // --- Applications Routes ---
 
 // @route   POST /api/student/freelancing/applications
@@ -96,7 +92,11 @@ router.post("/applications/upload-resume", upload.single("file"), uploadResume);
 
 // @route   POST /api/student/freelancing/applications/upload-document
 // @desc    Upload additional document
-router.post("/applications/upload-document", upload.single("file"), uploadDocument);
+router.post(
+  "/applications/upload-document",
+  upload.single("file"),
+  uploadDocument,
+);
 
 // @route   POST /api/student/freelancing/applications/:applicationId/submit
 // @desc    Submit application

@@ -1,5 +1,5 @@
-import React, { createContext, useState, useCallback } from 'react';
-import * as investorApi from '../api/investorApi';
+import React, { createContext, useState, useCallback } from "react";
+import * as investorApi from "../api/investorApi";
 
 export const InvestorContext = createContext(null);
 
@@ -10,7 +10,8 @@ export const InvestorProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const handleError = (err, shouldThrow = true) => {
-    const msg = err.response?.data?.message || err.message || "An error occurred";
+    const msg =
+      err.response?.data?.message || err.message || "An error occurred";
     setError(msg);
     if (shouldThrow) throw new Error(msg);
   };
@@ -30,11 +31,16 @@ export const InvestorProvider = ({ children }) => {
 
   const addToWatchlist = useCallback(async (startupId) => {
     setError(null);
-    setWatchlist(prev => [...prev, { _id: startupId, startup: { _id: startupId } }]);
+    setWatchlist((prev) => [
+      ...prev,
+      { _id: startupId, startup: { _id: startupId } },
+    ]);
     try {
       await investorApi.addToWatchlist(startupId);
     } catch (err) {
-      setWatchlist(prev => prev.filter(item => item.startup?._id !== startupId));
+      setWatchlist((prev) =>
+        prev.filter((item) => item.startup?._id !== startupId),
+      );
       handleError(err, false);
     }
   }, []);
@@ -42,15 +48,15 @@ export const InvestorProvider = ({ children }) => {
   const removeFromWatchlist = useCallback(async (startupId) => {
     setError(null);
     let removedItem = null;
-    setWatchlist(prev => {
-      const idx = prev.findIndex(item => item.startup?._id === startupId);
+    setWatchlist((prev) => {
+      const idx = prev.findIndex((item) => item.startup?._id === startupId);
       if (idx > -1) removedItem = prev[idx];
-      return prev.filter(item => item.startup?._id !== startupId);
+      return prev.filter((item) => item.startup?._id !== startupId);
     });
     try {
       await investorApi.removeFromWatchlist(startupId);
     } catch (err) {
-      if (removedItem) setWatchlist(prev => [...prev, removedItem]);
+      if (removedItem) setWatchlist((prev) => [...prev, removedItem]);
       handleError(err, false);
     }
   }, []);
@@ -71,7 +77,7 @@ export const InvestorProvider = ({ children }) => {
     try {
       await investorApi.trackPitchView(startupId);
     } catch (err) {
-      console.error('Failed to track pitch view:', err);
+      console.error("Failed to track pitch view:", err);
     }
   }, []);
 

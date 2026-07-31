@@ -1,15 +1,15 @@
 export default function Input({
   id,
   label,
-  labelClassName = '',
-  type = 'text',
-  placeholder = '',
+  labelClassName = "",
+  type = "text",
+  placeholder = "",
   autoComplete,
   error,
   helperText,
   leftSlot,
   rightSlot,
-  className = '',
+  className = "",
   required = false,
   ...rest
 }) {
@@ -17,10 +17,15 @@ export default function Input({
 
   return (
     <div className={`flex flex-col gap-1 ${className}`}>
-      <label htmlFor={id} className={`text-caption font-medium text-text-heading font-inter ${labelClassName}`}>
+      <label
+        htmlFor={id}
+        className={`text-caption font-medium text-text-heading font-inter ${labelClassName}`}
+      >
         {label}
         {required && (
-          <span className="text-error ml-0.5" aria-hidden="true">*</span>
+          <span className="text-error ml-0.5" aria-hidden="true">
+            *
+          </span>
         )}
       </label>
 
@@ -43,28 +48,24 @@ export default function Input({
           required={required}
           aria-invalid={hasError || undefined}
           aria-describedby={
-            hasError
-              ? `${id}-error`
-              : helperText
-              ? `${id}-hint`
-              : undefined
+            hasError ? `${id}-error` : helperText ? `${id}-hint` : undefined
           }
           className={[
             // bg-surface-white matches the surrounding Card, so the field
             // reads as recessed rather than a separate surface.
-            'w-full rounded-md border bg-surface-white text-sm text-text-body font-inter',
-            'placeholder:text-text-muted',
-            'transition-all duration-150 ease-linear',
-            'focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black',
-            'min-h-[44px] py-2.5',
-            leftSlot ? 'pl-9' : 'pl-3',
-            rightSlot ? 'pr-9' : 'pr-3',
+            "w-full rounded-md border bg-surface-white text-sm text-text-body font-inter",
+            "placeholder:text-text-muted",
+            "transition-all duration-150 ease-linear",
+            "focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black",
+            "min-h-[44px] py-2.5",
+            leftSlot ? "pl-9" : "pl-3",
+            rightSlot ? "pr-9" : "pr-3",
             hasError
-              ? 'border-error focus:border-error focus:ring-error'
-              : 'border-border-subtle focus:border-brand-black',
+              ? "border-error focus:border-error focus:ring-error"
+              : "border-border-subtle focus:border-brand-black",
           ]
             .filter(Boolean)
-            .join(' ')}
+            .join(" ")}
           {...rest}
         />
 

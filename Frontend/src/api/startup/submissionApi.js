@@ -23,7 +23,9 @@ const mapLaunchPayload = (payload) => {
   return {
     startup_name: payload.startupName,
     product_name: payload.productName,
-    launch_date: payload.launchDate ? new Date(payload.launchDate).toISOString() : undefined,
+    launch_date: payload.launchDate
+      ? new Date(payload.launchDate).toISOString()
+      : undefined,
     industry: payload.industry,
     team_size: payload.teamSize ? parseInt(payload.teamSize, 10) : undefined,
     funding_status: payload.funding,

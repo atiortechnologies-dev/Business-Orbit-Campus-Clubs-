@@ -1,3 +1,8 @@
+/**
+ * @file LaunchEvidenceFile.js
+ * @description Defines the Mongoose schema and model for evidence files submitted during a startup's launch.
+ * @architecture Acts as a data model within the storage architecture for tracking multimedia evidence such as photos and presentations for launches.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -46,4 +51,8 @@ const LaunchEvidenceFileSchema = new mongoose.Schema(
 LaunchEvidenceFileSchema.index({ startup_id: 1 });
 LaunchEvidenceFileSchema.index({ evidence_type: 1 });
 
+/**
+ * @module LaunchEvidenceFile
+ * @description Exports the LaunchEvidenceFile Mongoose model.
+ */
 module.exports = mongoose.model("LaunchEvidenceFile", LaunchEvidenceFileSchema);

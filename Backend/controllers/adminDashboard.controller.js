@@ -1,6 +1,16 @@
+/**
+ * @file adminDashboard.controller.js
+ * @description Controller for managing admin dashboard announcements and statistics.
+ * @architecture Handles admin dashboard logic, interacting with Announcement model and generating system statistics.
+ */
 const asyncHandler = require("../middlewares/asyncHandler");
 const Announcement = require("../models/Announcement");
 
+/**
+ * @desc    Get paginated announcements and dashboard statistics
+ * @route   GET /api/admin/dashboard/announcements
+ * @access  Private/Admin
+ */
 const getAnnouncements = asyncHandler(async (req, res) => {
   const { page = 1, limit = 10, status, priority, search } = req.query;
   const skip = (page - 1) * limit;
@@ -45,6 +55,11 @@ const getAnnouncements = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Create a new announcement
+ * @route   POST /api/admin/dashboard/announcements
+ * @access  Private/Admin
+ */
 const createAnnouncement = asyncHandler(async (req, res) => {
   const { title, short_summary, body_content, target_audience, priority } =
     req.validatedData;

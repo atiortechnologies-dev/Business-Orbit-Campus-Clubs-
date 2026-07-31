@@ -1,3 +1,8 @@
+/**
+ * @file TractionReviewMeeting.js
+ * @description Mongoose model for scheduling and managing review meetings related to a startup's traction metrics and product submissions.
+ * @architecture Handles the meeting entities for the traction stage, linking students, reviewers, and submissions in the database.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -82,6 +87,10 @@ const TractionReviewMeetingSchema = new mongoose.Schema(
 TractionReviewMeetingSchema.index({ startup_id: 1 });
 TractionReviewMeetingSchema.index({ submission_id: 1 });
 
+/**
+ * @module TractionReviewMeeting
+ * @description Exports the TractionReviewMeeting Mongoose model.
+ */
 module.exports = mongoose.model(
   "TractionReviewMeeting",
   TractionReviewMeetingSchema,

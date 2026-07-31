@@ -9,7 +9,7 @@ const router = express.Router();
 const {
   getReceivedPitches,
   getPitchDetailsInvestor,
-  updatePitchStatus
+  updatePitchStatus,
 } = require("../controllers/pitchSubmission.controller");
 
 // @route   GET /api/investor/direct-pitches

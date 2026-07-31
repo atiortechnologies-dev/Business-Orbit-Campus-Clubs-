@@ -14,13 +14,19 @@ const User = require("../../models/User");
 const Notification = require("../../models/Notification");
 const mongoose = require("mongoose");
 
-const formatPaginatedResponse = (data, page, limit, totalRecords, metrics = {}) => ({
+const formatPaginatedResponse = (
+  data,
+  page,
+  limit,
+  totalRecords,
+  metrics = {},
+) => ({
   data,
   page: Number(page),
   limit: Number(limit),
   total_records: totalRecords,
   total_pages: Math.ceil(totalRecords / limit),
-  metrics
+  metrics,
 });
 
 /**
@@ -31,14 +37,21 @@ const formatPaginatedResponse = (data, page, limit, totalRecords, metrics = {}) 
 exports.getChapterOverview = asyncHandler(async (req, res) => {
   const chapter = await Chapter.findById(req.params.id);
   if (!chapter) {
-    return res.status(404).json({ success: false, message: "Chapter not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Chapter not found" });
   }
 
   // Calculate some real metrics if required, but Chapter model has them:
   // total_members, active_startups, mentors_count, events_conducted
   // Alternatively, query them real-time.
-  const total_students = await StudentProfile.countDocuments({ chapter_id: chapter._id });
-  const active_startups = await Startup.countDocuments({ chapter_id: chapter._id, status: "active" });
+  const total_students = await StudentProfile.countDocuments({
+    chapter_id: chapter._id,
+  });
+  const active_startups = await Startup.countDocuments({
+    chapter_id: chapter._id,
+    status: "active",
+  });
 
   res.status(200).json({
     success: true,
@@ -81,7 +94,9 @@ exports.getChapterStudents = asyncHandler(async (req, res) => {
     .limit(limit)
     .lean();
 
-  const totalStartupsCount = await Startup.countDocuments({ chapter_id: req.params.id });
+  const totalStartupsCount = await Startup.countDocuments({
+    chapter_id: req.params.id,
+  });
 
   res.status(200).json({
     success: true,
@@ -90,7 +105,7 @@ exports.getChapterStudents = asyncHandler(async (req, res) => {
       active_startups: totalStartupsCount,
       completion_rate: 100, // Placeholder
       pending_reviews: 0, // Placeholder
-    })
+    }),
   });
 });
 
@@ -107,10 +122,7 @@ exports.getChapterStartups = asyncHandler(async (req, res) => {
   const filter = { chapter_id: req.params.id };
 
   const totalRecords = await Startup.countDocuments(filter);
-  const startups = await Startup.find(filter)
-    .skip(skip)
-    .limit(limit)
-    .lean();
+  const startups = await Startup.find(filter).skip(skip).limit(limit).lean();
 
   res.status(200).json({
     success: true,
@@ -119,7 +131,7 @@ exports.getChapterStartups = asyncHandler(async (req, res) => {
       active_startups: totalRecords, // Simplified
       incubated_count: 0,
       launched_count: 0,
-    })
+    }),
   });
 });
 
@@ -132,22 +144,28 @@ exports.assignChapterLead = asyncHandler(async (req, res) => {
   const { chapter_lead_id } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(chapter_lead_id)) {
-    return res.status(400).json({ success: false, message: "Invalid chapter_lead_id" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid chapter_lead_id" });
   }
 
   const user = await User.findById(chapter_lead_id);
   if (!user || user.account_status !== "active") {
-    return res.status(400).json({ success: false, message: "User not found or not active" });
+    return res
+      .status(400)
+      .json({ success: false, message: "User not found or not active" });
   }
 
   const chapter = await Chapter.findByIdAndUpdate(
     req.params.id,
     { chapter_lead_id },
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
 
   if (!chapter) {
-    return res.status(404).json({ success: false, message: "Chapter not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Chapter not found" });
   }
 
   await AuditLog.create({
@@ -197,13 +215,19 @@ exports.getChapterEvents = asyncHandler(async (req, res) => {
     .limit(limit)
     .lean();
 
-  const upcoming = await ChapterEvent.countDocuments({ chapter_id: chapterId, status: { $in: ["PENDING", "ACTIVE", "scheduled"] } });
-  const completed = await ChapterEvent.countDocuments({ chapter_id: chapterId, status: { $in: ["COMPLETED", "completed"] } });
+  const upcoming = await ChapterEvent.countDocuments({
+    chapter_id: chapterId,
+    status: { $in: ["PENDING", "ACTIVE", "scheduled"] },
+  });
+  const completed = await ChapterEvent.countDocuments({
+    chapter_id: chapterId,
+    status: { $in: ["COMPLETED", "completed"] },
+  });
 
   // Calculate total registrations and average attendance %
   // Simplified for now based on PRD requirements.
   let total_registrations = 0;
-  events.forEach(e => total_registrations += (e.total_registrations || 0));
+  events.forEach((e) => (total_registrations += e.total_registrations || 0));
 
   res.status(200).json({
     success: true,
@@ -211,8 +235,8 @@ exports.getChapterEvents = asyncHandler(async (req, res) => {
       upcoming,
       completed,
       total_registrations,
-      average_attendance_pct: 0 // Placeholder
-    })
+      average_attendance_pct: 0, // Placeholder
+    }),
   });
 });
 
@@ -222,51 +246,81 @@ exports.getChapterEvents = asyncHandler(async (req, res) => {
  * @access  Private (Admin)
  */
 exports.createChapterEvent = asyncHandler(async (req, res) => {
-  const { title, description, category, event_date, location_venue, max_capacity } = req.body;
+  const {
+    title,
+    description,
+    category,
+    event_date,
+    location_venue,
+    max_capacity,
+  } = req.body;
   const chapterId = req.params.id;
 
-  if (!title || !description || !category || !event_date || !location_venue || !max_capacity) {
-    return res.status(400).json({ success: false, message: "Missing required fields" });
+  if (
+    !title ||
+    !description ||
+    !category ||
+    !event_date ||
+    !location_venue ||
+    !max_capacity
+  ) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing required fields" });
   }
 
   if (max_capacity <= 0) {
-    return res.status(400).json({ success: false, message: "max_capacity must be greater than 0" });
+    return res
+      .status(400)
+      .json({ success: false, message: "max_capacity must be greater than 0" });
   }
 
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const [newEvent] = await ChapterEvent.create([{
-      chapter_id: chapterId,
-      title,
-      description,
-      category,
-      event_date,
-      location_venue,
-      max_capacity,
-      status: "ACTIVE"
-    }], { session });
+    const [newEvent] = await ChapterEvent.create(
+      [
+        {
+          chapter_id: chapterId,
+          title,
+          description,
+          category,
+          event_date,
+          location_venue,
+          max_capacity,
+          status: "ACTIVE",
+        },
+      ],
+      { session },
+    );
 
-    await AuditLog.create([{
-      actor_id: req.user.id,
-      actor_name: req.user.full_name || "Admin",
-      module: "CHAPTERS",
-      action: "CHAPTER_EVENT_CREATED",
-      target_entity_id: newEvent._id.toString(),
-      target_entity_name: newEvent.title,
-      status: "SUCCESS",
-      ip_address: req.ip,
-      details: { event_id: newEvent._id },
-    }], { session });
+    await AuditLog.create(
+      [
+        {
+          actor_id: req.user.id,
+          actor_name: req.user.full_name || "Admin",
+          module: "CHAPTERS",
+          action: "CHAPTER_EVENT_CREATED",
+          target_entity_id: newEvent._id.toString(),
+          target_entity_name: newEvent.title,
+          status: "SUCCESS",
+          ip_address: req.ip,
+          details: { event_id: newEvent._id },
+        },
+      ],
+      { session },
+    );
 
-    const students = await StudentProfile.find({ chapter_id: chapterId }).select("user_id").lean();
+    const students = await StudentProfile.find({ chapter_id: chapterId })
+      .select("user_id")
+      .lean();
     if (students && students.length > 0) {
-      const notifications = students.map(s => ({
+      const notifications = students.map((s) => ({
         recipient_id: s.user_id,
         title: "New Chapter Event",
         message: `A new event "${newEvent.title}" has been scheduled in your chapter.`,
-        type: "info"
+        type: "info",
       }));
       await Notification.insertMany(notifications, { session });
     }
@@ -278,8 +332,8 @@ exports.createChapterEvent = asyncHandler(async (req, res) => {
       success: true,
       message: "Chapter event created successfully",
       data: {
-        event: newEvent
-      }
+        event: newEvent,
+      },
     });
   } catch (error) {
     await session.abortTransaction();

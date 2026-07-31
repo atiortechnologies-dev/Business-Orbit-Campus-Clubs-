@@ -1,4 +1,14 @@
+/**
+ * @file mvpReview.routes.js
+ * @description Routes for MVP review and meeting management.
+ * @architecture Exposes endpoints for students to view MVP review feedback and manage review meetings.
+ */
 const express = require("express");
+/**
+ * @desc    MVP Review routing module
+ * @route   /api/mvp-review
+ * @access  Private (Student)
+ */
 const router = express.Router();
 const {
   getReviewMeeting,

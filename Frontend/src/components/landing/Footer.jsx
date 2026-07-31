@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
-import Logo from '@/components/ui/Logo';
-import ComingSoon from '@/components/ui/ComingSoon';
+import { Link } from "react-router-dom";
+import Logo from "@/components/ui/Logo";
+import ComingSoon from "@/components/ui/ComingSoon";
 
 const COLUMNS = [
-  { title: 'Company', items: ['About Us', 'Careers', 'Press', 'Contact'] },
-  { title: 'Resources', items: ['Events', 'Stories', 'Blog', 'Support'] },
+  { title: "Company", items: ["About Us", "Careers", "Press", "Contact"] },
+  { title: "Resources", items: ["Events", "Stories", "Blog", "Support"] },
 ];
 
 export default function Footer() {
@@ -20,12 +20,16 @@ export default function Footer() {
 
         {COLUMNS.map((col) => (
           <div key={col.title}>
-            <h3 className="font-poppins font-semibold text-small text-text-heading">{col.title}</h3>
+            <h3 className="font-poppins font-semibold text-small text-text-heading">
+              {col.title}
+            </h3>
             <ul className="mt-4 space-y-2 font-inter text-small text-text-muted">
               {col.items.map((item) => (
                 <li key={item}>
                   <ComingSoon label={item} position="top" inline>
-                    <span className="hover:text-text-heading transition-colors">{item}</span>
+                    <span className="hover:text-text-heading transition-colors">
+                      {item}
+                    </span>
                   </ComingSoon>
                 </li>
               ))}
@@ -34,13 +38,31 @@ export default function Footer() {
         ))}
 
         <div>
-          <h3 className="font-poppins font-semibold text-small text-text-heading">Legal</h3>
+          <h3 className="font-poppins font-semibold text-small text-text-heading">
+            Legal
+          </h3>
           <ul className="mt-4 space-y-2 font-inter text-small text-text-muted">
-            <li><Link to="/legal/privacy-policy" className="hover:text-text-heading transition-colors">Privacy Policy</Link></li>
-            <li><Link to="/legal/privacy-policy" className="hover:text-text-heading transition-colors">Terms of Service</Link></li>
+            <li>
+              <Link
+                to="/legal/privacy-policy"
+                className="hover:text-text-heading transition-colors"
+              >
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/legal/privacy-policy"
+                className="hover:text-text-heading transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </li>
             <li>
               <ComingSoon label="Cookie Policy" position="top" inline>
-                <span className="hover:text-text-heading transition-colors">Cookie Policy</span>
+                <span className="hover:text-text-heading transition-colors">
+                  Cookie Policy
+                </span>
               </ComingSoon>
             </li>
           </ul>

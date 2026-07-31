@@ -51,9 +51,24 @@ describe("Activity Log Controller", () => {
     it("should return activity logs for the user with pagination", async () => {
       const fakeEntityId = new mongoose.Types.ObjectId();
       await ActivityLog.create([
-        { user_id: student1Id, action: "ACTION_1", entity_type: "Test", entity_id: fakeEntityId },
-        { user_id: student1Id, action: "ACTION_2", entity_type: "Test", entity_id: fakeEntityId },
-        { user_id: student2Id, action: "ACTION_3", entity_type: "Test", entity_id: fakeEntityId },
+        {
+          user_id: student1Id,
+          action: "ACTION_1",
+          entity_type: "Test",
+          entity_id: fakeEntityId,
+        },
+        {
+          user_id: student1Id,
+          action: "ACTION_2",
+          entity_type: "Test",
+          entity_id: fakeEntityId,
+        },
+        {
+          user_id: student2Id,
+          action: "ACTION_3",
+          entity_type: "Test",
+          entity_id: fakeEntityId,
+        },
       ]);
 
       const res = await request(app)

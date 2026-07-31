@@ -21,19 +21,28 @@ const { ASSIGNMENT_STATUS } = require("../constants/statusConstants");
  */
 const verifyChatAccess = async (userId, role, chatRoom) => {
   if (role === "mentor") {
-    if (chatRoom.mentor_id && chatRoom.mentor_id.toString() !== userId.toString()) {
+    if (
+      chatRoom.mentor_id &&
+      chatRoom.mentor_id.toString() !== userId.toString()
+    ) {
       const error = new Error("Unauthorized: You are not part of this chat.");
       error.statusCode = 403;
       throw error;
     }
   } else if (role === "student") {
-    if (chatRoom.student_id && chatRoom.student_id.toString() !== userId.toString()) {
+    if (
+      chatRoom.student_id &&
+      chatRoom.student_id.toString() !== userId.toString()
+    ) {
       const error = new Error("Unauthorized: You are not part of this chat.");
       error.statusCode = 403;
       throw error;
     }
   } else if (role === "investor") {
-    if (chatRoom.investor_id && chatRoom.investor_id.toString() !== userId.toString()) {
+    if (
+      chatRoom.investor_id &&
+      chatRoom.investor_id.toString() !== userId.toString()
+    ) {
       const error = new Error("Unauthorized: You are not part of this chat.");
       error.statusCode = 403;
       throw error;
@@ -79,17 +88,31 @@ exports.createChatRoom = asyncHandler(async (req, res) => {
 
   let chatRoom;
   if (role === "investor") {
-    chatRoom = await ChatRoom.findOne({ investor_id: userId, startup_id: targetId });
+    chatRoom = await ChatRoom.findOne({
+      investor_id: userId,
+      startup_id: targetId,
+    });
     if (!chatRoom) {
-      chatRoom = await ChatRoom.create({ investor_id: userId, startup_id: targetId });
+      chatRoom = await ChatRoom.create({
+        investor_id: userId,
+        startup_id: targetId,
+      });
     }
   } else if (role === "student") {
-    chatRoom = await ChatRoom.findOne({ student_id: userId, investor_id: targetId });
+    chatRoom = await ChatRoom.findOne({
+      student_id: userId,
+      investor_id: targetId,
+    });
     if (!chatRoom) {
-      chatRoom = await ChatRoom.create({ student_id: userId, investor_id: targetId });
+      chatRoom = await ChatRoom.create({
+        student_id: userId,
+        investor_id: targetId,
+      });
     }
   } else {
-    return res.status(403).json({ message: "Role not authorized to create this room." });
+    return res
+      .status(403)
+      .json({ message: "Role not authorized to create this room." });
   }
 
   res.status(201).json(chatRoom);
@@ -223,12 +246,10 @@ exports.sendMessage = asyncHandler(async (req, res) => {
   }
 
   if (message.length > 20000) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Message is too long. Maximum allowed length is 20000 characters.",
-      });
+    return res.status(400).json({
+      message:
+        "Message is too long. Maximum allowed length is 20000 characters.",
+    });
   }
 
   const chatRoom = await ChatRoom.findOne({ _id: chatId });

@@ -4,7 +4,7 @@ This is the shared frontend for **every** BOCC role (Student, Incubator,
 Admin, Investor, Mentor, Company, plus Auth/Onboarding and public
 Landing) — one Vite + React app, not one project per role. Read this
 before adding a new screen, especially if someone else might be building
-a different screen of the *same* portal at the same time as you.
+a different screen of the _same_ portal at the same time as you.
 
 ## 1. Where things live
 
@@ -224,23 +224,23 @@ public/
 Before writing a new component, check `components/ui/` and
 `components/layout/` — most of what a new screen needs already exists:
 
-| Need | Use |
-|---|---|
-| A button | `components/ui/Button.jsx` |
-| A card/panel | `components/ui/Card.jsx` |
-| A text input | `components/ui/Input.jsx` |
-| The BOCC logo | `components/ui/Logo.jsx` — **never** a raw `<img src="/logos/...">`, the sizing/theme-switching logic lives in this component |
-| A "not built yet" marker | `components/ui/ComingSoon.jsx` |
-| Light/dark toggle | `components/ui/ThemeToggle.jsx` |
-| Reading/toggling theme | `useTheme()` from `components/ui/ThemeProvider.jsx` |
-| Top nav on a public/auth page | `components/layout/PublicNav.jsx` — already wired into `AuthLayout`, only import it directly if you're building a new *public* page outside that layout |
-| Dashboard side panel | `components/layout/Sidebar.jsx` — already wired into all six portal shells (Dashboard/Incubator/Admin/Investor/Mentor/Company), you should never need to import this directly |
-| A status/category pill | `components/ui/Badge.jsx` — `variant="success\|warning\|error\|info\|neutral\|brand"`, Title Case content (not uppercase — the component doesn't force a case, older screens' own inline badges predate this and are uppercase, don't "fix" them to match unless you're already touching that file) |
-| A metric tile (label + big number + trend) | `components/ui/StatCard.jsx` |
-| A dense list/queue with columns | `components/ui/DataTable.jsx` — desktop grid, auto-collapses to stacked cards below `md`. Read the component's own doc comment before adding a 6+ column table; see the gotcha in §6 about column count vs. container width |
-| A confirmation/decision dialog | `components/ui/Modal.jsx` — Escape-to-close, backdrop-click-to-close, already wired for `role="dialog"` |
+| Need                                                                                                                                               | Use                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A button                                                                                                                                           | `components/ui/Button.jsx`                                                                                                                                                                                                                                                                                                      |
+| A card/panel                                                                                                                                       | `components/ui/Card.jsx`                                                                                                                                                                                                                                                                                                        |
+| A text input                                                                                                                                       | `components/ui/Input.jsx`                                                                                                                                                                                                                                                                                                       |
+| The BOCC logo                                                                                                                                      | `components/ui/Logo.jsx` — **never** a raw `<img src="/logos/...">`, the sizing/theme-switching logic lives in this component                                                                                                                                                                                                   |
+| A "not built yet" marker                                                                                                                           | `components/ui/ComingSoon.jsx`                                                                                                                                                                                                                                                                                                  |
+| Light/dark toggle                                                                                                                                  | `components/ui/ThemeToggle.jsx`                                                                                                                                                                                                                                                                                                 |
+| Reading/toggling theme                                                                                                                             | `useTheme()` from `components/ui/ThemeProvider.jsx`                                                                                                                                                                                                                                                                             |
+| Top nav on a public/auth page                                                                                                                      | `components/layout/PublicNav.jsx` — already wired into `AuthLayout`, only import it directly if you're building a new _public_ page outside that layout                                                                                                                                                                         |
+| Dashboard side panel                                                                                                                               | `components/layout/Sidebar.jsx` — already wired into all six portal shells (Dashboard/Incubator/Admin/Investor/Mentor/Company), you should never need to import this directly                                                                                                                                                   |
+| A status/category pill                                                                                                                             | `components/ui/Badge.jsx` — `variant="success\|warning\|error\|info\|neutral\|brand"`, Title Case content (not uppercase — the component doesn't force a case, older screens' own inline badges predate this and are uppercase, don't "fix" them to match unless you're already touching that file)                             |
+| A metric tile (label + big number + trend)                                                                                                         | `components/ui/StatCard.jsx`                                                                                                                                                                                                                                                                                                    |
+| A dense list/queue with columns                                                                                                                    | `components/ui/DataTable.jsx` — desktop grid, auto-collapses to stacked cards below `md`. Read the component's own doc comment before adding a 6+ column table; see the gotcha in §6 about column count vs. container width                                                                                                     |
+| A confirmation/decision dialog                                                                                                                     | `components/ui/Modal.jsx` — Escape-to-close, backdrop-click-to-close, already wired for `role="dialog"`                                                                                                                                                                                                                         |
 | A "media coming soon" image slot (hero shots, partner photos, testimonial headshots — anything standing in for real photography, not an app state) | `components/ui/PlaceholderGraphic.jsx` — dashed border + a contextual lucide icon + short caption, accepts `children` for any overlay badge layered on top. Don't reach for a bare dashed `<div>` or invent a second placeholder style; this is also what replaced the old `.placeholder-box` CSS class, which no longer exists |
-| A role-specific signup form | `components/auth/RoleSignupForm.jsx` — owns password/confirm/strength/terms/submit for all 5 `/signup/<role>` pages; a new page just passes `fields` (its own field list) + copy, see `pages/auth/StudentSignup.jsx` for the ~25-line pattern. Don't build a 6th copy of the password/terms handling by hand |
+| A role-specific signup form                                                                                                                        | `components/auth/RoleSignupForm.jsx` — owns password/confirm/strength/terms/submit for all 5 `/signup/<role>` pages; a new page just passes `fields` (its own field list) + copy, see `pages/auth/StudentSignup.jsx` for the ~25-line pattern. Don't build a 6th copy of the password/terms handling by hand                    |
 
 The design guide (ask whoever's tracking `Frontend/Working/` for the
 current copy — that folder is a scratch space that gets cleared out, so
@@ -251,7 +251,7 @@ to have before writing a new one, not a silent workaround.
 
 ## 4. Avoiding conflicts when multiple people build the same portal
 
-Since pages are one-file-per-screen, two people building *different*
+Since pages are one-file-per-screen, two people building _different_
 screens of the same portal (e.g. one person on Student Notifications,
 another on Student Journey) essentially never touch the same file — normal
 git merges handle that with zero manual work.
@@ -290,7 +290,7 @@ lines, don't take "theirs" or "mine."
   (`canvas-bg`, `surface-white`, `text-heading`, `text-body`, `text-muted`,
   `border-subtle`, `divider-line`) flip value between light and dark mode —
   that's the point of them. `brand-black` and `accent-neon` are the two
-  *fixed* tokens, identical in both themes.
+  _fixed_ tokens, identical in both themes.
   **The bug this causes:** if you put an element on a surface that is
   itself always one fixed color (like the dashboard `Sidebar`, which is
   always `bg-brand-black` regardless of theme) and then color its text
@@ -335,7 +335,7 @@ lines, don't take "theirs" or "mine."
   the app before being caught.
 - **Never ship a `grid-cols-N` (N > 1) with no responsive prefix on a
   content page.** `grid-cols-5` with nothing else forces 5 columns at
-  *every* viewport, including a 375px phone. Always give it a mobile-safe
+  _every_ viewport, including a 375px phone. Always give it a mobile-safe
   base and scale up: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-5` (or
   whatever fits the content) — see `pages/auth/RoleSelection.jsx` for the
   fixed version of exactly this bug.
@@ -409,7 +409,7 @@ lines, don't take "theirs" or "mine."
   verify an Enter-to-submit interaction actually works, don't trust a
   `computer key: "Return"` press alone — either use `computer type` to
   enter real per-character keystrokes (those fire real `input` events)
-  followed by the key press and confirm the *result*, or dispatch a
+  followed by the key press and confirm the _result_, or dispatch a
   spec-correct event directly for verification purposes: `el.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }))`
   after setting `.value` via the native setter. If that makes it work,
   the component was fine all along — this is a tool-dispatch gap, not an
@@ -442,11 +442,11 @@ lines, don't take "theirs" or "mine."
     Don't reach for a calendar-API integration for a single "add this one
     event" button.
   - **File attachments the user just picked** — if a user selects a file
-    in *this* session (a chat attachment, a photo, a logo), you already
+    in _this_ session (a chat attachment, a photo, a logo), you already
     have its real bytes. `URL.createObjectURL(file)` gives a real,
     downloadable/viewable blob URL — render it as an actual `<a
-    download>`/`<img>`, don't wrap it in `ComingSoon`. That's different
-    from a *pre-seeded mock* attachment (a filename/size with no
+download>`/`<img>`, don't wrap it in `ComingSoon`. That's different
+    from a _pre-seeded mock_ attachment (a filename/size with no
     underlying `File` object) — those stay `ComingSoon` since the bytes
     genuinely never existed. See `pages/incubator/Messages.jsx`'s
     attachment rendering for both cases side by side.
@@ -469,7 +469,7 @@ lines, don't take "theirs" or "mine."
   `var(--color-border-subtle)` for its rings — that illustration has no
   background fill of its own, it sits directly on the page's own
   theme-reactive canvas, so the reactive token is the right call there.
-  Rule of thumb: the token choice depends on what's *behind* the shape,
+  Rule of thumb: the token choice depends on what's _behind_ the shape,
   not on what the shape depicts.
 
 ## 7. Before calling a screen "done"
@@ -490,7 +490,7 @@ with `framer-motion` — a staggered entrance animation on page load, plus
 scroll-triggered fades further down each page. Every other screen in this
 app does motion with plain CSS transitions (`transition-all duration-200`,
 the `animate-fade-in`/`animate-slide-in` utilities in `index.css`), so
-adding an animation *library* is a real, app-wide decision — not something
+adding an animation _library_ is a real, app-wide decision — not something
 to slip in through one feature. The landing pages were rebuilt on the CSS-
 transition convention to stay consistent with the rest of the app, and
 `framer-motion` was removed from `package.json` accordingly.
@@ -554,7 +554,7 @@ distinct from the Shivom landing-page pass documented above:
   `Mentorchats`) built and ran fine in the source repo on macOS but would
   hard-fail on any case-sensitive filesystem (Linux CI, Vercel).** macOS's
   default filesystem is case-insensitive, so `import from
-  './pages/MentorChats/MentorChats'` resolved against a real folder named
+'./pages/MentorChats/MentorChats'` resolved against a real folder named
   `Mentorchats` without complaint locally. If you're ever pulling in
   another contributor's repo and it's macOS-only tested, don't trust a
   clean local build as proof the imports are actually correct — grep for
@@ -567,7 +567,7 @@ distinct from the Shivom landing-page pass documented above:
   (`RoleSignupForm.jsx` + 5 thin `*Signup.jsx` pages) — the CompleteProfile
   step reused that same shape rather than reinventing it. Before porting a
   batch of similar-looking source files 1:1, check whether an existing
-  shared-component pattern in *this* repo already covers the shape.
+  shared-component pattern in _this_ repo already covers the shape.
 - **Cross-checked persona names across a source repo's own files before
   trusting any single one.** Madhu's source had 3 different names for the
   Mentor's own identity across her 5 Mentor files (an internal
@@ -576,7 +576,7 @@ distinct from the Shivom landing-page pass documented above:
   one name (Priya Anand) used consistently across all 5 rebuilt Mentor
   screens, and renamed the one incidental third-party data collision
   found in seed data too. When porting authenticated-portal content from
-  an external source, grep the *whole* source folder for the persona name
+  an external source, grep the _whole_ source folder for the persona name
   before picking one, not just the first file you read — and check it
   against this app's own existing personas (Alex Chen/Student, Sarah
   Jenkins/Incubator, Alex Rivera/Admin) for collisions.

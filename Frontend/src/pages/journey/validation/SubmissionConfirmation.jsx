@@ -1,24 +1,41 @@
-import { Link } from 'react-router-dom';
-import { ShieldCheck, ArrowRight, ChevronRight, BookOpen, MessageSquare, History } from 'lucide-react';
-import DashboardShell from '@/components/dashboard/DashboardShell';
-import ComingSoon from '@/components/ui/ComingSoon';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { Link } from "react-router-dom";
+import {
+  ShieldCheck,
+  ArrowRight,
+  ChevronRight,
+  BookOpen,
+  MessageSquare,
+  History,
+} from "lucide-react";
+import DashboardShell from "@/components/dashboard/DashboardShell";
+import ComingSoon from "@/components/ui/ComingSoon";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const LINKS = [
-  { icon: BookOpen, label: 'Review Guidelines' },
-  { icon: MessageSquare, label: 'Mentor Chat' },
-  { icon: History, label: 'Submission History' },
+  { icon: BookOpen, label: "Review Guidelines" },
+  { icon: MessageSquare, label: "Mentor Chat" },
+  { icon: History, label: "Submission History" },
 ];
 
 export default function ValidationSubmissionConfirmationPage() {
-  useDocumentTitle('Submission Received — BOCC');
+  useDocumentTitle("Submission Received — BOCC");
 
   return (
     <DashboardShell pageId="validation-confirmation">
       <nav className="mb-2 flex items-center gap-2 text-text-muted font-inter font-normal text-small">
-        <Link to="/dashboard" className="hover:text-text-heading transition-colors">Dashboard</Link>
+        <Link
+          to="/dashboard"
+          className="hover:text-text-heading transition-colors"
+        >
+          Dashboard
+        </Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <Link to="/build-startup/journey/validation" className="hover:text-text-heading transition-colors">Validation</Link>
+        <Link
+          to="/build-startup/journey/validation"
+          className="hover:text-text-heading transition-colors"
+        >
+          Validation
+        </Link>
         <ChevronRight size={14} strokeWidth={2} />
         <span className="text-text-heading font-semibold">Submitted</span>
       </nav>
@@ -36,7 +53,8 @@ export default function ValidationSubmissionConfirmationPage() {
           Stage 2 Submission Received
         </h1>
         <p className="font-inter text-body text-text-body">
-          Your Validation report and evidence log have been sent for mentor review.
+          Your Validation report and evidence log have been sent for mentor
+          review.
         </p>
         <p className="font-inter font-semibold text-body text-text-heading mt-1">
           Expected timeline: 3–5 business days.
@@ -44,9 +62,9 @@ export default function ValidationSubmissionConfirmationPage() {
 
         <div className="bg-canvas-bg border border-border-subtle rounded-lg p-4 mt-6 text-left">
           <p className="font-inter text-small text-text-body">
-            <strong className="text-text-heading">Submission Locked</strong> — your report and
-            evidence can&apos;t be edited while under review. You&apos;ll be notified as soon as
-            a decision is made.
+            <strong className="text-text-heading">Submission Locked</strong> —
+            your report and evidence can&apos;t be edited while under review.
+            You&apos;ll be notified as soon as a decision is made.
           </p>
         </div>
 

@@ -13,11 +13,11 @@ const FAQ = require("../models/FAQ");
 const app = express();
 app.use(express.json());
 // Mock environment variable for the test
-process.env.ADMIN_API_KEY = "DUMMY_SECRET_FOR_TESTING_ONLY";
+process.env.ADMIN_API_KEY = "TEST_API_KEY_123";
 app.use("/api/admin", adminRoutes);
 
 describe("Admin API Routes - Phase 1 (FAQs)", () => {
-  const validApiKey = "DUMMY_SECRET_FOR_TESTING_ONLY";
+  const validApiKey = "TEST_API_KEY_123";
 
   describe("Middleware (adminAuth)", () => {
     it("should return 401 if no API key provided", async () => {
@@ -113,7 +113,7 @@ describe("Admin API Routes - Phase 1 (FAQs)", () => {
 const PartnerLogo = require("../models/PartnerLogo");
 
 describe("Admin API Routes - Phase 2 (PartnerLogos via Generic CRUD)", () => {
-  const validApiKey = "DUMMY_SECRET_FOR_TESTING_ONLY";
+  const validApiKey = "TEST_API_KEY_123";
 
   describe("POST /api/admin/partner-logos", () => {
     it("should successfully create a PartnerLogo", async () => {

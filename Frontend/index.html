@@ -13,9 +13,10 @@
     <script>
       (function () {
         try {
-          var s = localStorage.getItem('theme');
-          var q = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          if (s === 'dark' || (!s && q)) document.documentElement.classList.add('dark');
+          var s = localStorage.getItem("theme");
+          var q = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (s === "dark" || (!s && q))
+            document.documentElement.classList.add("dark");
         } catch (_) {}
       })();
     </script>

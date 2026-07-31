@@ -26,11 +26,13 @@ export const adminStatsApi = {
 
 export const adminChapterApi = {
   getChangeRequests: () => api.get("/chapter-change-requests"),
-  approveChangeRequest: (id) => api.put(`/chapter-change-requests/${id}/approve`),
+  approveChangeRequest: (id) =>
+    api.put(`/chapter-change-requests/${id}/approve`),
   rejectChangeRequest: (id) => api.put(`/chapter-change-requests/${id}/reject`),
   bulkApproveRequests: (data) => api.post("/bulk-approve", data),
 };
 
 export const adminUserApi = {
-  deleteUser: (id) => api.delete(`/users/${id}`),
+  getUsers: () => api.get("/admin/users"),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
 };

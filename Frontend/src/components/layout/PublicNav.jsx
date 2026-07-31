@@ -1,17 +1,17 @@
-import { Link } from 'react-router-dom';
-import ComingSoon from '@/components/ui/ComingSoon';
-import Logo from '@/components/ui/Logo';
-import ThemeToggle from '@/components/ui/ThemeToggle';
+import { Link } from "react-router-dom";
+import ComingSoon from "@/components/ui/ComingSoon";
+import Logo from "@/components/ui/Logo";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 // 'href' only set where a real destination exists — 'About' is the one
 // genuine match among the four (the general landing page's own intro
 // content); 'Clubs'/'Events'/'Partners' have no matching page yet and stay
 // ComingSoon rather than being forced onto an unrelated landing page.
 const NAV_LINKS = [
-  { label: 'Clubs' },
-  { label: 'Events' },
-  { label: 'Partners' },
-  { label: 'About', href: '/landing' },
+  { label: "Clubs" },
+  { label: "Events" },
+  { label: "Partners" },
+  { label: "About", href: "/landing" },
 ];
 
 // Shared by every unauthenticated route (the 4 auth pages via AuthLayout,
@@ -26,11 +26,14 @@ export default function PublicNav() {
     <nav className="w-full top-0 sticky bg-surface-white border-b border-divider-line z-50">
       <div
         className="flex justify-between items-center h-[72px] mx-auto px-4 lg:px-10"
-        style={{ maxWidth: 'var(--spacing-container-max)' }}
+        style={{ maxWidth: "var(--spacing-container-max)" }}
       >
         <div className="flex items-center gap-6">
           <Logo variant="horizontal" size={28} priority />
-          <div className="hidden md:flex items-center" style={{ gap: 'var(--spacing-gutter)' }}>
+          <div
+            className="hidden md:flex items-center"
+            style={{ gap: "var(--spacing-gutter)" }}
+          >
             {NAV_LINKS.map((item) =>
               item.href ? (
                 <Link
@@ -41,17 +44,25 @@ export default function PublicNav() {
                   {item.label}
                 </Link>
               ) : (
-                <ComingSoon key={item.label} label={item.label} position="bottom" inline>
+                <ComingSoon
+                  key={item.label}
+                  label={item.label}
+                  position="bottom"
+                  inline
+                >
                   <span className="text-text-body hover:text-text-heading transition-colors font-inter font-medium text-small">
                     {item.label}
                   </span>
                 </ComingSoon>
-              )
+              ),
             )}
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/login" className="text-text-body hover:underline cursor-pointer font-inter font-medium text-small">
+          <Link
+            to="/login"
+            className="text-text-body hover:underline cursor-pointer font-inter font-medium text-small"
+          >
             Login
           </Link>
           <Link to="/role-selection">

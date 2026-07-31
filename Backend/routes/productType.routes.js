@@ -1,4 +1,14 @@
+/**
+ * @file productType.routes.js
+ * @description Routes for selecting and retrieving product types.
+ * @architecture Manages endpoints related to product type selection for student startups.
+ */
 const express = require("express");
+/**
+ * @desc    Product Type routing module
+ * @route   /api/product-type
+ * @access  Private (Student)
+ */
 const router = express.Router();
 
 const { selectProductTypeSchema } = require("../utils/validators");

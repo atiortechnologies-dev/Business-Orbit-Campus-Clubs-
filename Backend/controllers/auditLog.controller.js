@@ -32,19 +32,25 @@ const getDateFromTimeframe = (timeframe) => {
  * @access Private (Admin/SuperAdmin)
  */
 exports.getLogs = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10, timeframe, module: logModule, user } = req.query;
+  const {
+    page = 1,
+    limit = 10,
+    timeframe,
+    module: logModule,
+    user,
+  } = req.query;
 
   const query = {};
-  
+
   const fromDate = getDateFromTimeframe(timeframe);
   if (fromDate) {
     query.created_at = { $gte: fromDate };
   }
-  
+
   if (logModule) {
     query.module = logModule.toUpperCase();
   }
-  
+
   if (user) {
     query.actor_id = user;
   }
@@ -59,7 +65,7 @@ exports.getLogs = asyncHandler(async (req, res) => {
       .skip(skip)
       .limit(limitNum)
       .lean(),
-    AuditLog.countDocuments(query)
+    AuditLog.countDocuments(query),
   ]);
 
   const totalPages = Math.ceil(total / limitNum);
@@ -67,7 +73,7 @@ exports.getLogs = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: {
-      auditLogs: auditLogs.map(log => ({
+      auditLogs: auditLogs.map((log) => ({
         _id: log._id,
         timestamp: log.created_at,
         actor_id: log.actor_id,
@@ -78,12 +84,12 @@ exports.getLogs = asyncHandler(async (req, res) => {
         target_entity_name: log.target_entity_name,
         status: log.status,
         ip_address: log.ip_address,
-        details: log.details
+        details: log.details,
       })),
       total,
       page: pageNum,
-      totalPages
-    }
+      totalPages,
+    },
   });
 });
 
@@ -104,14 +110,14 @@ exports.getPulse = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: {
-      pulse: logs.map(log => ({
+      pulse: logs.map((log) => ({
         _id: log._id,
         timestamp: log.created_at,
         actor_name: log.actor_name,
         action: log.action,
-        module: log.module
-      }))
-    }
+        module: log.module,
+      })),
+    },
   });
 });
 
@@ -132,28 +138,30 @@ exports.getVolumeTrend = asyncHandler(async (req, res) => {
           year: { $year: "$created_at" },
           month: { $month: "$created_at" },
           day: { $dayOfMonth: "$created_at" },
-          hour: { $hour: "$created_at" }
+          hour: { $hour: "$created_at" },
         },
-        count: { $sum: 1 }
-      }
+        count: { $sum: 1 },
+      },
     },
-    { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1 } }
+    { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1, "_id.hour": 1 } },
   ]);
 
-  const trend = aggregateResult.map(item => {
+  const trend = aggregateResult.map((item) => {
     // Format to ISO string for the specific hour
-    const date = new Date(Date.UTC(item._id.year, item._id.month - 1, item._id.day, item._id.hour));
+    const date = new Date(
+      Date.UTC(item._id.year, item._id.month - 1, item._id.day, item._id.hour),
+    );
     return {
       time: date.toISOString(),
-      count: item.count
+      count: item.count,
     };
   });
 
   res.status(200).json({
     success: true,
     data: {
-      trend
-    }
+      trend,
+    },
   });
 });
 
@@ -166,16 +174,16 @@ exports.exportLogs = asyncHandler(async (req, res) => {
   const { timeframe, module: logModule, user } = req.query;
 
   const query = {};
-  
+
   const fromDate = getDateFromTimeframe(timeframe);
   if (fromDate) {
     query.created_at = { $gte: fromDate };
   }
-  
+
   if (logModule) {
     query.module = logModule.toUpperCase();
   }
-  
+
   if (user) {
     query.actor_id = user;
   }
@@ -183,34 +191,48 @@ exports.exportLogs = asyncHandler(async (req, res) => {
   const logs = await AuditLog.find(query).sort({ created_at: -1 }).lean();
 
   // Very simple CSV conversion. In real-world, json2csv is better.
-  const fields = ['ID', 'Timestamp', 'Actor ID', 'Actor Name', 'Module', 'Action', 'Target Entity ID', 'Target Entity Name', 'Status', 'IP Address', 'Details'];
+  const fields = [
+    "ID",
+    "Timestamp",
+    "Actor ID",
+    "Actor Name",
+    "Module",
+    "Action",
+    "Target Entity ID",
+    "Target Entity Name",
+    "Status",
+    "IP Address",
+    "Details",
+  ];
   const csvLines = [];
-  
+
   // Create Header
-  csvLines.push(fields.join(','));
+  csvLines.push(fields.join(","));
 
   // Fill data
-  logs.forEach(log => {
-    const details = log.details ? JSON.stringify(log.details).replace(/"/g, '""') : '';
+  logs.forEach((log) => {
+    const details = log.details
+      ? JSON.stringify(log.details).replace(/"/g, '""')
+      : "";
     const line = [
       log._id.toString(),
-      log.created_at ? log.created_at.toISOString() : '',
-      log.actor_id ? log.actor_id.toString() : '',
-      `"${(log.actor_name || '').replace(/"/g, '""')}"`,
-      `"${log.module || ''}"`,
-      `"${(log.action || '').replace(/"/g, '""')}"`,
-      `"${log.target_entity_id || ''}"`,
-      `"${(log.target_entity_name || '').replace(/"/g, '""')}"`,
+      log.created_at ? log.created_at.toISOString() : "",
+      log.actor_id ? log.actor_id.toString() : "",
+      `"${(log.actor_name || "").replace(/"/g, '""')}"`,
+      `"${log.module || ""}"`,
+      `"${(log.action || "").replace(/"/g, '""')}"`,
+      `"${log.target_entity_id || ""}"`,
+      `"${(log.target_entity_name || "").replace(/"/g, '""')}"`,
       log.status,
-      log.ip_address || '',
-      `"${details}"`
+      log.ip_address || "",
+      `"${details}"`,
     ];
-    csvLines.push(line.join(','));
+    csvLines.push(line.join(","));
   });
 
-  const csvContent = csvLines.join('\\n');
+  const csvContent = csvLines.join("\\n");
 
-  res.header('Content-Type', 'text/csv');
-  res.attachment('audit_logs.csv');
+  res.header("Content-Type", "text/csv");
+  res.attachment("audit_logs.csv");
   res.status(200).send(csvContent);
 });

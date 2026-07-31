@@ -123,6 +123,44 @@ exports.updateFeaturedStartup = updateResource(
 exports.deleteFeaturedStartup = deleteResource(FeaturedStartup);
 
 /**
+ * @route   GET /api/admin/users
+ * @desc    Get a list of users
+ * @access  Private (Admin)
+ */
+exports.getUsers = async (req, res, next) => {
+  try {
+    const query = {};
+    if (req.query.role) {
+      query.role = req.query.role;
+    }
+
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const startIndex = (page - 1) * limit;
+
+    const total = await User.countDocuments(query);
+    const users = await User.find(query)
+      .select("-password")
+      .sort({ created_at: -1 })
+      .skip(startIndex)
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      pagination: {
+        total,
+        page,
+        limit,
+      },
+      data: users,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * @route   DELETE /api/admin/users/:id
  * @desc    Delete a User (and automatically cascade delete all their dependencies)
  * @access  Private (Admin)

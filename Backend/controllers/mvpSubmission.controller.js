@@ -1,3 +1,8 @@
+/**
+ * @file mvpSubmission.controller.js
+ * @description Handles MVP submissions and Stage 3 tracking.
+ * @architecture Manages the creation, retrieval, and updating of MVP submissions, interacting with MVPSubmission and StartupStage models.
+ */
 const asyncHandler = require("../middlewares/asyncHandler");
 const MVPChecklist = require("../models/MVPChecklist");
 const MVPSubmission = require("../models/MVPSubmission");
@@ -6,6 +11,11 @@ const StartupStage = require("../models/StartupStage");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // POST /api/student/mvp/submit
+/**
+ * @desc    Submit MVP details
+ * @route   POST /api/student/mvp/submit
+ * @access  Private/Student
+ */
 const submitMVP = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const mvpData = req.validatedData;
@@ -97,6 +107,11 @@ const submitMVP = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/mvp
+/**
+ * @desc    Get MVP submission details
+ * @route   GET /api/student/mvp
+ * @access  Private/Student
+ */
 const getMVPSubmission = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -126,6 +141,11 @@ const getMVPSubmission = asyncHandler(async (req, res) => {
 });
 
 // PUT /api/student/mvp
+/**
+ * @desc    Update MVP submission
+ * @route   PUT /api/student/mvp
+ * @access  Private/Student
+ */
 const updateMVPSubmission = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const updateData = req.validatedData;

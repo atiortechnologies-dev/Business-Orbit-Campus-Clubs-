@@ -1,7 +1,17 @@
-export default function SelectField({ id, label, value, onChange, options, placeholder = 'Select an option' }) {
+export default function SelectField({
+  id,
+  label,
+  value,
+  onChange,
+  options,
+  placeholder = "Select an option",
+}) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="text-caption font-medium text-text-heading font-inter">
+      <label
+        htmlFor={id}
+        className="text-caption font-medium text-text-heading font-inter"
+      >
         {label}
       </label>
       <select

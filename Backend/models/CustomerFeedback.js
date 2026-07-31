@@ -1,3 +1,8 @@
+/**
+ * @file CustomerFeedback.js
+ * @description Defines the Mongoose schema and model for storing customer feedback for startups.
+ * @architecture Serves as a data model to collect and analyze user feedback, linking startups to their customers' insights and ratings.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -84,4 +89,8 @@ CustomerFeedbackSchema.index({ startup_id: 1 });
 CustomerFeedbackSchema.index({ student_id: 1 });
 CustomerFeedbackSchema.index({ rating: 1 });
 
+/**
+ * @module CustomerFeedback
+ * @description Exports the CustomerFeedback Mongoose model.
+ */
 module.exports = mongoose.model("CustomerFeedback", CustomerFeedbackSchema);

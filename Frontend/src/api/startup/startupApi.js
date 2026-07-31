@@ -19,5 +19,5 @@ export const filterStartups = async (filters) => {
 };
 
 export const getStagesProgress = () => {
-  return api.get('/stages/progress');
+  return api.get("/stages/progress");
 };

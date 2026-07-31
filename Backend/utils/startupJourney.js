@@ -23,12 +23,17 @@ const getOrCreateStartup = async (userId, defaultStartupName) => {
   session.startTransaction();
 
   try {
-    const [newStartup] = await Startup.create([{
-      student_id: userId,
-      startup_name: defaultStartupName,
-      current_stage: 1,
-      progress_percentage: 0,
-    }], { session });
+    const [newStartup] = await Startup.create(
+      [
+        {
+          student_id: userId,
+          startup_name: defaultStartupName,
+          current_stage: 1,
+          progress_percentage: 0,
+        },
+      ],
+      { session },
+    );
 
     startup = newStartup;
 

@@ -174,14 +174,19 @@ exports.listMentors = asyncHandler(async (req, res, next) => {
         from: "users",
         localField: "user_id",
         foreignField: "_id",
-        as: "user_id"
-      }
+        as: "user_id",
+      },
     },
     { $unwind: "$user_id" },
-    { $match: { "user_id.role": "mentor", "user_id.account_status": "active" } }
+    {
+      $match: { "user_id.role": "mentor", "user_id.account_status": "active" },
+    },
   ];
 
-  const totalResult = await MentorProfile.aggregate([...pipeline, { $count: "total" }]);
+  const totalResult = await MentorProfile.aggregate([
+    ...pipeline,
+    { $count: "total" },
+  ]);
   const total = totalResult.length > 0 ? totalResult[0].total : 0;
 
   const mentors = await MentorProfile.aggregate([
@@ -194,10 +199,10 @@ exports.listMentors = asyncHandler(async (req, res, next) => {
         user_id: {
           _id: "$user_id._id",
           full_name: "$user_id.full_name",
-          email: "$user_id.email"
-        }
-      }
-    }
+          email: "$user_id.email",
+        },
+      },
+    },
   ]);
 
   res.status(200).json({
@@ -285,12 +290,10 @@ exports.getMentorProfileStudentView = asyncHandler(async (req, res, next) => {
   }).populate("user_id", "full_name email");
 
   if (!profile || !profile.user_id) {
-    return res
-      .status(404)
-      .json({
-        success: false,
-        message: "Mentor not found or profile incomplete.",
-      });
+    return res.status(404).json({
+      success: false,
+      message: "Mentor not found or profile incomplete.",
+    });
   }
 
   res.status(200).json({

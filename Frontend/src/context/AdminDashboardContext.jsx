@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { adminSettingsApi, adminAuditLogApi } from '../api/admin/adminApi';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { adminSettingsApi, adminAuditLogApi } from "../api/admin/adminApi";
 
 const AdminDashboardContext = createContext();
 
@@ -10,7 +16,7 @@ export const AdminDashboardProvider = ({ children }) => {
   const [auditLogs, setAuditLogs] = useState([]);
   const [pulse, setPulse] = useState(null);
   const [volumeTrend, setVolumeTrend] = useState([]);
-  
+
   const [isLoadingSettings, setIsLoadingSettings] = useState(false);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
   const [error, setError] = useState(null);
@@ -22,8 +28,8 @@ export const AdminDashboardProvider = ({ children }) => {
       const res = await adminSettingsApi.getSettings();
       setSettings(res.data.data || res.data);
     } catch (err) {
-      console.error('Failed to fetch settings:', err);
-      setError(err.response?.data?.message || 'Failed to fetch settings');
+      console.error("Failed to fetch settings:", err);
+      setError(err.response?.data?.message || "Failed to fetch settings");
     } finally {
       setIsLoadingSettings(false);
     }
@@ -36,14 +42,14 @@ export const AdminDashboardProvider = ({ children }) => {
       const [logsRes, pulseRes, trendRes] = await Promise.all([
         adminAuditLogApi.getLogs(params),
         adminAuditLogApi.getPulse(),
-        adminAuditLogApi.getVolumeTrend()
+        adminAuditLogApi.getVolumeTrend(),
       ]);
       setAuditLogs(logsRes.data.data || logsRes.data);
       setPulse(pulseRes.data.data || pulseRes.data);
       setVolumeTrend(trendRes.data.data || trendRes.data);
     } catch (err) {
-      console.error('Failed to fetch audit logs:', err);
-      setError(err.response?.data?.message || 'Failed to fetch audit logs');
+      console.error("Failed to fetch audit logs:", err);
+      setError(err.response?.data?.message || "Failed to fetch audit logs");
     } finally {
       setIsLoadingLogs(false);
     }
@@ -52,14 +58,17 @@ export const AdminDashboardProvider = ({ children }) => {
   const updatePlatformSettings = async (data) => {
     setError(null);
     const previousSettings = settings;
-    setSettings((prev) => ({ ...prev, platform: { ...prev?.platform, ...data } }));
+    setSettings((prev) => ({
+      ...prev,
+      platform: { ...prev?.platform, ...data },
+    }));
     try {
       await adminSettingsApi.updatePlatformSettings(data);
       // Let the optimistic update hold, fetch in background just to sync
       fetchSettings();
     } catch (err) {
       setSettings(previousSettings);
-      setError(err.response?.data?.message || 'Update failed');
+      setError(err.response?.data?.message || "Update failed");
       throw err;
     }
   };
@@ -67,27 +76,33 @@ export const AdminDashboardProvider = ({ children }) => {
   const updateProfile = async (data) => {
     setError(null);
     const previousSettings = settings;
-    setSettings((prev) => ({ ...prev, profile: { ...prev?.profile, ...data } }));
+    setSettings((prev) => ({
+      ...prev,
+      profile: { ...prev?.profile, ...data },
+    }));
     try {
       await adminSettingsApi.updateProfile(data);
       fetchSettings();
     } catch (err) {
       setSettings(previousSettings);
-      setError(err.response?.data?.message || 'Update failed');
+      setError(err.response?.data?.message || "Update failed");
       throw err;
     }
   };
-  
+
   const updateNotifications = async (data) => {
     setError(null);
     const previousSettings = settings;
-    setSettings((prev) => ({ ...prev, notifications: { ...prev?.notifications, ...data } }));
+    setSettings((prev) => ({
+      ...prev,
+      notifications: { ...prev?.notifications, ...data },
+    }));
     try {
       await adminSettingsApi.updateNotifications(data);
       fetchSettings();
     } catch (err) {
       setSettings(previousSettings);
-      setError(err.response?.data?.message || 'Update failed');
+      setError(err.response?.data?.message || "Update failed");
       throw err;
     }
   };

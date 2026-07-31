@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Plus,
@@ -10,20 +10,35 @@ import {
   Search,
   Bell,
   Menu,
-} from 'lucide-react';
-import ComingSoon from '@/components/ui/ComingSoon';
-import Logo from '@/components/ui/Logo';
-import ThemeToggle from '@/components/ui/ThemeToggle';
-import Sidebar from '@/components/layout/Sidebar';
-import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
+} from "lucide-react";
+import ComingSoon from "@/components/ui/ComingSoon";
+import Logo from "@/components/ui/Logo";
+import ThemeToggle from "@/components/ui/ThemeToggle";
+import Sidebar from "@/components/layout/Sidebar";
+import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: 'Dashboard',        href: '/company/dashboard', real: true },
-  { icon: Plus,            label: 'Post Opportunity', href: '/company/post-opportunity/step-1', real: true },
-  { icon: FolderOpen,      label: 'My Opportunities', href: '/company/my-opportunities', real: true },
-  { icon: Users,           label: 'Applicants',       href: '/company/applicants', real: true },
-  { icon: UserCircle,      label: 'Profile',          href: '#', real: false },
-  { icon: Settings,        label: 'Settings',         href: '#', real: false },
+  {
+    icon: LayoutDashboard,
+    label: "Dashboard",
+    href: "/company/dashboard",
+    real: true,
+  },
+  {
+    icon: Plus,
+    label: "Post Opportunity",
+    href: "/company/post-opportunity/step-1",
+    real: true,
+  },
+  {
+    icon: FolderOpen,
+    label: "My Opportunities",
+    href: "/company/my-opportunities",
+    real: true,
+  },
+  { icon: Users, label: "Applicants", href: "/company/applicants", real: true },
+  { icon: UserCircle, label: "Profile", href: "#", real: false },
+  { icon: Settings, label: "Settings", href: "#", real: false },
 ];
 
 // Same three-piece pattern as DashboardShell/IncubatorShell/AdminShell/
@@ -52,7 +67,9 @@ export default function CompanyShell({ children }) {
         onToggleCollapse={onToggleCollapse}
       />
 
-      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[var(--spacing-sidebar-width)]'} min-h-screen flex flex-col`}>
+      <main
+        className={`${collapsed ? "lg:pl-20" : "lg:pl-[var(--spacing-sidebar-width)]"} min-h-screen flex flex-col`}
+      >
         <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-4">
             <button
@@ -112,10 +129,16 @@ export default function CompanyShell({ children }) {
             </p>
           </div>
           <div className="flex gap-8">
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Privacy Policy
             </Link>
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Terms of Service
             </Link>
             <ComingSoon label="Contact Support" position="top" inline>

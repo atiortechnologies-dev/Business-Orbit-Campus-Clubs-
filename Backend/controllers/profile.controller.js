@@ -200,9 +200,14 @@ const getMyProfile = asyncHandler(async (req, res) => {
 const changePassword = asyncHandler(async (req, res) => {
   const { current_password, new_password } = req.body;
   if (!current_password || !new_password) {
-    return res.status(400).json({ success: false, message: "Current and new passwords are required" });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Current and new passwords are required",
+      });
   }
-  
+
   const user = await User.findById(req.user.id).select("+password_hash");
   if (!user) {
     return res.status(404).json({ success: false, message: "User not found" });
@@ -210,13 +215,17 @@ const changePassword = asyncHandler(async (req, res) => {
 
   const isMatch = await comparePassword(current_password, user.password_hash);
   if (!isMatch) {
-    return res.status(401).json({ success: false, message: "Incorrect current password" });
+    return res
+      .status(401)
+      .json({ success: false, message: "Incorrect current password" });
   }
 
   user.password_hash = await hashPassword(new_password);
   await user.save();
 
-  return res.status(200).json({ success: true, message: "Password updated successfully" });
+  return res
+    .status(200)
+    .json({ success: true, message: "Password updated successfully" });
 });
 
 /**
@@ -231,18 +240,26 @@ const updateNotificationPreferences = asyncHandler(async (req, res) => {
 
   const profile = await ProfileModel.findOne({ user_id: userId });
   if (!profile) {
-    return res.status(404).json({ success: false, message: "Profile not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Profile not found" });
   }
 
   if (req.body.notification_preferences) {
     profile.notification_preferences = {
       ...profile.notification_preferences,
-      ...req.body.notification_preferences
+      ...req.body.notification_preferences,
     };
     await profile.save();
   }
 
-  return res.status(200).json({ success: true, message: "Notification preferences updated", data: profile.notification_preferences });
+  return res
+    .status(200)
+    .json({
+      success: true,
+      message: "Notification preferences updated",
+      data: profile.notification_preferences,
+    });
 });
 
 /**
@@ -254,23 +271,33 @@ const uploadPhoto = asyncHandler(async (req, res) => {
   const { role, id: userId } = req.user;
   const config = roleConfig[role];
   const ProfileModel = config.ProfileModel;
-  
+
   // This is a stub for the actual photo upload logic (e.g. S3 / Cloudinary)
   const { photo_url } = req.body; // Assume frontend uploads and passes URL, or we handle req.file here
-  
+
   if (!photo_url) {
-    return res.status(400).json({ success: false, message: "Photo URL is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Photo URL is required" });
   }
 
   const profile = await ProfileModel.findOne({ user_id: userId });
   if (!profile) {
-    return res.status(404).json({ success: false, message: "Profile not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Profile not found" });
   }
 
   profile.profile_photo = photo_url;
   await profile.save();
 
-  return res.status(200).json({ success: true, message: "Photo uploaded successfully", data: { profile_photo: photo_url } });
+  return res
+    .status(200)
+    .json({
+      success: true,
+      message: "Photo uploaded successfully",
+      data: { profile_photo: photo_url },
+    });
 });
 
 module.exports = {

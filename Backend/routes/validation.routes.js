@@ -1,4 +1,14 @@
+/**
+ * @file validation.routes.js
+ * @description Routes for the startup validation stage.
+ * @architecture Provides endpoints for survey management, evidence upload, validation reporting, and review meetings.
+ */
 const express = require("express");
+/**
+ * @desc    Validation stage routing module
+ * @route   /api/validation
+ * @access  Private (Student)
+ */
 const router = express.Router();
 
 const { protect, requireRole } = require("../middlewares/authMiddleware");

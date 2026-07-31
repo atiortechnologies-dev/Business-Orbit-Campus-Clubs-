@@ -26,9 +26,9 @@ export const getMvpReview = async () => {
 };
 
 export const setProductType = (payload) => {
-  return api.post('/startup/product-type', payload);
+  return api.post("/startup/product-type", payload);
 };
 
 export const getProductType = () => {
-  return api.get('/startup/product-type');
+  return api.get("/startup/product-type");
 };

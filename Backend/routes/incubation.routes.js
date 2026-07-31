@@ -1,6 +1,16 @@
+/**
+ * @file incubation.routes.js
+ * @description Routes for the incubation stage operations.
+ * @architecture Handles endpoints related to incubation verification, review status, results, and stage 4 progression.
+ */
 const express = require("express");
 const { validateRequest } = require("../middlewares/validateRequest");
 const { protect, requireRole } = require("../middlewares/authMiddleware");
+/**
+ * @desc    Incubation routing module
+ * @route   /api/incubation
+ * @access  Private (Student)
+ */
 const router = express.Router();
 const incubationController = require("../controllers/incubation.controller");
 const {

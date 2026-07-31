@@ -5,6 +5,7 @@ reading the actual code, not assumed from what it looks like. Each stub
 lists the exact file/function to replace.
 
 **How to read "Real" vs "Stub":**
+
 - **Real** — genuine client-side logic. Works today, needs no backend to
   keep working (validation, local UI state, toggles, etc.).
 - **Stub** — looks finished, does nothing persistent. Has a `// TODO(backend)`
@@ -23,6 +24,7 @@ endpoint-oriented list, so a backend engineer doesn't have to walk every
 file to reconstruct what's needed. Grouped by resource, not by screen.
 
 **Already real, in `Backend/`** (see `Backend/routes/authRoute.js`):
+
 - `POST /api/auth/register` — implemented, validated by
   `Backend/utils/validators.js`'s `registerSchema`. **Not wired up from
   this frontend yet** — see `components/auth/RoleSignupForm.jsx`'s
@@ -33,17 +35,20 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 - `GET /api/auth/check-email` — implemented, unused by this frontend.
 
 **Auth — not yet built on the backend:**
+
 - `POST /api/auth/login` (`pages/auth/Login.jsx`)
 - `POST /api/auth/forgot-password` (`pages/auth/ForgotPassword.jsx`)
 - `POST /api/auth/reset-password` (`pages/auth/ResetPassword.jsx`)
 
 **Profile / settings (PATCH, one per role + Student's own settings):**
+
 - Student: `pages/Settings.jsx` (profile, password, delete account)
 - Onboarding complete-profile, one per role: `pages/onboarding/complete-profile/{Student,Mentor,Investor,Incubator,Company}.jsx`
 - Incubator: `pages/incubator/Settings.jsx`
 - Mentor: `pages/mentor/Profile.jsx`
 
 **Student journey submissions (one POST per gated stage):**
+
 - Ideation: `pages/journey/ideation/IdeaSubmission.jsx`
 - Validation: `pages/journey/validation/{SurveyTracker,EvidenceUpload,ReportSubmission}.jsx`
 - MVP: `pages/journey/mvp/{ChooseProductType,MvpSubmission,IncubationProofSubmission}.jsx`
@@ -51,20 +56,24 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 - Launch: `pages/journey/launch/{LaunchSubmission,FinalPitchDeckUpload,LaunchProofUpload}.jsx`
 
 **Incubator review pipeline:**
+
 - `pages/incubator/ApplicationReview.jsx` — save draft, submit decision
 - `pages/incubator/Messages.jsx` — send message / attachment
 
 **Admin — two review pipelines + one dashboard action:**
+
 - Verification: `pages/admin/{VerificationDetail,VerificationDecision}.jsx`
 - Startup review: `pages/admin/{ReviewWorkspace,ReviewOutcome,ScheduleMeeting}.jsx`
 - `pages/admin/Admin.jsx` — dismiss a Critical Action
 
 **Admin — Announcements (list → create → preview → publish):**
+
 - `pages/admin/CreateAnnouncement.jsx` — save as draft
 - `pages/admin/PreviewAnnouncement.jsx` — save draft; publish (create or
   update the record, then fan out notifications per selected audience)
 
 **Admin — Chapters:**
+
 - `pages/admin/{ChapterManagement,ChapterDetail}.jsx` — read-only for now,
   no save/submit action exists yet (every mutating action on
   `ChapterDetail.jsx` — Edit, Assign Lead, Verify, Approve Funding — is
@@ -72,26 +81,32 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
   operation yet)
 
 **Admin — Opportunity moderation:**
+
 - `pages/admin/OpportunityReview.jsx` — Approve / Reject / Request
   Changes decision, plus reviewer notes
 
 **Admin — Settings:**
+
 - `pages/admin/AdminSettings.jsx` — save profile, platform config, and
   notification preferences in one call
 
 **Investor:**
+
 - `pages/investor/PitchDeck.jsx` — save due-diligence notes
 
 **Mentor:**
+
 - `pages/mentor/{Mentor,Requests}.jsx` — accept/decline a mentorship request
 - `pages/mentor/Meetings.jsx` — save session notes/outcome
 - `pages/mentor/Chats.jsx` — send message
 
 **Student — Incubator Marketplace & Freelancing:**
+
 - `pages/incubators/IncubatorApplicationForm.jsx` — submit application
 - `pages/freelancing/FreelancingApplicationForm.jsx` — submit application
 
 **Student — Mentor & Investor Network:**
+
 - `pages/mentors/MentorshipRequest.jsx` — submit request
   (`POST /api/mentors/:id/requests`)
 - `pages/investors/SendPitchDeck.jsx` — submit pitch
@@ -99,18 +114,21 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 - `pages/mentors/ChatConversation.jsx`, `pages/investors/InvestorConversation.jsx` — send message (real-time chat service)
 
 **Student — Support Center:**
+
 - `pages/support/RaiseSupportTicket.jsx` — create ticket
   (`POST /api/support/tickets`)
 - `pages/support/TicketDetail.jsx` — post reply
   (`POST /api/support/tickets/:id/replies`)
 
 **Company — Post Opportunity & Applicants:**
+
 - `pages/company/PostOpportunityStep{1..4}.jsx` — save draft, publish
   (`POST /api/opportunities`)
 - `pages/company/ApplicantDetail.jsx` — update application status, save
   internal notes
 
 **Shared:**
+
 - `components/layout/Sidebar.jsx` — every portal's sidebar footer shows a
   hardcoded name/initials/role; needs real authenticated-user data once
   a session exists, one place for all six portal shells.
@@ -147,6 +165,7 @@ the old flat `.placeholder-box` diagonal-hatch style, which has been
 removed from `index.css` now that nothing references it.
 
 ### `/landing` — `src/pages/landing/Home.jsx`
+
 - **Real:** Navbar's 5 in-page anchors (About/Startup Stories/Community/FAQ/
   Contact), Login/Explore, Roles section → real `/signup/<role>` for all 5
   roles, FAQ accordion, CTA section's Register Now/Become a Partner,
@@ -169,6 +188,7 @@ removed from `index.css` now that nothing references it.
   distinct terms page exists yet.
 
 ### `/landing/student` — `src/pages/landing/Student.jsx`
+
 - **Real:** Header's scroll-reactive background + mobile menu, Login/Sign
   Up, Hero's "Book Discovery Call" (routes to the real `/signup/student`
   form, not an actual scheduling flow — label is aspirational), FAQ
@@ -186,6 +206,7 @@ removed from `index.css` now that nothing references it.
   BottomCTA's "View Events", Footer's Startup Guide/Investor Deck/Events.
 
 ### `/landing/mentor` — `src/pages/landing/Mentor.jsx`
+
 - **Real:** Navbar's 4 in-page anchors, Hero's "View Ecosystem" anchor, FAQ
   accordion (mentor-specific content), CTA section's "Apply Now" →
   `/signup/mentor`.
@@ -204,6 +225,7 @@ removed from `index.css` now that nothing references it.
   (see Home's entry).
 
 ### `/landing/investor` — `src/pages/landing/Investor.jsx`
+
 - **Real:** Navbar's 4 in-page anchors, Hero's "Join as an Investor" →
   `/signup/investor`, Statistics section's count-up animation (genuine
   `IntersectionObserver`-gated `requestAnimationFrame` count, fires once on
@@ -221,6 +243,7 @@ removed from `index.css` now that nothing references it.
   Investment Team".
 
 ### `/landing/companies` — `src/pages/landing/Companies.jsx`
+
 - **Real:** Navbar's 4 in-page anchors, Hero's "Partner with BOCC" →
   `/signup/company`, FAQ accordion (companies-specific, 5 Q&A), FinalCTA's
   "Partner with BOCC" (same destination as Hero's).
@@ -233,6 +256,7 @@ removed from `index.css` now that nothing references it.
   6 with none, so no placeholder-attribution concern here.
 
 ### `/landing/incubator` — `src/pages/landing/Incubator.jsx`
+
 - **Real:** Navbar's 4 in-page anchors (Why BOCC/Framework/Benefits/FAQ),
   Hero's "Become a Partner" → `/signup/incubator`, Stats section (fixed
   `bg-brand-black` panel, matches the pattern used elsewhere for
@@ -258,6 +282,7 @@ removed from `index.css` now that nothing references it.
   changed here.
 
 ### Shared across all 6 (Navbar/Footer)
+
 - `src/components/landing/Navbar.jsx` and `Footer.jsx` are reused as-is by
   Home, Mentor, Investor, Companies, and Incubator (each passing its own
   `links` prop for the in-page anchors). Student alone has a bespoke
@@ -275,6 +300,7 @@ removed from `index.css` now that nothing references it.
 ## Auth
 
 ### `/login` — `src/pages/auth/Login.jsx`
+
 - **Real:** email/password format validation, password show/hide, remember-me
   checkbox (visual toggle, not persisted). The illustration placeholder is
   gone — replaced with a custom inline SVG (an abstract "orbit" motif, hub +
@@ -287,6 +313,7 @@ removed from `index.css` now that nothing references it.
   on failure.
 
 ### `/forgot-password` — `src/pages/auth/ForgotPassword.jsx`
+
 - **Real:** email validation, submit swaps the card to a confirmation view
   (client state only). Illustration placeholder replaced with a custom
   inline SVG specific to this screen's moment in the flow — an envelope
@@ -297,6 +324,7 @@ removed from `index.css` now that nothing references it.
 - **Coming Soon:** Support Center link.
 
 ### `/reset-password` — `src/pages/auth/ResetPassword.jsx`
+
 - **Real:** live password-strength calculation, confirm-password match
   validation, two independent eye toggles. Illustration placeholder
   replaced with a custom inline SVG — a shield with a keyhole ("your
@@ -306,12 +334,15 @@ removed from `index.css` now that nothing references it.
   password anywhere. Replace with `POST /api/auth/reset-password`.
 
 ### `/role-selection` — `src/pages/auth/RoleSelection.jsx`
+
 - **Real:** native radio-group role selection (full keyboard support).
   Continue → real navigation to `/signup/<role>` for all 5 roles.
 
 ### `/signup/student`, `/signup/company`, `/signup/investor`, `/signup/mentor`, `/signup/incubator`
+
 — `src/pages/auth/{Student,Company,Investor,Mentor,Incubator}Signup.jsx`,
 shared logic in `src/components/auth/RoleSignupForm.jsx`
+
 - **Real:** every field is a controlled input, password-match validation,
   terms-required validation, live password-strength meter (reuses
   `PasswordStrengthMeter`), show/hide password toggle.
@@ -331,6 +362,7 @@ shared logic in `src/components/auth/RoleSignupForm.jsx`
 ## Student Portal
 
 ### `/dashboard` — `src/pages/Dashboard.jsx`
+
 - **Stub:** everything is a static snapshot — "Welcome back, Alex," all 4
   stat numbers, the 5-stage tracker, all 3 notification previews. None of it
   is tied to a real logged-in user; there's no per-user state anywhere yet.
@@ -348,6 +380,7 @@ shared logic in `src/components/auth/RoleSignupForm.jsx`
   that don't exist yet, not just an unwired button.
 
 ### `/notifications` — `src/pages/Notifications.jsx`
+
 - **Real:** fully rebuilt around real local state — search (filters
   title/body), tab filtering (All/Unread/category, all backed by an actual
   `category` field), Mark all as read, Clear All, per-card Dismiss, View
@@ -364,6 +397,7 @@ shared logic in `src/components/auth/RoleSignupForm.jsx`
   wiring the real fetch, size the UI to the real count instead.
 
 ### `/build-startup/journey` — `src/pages/BuildStartupJourney.jsx`
+
 - **Stub:** stats and achievements are static; stage progression (which
   stage is "current" vs "locked") is hardcoded to Ideation, not derived
   from any real per-student state.
@@ -374,8 +408,10 @@ shared logic in `src/components/auth/RoleSignupForm.jsx`
   (waypoints rising to a flag) matching the STAGES list below it.
 
 ### Startup Journey — Ideation Stage — `src/pages/journey/ideation/*.jsx`
+
 Six screens: `IdeationOverview` → `IdeaSubmission` → `SubmissionConfirmation`,
 plus `ReviewMeeting`, `ReviewResult`, `TemplatesResources`.
+
 - **Real:** `IdeaSubmission`'s full form (controlled inputs, file select),
   `ReviewMeeting`'s prep checklist + Confirm/Reschedule (instant inline
   banner state), `ReviewResult`'s content is fully real (single determined
@@ -389,9 +425,11 @@ plus `ReviewMeeting`, `ReviewResult`, `TemplatesResources`.
   `TemplatesResources`.
 
 ### Startup Journey — Validation Stage — `src/pages/journey/validation/*.jsx`
+
 Seven screens: `ValidationOverview` → `SurveyTracker` → `EvidenceUpload` →
 `ReportSubmission` → `SubmissionConfirmation`, plus `ReviewMeeting`,
 `ReviewResult`.
+
 - **Real:** `ValidationOverview`'s action checklist (toggles, drives the
   progress bar), `EvidenceUpload`'s real file-select state (no fake
   progress bars — deliberately not replicating the source wireframe's
@@ -414,9 +452,11 @@ Seven screens: `ValidationOverview` → `SurveyTracker` → `EvidenceUpload` →
   there's no backend to send them to yet.
 
 ### Startup Journey — MVP Stage — `src/pages/journey/mvp/*.jsx`
+
 Seven screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
 `SubmissionSuccess` → `IncubationProofSubmission` → `IncubationVerificationReview`
 → `IncubationVerificationApproved`.
+
 - `MvpOverview`'s Development Roadmap illustration placeholder is now a
   custom inline SVG — an "assembling blocks" motif on a fixed-black
   surface. See `CONTRIBUTING.md` §6 for a real dark-mode token bug this
@@ -451,9 +491,11 @@ Seven screens: `MvpOverview` → `ChooseProductType` → `MvpSubmission` →
   which the original name would have implied.
 
 ### Startup Journey — Traction Stage — `src/pages/journey/traction/*.jsx`
+
 Seven screens: `TractionStage` → `UserAcquisitionTracker` →
 `CustomerFeedbackUpload` → `TractionProductSubmission` → `TractionReview` →
 `TractionReviewMeeting` → `TractionApproved`.
+
 - **Real:** `UserAcquisitionTracker`'s and `CustomerFeedbackUpload`'s full
   controlled form state; `TractionProductSubmission`'s Submit is genuinely
   gated on the product URL and release notes both being filled in (the
@@ -481,8 +523,10 @@ Seven screens: `TractionStage` → `UserAcquisitionTracker` →
   fields but no real navigation wired in — kept the one that worked.
 
 ### Startup Journey — Launch Stage — `src/pages/journey/launch/*.jsx`
+
 Five screens: `LaunchStage` → `LaunchSubmission` → `FinalPitchDeckUpload` →
 `LaunchProofUpload` → `LaunchVerificationReview`.
+
 - **Real:** `LaunchSubmission`'s and `LaunchProofUpload`'s full controlled
   form state across every section (general info, links, descriptions,
   social proof). `LaunchStage`'s overview now has the same icon-tile
@@ -508,10 +552,12 @@ Five screens: `LaunchStage` → `LaunchSubmission` → `FinalPitchDeckUpload` �
   said "Stage 5."
 
 ### Startup Journey — Complete — `src/pages/journey/JourneyComplete.jsx`
+
 The graduation screen after all 5 stages: journey stats, 4 achievement
 badges, 4 "next opportunity" cards (Alumni/Investors/Mentor/Showcase), and
 a certificate CTA — all sample data, nothing tied to a real record of
 progress.
+
 - **Real:** the Return to Dashboard link.
 - **Coming Soon:** all 4 opportunity-card CTAs, View Certificate.
 - Fixed 2 leftover `text-headline-md` occurrences (the 100%/A+ stats),
@@ -524,6 +570,7 @@ progress.
   happened.
 
 ### `/settings` — `src/pages/Settings.jsx`
+
 - **Real:** every field is a controlled input, Skills & Interests add/remove
   chips, Save Changes shows a real transient confirmation (2s auto-dismiss,
   same pattern as `incubator/Settings.jsx`'s Save Changes). Change Photo is
@@ -539,6 +586,7 @@ progress.
 - No more "Coming Soon" items on this page.
 
 ### `/legal/privacy-policy` — `src/pages/legal/PrivacyPolicy.jsx`
+
 - **Real:** in-page anchor navigation (left sub-nav → legal sections,
   including "Contact Support" which was previously wrapped in `ComingSoon`
   despite pointing at a real, already-built section — just an unwired
@@ -554,9 +602,11 @@ progress.
   Pages" above.
 
 ### Incubator Marketplace — `src/pages/incubators/*.jsx`
-*(Student-facing — discovering and applying to incubation programs, not
+
+_(Student-facing — discovering and applying to incubation programs, not
 the Incubator role's own portal below. Fills the "Incubators" nav item
-`DashboardShell.jsx` had stubbed since the sidebar was built.)*
+`DashboardShell.jsx` had stubbed since the sidebar was built.)_
+
 - **Real:** `IncubatorApplicationForm.jsx`'s Startup Name/Problem
   Statement/Proposed Solution gate a real "Submit Application" button
   (same `canSubmit` pattern as every other gated form in this app);
@@ -573,9 +623,11 @@ the Incubator role's own portal below. Fills the "Incubators" nav item
   Conversation, Download Documents.
 
 ### Freelancing — `src/pages/freelancing/*.jsx`
-*(Fills the "Freelancing" nav item's stub. Independent sample data from
+
+_(Fills the "Freelancing" nav item's stub. Independent sample data from
 Admin's/Company's Opportunity screens — same no-cross-portal-wiring
-precedent as every other role pair in this app.)*
+precedent as every other role pair in this app.)_
+
 - **Real:** `FreelancingApplicationForm.jsx` gates Submit on a written
   Cover Letter and navigates to `ApplyConfirmation.jsx` on success.
   `MyApplications.jsx`'s Active/Interviews/Rejected/Archived tabs are
@@ -589,7 +641,9 @@ precedent as every other role pair in this app.)*
   Application.
 
 ### Mentor Network — `src/pages/mentors/*.jsx`
-*(Fills the "Mentors" nav stub.)*
+
+_(Fills the "Mentors" nav stub.)_
+
 - **Real:** `MentorshipRequest.jsx` gates Submit Request on Startup Name +
   Problem Statement (same `canSubmit` pattern as every gated form here);
   submitting navigates into `ChatConversation.jsx` — a sent request is the
@@ -606,7 +660,9 @@ precedent as every other role pair in this app.)*
   buttons), Attach file, shared-file downloads.
 
 ### Investor Network — `src/pages/investors/*.jsx`
-*(Fills the "Investors" nav stub.)*
+
+_(Fills the "Investors" nav stub.)_
+
 - **Real:** `SendPitchDeck.jsx` gates Send Pitch Deck on Startup Name +
   Elevator Pitch; submitting navigates into `InvestorConversation.jsx` —
   same "the real action is the trigger for the next real screen" pattern
@@ -622,6 +678,7 @@ precedent as every other role pair in this app.)*
   (portfolio), Preview Pitch, pitch-deck/supporting-document uploads.
 
 ### Shared — Chat Inbox — `src/pages/mentors/ChatInbox.jsx` (`/mentors/messages`)
+
 One inbox listing both mentor and investor threads together — linked
 from both `ChatConversation.jsx`'s and `InvestorConversation.jsx`'s back
 arrow. **Real:** the 2 threads with a matching built conversation screen
@@ -631,7 +688,9 @@ Chen) — shown for inbox realism but wrapped honestly since no
 conversation screen exists for them.
 
 ### Support Center — `src/pages/support/*.jsx`
-*(Fills the last `real: false` stub in the Student sidebar — "Help".)*
+
+_(Fills the last `real: false` stub in the Student sidebar — "Help".)_
+
 - **Real:** `RaiseSupportTicket.jsx` gates Submit Ticket on Subject +
   Description (same `canSubmit` pattern as every gated form here);
   submitting navigates to `SupportDashboard.jsx` (`/support/tickets`).
@@ -648,7 +707,7 @@ conversation screen exists for them.
   `HelpCenter.jsx` are hardcoded. `// TODO(backend)` at
   `RaiseSupportTicket.jsx`'s `handleSubmit`: `POST /api/support/tickets`;
   at `TicketDetail.jsx`'s `handleSendReply`: `POST
-  /api/support/tickets/:id/replies`.
+/api/support/tickets/:id/replies`.
 - **Coming Soon:** Help Center's 8 category cards and 5 resource "View
   Resource" buttons, Contact Support, file-attachment upload zones (both
   screens), the ticket list's kebab Actions menu, Export Conversation,
@@ -669,12 +728,14 @@ conversation screen exists for them.
 ## Incubator Portal
 
 ### `/incubator` — `src/pages/incubator/Incubator.jsx`
+
 - **Stub:** all stats, activity, and lists are hardcoded.
 - **Real:** "Review Applications" and every "Review" button → real
   navigation to `/incubator/applications`.
 - **Coming Soon:** "View Startup Tracker," "Schedule Reviews."
 
 ### `/incubator/applications` — `src/pages/incubator/Applications.jsx`
+
 - **Real:** Stage/Industry/Status filters — genuinely filter the 5 visible
   rows client-side (fixed during this audit; the dropdown options
   previously didn't match the actual row data at all, so most filter
@@ -693,6 +754,7 @@ conversation screen exists for them.
   wiring a real paginated fetch, size the count to what's actually loaded.
 
 ### `/incubator/applications/review` — `src/pages/incubator/ApplicationReview.jsx`
+
 - **Real:** Reviewer Notes textarea (typing works, not persisted),
   Approve/Request Revisions/Reject single-select, Save Draft and Submit
   Decision both show real transient confirmation UI — and both are now
@@ -707,6 +769,7 @@ conversation screen exists for them.
   uploaded anywhere.
 
 ### `/incubator/messages` — `src/pages/incubator/Messages.jsx`
+
 - **Real:** switching conversations, typing and sending a message (appends
   to that conversation's local state immediately, Enter-to-send with
   Shift+Enter for newline). Attach File and Insert Image are now real file
@@ -730,6 +793,7 @@ conversation screen exists for them.
   directory, real calling infra, or screens that don't exist yet.
 
 ### `/incubator/settings` — `src/pages/incubator/Settings.jsx`
+
 - **Real:** every field is a genuine controlled input (typing works),
   Focus Industries chip add/remove (Add Industry now works the same way
   Student Settings' Skills chips do), Working Hours day toggles, Email
@@ -750,11 +814,12 @@ conversation screen exists for them.
 
 ## Admin Portal
 
-*(Built in an earlier session; missing from this file until now — added
+_(Built in an earlier session; missing from this file until now — added
 retroactively rather than assumed complete just because the screens look
-finished.)*
+finished.)_
 
 ### `/admin` — `src/pages/admin/Admin.jsx`
+
 - **Stub:** every stat card and the Activity Stream are static snapshots,
   not tied to any real data source. The Startup Journey Funnel's Daily vs.
   Monthly toggle is real (switches between two real local datasets), but
@@ -769,6 +834,7 @@ finished.)*
   need real analytics data that doesn't exist yet.
 
 ### `/admin/verification` — `VerificationQueue.jsx`
+
 - **Real:** Role/Status/Chapter filters genuinely filter the visible rows
   client-side. Export CSV downloads a real CSV of the currently-filtered
   rows. Date Range is now a real popover with From/To date inputs that
@@ -782,6 +848,7 @@ finished.)*
   never generated anywhere).
 
 ### `/admin/verification/detail` — `VerificationDetail.jsx`
+
 - **Real:** Internal Command Notes — typing and adding a note appends to
   local state immediately. Request More Info opens a real `Modal` with a
   textarea; sending appends a note recording the request and shows a
@@ -794,18 +861,21 @@ finished.)*
   all real files that were never uploaded anywhere.
 
 ### `/admin/verification/decision` — `VerificationDecision.jsx`
+
 - **Real:** Approve/Reject/Request Documents each open a real `Modal`;
   confirming shows an instant inline banner (no fake delay).
 - **Stub:** none of the 3 decisions persist anywhere — reload and the
   banner is gone, the user is still "pending."
 
 ### `/admin/reviews` — `ReviewQueue.jsx`
+
 - **Real:** Export CSV downloads a real CSV of the table's rows.
 - **Stub:** all 4 stat cards and the table's 4 rows are hardcoded.
 - **Coming Soon:** Bulk Action (same "no defined operation yet" reasoning
   as `VerificationQueue.jsx`'s).
 
 ### `/admin/reviews/detail` — `ReviewDetail.jsx`
+
 - **Real:** "Schedule Meeting" → real navigation to
   `/admin/reviews/schedule-meeting`. "Begin Evaluation" → real navigation
   to `/admin/reviews/workspace`. "Request Revision" shows an instant inline
@@ -819,6 +889,7 @@ finished.)*
   never uploaded anywhere.
 
 ### `/admin/reviews/workspace` — `ReviewWorkspace.jsx`
+
 - **Real:** Evaluation Checklist (5 real checkboxes), the "Core Strengths"
   Reviewer Notes textarea is wired to state and gates Save Draft (empty
   notes → button stays disabled, matching `ApplicationReview.jsx`'s
@@ -836,6 +907,7 @@ finished.)*
 - **Coming Soon:** Submission Preview placeholder.
 
 ### `/admin/reviews/outcome` — `ReviewOutcome.jsx`
+
 - **Real:** "Publish Result" — instant state change to a published banner
   (`// TODO(backend)` at the exact line, deliberately not the fake
   `setTimeout` "Publishing…" spinner the source wireframe used for this
@@ -847,6 +919,7 @@ finished.)*
   backend.
 
 ### `/admin/reviews/schedule-meeting` — `ScheduleMeeting.jsx`
+
 - **Real:** Reviewer select, Meeting Date/Time, Duration, Platform selects,
   Agenda textarea — all controlled inputs.
 - **Stub:** Startup Name / Primary Founder are prefilled and disabled
@@ -858,6 +931,7 @@ finished.)*
   Financials.
 
 ### `/admin/audit-log` — `AuditLog.jsx`
+
 - **Real:** Date/Module/User filters genuinely filter the log client-side
   (via `useMemo`) — Date range is now a real popover with From/To date
   inputs against each entry's actual `date`. Export .CSV downloads a real
@@ -869,6 +943,7 @@ finished.)*
   wiring a real paginated fetch, size the copy to what's actually loaded.
 
 ### Admin nav — `components/admin/AdminShell.jsx`
+
 Completed to the 8-item nav every wireframe in the batch below already
 specced (the original `unified_admin_dashboard` wireframe `Admin.jsx`
 itself was built from included this same nav, just never fully wired up):
@@ -880,6 +955,7 @@ page behind it) is gone. The header's gear icon now links to
 `/admin/settings` for real instead of showing a `ComingSoon` tooltip.
 
 ### `/admin/announcements` — `AnnouncementsDashboard.jsx`
+
 - **Real:** Status/Audience/Priority filters genuinely filter the table
   client-side.
 - **Stub:** the 3 listed announcements and the sidebar stats (Total Views
@@ -891,6 +967,7 @@ page behind it) is gone. The header's gear icon now links to
   any of these to act on.
 
 ### `/admin/announcements/create` — `CreateAnnouncement.jsx`
+
 - **Real:** the entire form (title, summary, body with live character
   count, audience checkboxes, priority radios, publish-now/schedule radio
   with conditional date/time fields) is a genuine controlled form, not a
@@ -904,6 +981,7 @@ page behind it) is gone. The header's gear icon now links to
   source wireframe) — not one of this app's 6 actual roles.
 
 ### `/admin/announcements/preview` — `PreviewAnnouncement.jsx`
+
 - **Real:** renders whatever was actually typed on the Create screen (via
   router state), not static sample copy — falls back to sample content
   only if the route is opened directly with no draft in hand. "Publish
@@ -917,6 +995,7 @@ page behind it) is gone. The header's gear icon now links to
   every selected audience group.
 
 ### `/admin/announcements/published` — `AnnouncementPublished.jsx`
+
 - **Real:** shows the actual published title/audience carried over from
   Preview (falls back to sample copy if reached directly). "Create New
   Announcement" and "Return to Dashboard" are real links.
@@ -927,6 +1006,7 @@ page behind it) is gone. The header's gear icon now links to
   yet for any of these to act on.
 
 ### `/admin/chapters` — `ChapterManagement.jsx`
+
 - **Real:** State/Status filters genuinely filter the table client-side.
   Row "View" (the people icon) → real navigation to `/admin/chapters/detail`.
 - **Stub:** the 5 listed chapters, the 4 stat cards, and the Chapter
@@ -936,6 +1016,7 @@ page behind it) is gone. The header's gear icon now links to
   Generate Report.
 
 ### `/admin/chapters/detail` — `ChapterDetail.jsx`
+
 - One chapter (Stanford Alpha), one internal Overview/Students/Startups/
   Events tab switch (`useState`, not 4 separate routes) — the source
   wireframes shipped 4 independently-Stitch-regenerated "chapter detail"
@@ -953,6 +1034,7 @@ page behind it) is gone. The header's gear icon now links to
   shortcut.
 
 ### `/admin/opportunities` — `OpportunityApprovalQueue.jsx`
+
 - **Real:** Company/Type/Status filters genuinely filter the table
   client-side. Row "View Details" → real navigation to
   `/admin/opportunities/review`.
@@ -965,13 +1047,14 @@ page behind it) is gone. The header's gear icon now links to
   `VerificationQueue.jsx` not deciding from a queue row either).
 
 ### `/admin/opportunities/review` — `OpportunityReview.jsx`
+
 - **Real:** Approve/Reject/Request Changes each open a real `Modal`
   (mirrors `VerificationDecision.jsx`'s 3-decision pattern exactly);
   confirming any of the three navigates back to the queue. Internal Notes
   textarea is a real controlled field (not persisted).
 - **Stub:** none of the 3 decisions persist anywhere — `// TODO(backend)`
   at `confirmDecision`: `PATCH /api/admin/opportunities/:id { decision,
-  reviewerNotes }`, then notify the posting company of the outcome. The
+reviewerNotes }`, then notify the posting company of the outcome. The
   company profile, opportunity detail, and Revision History are
   hardcoded.
 - **Coming Soon:** Message Startup.
@@ -981,6 +1064,7 @@ page behind it) is gone. The header's gear icon now links to
   `OpportunitiesTable.jsx`.
 
 ### `/admin/settings` — `AdminSettings.jsx`
+
 - **Real:** every field in Administrator Profile, Platform Configuration
   (including its 4 functional toggles), Admin Notifications' 8 per-event
   toggles plus the In-App/Email header checkboxes, and the Two-Factor
@@ -1004,12 +1088,13 @@ page behind it) is gone. The header's gear icon now links to
 
 ## Investor Portal
 
-*(Ported from a second intern's — Madhu's — separate repo onto this app's
+_(Ported from a second intern's — Madhu's — separate repo onto this app's
 shell/token/component system; see `CONTRIBUTING.md` §9 for the integration
 notes. Only one seeded pitch deck and one seeded submission set exist, same
-"honest single example" pattern as Incubator's `ApplicationReview.jsx`.)*
+"honest single example" pattern as Incubator's `ApplicationReview.jsx`.)_
 
 ### `/investor` — `src/pages/investor/Investor.jsx`
+
 - **Stub:** all 4 stat cards, the Recent Startup Submissions table, and the
   Pitch Deck Alerts feed are hardcoded snapshots, not tied to any real data
   source.
@@ -1020,6 +1105,7 @@ notes. Only one seeded pitch deck and one seeded submission set exist, same
   doesn't exist yet.
 
 ### `/investor/pitch-decks` — `src/pages/investor/IncomingPitchDecks.jsx`
+
 - **Real:** search genuinely filters the 6 seeded decks client-side (by
   name, founder, or tag), grid/list view toggle.
 - **Stub:** filtering only operates on 6 hardcoded decks, not a real
@@ -1031,6 +1117,7 @@ notes. Only one seeded pitch deck and one seeded submission set exist, same
   icon) — no preview modal exists yet.
 
 ### `/investor/pitch-decks/review` — `src/pages/investor/PitchDeck.jsx`
+
 - **Real:** slide-list navigation (Previous/Next and direct slide-select,
   8 real slide labels), Investor Notes textarea (typing works, not
   persisted).
@@ -1046,12 +1133,13 @@ notes. Only one seeded pitch deck and one seeded submission set exist, same
 
 ## Mentor Portal
 
-*(Ported from the same second intern's repo; persona consolidated to one
+_(Ported from the same second intern's repo; persona consolidated to one
 consistent "Priya Anand, Senior Mentor" across all 5 screens — her source
 had 3 different names for the mentor's own identity across her 5 files,
-one of which collided with this app's real Admin persona, "Alex Rivera.")*
+one of which collided with this app's real Admin persona, "Alex Rivera.")_
 
 ### `/mentor` — `src/pages/mentor/Mentor.jsx`
+
 - **Real:** Accept/Decline on the Recent Mentorship Requests list removes
   the request from local state immediately (shows a real empty state once
   cleared).
@@ -1062,6 +1150,7 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")*
   both route to real built pages.
 
 ### `/mentor/requests` — `src/pages/mentor/Requests.jsx`
+
 - **Real:** Newest First/Oldest First sort genuinely reverses the list
   order. Accept/Decline removes a request from local state (shows a real
   empty state once all 3 are cleared).
@@ -1072,6 +1161,7 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")*
   mentor-facing student-profile page exists yet.
 
 ### `/mentor/chats` — `src/pages/mentor/Chats.jsx`
+
 - **Real:** switching threads, thread search (filters by name), typing and
   sending a message (Enter-to-send, appends to that thread's local state
   immediately).
@@ -1084,6 +1174,7 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")*
   genuinely blocked on scheduling/file-upload infra that doesn't exist yet.
 
 ### `/mentor/meetings` — `src/pages/mentor/Meetings.jsx`
+
 - **Real:** search genuinely filters the 2 seeded meetings (by student or
   startup name), meeting-list selection, Mentor Notes textarea and Meeting
   Outcome select, Save Notes shows a real transient confirmation (2s
@@ -1097,6 +1188,7 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")*
   cross-linking that doesn't exist yet.
 
 ### `/mentor/profile` — `src/pages/mentor/Profile.jsx`
+
 - **Real:** every field is a controlled input, Areas of Expertise chip
   add/remove (Enter to add, click × to remove — same pattern as Student
   Settings' Skills chips), Ideal Startup Stages checkboxes, Meeting
@@ -1117,15 +1209,16 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")*
 
 ## Company Portal
 
-*(Originally added by a different contributor directly to `main`, outside
+_(Originally added by a different contributor directly to `main`, outside
 the usual branch/PR process this doc otherwise assumes. Fully remediated
 — rebuilt on the same shell/token/component conventions as every other
 portal. `components/company/CompanyShell.jsx` is the fifth instance of
 the shared three-piece shell pattern (Dashboard/Incubator/Admin/
 Investor/Mentor before it); the old `layouts/CompanyDashboardShell.jsx`
-and `components/bocc/*` are gone.)*
+and `components/bocc/*` are gone.)_
 
 ### `/company/dashboard` — `src/pages/company/Dashboard.jsx`
+
 - **Stub:** all 4 stat cards, the Recent Applicant Activity table, and
   the Latest Postings list are hardcoded snapshots — same as every other
   portal's dashboard at this stage.
@@ -1135,6 +1228,7 @@ and `components/bocc/*` are gone.)*
   until this batch built the screens they point to.
 
 ### `/company/my-opportunities` — `src/pages/company/MyOpportunities.jsx`
+
 - **Real:** search genuinely filters the 4 seeded opportunities
   client-side (by title or ref), using the shared `DataTable` component
   (desktop grid → stacked mobile cards, same as every other table in the
@@ -1156,10 +1250,12 @@ and `components/bocc/*` are gone.)*
   before.
 
 ### `/company/post-opportunity/step-{1..4}` — `src/pages/company/PostOpportunityStep{1..4}.jsx`
-*(Fills the "Post Opportunity" nav stub. 4-step wizard —
+
+_(Fills the "Post Opportunity" nav stub. 4-step wizard —
 `PostOpportunityStepper.jsx` is the shared progress header, `Next Step`
 gates on each step's required fields exactly like every other gated form
-in this app.)*
+in this app.)_
+
 - **Real:** Step 1's Title, Step 2's Required Skills (add-on-Enter/
   remove chips), and Step 3's Overview/Responsibilities (with live
   character counters against each field's max length) all gate
@@ -1178,7 +1274,9 @@ in this app.)*
   Branch, Change (deadline).
 
 ### `/company/applicants`, `/company/applicants/detail` — `ApplicantsList.jsx`, `ApplicantDetail.jsx`
-*(Fills the "Applicants" nav stub.)*
+
+_(Fills the "Applicants" nav stub.)_
+
 - **Real:** `ApplicantsList.jsx`'s 4 filter selects are genuine controlled
   state (visual filtering, not yet wired to the table — same "filter
   controls are real state, don't filter yet" pattern as
@@ -1188,12 +1286,13 @@ in this app.)*
 - **Stub:** the opportunity summary card and 3 listed applicants are
   hardcoded; Internal Notes and Application Status don't persist.
   `// TODO(backend)`: `GET /api/opportunities/:id/applicants`, `PATCH
-  /api/applicants/:id { status, notes }`.
+/api/applicants/:id { status, notes }`.
 - **Coming Soon:** Filter, Sort, Export, Edit/Close Opportunity, Resume
   icon, Schedule Interview, Download Resume, Contact Applicant, Reject,
   Share Profile, Portfolio/GitHub links.
 
 ### Shell — `components/company/CompanyShell.jsx`
+
 Sidebar nav: Dashboard, My Opportunities, Post Opportunity, and
 Applicants are all real now; Profile and Settings remain `real: false`
 (render as `ComingSoon` automatically via the shared `Sidebar.jsx`) since
@@ -1204,12 +1303,13 @@ those screens don't exist yet. Header search and notifications are
 
 ## Onboarding & Verification Flow
 
-*(Ported from the same second intern's repo — the pre-dashboard steps
+_(Ported from the same second intern's repo — the pre-dashboard steps
 between signup and a working portal. Nested under the existing
 `AuthLayout` since these are pre-auth screens structurally identical in
-kind to Login/ForgotPassword, not a new bespoke shell.)*
+kind to Login/ForgotPassword, not a new bespoke shell.)_
 
 ### `/onboarding/welcome` — `src/pages/onboarding/Welcome.jsx`
+
 - **Real:** "Continue to Email Verification" → real navigation to
   `/onboarding/verify-email`. "Back" → real navigation to `/role-selection`.
 - **Stub:** the chapter stats (524 members, 12 active startups, etc.) and
@@ -1223,6 +1323,7 @@ kind to Login/ForgotPassword, not a new bespoke shell.)*
   partnership from placeholder content.
 
 ### `/onboarding/verify-email` — `src/pages/onboarding/VerifyEmail.jsx`
+
 - **Real:** 6-digit OTP input (auto-advance/backspace-to-previous-box),
   Resend Code cooldown timer, Verify button genuinely gated on all 6 digits
   being filled.
@@ -1238,6 +1339,7 @@ kind to Login/ForgotPassword, not a new bespoke shell.)*
   success/failure.
 
 ### `/onboarding/verification-progress` — `src/pages/onboarding/VerificationProgress.jsx`
+
 - **Real:** "Return to Home" → real navigation to `/login`.
 - **Stub:** the 5-step progress tracker (fixed at "Review" as the active
   step), 80% progress bar, and "24–48 business hours" estimate are all
@@ -1245,14 +1347,17 @@ kind to Login/ForgotPassword, not a new bespoke shell.)*
 - **Coming Soon:** "Contact Support" — no support-ticket flow exists yet.
 
 ### `/onboarding/application-rejected` — `src/pages/onboarding/ApplicationRejected.jsx`
+
 - **Real:** "Back to Dashboard" → real navigation to `/login`.
 - **Stub:** the "Reason for review" text is a hardcoded generic message,
   not tied to any real rejection reason.
 - **Coming Soon:** "Contact Support" — same as above.
 
 ### `/onboarding/complete-profile/{student,mentor,investor,incubator,company}`
+
 — `src/pages/onboarding/complete-profile/*.jsx`, shared chrome in
 `src/components/onboarding/CompleteProfileShell.jsx`
+
 - **Real:** every field is a controlled input; photo/logo upload is a real
   file picker with instant local preview (`URL.createObjectURL`, never
   uploaded); tag fields (Skills, Areas of Expertise, Industry Focus, etc.)

@@ -104,6 +104,11 @@ export default function IdeaSubmissionPage() {
         }
       } catch (err) {
         console.error("Failed to load submission status:", err);
+        setErrorMsg(
+          err?.response?.data?.message ||
+            err?.message ||
+            "Failed to load submission status.",
+        );
       } finally {
         setLoading(false);
       }
@@ -150,7 +155,9 @@ export default function IdeaSubmissionPage() {
       setSuccessMsg("Draft saved successfully.");
       setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err) {
-      setErrorMsg(err?.message || "Failed to save draft.");
+      setErrorMsg(
+        err.response?.data?.message || err?.message || "Failed to save draft.",
+      );
     } finally {
       setSavingDraft(false);
     }
@@ -170,7 +177,9 @@ export default function IdeaSubmissionPage() {
         replace: true,
       });
     } catch (err) {
-      setErrorMsg(err?.message || "Failed to submit idea.");
+      setErrorMsg(
+        err.response?.data?.message || err?.message || "Failed to submit idea.",
+      );
     } finally {
       setSubmitting(false);
     }

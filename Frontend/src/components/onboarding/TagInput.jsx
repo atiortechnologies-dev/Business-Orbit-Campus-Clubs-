@@ -1,25 +1,28 @@
-import { useState } from 'react';
-import { X } from 'lucide-react';
+import { useState } from "react";
+import { X } from "lucide-react";
 
 // Real add/remove on already-loaded local state (not a stub) — press
 // Enter to add, click the x to remove, same convention used for
 // client-side-only operations throughout this codebase.
 export default function TagInput({ id, label, tags, onChange, placeholder }) {
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState("");
 
   const addTag = (e) => {
-    if (e.key !== 'Enter') return;
+    if (e.key !== "Enter") return;
     e.preventDefault();
     const next = draft.trim();
     if (next && !tags.includes(next)) onChange([...tags, next]);
-    setDraft('');
+    setDraft("");
   };
 
   const removeTag = (tag) => onChange(tags.filter((t) => t !== tag));
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-caption font-medium text-text-heading font-inter">
+      <label
+        htmlFor={id}
+        className="text-caption font-medium text-text-heading font-inter"
+      >
         {label}
       </label>
       {tags.length > 0 && (

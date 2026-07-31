@@ -1,3 +1,8 @@
+/**
+ * @file PlatformSetting.js
+ * @description Mongoose model for storing global platform configurations and settings.
+ * @architecture Acts as the central settings schema for the admin portal, allowing dynamic configuration of features like registration and maintenance mode.
+ */
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -14,7 +19,11 @@ const platformSettingSchema = new Schema(
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
-  }
+  },
 );
 
+/**
+ * @module PlatformSetting
+ * @description Exports the PlatformSetting Mongoose model.
+ */
 module.exports = mongoose.model("PlatformSetting", platformSettingSchema);

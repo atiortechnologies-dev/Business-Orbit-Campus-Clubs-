@@ -63,14 +63,14 @@ describe("Settings Controller", () => {
         .set("Authorization", `Bearer ${superAdminJwt}`)
         .send({
           platform_name: "New Name",
-          maintenance_mode: true
+          maintenance_mode: true,
         });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.platformSetting.platform_name).toBe("New Name");
       expect(res.body.data.platformSetting.maintenance_mode).toBe(true);
-      
+
       const logs = await AuditLog.find();
       expect(logs.length).toBeGreaterThan(0);
     });
@@ -83,7 +83,7 @@ describe("Settings Controller", () => {
         .set("Authorization", `Bearer ${adminJwt}`)
         .send({
           full_name: "Updated Admin",
-          phone: "1234567890"
+          phone: "1234567890",
         });
 
       expect(res.statusCode).toBe(200);
@@ -99,13 +99,19 @@ describe("Settings Controller", () => {
         .set("Authorization", `Bearer ${adminJwt}`)
         .send({
           notifications: [
-            { event_category: "user_registrations", in_app_enabled: true, email_enabled: false }
-          ]
+            {
+              event_category: "user_registrations",
+              in_app_enabled: true,
+              email_enabled: false,
+            },
+          ],
         });
 
       expect(res.statusCode).toBe(200);
       expect(res.body.data.notifications).toHaveLength(1);
-      expect(res.body.data.notifications[0].event_category).toBe("user_registrations");
+      expect(res.body.data.notifications[0].event_category).toBe(
+        "user_registrations",
+      );
     });
   });
 
@@ -118,7 +124,7 @@ describe("Settings Controller", () => {
         ip_address: "127.0.0.1",
         refresh_token_hash: "hash",
         is_current: true,
-        last_active_at: new Date()
+        last_active_at: new Date(),
       });
 
       const res = await request(app)
@@ -141,10 +147,13 @@ describe("Settings Controller", () => {
         email_verified: true,
       });
       const superAdminJwt = generateToken(superAdmin, "superadmin@example.com");
-      
+
       const currentRefreshToken = "current-refresh-token-123";
       const crypto = require("crypto");
-      const currentHash = crypto.createHash('sha256').update(currentRefreshToken).digest('hex');
+      const currentHash = crypto
+        .createHash("sha256")
+        .update(currentRefreshToken)
+        .digest("hex");
 
       await UserSession.create({
         user_id: superAdmin._id,
@@ -153,7 +162,7 @@ describe("Settings Controller", () => {
         ip_address: "127.0.0.1",
         refresh_token_hash: currentHash,
         is_current: true,
-        last_active_at: new Date()
+        last_active_at: new Date(),
       });
 
       // Add a non-current session
@@ -164,7 +173,7 @@ describe("Settings Controller", () => {
         ip_address: "127.0.0.1",
         refresh_token_hash: "oldhash",
         is_current: false,
-        last_active_at: new Date()
+        last_active_at: new Date(),
       });
 
       const res = await request(app)
@@ -177,7 +186,7 @@ describe("Settings Controller", () => {
       expect(sessions).toHaveLength(1);
       expect(sessions[0].refresh_token_hash).toBe(currentHash);
     });
-    
+
     it("should fail if no refreshToken is provided", async () => {
       const superAdmin = await User.create({
         full_name: "Super Admin 2",
@@ -187,7 +196,10 @@ describe("Settings Controller", () => {
         account_status: "active",
         email_verified: true,
       });
-      const superAdminJwt = generateToken(superAdmin, "superadmin2@example.com");
+      const superAdminJwt = generateToken(
+        superAdmin,
+        "superadmin2@example.com",
+      );
 
       const res = await request(app)
         .post("/api/admin/settings/logout-all-devices")
@@ -205,7 +217,7 @@ describe("Settings Controller", () => {
         .set("Authorization", `Bearer ${adminJwt}`)
         .send({
           current_password: "CurrentPassword123",
-          new_password: "NewPassword123!"
+          new_password: "NewPassword123!",
         });
 
       expect(res.statusCode).toBe(200);
@@ -217,7 +229,7 @@ describe("Settings Controller", () => {
         .set("Authorization", `Bearer ${adminJwt}`)
         .send({
           current_password: "WrongPassword123",
-          new_password: "NewPassword123!"
+          new_password: "NewPassword123!",
         });
 
       expect(res.statusCode).toBe(400);

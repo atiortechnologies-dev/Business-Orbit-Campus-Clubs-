@@ -4,8 +4,8 @@
  * @architecture Interfaces with the AuditLog model for system observability.
  */
 
-const AuditLog = require('../../models/AuditLog');
-const asyncHandler = require('../../middlewares/asyncHandler');
+const AuditLog = require("../../models/AuditLog");
+const asyncHandler = require("../../middlewares/asyncHandler");
 
 /**
  * @desc    Get paginated audit logs with filtering
@@ -23,15 +23,15 @@ exports.getAuditLogs = asyncHandler(async (req, res) => {
   if (user) {
     query.actor_id = user;
   }
-  
+
   if (timeframe) {
     const now = new Date();
     let startDate = new Date();
-    if (timeframe === 'Last 24 Hours') {
+    if (timeframe === "Last 24 Hours") {
       startDate.setDate(now.getDate() - 1);
-    } else if (timeframe === 'Last 7 Days') {
+    } else if (timeframe === "Last 7 Days") {
       startDate.setDate(now.getDate() - 7);
-    } else if (timeframe === 'Last 30 Days') {
+    } else if (timeframe === "Last 30 Days") {
       startDate.setDate(now.getDate() - 30);
     }
     query.created_at = { $gte: startDate };
@@ -40,7 +40,11 @@ exports.getAuditLogs = asyncHandler(async (req, res) => {
   const skip = (parseInt(page, 10) - 1) * parseInt(limit, 10);
 
   const [auditLogs, total] = await Promise.all([
-    AuditLog.find(query).sort({ created_at: -1 }).skip(skip).limit(parseInt(limit, 10)).lean(),
+    AuditLog.find(query)
+      .sort({ created_at: -1 })
+      .skip(skip)
+      .limit(parseInt(limit, 10))
+      .lean(),
     AuditLog.countDocuments(query),
   ]);
 
@@ -64,19 +68,19 @@ exports.getAuditLogs = asyncHandler(async (req, res) => {
  * @access  Private (Admin/Super Admin)
  */
 exports.getPulse = asyncHandler(async (req, res) => {
-  res.setHeader('Content-Type', 'text/event-stream');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.setHeader('Connection', 'keep-alive');
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
 
   const changeStream = AuditLog.watch();
 
-  changeStream.on('change', (change) => {
-    if (change.operationType === 'insert') {
+  changeStream.on("change", (change) => {
+    if (change.operationType === "insert") {
       res.write(`data: ${JSON.stringify(change.fullDocument)}\n\n`);
     }
   });
 
-  req.on('close', () => {
+  req.on("close", () => {
     changeStream.close();
   });
 });
@@ -99,20 +103,20 @@ exports.getVolumeTrend = asyncHandler(async (req, res) => {
     {
       $group: {
         _id: {
-          year: { $year: '$created_at' },
-          month: { $month: '$created_at' },
-          day: { $dayOfMonth: '$created_at' },
-          hour: { $hour: '$created_at' },
+          year: { $year: "$created_at" },
+          month: { $month: "$created_at" },
+          day: { $dayOfMonth: "$created_at" },
+          hour: { $hour: "$created_at" },
         },
         count: { $sum: 1 },
       },
     },
     {
       $sort: {
-        '_id.year': 1,
-        '_id.month': 1,
-        '_id.day': 1,
-        '_id.hour': 1,
+        "_id.year": 1,
+        "_id.month": 1,
+        "_id.day": 1,
+        "_id.hour": 1,
       },
     },
   ]);
@@ -139,15 +143,15 @@ exports.exportLogs = asyncHandler(async (req, res) => {
   if (user) {
     query.actor_id = user;
   }
-  
+
   if (timeframe) {
     const now = new Date();
     let startDate = new Date();
-    if (timeframe === 'Last 24 Hours') {
+    if (timeframe === "Last 24 Hours") {
       startDate.setDate(now.getDate() - 1);
-    } else if (timeframe === 'Last 7 Days') {
+    } else if (timeframe === "Last 7 Days") {
       startDate.setDate(now.getDate() - 7);
-    } else if (timeframe === 'Last 30 Days') {
+    } else if (timeframe === "Last 30 Days") {
       startDate.setDate(now.getDate() - 30);
     }
     query.created_at = { $gte: startDate };
@@ -155,13 +159,21 @@ exports.exportLogs = asyncHandler(async (req, res) => {
 
   const logs = await AuditLog.find(query).sort({ created_at: -1 }).lean();
 
-  const fields = ['created_at', 'actor_name', 'module', 'action', 'target_entity_name', 'status', 'ip_address'];
-  
+  const fields = [
+    "created_at",
+    "actor_name",
+    "module",
+    "action",
+    "target_entity_name",
+    "status",
+    "ip_address",
+  ];
+
   try {
-    let csv = fields.join(',') + '\\n';
-    logs.forEach(log => {
-      const row = fields.map(field => {
-        let value = log[field] || '';
+    let csv = fields.join(",") + "\\n";
+    logs.forEach((log) => {
+      const row = fields.map((field) => {
+        let value = log[field] || "";
         if (value instanceof Date) {
           value = value.toISOString();
         }
@@ -171,14 +183,14 @@ exports.exportLogs = asyncHandler(async (req, res) => {
         }
         return value;
       });
-      csv += row.join(',') + '\\n';
+      csv += row.join(",") + "\\n";
     });
-    
-    res.header('Content-Type', 'text/csv');
-    res.attachment('audit_logs.csv');
+
+    res.header("Content-Type", "text/csv");
+    res.attachment("audit_logs.csv");
     return res.status(200).send(csv);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ success: false, message: 'Could not generate CSV' });
+    res.status(500).json({ success: false, message: "Could not generate CSV" });
   }
 });

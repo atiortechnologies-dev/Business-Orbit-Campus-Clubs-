@@ -1,3 +1,8 @@
+/**
+ * @file AuditLog.js
+ * @description Defines the Mongoose schema and model for application audit logs.
+ * @architecture Provides a system-wide audit trail mechanism by storing security and operational events within the database.
+ */
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
@@ -7,7 +12,15 @@ const auditLogSchema = new Schema(
     actor_name: { type: String },
     module: {
       type: String,
-      enum: ["SECURITY", "CLUBS", "AUTH", "SYSTEM", "CONTENT", "OPPORTUNITIES", "CHAPTERS"],
+      enum: [
+        "SECURITY",
+        "CLUBS",
+        "AUTH",
+        "SYSTEM",
+        "CONTENT",
+        "OPPORTUNITIES",
+        "CHAPTERS",
+      ],
       required: true,
     },
     action: { type: String, required: true },
@@ -23,9 +36,13 @@ const auditLogSchema = new Schema(
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
-  }
+  },
 );
 
 auditLogSchema.index({ created_at: -1 });
 
+/**
+ * @module AuditLog
+ * @description Exports the AuditLog Mongoose model.
+ */
 module.exports = mongoose.model("AuditLog", auditLogSchema);

@@ -1,7 +1,17 @@
-export default function TextAreaField({ id, label, value, onChange, placeholder, rows = 4 }) {
+export default function TextAreaField({
+  id,
+  label,
+  value,
+  onChange,
+  placeholder,
+  rows = 4,
+}) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={id} className="text-caption font-medium text-text-heading font-inter">
+      <label
+        htmlFor={id}
+        className="text-caption font-medium text-text-heading font-inter"
+      >
         {label}
       </label>
       <textarea

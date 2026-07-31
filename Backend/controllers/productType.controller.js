@@ -1,9 +1,19 @@
+/**
+ * @file productType.controller.js
+ * @description Controller for startup product type selection.
+ * @architecture Allows startups to select or update their product type, updating the StartupProduct model and MVPChecklist.
+ */
 const asyncHandler = require("../middlewares/asyncHandler");
 const MVPChecklist = require("../models/MVPChecklist");
 const StartupProduct = require("../models/StartupProduct");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // POST /api/student/startup/product-type
+/**
+ * @desc    Select startup product type
+ * @route   POST /api/student/startup/product-type
+ * @access  Private/Student
+ */
 const selectProductType = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { product_type, product_description } = req.validatedData;
@@ -55,6 +65,11 @@ const selectProductType = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/startup/product-type
+/**
+ * @desc    Get startup product type
+ * @route   GET /api/student/startup/product-type
+ * @access  Private/Student
+ */
 const getProductType = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

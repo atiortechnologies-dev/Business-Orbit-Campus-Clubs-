@@ -154,35 +154,35 @@ tooltip, `aria-disabled`) instead of a dead link or a fake page — see
 
 ## Routes
 
-| Route | Portal |
-|---|---|
-| `/login`, `/forgot-password`, `/reset-password`, `/role-selection`, `/signup/{student\|company\|investor\|mentor\|incubator}` | Auth |
-| `/onboarding/welcome`, `/onboarding/verify-email`, `/onboarding/verification-progress`, `/onboarding/application-rejected`, `/onboarding/complete-profile/{student\|mentor\|investor\|incubator\|company}` | Onboarding / verification |
-| `/landing`, `/landing/{student\|mentor\|investor\|incubator\|companies}` | Public landing |
-| `/dashboard`, `/notifications`, `/settings`, `/build-startup/journey` | Student |
-| `/build-startup/journey/ideation` (+ `/submit`, `/confirmation`, `/review-meeting`, `/review-result`, `/resources`) | Student — Ideation stage |
-| `/build-startup/journey/validation` (+ `/survey-tracker`, `/evidence-upload`, `/report-submission`, `/confirmation`, `/review-meeting`, `/review-result`) | Student — Validation stage |
-| `/build-startup/journey/mvp` (+ `/choose-product-type`, `/submit`, `/success`, `/incubation-proof`, `/incubation-verification`, `/incubation-approved`) | Student — MVP stage |
-| `/build-startup/journey/traction` (+ `/acquisition-tracker`, `/feedback-upload`, `/product-submission`, `/review`, `/review-meeting`, `/approved`) | Student — Traction stage |
-| `/build-startup/journey/launch` (+ `/submission`, `/pitch-deck`, `/proof-upload`, `/verification`) | Student — Launch stage |
-| `/build-startup/journey/complete` | Student — Journey complete |
-| `/incubators` (+ `/profile`, `/apply`, `/confirmed`, `/tracker`) | Student — Incubator Marketplace |
-| `/freelancing` (+ `/opportunity`, `/apply`, `/applied`, `/applications`) | Student — Freelancing |
-| `/mentors` (+ `/profile`, `/request`, `/chat`, `/messages`) | Student — Mentor Network (`/mentors/messages` is the shared chat inbox) |
-| `/investors` (+ `/profile`, `/send-pitch`, `/chat`) | Student — Investor Network |
-| `/support` (+ `/raise-ticket`, `/tickets`, `/tickets/detail`) | Student — Support Center |
-| `/incubator`, `/incubator/applications`, `/incubator/applications/review`, `/incubator/messages`, `/incubator/settings` | Incubator |
-| `/admin`, `/admin/verification(/detail\|/decision)`, `/admin/reviews(/detail\|/workspace\|/outcome\|/schedule-meeting)`, `/admin/audit-log` | Admin |
-| `/admin/announcements` (+ `/create`, `/preview`, `/published`) | Admin — Announcements |
-| `/admin/chapters` (+ `/detail`) | Admin — Chapter Management |
-| `/admin/opportunities` (+ `/review`) | Admin — Opportunity moderation |
-| `/admin/settings` | Admin — Settings |
-| `/investor`, `/investor/pitch-decks`, `/investor/pitch-decks/review` | Investor |
-| `/mentor`, `/mentor/requests`, `/mentor/chats`, `/mentor/meetings`, `/mentor/profile` | Mentor |
-| `/company/dashboard`, `/company/my-opportunities` | Company |
-| `/company/post-opportunity/step-{1..4}` | Company — Post Opportunity wizard |
-| `/company/applicants` (+ `/detail`) | Company — Applicants |
-| `/legal/privacy-policy` | Public |
+| Route                                                                                                                                                                                                      | Portal                                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `/login`, `/forgot-password`, `/reset-password`, `/role-selection`, `/signup/{student\|company\|investor\|mentor\|incubator}`                                                                              | Auth                                                                    |
+| `/onboarding/welcome`, `/onboarding/verify-email`, `/onboarding/verification-progress`, `/onboarding/application-rejected`, `/onboarding/complete-profile/{student\|mentor\|investor\|incubator\|company}` | Onboarding / verification                                               |
+| `/landing`, `/landing/{student\|mentor\|investor\|incubator\|companies}`                                                                                                                                   | Public landing                                                          |
+| `/dashboard`, `/notifications`, `/settings`, `/build-startup/journey`                                                                                                                                      | Student                                                                 |
+| `/build-startup/journey/ideation` (+ `/submit`, `/confirmation`, `/review-meeting`, `/review-result`, `/resources`)                                                                                        | Student — Ideation stage                                                |
+| `/build-startup/journey/validation` (+ `/survey-tracker`, `/evidence-upload`, `/report-submission`, `/confirmation`, `/review-meeting`, `/review-result`)                                                  | Student — Validation stage                                              |
+| `/build-startup/journey/mvp` (+ `/choose-product-type`, `/submit`, `/success`, `/incubation-proof`, `/incubation-verification`, `/incubation-approved`)                                                    | Student — MVP stage                                                     |
+| `/build-startup/journey/traction` (+ `/acquisition-tracker`, `/feedback-upload`, `/product-submission`, `/review`, `/review-meeting`, `/approved`)                                                         | Student — Traction stage                                                |
+| `/build-startup/journey/launch` (+ `/submission`, `/pitch-deck`, `/proof-upload`, `/verification`)                                                                                                         | Student — Launch stage                                                  |
+| `/build-startup/journey/complete`                                                                                                                                                                          | Student — Journey complete                                              |
+| `/incubators` (+ `/profile`, `/apply`, `/confirmed`, `/tracker`)                                                                                                                                           | Student — Incubator Marketplace                                         |
+| `/freelancing` (+ `/opportunity`, `/apply`, `/applied`, `/applications`)                                                                                                                                   | Student — Freelancing                                                   |
+| `/mentors` (+ `/profile`, `/request`, `/chat`, `/messages`)                                                                                                                                                | Student — Mentor Network (`/mentors/messages` is the shared chat inbox) |
+| `/investors` (+ `/profile`, `/send-pitch`, `/chat`)                                                                                                                                                        | Student — Investor Network                                              |
+| `/support` (+ `/raise-ticket`, `/tickets`, `/tickets/detail`)                                                                                                                                              | Student — Support Center                                                |
+| `/incubator`, `/incubator/applications`, `/incubator/applications/review`, `/incubator/messages`, `/incubator/settings`                                                                                    | Incubator                                                               |
+| `/admin`, `/admin/verification(/detail\|/decision)`, `/admin/reviews(/detail\|/workspace\|/outcome\|/schedule-meeting)`, `/admin/audit-log`                                                                | Admin                                                                   |
+| `/admin/announcements` (+ `/create`, `/preview`, `/published`)                                                                                                                                             | Admin — Announcements                                                   |
+| `/admin/chapters` (+ `/detail`)                                                                                                                                                                            | Admin — Chapter Management                                              |
+| `/admin/opportunities` (+ `/review`)                                                                                                                                                                       | Admin — Opportunity moderation                                          |
+| `/admin/settings`                                                                                                                                                                                          | Admin — Settings                                                        |
+| `/investor`, `/investor/pitch-decks`, `/investor/pitch-decks/review`                                                                                                                                       | Investor                                                                |
+| `/mentor`, `/mentor/requests`, `/mentor/chats`, `/mentor/meetings`, `/mentor/profile`                                                                                                                      | Mentor                                                                  |
+| `/company/dashboard`, `/company/my-opportunities`                                                                                                                                                          | Company                                                                 |
+| `/company/post-opportunity/step-{1..4}`                                                                                                                                                                    | Company — Post Opportunity wizard                                       |
+| `/company/applicants` (+ `/detail`)                                                                                                                                                                        | Company — Applicants                                                    |
+| `/legal/privacy-policy`                                                                                                                                                                                    | Public                                                                  |
 
 126 routes total. `src/router.jsx` is the single source of truth — if this
 table and that file ever disagree, the file wins; update this table to

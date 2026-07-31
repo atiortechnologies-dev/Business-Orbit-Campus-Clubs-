@@ -17,7 +17,16 @@ const applicationStatusHistorySchema = new mongoose.Schema(
     status: {
       type: String,
       required: true,
-      enum: ["draft", "submitted", "viewed", "shortlisted", "interview", "selected", "rejected", "withdrawn"],
+      enum: [
+        "draft",
+        "submitted",
+        "viewed",
+        "shortlisted",
+        "interview",
+        "selected",
+        "rejected",
+        "withdrawn",
+      ],
     },
     updated_by: {
       type: mongoose.Schema.Types.ObjectId,
@@ -29,7 +38,10 @@ const applicationStatusHistorySchema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: { createdAt: "updated_at", updatedAt: false } }
+  { timestamps: { createdAt: "updated_at", updatedAt: false } },
 );
 
-module.exports = mongoose.model("ApplicationStatusHistory", applicationStatusHistorySchema);
+module.exports = mongoose.model(
+  "ApplicationStatusHistory",
+  applicationStatusHistorySchema,
+);

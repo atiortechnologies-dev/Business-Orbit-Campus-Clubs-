@@ -1,32 +1,80 @@
-import { useNavigate } from 'react-router-dom';
-import { Download, Zap, Clock, CheckCircle, XCircle, Calendar, ArrowRight } from 'lucide-react';
-import AdminShell from '@/components/admin/AdminShell';
-import DataTable from '@/components/ui/DataTable';
-import Badge from '@/components/ui/Badge';
-import StatCard from '@/components/ui/StatCard';
-import ComingSoon from '@/components/ui/ComingSoon';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-import { downloadCsv } from '@/utils/csv';
+import { useNavigate } from "react-router-dom";
+import {
+  Download,
+  Zap,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Calendar,
+  ArrowRight,
+} from "lucide-react";
+import AdminShell from "@/components/admin/AdminShell";
+import DataTable from "@/components/ui/DataTable";
+import Badge from "@/components/ui/Badge";
+import StatCard from "@/components/ui/StatCard";
+import ComingSoon from "@/components/ui/ComingSoon";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { downloadCsv } from "@/utils/csv";
 
 const SUBMISSIONS = [
-  { id: 's1', name: 'Lumina AI', founder: 'Sarah Jenkins', chapter: 'Stanford Chapter', stage: 'MVP', date: '2024-10-24', reviewer: 'Alex Rivera', priority: 'High', status: 'Pending' },
-  { id: 's2', name: 'EcoFlow', founder: 'Mark Zuberi', chapter: 'MIT Tech Hub', stage: 'Traction', date: '2024-10-23', reviewer: 'Priya Sharma', priority: 'Medium', status: 'Under Review' },
-  { id: 's3', name: 'BlockDocs', founder: 'Elena Rodriguez', chapter: 'UC Berkeley', stage: 'Idea', date: '2024-10-23', reviewer: 'Alex Rivera', priority: 'Low', status: 'Pending' },
-  { id: 's4', name: 'StitchPoint', founder: 'James Chen', chapter: 'UT Austin', stage: 'Validation', date: '2024-10-22', reviewer: 'Jessica Wu', priority: 'High', status: 'Under Review' },
+  {
+    id: "s1",
+    name: "Lumina AI",
+    founder: "Sarah Jenkins",
+    chapter: "Stanford Chapter",
+    stage: "MVP",
+    date: "2024-10-24",
+    reviewer: "Alex Rivera",
+    priority: "High",
+    status: "Pending",
+  },
+  {
+    id: "s2",
+    name: "EcoFlow",
+    founder: "Mark Zuberi",
+    chapter: "MIT Tech Hub",
+    stage: "Traction",
+    date: "2024-10-23",
+    reviewer: "Priya Sharma",
+    priority: "Medium",
+    status: "Under Review",
+  },
+  {
+    id: "s3",
+    name: "BlockDocs",
+    founder: "Elena Rodriguez",
+    chapter: "UC Berkeley",
+    stage: "Idea",
+    date: "2024-10-23",
+    reviewer: "Alex Rivera",
+    priority: "Low",
+    status: "Pending",
+  },
+  {
+    id: "s4",
+    name: "StitchPoint",
+    founder: "James Chen",
+    chapter: "UT Austin",
+    stage: "Validation",
+    date: "2024-10-22",
+    reviewer: "Jessica Wu",
+    priority: "High",
+    status: "Under Review",
+  },
 ];
 
-const PRIORITY_VARIANT = { High: 'error', Medium: 'warning', Low: 'neutral' };
-const STATUS_VARIANT = { Pending: 'info', 'Under Review': 'warning' };
+const PRIORITY_VARIANT = { High: "error", Medium: "warning", Low: "neutral" };
+const STATUS_VARIANT = { Pending: "info", "Under Review": "warning" };
 
 export default function ReviewQueuePage() {
-  useDocumentTitle('Stage Approval Queue — BOCC Admin');
+  useDocumentTitle("Stage Approval Queue — BOCC Admin");
   const navigate = useNavigate();
 
   const columns = [
     {
-      key: 'name',
-      label: 'Startup',
-      width: '1.6fr',
+      key: "name",
+      label: "Startup",
+      width: "1.6fr",
       mobileLabel: false,
       render: (row) => (
         <div className="flex items-center gap-3">
@@ -34,37 +82,45 @@ export default function ReviewQueuePage() {
             {row.name.charAt(0)}
           </div>
           <div className="min-w-0">
-            <p className="font-poppins font-semibold text-small text-text-heading truncate">{row.name}</p>
-            <p className="font-inter text-caption text-text-muted truncate">{row.founder}</p>
+            <p className="font-poppins font-semibold text-small text-text-heading truncate">
+              {row.name}
+            </p>
+            <p className="font-inter text-caption text-text-muted truncate">
+              {row.founder}
+            </p>
           </div>
         </div>
       ),
     },
-    { key: 'chapter', label: 'Chapter', width: '1.2fr' },
+    { key: "chapter", label: "Chapter", width: "1.2fr" },
     {
-      key: 'stage',
-      label: 'Stage',
-      width: '1fr',
+      key: "stage",
+      label: "Stage",
+      width: "1fr",
       render: (row) => <Badge variant="brand">{row.stage}</Badge>,
     },
-    { key: 'date', label: 'Submitted', width: '1fr' },
-    { key: 'reviewer', label: 'Reviewer', width: '1.1fr' },
+    { key: "date", label: "Submitted", width: "1fr" },
+    { key: "reviewer", label: "Reviewer", width: "1.1fr" },
     {
-      key: 'priority',
-      label: 'Priority',
-      width: '0.8fr',
-      render: (row) => <Badge variant={PRIORITY_VARIANT[row.priority]}>{row.priority}</Badge>,
+      key: "priority",
+      label: "Priority",
+      width: "0.8fr",
+      render: (row) => (
+        <Badge variant={PRIORITY_VARIANT[row.priority]}>{row.priority}</Badge>
+      ),
     },
     {
-      key: 'status',
-      label: 'Status',
-      width: '1fr',
-      render: (row) => <Badge variant={STATUS_VARIANT[row.status]}>{row.status}</Badge>,
+      key: "status",
+      label: "Status",
+      width: "1fr",
+      render: (row) => (
+        <Badge variant={STATUS_VARIANT[row.status]}>{row.status}</Badge>
+      ),
     },
     {
-      key: 'actions',
-      label: '',
-      width: '0.8fr',
+      key: "actions",
+      label: "",
+      width: "0.8fr",
       mobileLabel: false,
       render: () => (
         <span className="flex items-center gap-1 font-inter font-semibold text-small text-text-heading">
@@ -78,9 +134,12 @@ export default function ReviewQueuePage() {
     <AdminShell>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-poppins font-semibold text-page text-text-heading">Stage Approval Queue</h1>
+          <h1 className="font-poppins font-semibold text-page text-text-heading">
+            Stage Approval Queue
+          </h1>
           <p className="font-inter text-body text-text-body mt-1">
-            Review startup submissions across all stages of the BOCC Startup Journey.
+            Review startup submissions across all stages of the BOCC Startup
+            Journey.
           </p>
         </div>
         <div className="flex gap-2">
@@ -91,16 +150,22 @@ export default function ReviewQueuePage() {
           </ComingSoon>
           <button
             type="button"
-            onClick={() => downloadCsv('review-queue', [
-              { key: 'name', label: 'Startup' },
-              { key: 'founder', label: 'Founder' },
-              { key: 'chapter', label: 'Chapter' },
-              { key: 'stage', label: 'Stage' },
-              { key: 'date', label: 'Submitted' },
-              { key: 'reviewer', label: 'Reviewer' },
-              { key: 'priority', label: 'Priority' },
-              { key: 'status', label: 'Status' },
-            ], SUBMISSIONS)}
+            onClick={() =>
+              downloadCsv(
+                "review-queue",
+                [
+                  { key: "name", label: "Startup" },
+                  { key: "founder", label: "Founder" },
+                  { key: "chapter", label: "Chapter" },
+                  { key: "stage", label: "Stage" },
+                  { key: "date", label: "Submitted" },
+                  { key: "reviewer", label: "Reviewer" },
+                  { key: "priority", label: "Priority" },
+                  { key: "status", label: "Status" },
+                ],
+                SUBMISSIONS,
+              )
+            }
             className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small hover:bg-canvas-bg transition-colors"
           >
             <Download size={14} strokeWidth={2} /> Export CSV
@@ -109,20 +174,43 @@ export default function ReviewQueuePage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard label="Pending Reviews" value="42" icon={<Clock size={18} strokeWidth={2} />} subtext="+12% from last week" trendDirection="up" />
-        <StatCard label="Approved Today" value="18" icon={<CheckCircle size={18} strokeWidth={2} />} subtext="Daily target: 25" />
-        <StatCard label="Rejected Today" value="04" icon={<XCircle size={18} strokeWidth={2} />} subtext="Within threshold" />
-        <StatCard label="Meetings Pending" value="09" icon={<Calendar size={18} strokeWidth={2} />} subtext="Next: 14:00 PM" />
+        <StatCard
+          label="Pending Reviews"
+          value="42"
+          icon={<Clock size={18} strokeWidth={2} />}
+          subtext="+12% from last week"
+          trendDirection="up"
+        />
+        <StatCard
+          label="Approved Today"
+          value="18"
+          icon={<CheckCircle size={18} strokeWidth={2} />}
+          subtext="Daily target: 25"
+        />
+        <StatCard
+          label="Rejected Today"
+          value="04"
+          icon={<XCircle size={18} strokeWidth={2} />}
+          subtext="Within threshold"
+        />
+        <StatCard
+          label="Meetings Pending"
+          value="09"
+          icon={<Calendar size={18} strokeWidth={2} />}
+          subtext="Next: 14:00 PM"
+        />
       </div>
 
       <DataTable
         columns={columns}
         rows={SUBMISSIONS}
-        onRowClick={() => navigate('/admin/reviews/detail')}
+        onRowClick={() => navigate("/admin/reviews/detail")}
         emptyMessage="No submissions in the queue."
       />
       <div className="flex justify-between items-center mt-4">
-        <span className="font-inter text-small text-text-muted">Showing 1-4 of 42 submissions</span>
+        <span className="font-inter text-small text-text-muted">
+          Showing 1-4 of 42 submissions
+        </span>
       </div>
     </AdminShell>
   );

@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 export default function CTA() {
   return (
@@ -11,15 +11,22 @@ export default function CTA() {
               Ready to Guide the Next Big Thing?
             </h2>
             <p className="mt-6 font-inter text-body md:text-card text-white/60 leading-relaxed max-w-2xl mx-auto">
-              Join 500+ expert mentors shaping the future of campus innovation. Your experience can be the
-              catalyst that turns a vision into reality.
+              Join 500+ expert mentors shaping the future of campus innovation.
+              Your experience can be the catalyst that turns a vision into
+              reality.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
-              <Link to="/signup/mentor" className="inline-flex items-center gap-2 bg-accent-neon text-brand-black font-poppins font-semibold px-8 py-4 rounded-md hover:opacity-90 transition-all">
+              <Link
+                to="/signup/mentor"
+                className="inline-flex items-center gap-2 bg-accent-neon text-brand-black font-poppins font-semibold px-8 py-4 rounded-md hover:opacity-90 transition-all"
+              >
                 Apply Now
                 <ArrowRight size={18} strokeWidth={2} />
               </Link>
-              <a href="#why-mentor" className="inline-flex items-center gap-2 border border-white/20 text-white font-poppins font-semibold px-8 py-4 rounded-md hover:border-white/40 transition-colors">
+              <a
+                href="#why-mentor"
+                className="inline-flex items-center gap-2 border border-white/20 text-white font-poppins font-semibold px-8 py-4 rounded-md hover:border-white/40 transition-colors"
+              >
                 Learn More
               </a>
             </div>

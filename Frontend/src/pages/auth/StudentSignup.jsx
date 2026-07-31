@@ -21,7 +21,7 @@ const BASE_FIELDS = [
   {
     name: "college",
     label: "College Name",
-    type: "select",
+    type: "autocomplete",
     options: [], // Populated dynamically from API
   },
   {
@@ -42,6 +42,7 @@ export default function StudentSignupPage() {
 
   const [fields, setFields] = useState(BASE_FIELDS);
   const [isFetchingChapters, setIsFetchingChapters] = useState(true);
+  const [fetchError, setFetchError] = useState("");
 
   useEffect(() => {
     const fetchChapters = async () => {
@@ -59,6 +60,11 @@ export default function StudentSignupPage() {
         );
       } catch (err) {
         console.error("Failed to load chapters:", err);
+        setFetchError(
+          err?.response?.data?.message ||
+            err?.message ||
+            "Unable to load colleges. Please refresh the page.",
+        );
       } finally {
         setIsFetchingChapters(false);
       }
@@ -77,6 +83,7 @@ export default function StudentSignupPage() {
       }
       fields={fields}
       isLoadingChapters={isFetchingChapters}
+      globalError={fetchError}
     />
   );
 }

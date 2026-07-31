@@ -33,7 +33,7 @@ describe("AuditLog Controller", () => {
         target_entity_name: "Test",
         status: "SUCCESS",
         ip_address: "127.0.0.1",
-        created_at: new Date(Date.now() - 3600 * 1000)
+        created_at: new Date(Date.now() - 3600 * 1000),
       },
       {
         actor_id: adminId,
@@ -43,8 +43,8 @@ describe("AuditLog Controller", () => {
         target_entity_name: "Test2",
         status: "SUCCESS",
         ip_address: "127.0.0.1",
-        created_at: new Date(Date.now() - 48 * 3600 * 1000) // 2 days ago
-      }
+        created_at: new Date(Date.now() - 48 * 3600 * 1000), // 2 days ago
+      },
     ]);
   });
 
@@ -95,7 +95,9 @@ describe("AuditLog Controller", () => {
         .set("Authorization", `Bearer ${adminJwt}`);
 
       expect(res.statusCode).toBe(200);
-      expect(res.headers['content-type']).toBe('text/event-stream; charset=utf-8');
+      expect(res.headers["content-type"]).toBe(
+        "text/event-stream; charset=utf-8",
+      );
     });
   });
 
@@ -118,7 +120,7 @@ describe("AuditLog Controller", () => {
         .set("Authorization", `Bearer ${adminJwt}`);
 
       expect(res.statusCode).toBe(200);
-      expect(res.headers['content-type']).toBe('text/csv; charset=utf-8');
+      expect(res.headers["content-type"]).toBe("text/csv; charset=utf-8");
       expect(res.text).toContain("created_at,actor_name,module");
     });
   });

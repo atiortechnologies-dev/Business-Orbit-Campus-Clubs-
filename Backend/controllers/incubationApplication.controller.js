@@ -314,12 +314,10 @@ const withdrawApplication = asyncHandler(async (req, res) => {
   }
 
   if (application.student_id.toString() !== studentId.toString()) {
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message: "Unauthorized to withdraw this application.",
-      });
+    return res.status(403).json({
+      success: false,
+      message: "Unauthorized to withdraw this application.",
+    });
   }
 
   if (

@@ -18,7 +18,11 @@ const chapterSchema = new mongoose.Schema(
       default: "ACTIVE",
     },
     location: { type: String, trim: true },
-    chapter_lead_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+    chapter_lead_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
     health_score: { type: Number, default: 100 },
     founded_date: { type: Date },
     is_deleted: { type: Boolean, default: false },

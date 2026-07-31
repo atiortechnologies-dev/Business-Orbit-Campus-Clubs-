@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Mail,
@@ -9,19 +9,19 @@ import {
   Bell,
   Settings,
   Menu,
-} from 'lucide-react';
-import ComingSoon from '@/components/ui/ComingSoon';
-import Logo from '@/components/ui/Logo';
-import ThemeToggle from '@/components/ui/ThemeToggle';
-import Sidebar from '@/components/layout/Sidebar';
-import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
+} from "lucide-react";
+import ComingSoon from "@/components/ui/ComingSoon";
+import Logo from "@/components/ui/Logo";
+import ThemeToggle from "@/components/ui/ThemeToggle";
+import Sidebar from "@/components/layout/Sidebar";
+import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/mentor', real: true },
-  { icon: Mail,            label: 'Requests',  href: '/mentor/requests', real: true },
-  { icon: MessageSquare,   label: 'Chats',      href: '/mentor/chats', real: true },
-  { icon: Calendar,        label: 'Meetings',   href: '/mentor/meetings', real: true },
-  { icon: UserCircle2,     label: 'Profile',    href: '/mentor/profile', real: true },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/mentor", real: true },
+  { icon: Mail, label: "Requests", href: "/mentor/requests", real: true },
+  { icon: MessageSquare, label: "Chats", href: "/mentor/chats", real: true },
+  { icon: Calendar, label: "Meetings", href: "/mentor/meetings", real: true },
+  { icon: UserCircle2, label: "Profile", href: "/mentor/profile", real: true },
 ];
 
 // Fifth instance of the three-piece shell pattern (header + content slot +
@@ -44,7 +44,9 @@ export default function MentorShell({ children }) {
         onToggleCollapse={onToggleCollapse}
       />
 
-      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[var(--spacing-sidebar-width)]'} min-h-screen flex flex-col`}>
+      <main
+        className={`${collapsed ? "lg:pl-20" : "lg:pl-[var(--spacing-sidebar-width)]"} min-h-screen flex flex-col`}
+      >
         <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-4">
             <button
@@ -71,7 +73,11 @@ export default function MentorShell({ children }) {
               position="bottom"
               className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border border-border-subtle bg-canvas-bg"
             >
-              <UserCircle2 size={18} strokeWidth={2} className="text-text-muted" />
+              <UserCircle2
+                size={18}
+                strokeWidth={2}
+                className="text-text-muted"
+              />
               <span className="text-text-muted font-inter font-normal text-body">
                 Search students, startups...
               </span>
@@ -109,10 +115,16 @@ export default function MentorShell({ children }) {
             </p>
           </div>
           <div className="flex gap-8">
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Privacy Policy
             </Link>
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Terms of Service
             </Link>
             <ComingSoon label="Contact Support" position="top" inline>

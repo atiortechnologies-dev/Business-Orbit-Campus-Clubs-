@@ -44,7 +44,7 @@ let faqId, partnerLogoId, enquiryId;
 
 const adminApiKey = "testadmin";
 process.env.ADMIN_API_KEY = adminApiKey;
-process.env.JWT_SECRET = "DUMMY_SECRET_FOR_TESTING_ONLY";
+process.env.JWT_SECRET = "TEST_API_KEY_123";
 
 beforeAll(async () => {
   // DB Connection is managed by tests/setup.js

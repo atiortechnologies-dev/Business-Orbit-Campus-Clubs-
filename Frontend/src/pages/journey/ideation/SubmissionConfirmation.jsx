@@ -1,17 +1,27 @@
-import { Link } from 'react-router-dom';
-import { CheckCircle2, ArrowRight, ChevronRight } from 'lucide-react';
-import DashboardShell from '@/components/dashboard/DashboardShell';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { Link } from "react-router-dom";
+import { CheckCircle2, ArrowRight, ChevronRight } from "lucide-react";
+import DashboardShell from "@/components/dashboard/DashboardShell";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function SubmissionConfirmationPage() {
-  useDocumentTitle('Idea Submitted — BOCC');
+  useDocumentTitle("Idea Submitted — BOCC");
 
   return (
     <DashboardShell pageId="idea-confirmation">
       <nav className="mb-2 flex items-center gap-2 text-text-muted font-inter font-normal text-small">
-        <Link to="/dashboard" className="hover:text-text-heading transition-colors">Dashboard</Link>
+        <Link
+          to="/dashboard"
+          className="hover:text-text-heading transition-colors"
+        >
+          Dashboard
+        </Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <Link to="/build-startup/journey/ideation" className="hover:text-text-heading transition-colors">Ideation</Link>
+        <Link
+          to="/build-startup/journey/ideation"
+          className="hover:text-text-heading transition-colors"
+        >
+          Ideation
+        </Link>
         <ChevronRight size={14} strokeWidth={2} />
         <span className="text-text-heading font-semibold">Submitted</span>
       </nav>
