@@ -1,4 +1,10 @@
 import axios from "axios";
+import {
+  clearAuthTokens,
+  getStoredAccessToken,
+  getStoredRefreshToken,
+  persistAuthTokens,
+} from "./auth/tokenStorage";
 
 const api = axios.create({
   baseURL: "http://localhost:5000/api",
@@ -9,13 +15,42 @@ const api = axios.create({
   },
 });
 
+let isRefreshing = false;
+let refreshPromise = null;
+
+const shouldRedirectToLogin = () => {
+  if (typeof window === "undefined") return false;
+
+  const publicPaths = [
+    "/login",
+    "/forgot-password",
+    "/reset-password",
+    "/onboarding/welcome",
+    "/role-selection",
+    "/student-signup",
+    "/company-signup",
+    "/investor-signup",
+    "/mentor-signup",
+    "/incubator-signup",
+    "/landing",
+    "/privacy-policy",
+    "/unauthorized",
+  ];
+
+  return !publicPaths.includes(window.location.pathname);
+};
+
 // 1. Request Interceptor: Attach Access Token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("accessToken");
+    const token = getStoredAccessToken();
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else if (config.headers.Authorization) {
+      delete config.headers.Authorization;
     }
+
     return config;
   },
   (error) => Promise.reject(error),
@@ -30,7 +65,6 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Handle 401 Unauthorized (Expired Access Token)
     if (
       error.response?.status === 401 &&
       originalRequest &&
@@ -45,56 +79,76 @@ api.interceptors.response.use(
         requestUrl.includes("/auth/refresh-token");
 
       if (!isAuthRequest) {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const refreshToken = getStoredRefreshToken();
 
-        // If no refresh token exists, redirect without making extra API calls
         if (!refreshToken) {
-          localStorage.clear();
-          if (window.location.pathname !== "/login") {
-            window.location.href = "/login";
+          clearAuthTokens();
+
+          if (shouldRedirectToLogin()) {
+            window.location.replace("/login");
           }
+
           return Promise.reject(new Error("No refresh token available."));
         }
 
-        try {
-          // Use direct standalone axios call to avoid interceptor loop
-          const res = await axios.post(
-            "http://localhost:5000/api/auth/refresh-token",
-            {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          refreshPromise = axios
+            .post("http://localhost:5000/api/auth/refresh-token", {
               refreshToken,
-            },
-          );
+            })
+            .then((res) => {
+              const newAccessToken =
+                res?.data?.data?.accessToken ||
+                res?.data?.accessToken ||
+                res?.accessToken ||
+                res?.data?.data?.token;
+              const newRefreshToken =
+                res?.data?.data?.refreshToken ||
+                res?.data?.refreshToken ||
+                res?.refreshToken ||
+                refreshToken;
 
-          // Check all common response shapes
-          const newAccessToken =
-            res.data?.data?.accessToken ||
-            res.data?.accessToken ||
-            res.data?.data?.token;
+              if (!newAccessToken) {
+                throw new Error("Refresh token response did not include a new access token.");
+              }
 
-          if (newAccessToken) {
-            localStorage.setItem("accessToken", newAccessToken);
+              persistAuthTokens({
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken,
+              });
 
-            // Re-attach new token to headers & retry original request
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-            return api(originalRequest);
-          }
+              return newAccessToken;
+            })
+            .catch((refreshError) => {
+              clearAuthTokens();
+
+              if (shouldRedirectToLogin()) {
+                window.location.replace("/login");
+              }
+
+              throw refreshError;
+            })
+            .finally(() => {
+              isRefreshing = false;
+              refreshPromise = null;
+            });
+        }
+
+        try {
+          const newAccessToken = await refreshPromise;
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+          return api(originalRequest);
         } catch (refreshError) {
-          // Refresh failed -> clear session & redirect to login
-          localStorage.clear();
-          if (window.location.pathname !== "/login") {
-            window.location.href = "/login";
-          }
           return Promise.reject(refreshError);
         }
       }
     }
 
-    // Handle 403 Forbidden
     if (error.response?.status === 403) {
       console.error("Access Forbidden: Invalid Role permissions");
     }
 
-    // Formatted Error Object (preserves error.response and error.data for components)
     const customError = new Error(
       error.response?.data?.message || error.message || "Something went wrong",
     );
