@@ -1,15 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
-
-const FAQS = [
-  { q: 'Who can join BOCC?', a: 'Any enrolled university student with an idea — or just the curiosity to explore startups. No prior experience required.' },
-  { q: 'How long is the startup journey program?', a: 'The core 5-stage journey runs an average of 12 months, but you move at your own pace with mentor checkpoints along the way.' },
-  { q: 'Do I need a co-founder to apply?', a: "No. Many founders join solo and find co-founders inside the community. We'll help you assess whether a team is right for your venture." },
-  { q: 'Is the grant funding dilutive?', a: 'No. Our startup grants are non-dilutive — you keep full ownership of your company while you build.' },
-];
+import { cmsApi } from '@/api/cmsApi';
 
 export default function FAQ() {
+  const [faqs, setFaqs] = useState([]);
   const [open, setOpen] = useState(0);
+
+  useEffect(() => {
+    async function loadFaqs() {
+      try {
+        const response = await cmsApi.getFaqs();
+        // Assuming response is an array of FAQs or response.data is the array
+        if (Array.isArray(response)) {
+          setFaqs(response);
+        } else if (response && Array.isArray(response.data)) {
+          setFaqs(response.data);
+        } else if (response && Array.isArray(response.faqs)) {
+          setFaqs(response.faqs);
+        }
+      } catch (err) {
+        console.error('Failed to load FAQs:', err);
+      }
+    }
+    loadFaqs();
+  }, []);
 
   return (
     <section id="faq" className="py-20 md:py-28 bg-surface-white">
@@ -22,16 +36,16 @@ export default function FAQ() {
         </div>
 
         <div className="mt-12 divide-y divide-border-subtle border-y border-border-subtle">
-          {FAQS.map((faq, idx) => {
+          {faqs.map((faq, idx) => {
             const isOpen = open === idx;
             return (
-              <div key={faq.q}>
+              <div key={faq._id || idx}>
                 <button
                   type="button"
                   onClick={() => setOpen(isOpen ? -1 : idx)}
                   className="w-full flex items-center justify-between gap-4 py-5 md:py-6 text-left"
                 >
-                  <span className="font-inter font-medium text-body md:text-card text-text-heading">{faq.q}</span>
+                  <span className="font-inter font-medium text-body md:text-card text-text-heading">{faq.question || faq.q}</span>
                   <ChevronDown
                     size={20}
                     strokeWidth={2}
@@ -40,7 +54,7 @@ export default function FAQ() {
                 </button>
                 <div className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                   <div className="overflow-hidden">
-                    <p className="pb-5 md:pb-6 font-inter text-small md:text-body text-text-muted leading-relaxed">{faq.a}</p>
+                    <p className="pb-5 md:pb-6 font-inter text-small md:text-body text-text-muted leading-relaxed">{faq.answer || faq.a}</p>
                   </div>
                 </div>
               </div>

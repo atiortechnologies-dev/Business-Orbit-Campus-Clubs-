@@ -98,6 +98,7 @@ const OpportunityReview = lazy(() => import('@/pages/admin/OpportunityReview'));
 const AdminSettings = lazy(() => import('@/pages/admin/AdminSettings'));
 const ChapterChangeRequests = lazy(() => import('@/pages/admin/ChapterChangeRequests'));
 const UserManagement = lazy(() => import('@/pages/admin/UserManagement'));
+const CmsManager = lazy(() => import('@/pages/admin/CmsManager'));
 const LandingHome = lazy(() => import('@/pages/landing/Home'));
 const LandingStudent = lazy(() => import('@/pages/landing/Student'));
 const LandingMentor = lazy(() => import('@/pages/landing/Mentor'));
@@ -300,6 +301,7 @@ export const router = createBrowserRouter([
       { path: '/admin/settings', element: withSuspense(AdminSettings) },
       { path: '/admin/chapter-change-requests', element: withSuspense(ChapterChangeRequests) },
       { path: '/admin/user-management', element: withSuspense(UserManagement) },
+      { path: '/admin/cms', element: withSuspense(CmsManager) },
     ]
   },
   {

@@ -11,6 +11,7 @@ import FAQ from '@/components/landing/FAQ';
 import CTA from '@/components/landing/CTA';
 import Contact from '@/components/landing/Contact';
 import Footer from '@/components/landing/Footer';
+import FeaturedStartups from '@/components/landing/FeaturedStartups';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function LandingHomePage() {
@@ -27,6 +28,7 @@ export default function LandingHomePage() {
         <Roles />
         <Ecosystem />
         <Stories />
+        <FeaturedStartups />
         <Partner />
         <LogoStrip title="Featured in leading publications" />
         <FAQ />
