@@ -4,11 +4,8 @@ import DashboardShell from '@/components/dashboard/DashboardShell';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-
-const DOCUMENTS = [
-  { name: 'Pitch_Deck_v2.pdf', type: 'PDF', date: 'Oct 24, 2023' },
-  { name: 'Financial_Projections.xlsx', type: 'XLSX', date: 'Oct 24, 2023' },
-];
+import api from '@/api/axiosInstance';
+import { useState, useEffect } from 'react';
 
 const STEPS = [
   { label: 'Submitted', date: 'Oct 24, 2023 · 10:45 AM', done: true },
@@ -27,6 +24,26 @@ const UPDATES = [
 
 export default function MyIncubationPage() {
   useDocumentTitle('My Incubation — BOCC');
+
+  const [documents, setDocuments] = useState([
+    { name: 'Pitch_Deck_v2.pdf', type: 'PDF', date: 'Oct 24, 2023' },
+    { name: 'Financial_Projections.xlsx', type: 'XLSX', date: 'Oct 24, 2023' },
+  ]);
+
+  useEffect(() => {
+    api.get('/admission-documents')
+      .then(res => {
+        if (res.data && res.data.documents && res.data.documents.length > 0) {
+          const mappedDocs = res.data.documents.map(d => ({
+            name: typeof d === 'string' ? d : (d.name || 'Document'),
+            type: typeof d === 'string' ? 'PDF' : (d.type || 'PDF'),
+            date: typeof d === 'string' ? 'Oct 24, 2023' : (d.uploadedAt || 'Oct 24, 2023'),
+          }));
+          setDocuments(mappedDocs);
+        }
+      })
+      .catch(err => console.error('Failed to fetch admission documents', err));
+  }, []);
 
   return (
     <DashboardShell pageId="my-incubation">
@@ -98,7 +115,7 @@ export default function MyIncubationPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-subtle">
-                {DOCUMENTS.map((doc) => (
+                {documents.map((doc) => (
                   <tr key={doc.name}>
                     <td className="px-6 py-4 font-inter text-small text-text-heading">{doc.name}</td>
                     <td className="px-6 py-4 font-inter text-small text-text-muted">{doc.type}</td>
