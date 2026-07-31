@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Video, Phone, Send, Plus, CalendarDays, Clock, FileText } from 'lucide-react';
+import { useEffect } from 'react';
+import api from '@/api/axiosInstance';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -15,6 +17,11 @@ export default function ChatConversationPage() {
   useDocumentTitle('Sarah Jenkins — Chat — BOCC');
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
+
+  useEffect(() => {
+    // Marking a mock chat ID as read for integration demonstration
+    api.patch('/read/t1').catch((err) => console.error('Failed to mark chat as read:', err));
+  }, []);
 
   const handleSend = () => {
     if (input.trim() === '') return;

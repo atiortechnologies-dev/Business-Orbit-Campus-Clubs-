@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Search, Send, Paperclip } from 'lucide-react';
+import api from '@/api/axiosInstance';
 import MentorShell from '@/components/mentor/MentorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import Badge from '@/components/ui/Badge';
@@ -69,11 +70,30 @@ export default function MentorChatsPage() {
 
   const activeThread = threads.find((t) => t.id === activeThreadId);
 
-  const filteredThreads = useMemo(() => {
-    const q = threadSearch.trim().toLowerCase();
-    if (!q) return threads;
-    return threads.filter((t) => t.name.toLowerCase().includes(q));
-  }, [threads, threadSearch]);
+  const [filteredThreads, setFilteredThreads] = useState(INITIAL_THREADS);
+
+  useEffect(() => {
+    const fetchThreads = async () => {
+      try {
+        const response = await api.get('/conversations/search', { params: { q: threadSearch } });
+        if (Array.isArray(response)) {
+          setFilteredThreads(response.length ? response : threads);
+        } else if (response.data && Array.isArray(response.data)) {
+          setFilteredThreads(response.data.length ? response.data : threads);
+        }
+      } catch (error) {
+        console.error('Failed to fetch conversations:', error);
+      }
+    };
+    const timeoutId = setTimeout(fetchThreads, 300);
+    return () => clearTimeout(timeoutId);
+  }, [threadSearch, threads]);
+
+  useEffect(() => {
+    if (activeThreadId) {
+      api.patch(`/read/${activeThreadId}`).catch((err) => console.error('Failed to mark read:', err));
+    }
+  }, [activeThreadId]);
 
   const handleSend = () => {
     if (messageInput.trim() === '') return;

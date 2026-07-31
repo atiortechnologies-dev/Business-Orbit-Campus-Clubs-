@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import api from '@/api/axiosInstance';
 import {
   Search,
   Edit,
@@ -97,6 +98,33 @@ export default function ChatsPage() {
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
 
+  const [conversationsList, setConversationsList] = useState(CONVERSATIONS);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const response = await api.get('/conversations/search', { params: { q: searchQuery } });
+        // Assuming backend returns an array of conversations. If response is wrapped, adjust accordingly.
+        if (Array.isArray(response)) {
+          setConversationsList(response.length ? response : CONVERSATIONS);
+        } else if (response.data && Array.isArray(response.data)) {
+          setConversationsList(response.data.length ? response.data : CONVERSATIONS);
+        }
+      } catch (error) {
+        console.error('Failed to fetch conversations:', error);
+      }
+    };
+    const timeoutId = setTimeout(fetchConversations, 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (activeConv) {
+      api.patch(`/read/${activeConv}`).catch((err) => console.error('Failed to mark read:', err));
+    }
+  }, [activeConv]);
+
   const [messagesMap, setMessagesMap] = useState({
     acme: SEEDED_MESSAGES_ACME,
     ecostream: [
@@ -172,8 +200,8 @@ export default function ChatsPage() {
     setShowEmojiPicker(false);
   };
 
-  const activeDetails = CONVERSATIONS.find((c) => c.id === activeConv);
-  const activeMessages = messagesMap[activeConv];
+  const activeDetails = conversationsList.find((c) => c.id === activeConv) || CONVERSATIONS[0];
+  const activeMessages = messagesMap[activeConv] || [];
 
   return (
     <IncubatorShell>
@@ -192,8 +220,20 @@ export default function ChatsPage() {
               <Edit size={18} strokeWidth={2} />
             </ComingSoon>
           </div>
+          <div className="p-4 border-b border-border-subtle bg-canvas-bg/30">
+            <div className="relative">
+              <Search size={16} strokeWidth={2} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search conversations..."
+                className="w-full bg-surface-white border border-border-subtle rounded-md pl-9 pr-3 py-2 font-inter text-small focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
+              />
+            </div>
+          </div>
           <div className="flex-1 overflow-y-auto divide-y divide-border-subtle/50">
-            {CONVERSATIONS.map((conv) => {
+            {conversationsList.map((conv) => {
               const isSelected = activeConv === conv.id;
               return (
                 <button
