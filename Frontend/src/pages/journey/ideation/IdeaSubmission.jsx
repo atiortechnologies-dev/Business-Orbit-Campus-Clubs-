@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
-  UploadCloud,
   ChevronRight,
   Loader2,
   AlertCircle,
   CheckCircle2,
   Clock,
-  FileText,
-  Lock,
+  ExternalLink,
+  Link2,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -76,7 +75,7 @@ export default function IdeaSubmissionPage() {
     targetAudience: "",
     valueProposition: "",
     competitors: "",
-    document: null,
+    attachmentUrl: "",
   });
 
   const [submissionDetails, setSubmissionDetails] = useState(null);
@@ -108,7 +107,7 @@ export default function IdeaSubmissionPage() {
             targetAudience: sub.target_audience || "",
             valueProposition: sub.value_proposition || "",
             competitors: sub.competitors || "",
-            document: null,
+            attachmentUrl: sub.attachment_url || "",
           });
 
           // Lock form if already submitted
@@ -134,11 +133,6 @@ export default function IdeaSubmissionPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    if (isReadOnly) return;
-    setFormData((prev) => ({ ...prev, document: e.target.files[0] ?? null }));
-  };
-
   const mapPayload = () => ({
     title: formData.startupName.trim(),
     description: formData.problemStatement.trim(),
@@ -148,6 +142,7 @@ export default function IdeaSubmissionPage() {
     target_audience: formData.targetAudience.trim(),
     value_proposition: formData.valueProposition.trim(),
     competitors: formData.competitors.trim(),
+    attachment_url: formData.attachmentUrl.trim(),
   });
 
   const canSubmit =
@@ -305,32 +300,50 @@ export default function IdeaSubmissionPage() {
             </div>
           ))}
 
-          {!isReadOnly && (
-            <div className="space-y-1.5">
-              <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider block">
-                Supporting Documents
-              </label>
-              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border-subtle rounded-lg py-8 cursor-pointer hover:border-text-muted transition-colors">
-                <UploadCloud
-                  size={28}
-                  strokeWidth={1.5}
-                  className="text-text-muted"
-                />
-                <p className="font-inter text-small text-text-body">
-                  Click to upload or drag and drop
-                </p>
-                <p className="font-inter text-caption text-text-muted">
-                  PDF, PNG, JPG (Max 10MB)
-                </p>
-                <input
-                  type="file"
-                  accept=".pdf,.png,.jpg,.jpeg"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </label>
+          <div className="space-y-1.5">
+            <label
+              htmlFor="attachmentUrl"
+              className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider block"
+            >
+              Supporting Document / Pitch Deck Link
+            </label>
+            <div className="relative">
+              <input
+                id="attachmentUrl"
+                name="attachmentUrl"
+                type="url"
+                disabled={isReadOnly}
+                value={formData.attachmentUrl}
+                onChange={handleChange}
+                placeholder="https://drive.google.com/..., Notion, Figma, or Dropbox link"
+                className={`w-full border rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none ${
+                  isReadOnly
+                    ? "bg-canvas-bg/50 border-border-subtle cursor-not-allowed opacity-90"
+                    : "bg-canvas-bg border-border-subtle focus:ring-1 focus:ring-brand-black"
+                }`}
+              />
             </div>
-          )}
+            <p className="font-inter text-caption text-text-muted">
+              Paste a shareable link to your pitch deck or supporting files
+              (Google Drive, Notion, Figma, etc.).
+            </p>
+
+            {/* Clickable link preview when in read-only mode */}
+            {isReadOnly && formData.attachmentUrl && (
+              <div className="pt-2">
+                <a
+                  href={formData.attachmentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-canvas-bg border border-border-subtle rounded-md text-small font-semibold text-text-heading hover:bg-surface-white transition-colors"
+                >
+                  <Link2 size={16} />
+                  <span>Open Submitted Link</span>
+                  <ExternalLink size={14} className="text-text-muted" />
+                </a>
+              </div>
+            )}
+          </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-divider-line">
             {isReadOnly ? (
