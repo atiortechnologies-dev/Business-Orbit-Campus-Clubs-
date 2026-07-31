@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Megaphone,
@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import api from "@/api/axiosInstance";
 
 const TABS = [
   "All",
@@ -96,6 +97,16 @@ export default function NotificationsPage() {
   const [query, setQuery] = useState("");
   const [detailId, setDetailId] = useState(null);
 
+  useEffect(() => {
+    api.get("/notifications")
+      .then(res => {
+        if (res.data && res.data.length > 0) {
+          setNotifications(res.data);
+        }
+      })
+      .catch(err => console.error("Failed to fetch notifications", err));
+  }, []);
+
   const filtered = useMemo(() => {
     let list = notifications;
     if (activeTab === "Unread") list = list.filter((n) => n.unread);
@@ -112,8 +123,11 @@ export default function NotificationsPage() {
     return list;
   }, [notifications, activeTab, query]);
 
-  const markAllRead = () =>
-    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
+  const markAllRead = () => {
+    api.patch("/notifications/mark-read")
+      .then(() => setNotifications((prev) => prev.map((n) => ({ ...n, unread: false }))))
+      .catch(err => console.error("Failed to mark notifications read", err));
+  };
   const clearAll = () => setNotifications([]);
   const dismiss = (id) =>
     setNotifications((prev) => prev.filter((n) => n.id !== id));
