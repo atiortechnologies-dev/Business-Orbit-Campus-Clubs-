@@ -1,79 +1,104 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Download, Zap } from 'lucide-react';
-import AdminShell from '@/components/admin/AdminShell';
-import DataTable from '@/components/ui/DataTable';
-import Badge from '@/components/ui/Badge';
-import ComingSoon from '@/components/ui/ComingSoon';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-import { downloadCsv } from '@/utils/csv';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Download, Zap, Loader2 } from "lucide-react";
+import AdminShell from "@/components/admin/AdminShell";
+import DataTable from "@/components/ui/DataTable";
+import Badge from "@/components/ui/Badge";
+import ComingSoon from "@/components/ui/ComingSoon";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { downloadCsv } from "@/utils/csv";
+import { getVerificationQueue } from "@/api/admin/adminUsersVerificationApi";
 
-// TODO(backend): replace with GET /admin/users/verification — every
-// registered Student/Mentor/Investor/Incubator/Company account pending or
-// already decided on, most recent registration first.
-const USERS = [
-  { id: 'v1', username: 'alex_rivers_01', email: 'alex.rivers@startup.io', role: 'Company', phone: '+1 (555) 234-8901', regDate: '2024-10-24', status: 'Pending' },
-  { id: 'v2', username: 'sarah_venture', email: 's.connor@vcfund.com', role: 'Investor', phone: '+44 20 7946 0123', regDate: '2024-10-23', status: 'Under Review' },
-  { id: 'v3', username: 'morgan_scale', email: 'm.scale@incubator.org', role: 'Incubator', phone: '+1 (555) 998-0012', regDate: '2024-10-22', status: 'Pending' },
-  { id: 'v4', username: 'dr_smith_mentor', email: 'jsmith@edu.academy', role: 'Mentor', phone: '+61 2 9876 5432', regDate: '2024-10-21', status: 'Rejected' },
-  { id: 'v5', username: 'priya_chen_22', email: 'priya.chen@stanford.edu', role: 'Student', phone: '+1 (555) 402-7731', regDate: '2024-10-20', status: 'Approved' },
-  { id: 'v6', username: 'jordan_lee_biz', email: 'jordan.lee@nexusbio.com', role: 'Company', phone: '+1 (555) 615-2290', regDate: '2024-10-19', status: 'Approved' },
+const ROLE_OPTIONS = [
+  "All Roles",
+  "Student",
+  "Mentor",
+  "Investor",
+  "Incubator",
+  "Company",
 ];
-
-const ROLE_OPTIONS = ['All Roles', 'Student', 'Mentor', 'Investor', 'Incubator', 'Company'];
-const STATUS_OPTIONS = ['All Statuses', 'Pending', 'Under Review', 'Approved', 'Rejected'];
-const STATUS_VARIANT = { Pending: 'warning', 'Under Review': 'info', Approved: 'success', Rejected: 'error' };
-
-// Where each role's "View Details" button lands — one single-page
-// verification screen per role (see MentorVerification.jsx etc.).
-const ROLE_ROUTE = {
-  Student: '/admin/verification/student',
-  Mentor: '/admin/verification/mentor',
-  Investor: '/admin/verification/investor',
-  Incubator: '/admin/verification/incubator',
-  Company: '/admin/verification/company',
+const STATUS_OPTIONS = [
+  "All Statuses",
+  "Pending",
+  "Under Review",
+  "Approved",
+  "Rejected",
+];
+const STATUS_VARIANT = {
+  Pending: "warning",
+  "Under Review": "info",
+  Approved: "success",
+  Rejected: "error",
 };
 
 export default function VerificationQueuePage() {
-  useDocumentTitle('User Verification Queue — BOCC Admin');
+  useDocumentTitle("User Verification Queue — BOCC Admin");
   const navigate = useNavigate();
 
-  const [roleFilter, setRoleFilter] = useState('All Roles');
-  const [statusFilter, setStatusFilter] = useState('All Statuses');
-  const [dateFromInput, setDateFromInput] = useState('');
-  const [dateToInput, setDateToInput] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Client-side filter states
+  const [roleFilter, setRoleFilter] = useState("All Roles");
+  const [statusFilter, setStatusFilter] = useState("All Statuses");
+  const [dateFromInput, setDateFromInput] = useState("");
+  const [dateToInput, setDateToInput] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
   const [selectedIds, setSelectedIds] = useState([]);
 
-  const visibleUsers = USERS.filter((u) => {
-    if (roleFilter !== 'All Roles' && u.role !== roleFilter) return false;
-    if (statusFilter !== 'All Statuses' && u.status !== statusFilter) return false;
+  // Fetch all pending users once on mount (No parameters required)
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        setLoading(true);
+        const res = await getVerificationQueue();
+        const data = res?.data || res;
+        setUsers(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Failed to load verification queue:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchUsers();
+  }, []);
+
+  const handleApplyFilters = () => {
+    setDateFrom(dateFromInput);
+    setDateTo(dateToInput);
+  };
+
+  // Pure Client-Side Filtering Logic
+  const visibleUsers = users.filter((u) => {
+    if (roleFilter !== "All Roles" && u.role !== roleFilter) return false;
+    if (statusFilter !== "All Statuses" && u.status !== statusFilter)
+      return false;
     if (dateFrom && u.regDate < dateFrom) return false;
     if (dateTo && u.regDate > dateTo) return false;
     return true;
   });
 
-  const allVisibleSelected = visibleUsers.length > 0 && visibleUsers.every((u) => selectedIds.includes(u.id));
+  const allVisibleSelected =
+    visibleUsers.length > 0 &&
+    visibleUsers.every((u) => selectedIds.includes(u.id));
 
   function toggleSelectAll() {
     setSelectedIds(allVisibleSelected ? [] : visibleUsers.map((u) => u.id));
   }
 
   function toggleSelectRow(id) {
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  }
-
-  function handleApplyFilters() {
-    setDateFrom(dateFromInput);
-    setDateTo(dateToInput);
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
   }
 
   const columns = [
     {
-      key: 'select',
-      label: '',
-      width: '0.4fr',
+      key: "select",
+      label: "",
+      width: "0.4fr",
       mobileLabel: false,
       render: (row) => (
         <input
@@ -86,9 +111,9 @@ export default function VerificationQueuePage() {
       ),
     },
     {
-      key: 'username',
-      label: 'Username',
-      width: '2fr',
+      key: "username",
+      label: "Username",
+      width: "2fr",
       mobileLabel: false,
       render: (row) => (
         <div className="flex items-center gap-3">
@@ -96,35 +121,53 @@ export default function VerificationQueuePage() {
             {row.username.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0">
-            <p className="font-poppins font-semibold text-small text-text-heading truncate" title={row.username}>{row.username}</p>
-            <p className="font-inter text-caption text-text-muted truncate" title={row.email}>{row.email}</p>
+            <p
+              className="font-poppins font-semibold text-small text-text-heading truncate"
+              title={row.username}
+            >
+              {row.username}
+            </p>
+            <p
+              className="font-inter text-caption text-text-muted truncate"
+              title={row.email}
+            >
+              {row.email}
+            </p>
           </div>
         </div>
       ),
     },
     {
-      key: 'role',
-      label: 'Role',
-      width: '1fr',
+      key: "role",
+      label: "Role",
+      width: "1fr",
       render: (row) => <Badge variant="neutral">{row.role}</Badge>,
     },
-    { key: 'phone', label: 'Phone Number', width: '1.3fr' },
+    { key: "phone", label: "Phone Number", width: "1.3fr" },
     {
-      key: 'status',
-      label: 'Status',
-      width: '1fr',
-      render: (row) => <Badge variant={STATUS_VARIANT[row.status]}>{row.status}</Badge>,
+      key: "status",
+      label: "Status",
+      width: "1fr",
+      render: (row) => (
+        <Badge variant={STATUS_VARIANT[row.status] || "neutral"}>
+          {row.status}
+        </Badge>
+      ),
     },
-    { key: 'regDate', label: 'Registration Date', width: '1.2fr' },
+    { key: "regDate", label: "Registration Date", width: "1.2fr" },
     {
-      key: 'actions',
-      label: '',
-      width: '1fr',
+      key: "actions",
+      label: "",
+      width: "1fr",
       mobileLabel: false,
       render: (row) => (
         <button
           type="button"
-          onClick={() => navigate(ROLE_ROUTE[row.role])}
+          onClick={() =>
+            navigate(
+              `/admin/verification/${row.role.toLowerCase()}?id=${row.id}`,
+            )
+          }
           className="px-4 py-2 border border-border-subtle rounded-md font-poppins font-semibold text-caption text-text-heading hover:bg-canvas-bg transition-colors"
         >
           View Details
@@ -137,7 +180,9 @@ export default function VerificationQueuePage() {
     <AdminShell>
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-poppins font-semibold text-page text-text-heading">User Verification Queue</h1>
+          <h1 className="font-poppins font-semibold text-page text-text-heading">
+            User Verification Queue
+          </h1>
           <p className="font-inter text-body text-text-body mt-1">
             Review and verify newly registered users across the BOCC platform.
           </p>
@@ -145,19 +190,20 @@ export default function VerificationQueuePage() {
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => downloadCsv('user-verification-queue', [
-              { key: 'username', label: 'Username' },
-              { key: 'email', label: 'Email' },
-              { key: 'role', label: 'Role' },
-              { key: 'phone', label: 'Phone Number' },
-              { key: 'regDate', label: 'Registration Date' },
-              { key: 'status', label: 'Status' },
-            ], visibleUsers)}
+            onClick={() =>
+              downloadCsv("user-verification-queue", columns, visibleUsers)
+            }
             className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small hover:bg-canvas-bg transition-colors"
           >
             <Download size={14} strokeWidth={2} /> Export CSV
           </button>
-          <ComingSoon label={`Bulk Actions${selectedIds.length ? ` (${selectedIds.length} selected)` : ''}`} position="bottom" inline>
+          <ComingSoon
+            label={`Bulk Actions${
+              selectedIds.length ? ` (${selectedIds.length} selected)` : ""
+            }`}
+            position="bottom"
+            inline
+          >
             <span className="flex items-center gap-1.5 bg-brand-black text-white px-4 py-2 rounded-lg font-poppins font-semibold text-small">
               <Zap size={14} strokeWidth={2} /> Bulk Actions
             </span>
@@ -165,31 +211,40 @@ export default function VerificationQueuePage() {
         </div>
       </div>
 
-      {/* Filters — Role/Status apply live, Registration Date Range applies on
-          click (matches the wireframe's explicit "Apply Filters" action). */}
+      {/* Client-side Filter Controls */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card space-y-1">
-          <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider">Role</label>
+          <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider">
+            Role
+          </label>
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
             className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
           >
-            {ROLE_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
+            {ROLE_OPTIONS.map((opt) => (
+              <option key={opt}>{opt}</option>
+            ))}
           </select>
         </div>
         <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card space-y-1">
-          <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider">Status</label>
+          <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider">
+            Status
+          </label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
             className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
           >
-            {STATUS_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
+            {STATUS_OPTIONS.map((opt) => (
+              <option key={opt}>{opt}</option>
+            ))}
           </select>
         </div>
         <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card space-y-1 sm:col-span-2 lg:col-span-2">
-          <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider">Registration Date Range</label>
+          <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider">
+            Registration Date Range
+          </label>
           <div className="flex items-center gap-2 pt-1">
             <input
               type="date"
@@ -215,33 +270,41 @@ export default function VerificationQueuePage() {
         </div>
       </div>
 
-      <DataTable
-        columns={[
-          {
-            key: 'select-header',
-            label: (
-              <input
-                type="checkbox"
-                checked={allVisibleSelected}
-                onChange={toggleSelectAll}
-                aria-label="Select all"
-                className="rounded border-border-subtle text-brand-black focus:ring-brand-black"
-              />
-            ),
-            width: '0.4fr',
-            mobileLabel: false,
-            render: columns[0].render,
-          },
-          ...columns.slice(1),
-        ]}
-        rows={visibleUsers}
-        emptyMessage="No users match the current filters."
-      />
-      <div className="flex justify-between items-center mt-4">
-        <span className="font-inter text-small text-text-muted">
-          Showing {visibleUsers.length} of {USERS.length} users
-        </span>
-      </div>
+      {loading ? (
+        <div className="flex justify-center py-16">
+          <Loader2 size={32} className="animate-spin text-text-muted" />
+        </div>
+      ) : (
+        <>
+          <DataTable
+            columns={[
+              {
+                key: "select-header",
+                label: (
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleSelectAll}
+                    aria-label="Select all"
+                    className="rounded border-border-subtle text-brand-black focus:ring-brand-black"
+                  />
+                ),
+                width: "0.4fr",
+                mobileLabel: false,
+                render: columns[0].render,
+              },
+              ...columns.slice(1),
+            ]}
+            rows={visibleUsers}
+            emptyMessage="No unverified users match the current filters."
+          />
+          <div className="flex justify-between items-center mt-4">
+            <span className="font-inter text-small text-text-muted">
+              Showing {visibleUsers.length} of {users.length} unverified users
+            </span>
+          </div>
+        </>
+      )}
     </AdminShell>
   );
 }

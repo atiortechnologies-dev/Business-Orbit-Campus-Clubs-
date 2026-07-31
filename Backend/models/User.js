@@ -56,6 +56,10 @@ const userSchema = new mongoose.Schema(
       enum: ["not_started", "skipped", "completed"],
       default: "not_started",
     },
+    profile_remarks: {
+      type: String,
+      default: "",
+    },
     otp_code_hash: {
       type: String,
       select: false,
