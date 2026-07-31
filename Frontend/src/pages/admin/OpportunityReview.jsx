@@ -7,6 +7,7 @@ import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import api from '@/api/axiosInstance';
 
 const REQUIRED_SKILLS = ['PyTorch', 'CUDA', 'C++', 'Triton'];
 const RESPONSIBILITIES = [
@@ -24,6 +25,7 @@ export default function OpportunityReviewPage() {
   const [openModal, setOpenModal] = useState(null); // 'approve' | 'reject' | 'changes' | null
   const [changeReason, setChangeReason] = useState(CHANGE_REASONS[0]);
   const [notes, setNotes] = useState('');
+  const [noteSaved, setNoteSaved] = useState(false);
 
   // TODO(backend): each of these three should PATCH /api/admin/opportunities/:id
   // { decision: 'approved' | 'rejected' | 'changes_requested', reviewerNotes: notes }
@@ -178,9 +180,28 @@ export default function OpportunityReviewPage() {
               rows={5}
               className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body resize-none focus:outline-none focus:ring-1 focus:ring-brand-black"
             />
-            <p className="flex items-center gap-1.5 font-inter text-caption text-text-muted mt-3">
-              <Lock size={14} strokeWidth={2} /> Private to Administrators
-            </p>
+            <div className="flex items-center justify-between mt-3">
+              <p className="flex items-center gap-1.5 font-inter text-caption text-text-muted">
+                <Lock size={14} strokeWidth={2} /> Private to Administrators
+              </p>
+              <button
+                type="button"
+                disabled={!notes.trim()}
+                onClick={() => {
+                  if (notes.trim()) {
+                    api.post('/notes', { entityId: 'OP-8821', text: notes })
+                      .then(() => {
+                        setNoteSaved(true);
+                        setTimeout(() => setNoteSaved(false), 2000);
+                      })
+                      .catch(err => console.error('Failed to save notes:', err));
+                  }
+                }}
+                className="font-inter font-medium text-caption uppercase tracking-wide text-action-text bg-action-bg px-3 py-1.5 rounded-md hover:opacity-90 transition-all disabled:opacity-50"
+              >
+                {noteSaved ? 'Saved' : 'Save'}
+              </button>
+            </div>
           </div>
 
           <ComingSoon label="Message Startup" position="top">

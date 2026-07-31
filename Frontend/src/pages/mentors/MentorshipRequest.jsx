@@ -5,6 +5,7 @@ import DashboardShell from '@/components/dashboard/DashboardShell';
 import Button from '@/components/ui/Button';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { mentorshipApi } from '@/api/mentorshipApi';
+import api from '@/api/axiosInstance';
 
 const STAGE_OPTIONS = ['Ideation', 'Prototype / MVP', 'Early Traction', 'Scaling'];
 const INDUSTRY_OPTIONS = ['SaaS / Enterprise Software', 'FinTech', 'HealthTech', 'CleanTech', 'EdTech'];
@@ -42,10 +43,15 @@ export default function MentorshipRequestPage() {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    // TODO(backend): POST /api/mentors/:id/requests with the full form.
-    // Sends straight into the chat thread with this mentor — a sent
-    // request is the start of that conversation, not a dead end.
-    navigate('/mentors/chat');
+    setLoading(true);
+    api.post('/request-meeting', { ...form, mentorId: 'm1' })
+      .then(() => {
+        navigate('/mentors/messages');
+      })
+      .catch(err => {
+        console.error('Failed to request meeting:', err);
+        setLoading(false);
+      });
   };
 
   return (

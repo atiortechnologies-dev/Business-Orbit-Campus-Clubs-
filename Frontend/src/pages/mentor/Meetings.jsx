@@ -4,6 +4,8 @@ import MentorShell from '@/components/mentor/MentorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import Badge from '@/components/ui/Badge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import api from '@/api/axiosInstance';
+import { useEffect } from 'react';
 
 const STATS = [
   { label: 'Upcoming Meetings', value: '08' },
@@ -55,6 +57,22 @@ export default function MentorMeetingsPage() {
 
   const selectedMeeting = MEETINGS.find((m) => m.id === selectedMeetingId);
 
+  useEffect(() => {
+    if (selectedMeetingId) {
+      api.get(`/meeting/feedback?meetingId=${selectedMeetingId}`)
+        .then(res => {
+          if (res.data && res.data.notes) {
+            setMentorNotes(res.data.notes);
+            if (res.data.outcome) setOutcome(res.data.outcome);
+          } else {
+            setMentorNotes('');
+            setOutcome(OUTCOME_OPTIONS[0]);
+          }
+        })
+        .catch(err => console.error('Failed to fetch meeting feedback', err));
+    }
+  }, [selectedMeetingId]);
+
   const filteredMeetings = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return MEETINGS;
@@ -65,9 +83,18 @@ export default function MentorMeetingsPage() {
 
   const handleSaveNotes = () => {
     if (!canSaveNotes) return;
-    // TODO(backend): persist mentorNotes/outcome for this meeting.
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    api.post('/notes', { entityId: `meeting-${selectedMeetingId}`, text: mentorNotes, outcome })
+      .then(() => {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      })
+      .catch(err => console.error('Failed to save meeting notes', err));
+  };
+  
+  const handleScheduleFollowUp = () => {
+    api.post('/meeting/reschedule', { meetingId: selectedMeetingId, type: 'follow-up' })
+      .then(() => alert('Follow-up scheduled successfully!'))
+      .catch(err => console.error('Failed to schedule follow-up', err));
   };
 
   return (
@@ -212,9 +239,13 @@ export default function MentorMeetingsPage() {
               >
                 Save Notes
               </button>
-              <ComingSoon label="Schedule Follow-up" position="top" inline className="border border-border-subtle text-text-heading font-inter font-medium text-small px-5 py-2.5 rounded-md">
+              <button
+                type="button"
+                onClick={handleScheduleFollowUp}
+                className="border border-border-subtle text-text-heading font-inter font-medium text-small px-5 py-2.5 rounded-md hover:bg-canvas-bg transition-colors"
+              >
                 Schedule Follow-up
-              </ComingSoon>
+              </button>
             </div>
           </div>
         )}

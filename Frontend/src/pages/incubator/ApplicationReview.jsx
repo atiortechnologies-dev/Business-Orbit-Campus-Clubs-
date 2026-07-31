@@ -12,6 +12,7 @@ import {
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import api from '@/api/axiosInstance';
 
 export default function ApplicationReview() {
   useDocumentTitle('Application Review — BOCC Incubator Portal');
@@ -276,10 +277,13 @@ export default function ApplicationReview() {
               <button
                 type="button"
                 disabled={!notes.trim()}
-                // TODO(backend): PATCH this review as a draft ({ applicationId,
-                // reviewerNotes, decision: selectedDecision }) so it survives
-                // a reload; currently only held in local state.
-                onClick={() => notes.trim() && setDraftSaved(true)}
+                onClick={() => {
+                  if (notes.trim()) {
+                    api.post('/notes', { entityId: 'app-2024-089', text: notes })
+                      .then(() => setDraftSaved(true))
+                      .catch(err => console.error('Failed to save notes:', err));
+                  }
+                }}
                 className="text-text-muted hover:text-text-heading font-poppins font-semibold text-small transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save Draft

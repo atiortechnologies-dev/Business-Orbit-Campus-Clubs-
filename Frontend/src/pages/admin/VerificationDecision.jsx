@@ -6,6 +6,7 @@ import Badge from '@/components/ui/Badge';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import api from '@/api/axiosInstance';
 
 const CHECKLIST = [
   'Identity Verification',
@@ -37,8 +38,13 @@ export default function VerificationDecisionPage() {
   function handleAddNote(e) {
     e.preventDefault();
     if (!draft.trim()) return;
-    setNotes((prev) => [...prev, { author: 'Alex Rivera', text: draft.trim() }]);
-    setDraft('');
+    
+    api.post('/notes', { entityId: 'USR-88219', text: draft.trim() })
+      .then(() => {
+        setNotes((prev) => [...prev, { author: 'Admin User', text: draft.trim() }]);
+        setDraft('');
+      })
+      .catch((err) => console.error('Failed to post note', err));
   }
 
   // TODO(backend): each of these three confirm handlers should POST the
