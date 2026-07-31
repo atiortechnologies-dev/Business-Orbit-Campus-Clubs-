@@ -402,14 +402,12 @@ const login = asyncHandler(async (req, res) => {
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  // 6. Determine target redirect URL dynamically
-  const config = roleConfig[user.role];
-  let redirectTo = config?.dashboardRedirect;
-
-  // Check if user still needs to complete profile onboarding
-  if (user.profile_status === "pending") {
-    redirectTo = `/onboarding/complete-profile/${user.role}`;
-  }
+  // 6. Determine target redirect URL dynamically (with Admin override)
+  const redirectTo = user.role === "admin"
+    ? "/admin"
+    : user.profile_status === "pending"
+      ? `/onboarding/complete-profile/${user.role}`
+      : roleConfig[user.role]?.dashboardRedirect || "/dashboard";
 
   return res.status(200).json({
     success: true,
@@ -430,7 +428,6 @@ const login = asyncHandler(async (req, res) => {
     },
   });
 });
-
 /**
  * @desc    Request password reset
  * @route   POST /api/auth/forgot-password
