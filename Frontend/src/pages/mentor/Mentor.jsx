@@ -17,19 +17,24 @@ export default function MentorPage() {
   const [requests, setRequests] = useState([]);
   const [meetings, setMeetings] = useState([]);
   const [conversations, setConversations] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [reqs, meets, chats] = await Promise.all([
+        const [reqs, meets, chats, recs] = await Promise.all([
           getRecentRequests(),
           getUpcomingMeetings(),
           getRecentChats(),
+          import('@/api/axiosInstance').then(m => m.default.get('/recommendations').catch(() => null))
         ]);
         setRequests(reqs?.data || []);
         setMeetings(meets?.data || []);
         setConversations(chats?.data || []);
+        if (recs && recs.data) {
+          setRecommendations(Array.isArray(recs.data) ? recs.data : []);
+        }
       } catch (err) {
         console.error('Failed to fetch mentor dashboard data', err);
       } finally {
@@ -137,6 +142,25 @@ export default function MentorPage() {
               ))}
             </div>
           )}
+          
+          <div className="mt-6 flex items-center justify-between mb-4">
+            <h2 className="font-poppins font-semibold text-card text-text-heading">Recommended Startups</h2>
+          </div>
+          <div className="flex flex-col gap-4">
+            {recommendations.length === 0 && !loading ? (
+               <p className="font-inter text-small text-text-muted text-center py-2">No recommendations available.</p>
+            ) : (
+               recommendations.map((rec) => (
+                 <div key={rec._id || rec.id} className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-brand-black text-white flex items-center justify-center font-bold text-xs">{String(rec.startup_name || rec.name || 'S')[0]}</div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-poppins font-semibold text-small text-text-heading truncate">{rec.startup_name || rec.name}</p>
+                      <p className="font-inter text-caption text-text-muted truncate">{rec.industry || 'Tech'}</p>
+                    </div>
+                 </div>
+               ))
+            )}
+          </div>
         </div>
 
         <div className="lg:col-span-6 flex flex-col gap-6">

@@ -8,6 +8,7 @@ import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { filterStartups } from '@/api/startup/startupApi';
 import { useEffect, useState } from 'react';
+import api from '@/api/axiosInstance';
 
 const STATS = [
   { label: 'Startups Available', value: '124', subtext: '+12% this month', trendDirection: 'up' },
@@ -31,12 +32,17 @@ export default function InvestorPage() {
 
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [watchlistStats, setWatchlistStats] = useState(STATS);
+  const [recommendations, setRecommendations] = useState([]);
 
   useEffect(() => {
-    filterStartups({})
-      .then((res) => {
+    Promise.all([
+      filterStartups({}),
+      api.get('/watchlist/statistics').catch(() => null),
+      api.get('/recommendations').catch(() => null)
+    ])
+      .then(([res, statsRes, recsRes]) => {
         const data = res.data || res || [];
-        // Map to format required by DataTable if necessary
         const mappedData = data.map(s => ({
           id: s._id,
           name: s.startup_name || s.name || 'Unknown',
@@ -45,6 +51,27 @@ export default function InvestorPage() {
           submitted: new Date(s.createdAt || Date.now()).toLocaleDateString()
         }));
         setSubmissions(mappedData.slice(0, 5));
+        
+        if (statsRes && statsRes.data) {
+           setWatchlistStats([
+             { label: 'Startups Available', value: statsRes.data.totalAvailable || '124', subtext: 'Updated live' },
+             { label: 'Pitch Decks Received', value: statsRes.data.pitchDecks || '48', subtext: 'Since last visit' },
+             { label: 'Active Conversations', value: statsRes.data.activeConversations || '12', subtext: 'Active chats' },
+             { label: 'Watchlist Count', value: statsRes.data.watchlistCount || '31', subtext: 'Total items' }
+           ]);
+        }
+        
+        if (recsRes && recsRes.data) {
+           const recData = Array.isArray(recsRes.data) ? recsRes.data : [];
+           const mappedRecs = recData.map(s => ({
+             id: s._id,
+             name: s.startup_name || s.name || 'Unknown',
+             sector: s.industry || s.sector || 'Unknown',
+             stage: s.funding_stage || 'Pre-Seed',
+             submitted: 'Recommended'
+           }));
+           setRecommendations(mappedRecs.slice(0, 5));
+        }
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -62,7 +89,7 @@ export default function InvestorPage() {
       </section>
 
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        {STATS.map((stat) => (
+        {watchlistStats.map((stat) => (
           <StatCard key={stat.label} {...stat} />
         ))}
       </section>
@@ -106,7 +133,7 @@ export default function InvestorPage() {
               },
               { key: 'submitted', label: 'Submitted', className: 'text-text-muted' },
             ]}
-            rows={loading ? [] : submissions}
+            rows={loading ? [] : (recommendations.length > 0 ? recommendations : submissions)}
           />
         </div>
 
