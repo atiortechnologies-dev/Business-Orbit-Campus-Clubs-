@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Fingerprint,
   Upload,
@@ -15,6 +15,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { useAdminDashboard } from '@/context/AdminDashboardContext';
 
 const TIMEZONE_OPTIONS = ['(GMT-05:00) Eastern Time (US & Canada)', '(GMT+00:00) UTC'];
 
@@ -38,17 +39,19 @@ const LOGIN_ACTIVITY = [
 export default function AdminSettingsPage() {
   useDocumentTitle('Settings — BOCC Admin');
 
+  const { settings, updateProfile: submitProfile, updatePlatformSettings, updateNotifications, isLoadingSettings } = useAdminDashboard();
+
   const [profile, setProfile] = useState({
-    fullName: 'Jane Admin',
-    email: 'jane.admin@bocc-portal.com',
-    phone: '+1 (555) 000-1234',
-    designation: 'Head of Infrastructure',
+    fullName: '',
+    email: '',
+    phone: '',
+    designation: '',
     twoFactor: true,
   });
 
   const [platform, setPlatform] = useState({
-    name: 'BOCC Admin Portal',
-    supportEmail: 'ops@bocc-portal.com',
+    name: '',
+    supportEmail: '',
     timezone: TIMEZONE_OPTIONS[0],
     newRegistrations: true,
     emailVerificationRequired: true,
@@ -69,16 +72,40 @@ export default function AdminSettingsPage() {
     'Security Alerts': true,
   });
 
+  useEffect(() => {
+    if (settings) {
+      setProfile((prev) => ({ ...prev, ...settings.profile }));
+      setPlatform((prev) => ({ ...prev, ...settings.platform }));
+      if (settings.notifications) {
+        setNotifyInApp(settings.notifications.inApp ?? true);
+        setNotifyEmail(settings.notifications.email ?? true);
+        if (settings.notifications.events) {
+          setEventToggles((prev) => ({ ...prev, ...settings.notifications.events }));
+        }
+      }
+    }
+  }, [settings]);
+
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState(null);
 
   const updateProfile = (field) => (e) => setProfile((prev) => ({ ...prev, [field]: e.target.value }));
   const updatePlatform = (field) => (e) => setPlatform((prev) => ({ ...prev, [field]: e.target.value }));
   const toggleEvent = (event) => setEventToggles((prev) => ({ ...prev, [event]: !prev[event] }));
 
-  const handleSaveChanges = () => {
-    // TODO(backend): PATCH /api/admin/settings { profile, platform, notifications: { inApp: notifyInApp, email: notifyEmail, events: eventToggles } }.
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  const handleSaveChanges = async () => {
+    setError(null);
+    try {
+      await Promise.all([
+        submitProfile(profile),
+        updatePlatformSettings(platform),
+        updateNotifications({ inApp: notifyInApp, email: notifyEmail, events: eventToggles })
+      ]);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      setError(err?.message || "Failed to save changes");
+    }
   };
 
   return (
@@ -322,7 +349,8 @@ export default function AdminSettingsPage() {
       </div>
 
       <div className="sticky bottom-0 bg-canvas-bg/95 backdrop-blur-sm border-t border-divider-line py-4 mt-8 flex items-center justify-end gap-4">
-        {saved && <span className="font-inter text-small text-success mr-auto">Changes saved.</span>}
+        {error && <span className="font-inter text-small text-error mr-auto">{error}</span>}
+        {!error && saved && <span className="font-inter text-small text-success mr-auto">Changes saved.</span>}
         <Button variant="outline">Cancel</Button>
         <Button onClick={handleSaveChanges}>Save Changes</Button>
       </div>

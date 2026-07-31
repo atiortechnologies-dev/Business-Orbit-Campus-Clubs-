@@ -70,7 +70,7 @@ describe("Chat Message Transactions", () => {
 
   it("should securely create message and notification in a transaction", async () => {
     const res = await request(app)
-      .post(`/api/chat/send/${chatRoom._id}`)
+      .post(`/api/chat/conversations/${chatRoom._id}/messages`)
       .set("Authorization", `Bearer ${generateToken(studentUser)}`)
       .send({ message: "Hello from transaction test" });
 
@@ -94,7 +94,7 @@ describe("Chat Message Transactions", () => {
     });
 
     const res = await request(app)
-      .post(`/api/chat/send/${chatRoom._id}`)
+      .post(`/api/chat/conversations/${chatRoom._id}/messages`)
       .set("Authorization", `Bearer ${generateToken(studentUser)}`)
       .send({ message: "This message should be rolled back" });
 

@@ -1,0 +1,81 @@
+Frontend/src/pages/investor/PitchDeck.jsx:78:      const res = await api.post('/chat/conversations', { targetId: startupId });
+Frontend/src/api/admin/adminAnnouncementApi.js:5:  const res = await api.get("/admin/announcements", { params });
+Frontend/src/api/admin/adminAnnouncementApi.js:11:  const res = await api.post("/admin/announcements", payload);
+Frontend/src/api/admin/adminApi.js:4:  getSettings: () => api.get("/admin/settings"),
+Frontend/src/api/admin/adminApi.js:5:  updatePlatformSettings: (data) => api.put("/admin/settings/platform", data),
+Frontend/src/api/admin/adminApi.js:6:  exportConfig: () => api.get("/admin/settings/export-config"),
+Frontend/src/api/admin/adminApi.js:7:  updateProfile: (data) => api.put("/admin/settings/profile", data),
+Frontend/src/api/admin/adminApi.js:8:  updateNotifications: (data) => api.put("/admin/settings/notifications", data),
+Frontend/src/api/admin/adminApi.js:9:  getLoginHistory: () => api.get("/admin/settings/login-history"),
+Frontend/src/api/admin/adminApi.js:10:  logoutAllDevices: () => api.post("/admin/settings/logout-all-devices"),
+Frontend/src/api/admin/adminApi.js:11:  changePassword: (data) => api.post("/admin/settings/change-password", data),
+Frontend/src/api/admin/adminApi.js:12:  downloadSystemLogs: () => api.get("/admin/settings/download-system-logs"),
+Frontend/src/api/admin/adminApi.js:16:  getLogs: (params) => api.get("/admin/audit-log", { params }),
+Frontend/src/api/admin/adminApi.js:17:  getPulse: () => api.get("/admin/audit-log/pulse"),
+Frontend/src/api/admin/adminApi.js:18:  getVolumeTrend: () => api.get("/admin/audit-log/volume-trend"),
+Frontend/src/api/admin/adminApi.js:19:  exportLogs: (params) => api.get("/admin/audit-log/export", { params }),
+Frontend/src/api/admin/adminApi.js:23:  getStatistics: () => api.get("/admin/statistics"),
+Frontend/src/api/auth/authApi.js:4:  return api.post("/auth/register", payload);
+Frontend/src/api/auth/authApi.js:8:  return api.post("/auth/login", credentials);
+Frontend/src/api/auth/authApi.js:12:  return api.get("/auth/check-email", { params: { email } });
+Frontend/src/api/auth/authApi.js:16:  return api.post("/auth/send-otp", { email });
+Frontend/src/api/auth/authApi.js:20:  return api.post("/auth/verify-otp", { email, otp });
+Frontend/src/api/auth/authApi.js:24:  return api.post("/auth/forgot-password", emailData);
+Frontend/src/api/auth/authApi.js:28:  return api.post("/auth/reset-password", data);
+Frontend/src/api/auth/authApi.js:32:  return api.post("/auth/refresh-token", { refreshToken });
+Frontend/src/api/auth/authApi.js:36:  return api.get("/auth/me");
+Frontend/src/api/auth/authApi.js:40:  return api.get("/auth/get-all-chapter");
+Frontend/src/api/auth/profileApi.js:5:  return api.get(`/${role}/profile`);
+Frontend/src/api/auth/profileApi.js:10:  return api.post(`/${role}/profile`, profileData);
+Frontend/src/api/auth/profileApi.js:15:  return api.put(`/${role}/profile`, profileData);
+Frontend/src/api/auth/profileApi.js:20:  return api.post(`/${role}/profile/skip`);
+Frontend/src/api/auth/studentChapterApi.js:8:  return api.get("/student/chapter");
+Frontend/src/api/auth/studentChapterApi.js:17:  return api.get(`/chapter/${chapterId}/stats`);
+Frontend/src/api/axiosInstance.js:3:const api = axios.create({
+Frontend/src/api/axiosInstance.js:12:api.interceptors.request.use(
+Frontend/src/api/axiosInstance.js:24:api.interceptors.response.use(
+Frontend/src/api/dashboardApi.js:5:  const res = await api.get("/student/dashboard");
+Frontend/src/api/dashboardApi.js:11:  const res = await api.get("/student/profile-details");
+Frontend/src/api/dashboardApi.js:17:  const res = await api.put("/student/profile-details", profileData);
+Frontend/src/api/startup/startupApi.js:5:  const res = await api.get("/startup/progress");
+Frontend/src/api/startup/startupApi.js:11:  const res = await api.get("/startup/stages");
+Frontend/src/api/startup/submissionApi.js:5:  const res = await api.post("/startup/submit", submissionData);
+Frontend/src/api/startup/submissionApi.js:11:  const res = await api.put("/startup/save-draft", draftData);
+Frontend/src/api/startup/submissionApi.js:17:  const res = await api.get("/startup/submission-status");
+Frontend/src/api/startup/submissionApi.js:48:  const res = await api.post("/stages/launch/submission/draft", mappedPayload);
+Frontend/src/api/startup/submissionApi.js:55:  const res = await api.post("/stages/launch/submission/submit", mappedPayload);
+Frontend/src/api/startup/incubationApi.js:5:  const res = await api.post("/stages/launch/start");
+Frontend/src/api/startup/incubationApi.js:11:  const res = await api.get("/stages/launch");
+Frontend/src/api/startup/incubationApi.js:17:  const res = await api.get("/stages/launch/checklist");
+Frontend/src/api/startup/incubationApi.js:23:  const res = await api.get("/stages/launch/submission");
+Frontend/src/api/startup/incubationApi.js:29:  const res = await api.get("/stages/traction");
+Frontend/src/api/startup/incubationApi.js:35:  const res = await api.post("/stages/traction/start");
+Frontend/src/api/startup/incubationApi.js:41:  const res = await api.get("/stages/traction/checklist");
+Frontend/src/api/startup/tractionApi.js:4:  const res = await api.post("/traction/metrics", payload);
+Frontend/src/api/startup/tractionApi.js:9:  const res = await api.get("/traction/metrics");
+Frontend/src/api/startup/tractionApi.js:14:  const res = await api.put(`/traction/metrics/${metricId}`, payload);
+Frontend/src/api/startup/tractionApi.js:19:  const res = await api.delete(`/traction/metrics/${metricId}`);
+Frontend/src/api/startup/tractionApi.js:24:  const res = await api.post("/traction/submission", payload);
+Frontend/src/api/startup/tractionApi.js:29:  const res = await api.get("/traction/submission");
+Frontend/src/api/startup/tractionApi.js:34:  const res = await api.put(`/traction/submission/${submissionId}`, payload);
+Frontend/src/api/startup/tractionApi.js:39:  const res = await api.delete(`/traction/submission/document/${documentId}`);
+Frontend/src/api/startup/tractionApi.js:44:  const res = await api.get("/traction/review/status");
+Frontend/src/api/startup/tractionApi.js:49:  const res = await api.get("/traction/review/timeline");
+Frontend/src/api/startup/tractionApi.js:54:  const res = await api.get("/traction/review/comments");
+Frontend/src/api/startup/tractionApi.js:59:  const res = await api.get("/traction/review-meeting/details");
+Frontend/src/api/startup/tractionApi.js:64:  const res = await api.get("/traction/review-meeting/join-link");
+Frontend/src/api/startup/tractionApi.js:69:  const res = await api.post("/traction/review-meeting/confirm-attendance");
+Frontend/src/api/startup/tractionApi.js:74:  const res = await api.get("/traction/result");
+Frontend/src/api/startup/tractionApi.js:79:  const res = await api.get("/traction/approval");
+Frontend/src/api/startup/mvpApi.js:4:  const res = await api.get("/stages/mvp");
+Frontend/src/api/startup/mvpApi.js:9:  const res = await api.get("/stages/mvp/checklist");
+Frontend/src/api/startup/mvpApi.js:14:  const res = await api.get("/mvp/meeting");
+Frontend/src/api/startup/mvpApi.js:19:  const res = await api.post("/mvp/reschedule", payload);
+Frontend/src/api/startup/mvpApi.js:24:  const res = await api.get("/mvp/review");
+Frontend/src/api/investorApi.js:5:  const res = await api.post("/watchlist", { startupId });
+Frontend/src/api/investorApi.js:11:  const res = await api.delete(`/watchlist/${startupId}`);
+Frontend/src/api/investorApi.js:17:  const res = await api.get("/watchlist");
+Frontend/src/api/investorApi.js:23:  const res = await api.get("/dashboard/stats");
+Frontend/src/api/investorApi.js:29:  const res = await api.get("/pitches", { params });
+Frontend/src/api/investorApi.js:35:  const res = await api.get("/startups/search", { params: { q: query } });
+Frontend/src/api/investorApi.js:41:  const res = await api.post("/pitch/view", { startupId });

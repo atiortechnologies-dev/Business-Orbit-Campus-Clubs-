@@ -20,6 +20,7 @@ import DashboardShell from '@/components/dashboard/DashboardShell';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { useIncubation } from '@/hooks/useIncubation';
 
 const INDUSTRIES = ['Select Industry', 'Fintech', 'Healthtech', 'SaaS', 'EdTech'];
 const FUNDING = ['Select Status', 'Bootstrapped', 'Pre-seed', 'Seed', 'Series A+'];
@@ -54,13 +55,54 @@ export default function LaunchSubmissionPage() {
 
   const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const handleSubmit = () => {
-    // TODO(backend): submit launch details for graduation review.
-    navigate('/build-startup/journey/launch/pitch-deck');
+  const { submitLaunch, saveLaunchDraft, fetchLaunchSubmission, launchSubmission, isLoading: isContextLoading } = useIncubation();
+  const [toastMsg, setToastMsg] = useState({ type: '', text: '' });
+
+  // Fetch draft data on mount
+  useEffect(() => {
+    fetchLaunchSubmission();
+  }, [fetchLaunchSubmission]);
+
+  // Sync draft data into form when it loads
+  useEffect(() => {
+    if (launchSubmission) {
+      setForm({
+        startupName: launchSubmission.startup_name || '',
+        productName: launchSubmission.product_name || '',
+        launchDate: launchSubmission.launch_date ? launchSubmission.launch_date.split('T')[0] : '',
+        industry: launchSubmission.industry || INDUSTRIES[0],
+        fundingStatus: launchSubmission.funding_status || FUNDING[0],
+        demoLink: launchSubmission.demo_link || '',
+        socials: {
+          twitter: launchSubmission.social?.twitter || '',
+          linkedin: launchSubmission.social?.linkedin || '',
+        }
+      });
+    }
+  }, [launchSubmission]);
+
+  const isSavingDraft = isContextLoading;
+  const isSubmitting = isContextLoading;
+
+  const handleSubmit = async () => {
+    setToastMsg({ type: '', text: '' });
+    try {
+      await submitLaunch(form);
+      navigate('/build-startup/journey/launch/pitch-deck');
+    } catch (err) {
+      setToastMsg({ type: 'error', text: err.message || 'Submission failed' });
+    }
   };
 
-  const handleSaveDraft = () => {
-    // TODO(backend): persist as a draft against the student's account.
+  const handleSaveDraft = async () => {
+    setToastMsg({ type: '', text: '' });
+    try {
+      await saveLaunchDraft(form);
+      setToastMsg({ type: 'success', text: 'Draft Saved' });
+      setTimeout(() => setToastMsg({ type: '', text: '' }), 3000);
+    } catch (err) {
+      setToastMsg({ type: 'error', text: err.message || 'Failed to save draft' });
+    }
   };
 
   return (
@@ -178,11 +220,18 @@ export default function LaunchSubmissionPage() {
           </section>
 
           <div className="flex items-center gap-4 py-6 border-t border-divider-line">
-            <Button onClick={handleSubmit}>
-              Submit Launch Details
-              <Send size={16} strokeWidth={2} />
+            <Button onClick={handleSubmit} disabled={isSubmitting || isSavingDraft}>
+              {isSubmitting ? 'Submitting...' : 'Submit Launch Details'}
+              {!isSubmitting && <Send size={16} strokeWidth={2} />}
             </Button>
-            <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
+            <Button variant="outline" onClick={handleSaveDraft} disabled={isSubmitting || isSavingDraft}>
+              {isSavingDraft ? 'Saving...' : 'Save Draft'}
+            </Button>
+            {toastMsg.text && (
+              <span className={`text-sm font-medium ${toastMsg.type === 'error' ? 'text-red-500' : 'text-green-600'}`}>
+                {toastMsg.text}
+              </span>
+            )}
           </div>
         </div>
 

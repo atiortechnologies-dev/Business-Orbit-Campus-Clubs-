@@ -86,4 +86,49 @@ const opportunitySchema = new mongoose.Schema(
 // ⚡ Performance: Text index for global search features
 opportunitySchema.index({ title: "text", description: "text" });
 
+const cascadeService = require("../services/cascadeService");
+
+opportunitySchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    const session = this.getOptions().session;
+    await cascadeService.deleteOpportunityDependencies(doc._id, session);
+  }
+});
+
+opportunitySchema.post(
+  "deleteOne",
+  { document: true, query: false },
+  async function () {
+    const session = this.$session();
+    await cascadeService.deleteOpportunityDependencies(this._id, session);
+  },
+);
+
+opportunitySchema.pre(
+  "deleteOne",
+  { document: false, query: true },
+  async function () {
+    const doc = await this.model
+      .findOne(this.getFilter())
+      .session(this.getOptions().session);
+    if (doc) {
+      this._cascadeOpportunityId = doc._id;
+    }
+  },
+);
+
+opportunitySchema.post(
+  "deleteOne",
+  { document: false, query: true },
+  async function () {
+    if (this._cascadeOpportunityId) {
+      const session = this.getOptions().session;
+      await cascadeService.deleteOpportunityDependencies(
+        this._cascadeOpportunityId,
+        session,
+      );
+    }
+  },
+);
+
 module.exports = mongoose.model("Opportunity", opportunitySchema);

@@ -1,0 +1,529 @@
+[
+  {
+    "type": "relational_refs_to_verify",
+    "severity": "Info",
+    "detail": "These models reference other models via `ref:`. For each, manually check: on delete of the referenced document, does anything cascade or clean up? Is the write that creates both sides wrapped in a transaction?",
+    "items": [
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ActivityLog.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/AdmissionDocument.js",
+        "references": [
+          "IncubationAdmission"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ApplicantStatus.js",
+        "references": [
+          "Application",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Application.js",
+        "references": [
+          "Opportunity",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ApplicationInterview.js",
+        "references": [
+          "Application"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ApplicationTimeline.js",
+        "references": [
+          "IncubationApplication",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/AtiorAssistanceRequest.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ChapterChangeRequest.js",
+        "references": [
+          "Chapter",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ChatRoom.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/CompanyProfile.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/CustomerFeedback.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/EmailVerification.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/IncubationAdmission.js",
+        "references": [
+          "IncubationApplication",
+          "IncubatorProfile",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/IncubationApplication.js",
+        "references": [
+          "IncubatorProfile",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/IncubationUpdate.js",
+        "references": [
+          "IncubationApplication",
+          "IncubatorProfile"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/IncubationVerification.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/IncubatorProfile.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/InvestorChatRoom.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/InvestorMessage.js",
+        "references": [
+          "InvestorChatRoom",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/InvestorNote.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/InvestorProfile.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/InvestorWatchlist.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/LaunchEvidenceFile.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/LaunchInsights.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/LaunchPitchDocument.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/LaunchStage.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/LaunchSubmission.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/LaunchVerification.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MVPChecklist.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MVPReview.js",
+        "references": [
+          "MVPSubmission",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MVPReviewMeeting.js",
+        "references": [
+          "MVPSubmission",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MVPSubmission.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Meeting.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MeetingFeedback.js",
+        "references": [
+          "ReviewMeeting",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MeetingNotes.js",
+        "references": [
+          "MentorMeeting"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MentorAssignment.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MentorMeeting.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MentorRequest.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MentorReview.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Message.js",
+        "references": [
+          "ChatRoom",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Notification.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/PasswordReset.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/PitchDocument.js",
+        "references": [
+          "PitchSubmission"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/PitchSubmission.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/PitchView.js",
+        "references": [
+          "StartupPitch",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ProductSubmission.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/RecruiterNote.js",
+        "references": [
+          "Application",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Review.js",
+        "references": [
+          "StageSubmission",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ReviewMeeting.js",
+        "references": [
+          "StageSubmission",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/SavedOpportunity.js",
+        "references": [
+          "Opportunity",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/StageSubmission.js",
+        "references": [
+          "Startup",
+          "StartupStage",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Startup.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/StartupGraduation.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/StartupPitch.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/StartupProduct.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/StartupStage.js",
+        "references": [
+          "Startup"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/StudentProfile.js",
+        "references": [
+          "Chapter",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/TractionMetrics.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/TractionReview.js",
+        "references": [
+          "ProductSubmission",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/TractionReviewMeeting.js",
+        "references": [
+          "ProductSubmission",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ValidationChecklistItem.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ValidationEvidence.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ValidationReport.js",
+        "references": [
+          "StageSubmission",
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ValidationSurvey.js",
+        "references": [
+          "Startup",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/AdminNotificationSetting.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ApplicationStatusHistory.js",
+        "references": [
+          "Application",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/AuditLog.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Chapter.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/ChapterEvent.js",
+        "references": [
+          "Chapter"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/EventRegistration.js",
+        "references": [
+          "ChapterEvent",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/FreelanceOpportunity.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Opportunity.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/OpportunityNote.js",
+        "references": [
+          "FreelanceOpportunity",
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/UserSession.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/Announcement.js",
+        "references": [
+          "User"
+        ]
+      },
+      {
+        "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/models/MentorProfile.js",
+        "references": [
+          "User"
+        ]
+      }
+    ]
+  }
+]

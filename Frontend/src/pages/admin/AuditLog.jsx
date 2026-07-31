@@ -1,35 +1,38 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Calendar, ChevronLeft, ChevronRight, Zap, User as UserIcon, AlertTriangle, FileText, Cloud, Download } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { downloadCsv } from '@/utils/csv';
+import { useAdminDashboard } from '@/context/AdminDashboardContext';
 
-const LOGS = [
+const FALLBACK_LOGS = [
   { id: 'l1', timestamp: '2024-10-24 14:22:01', date: '2024-10-24', initials: 'JD', user: 'j_doe_admin', module: 'Security', action: 'Updated User Permissions', target: 'ID: 8829-X-22', status: 'Success', ip: '192.168.1.104' },
-  { id: 'l2', timestamp: '2024-10-24 14:18:55', date: '2024-10-24', initials: 'SM', user: 's_miller_op', module: 'Clubs', action: 'Modified Club Metadata', target: 'Central Tennis Hub', status: 'Success', ip: '216.58.214.14' },
-  { id: 'l3', timestamp: '2024-10-24 13:55:12', date: '2024-10-24', initials: '??', user: 'Unknown', module: 'Auth', action: 'Failed Login Attempt', target: 'Admin Portal Login', status: 'Rejected', ip: '45.12.8.212', flagged: true },
-  { id: 'l4', timestamp: '2024-10-23 13:40:02', date: '2024-10-23', initials: 'AK', user: 'a_kapoor_sys', module: 'System', action: 'Backup Execution Initiated', target: 'Global Storage Cluster', status: 'Pending', ip: '10.0.0.42' },
-  { id: 'l5', timestamp: '2024-10-22 13:22:11', date: '2024-10-22', initials: 'JD', user: 'j_doe_admin', module: 'Content', action: 'Archived Report Cycle', target: 'FY23_Q3_Final', status: 'Success', ip: '192.168.1.104' },
 ];
 
 const MODULES = ['All', 'Security', 'Clubs', 'Auth', 'System', 'Content'];
 const USERS = ['All', 'j_doe_admin', 's_miller_op', 'a_kapoor_sys', 'Unknown'];
 const STATUS_VARIANT = { Success: 'success', Rejected: 'error', Pending: 'warning' };
 
-const TIMELINE = [
+const FALLBACK_TIMELINE = [
   { icon: Zap, time: 'Just now', text: <><span className="font-semibold">System</span> triggered an automated database optimization.</> },
-  { icon: UserIcon, time: '12 min ago', text: <><span className="font-semibold">j_doe_admin</span> edited access levels for 12 accounts.</> },
-  { icon: AlertTriangle, time: '28 min ago', flagged: true, text: <>Failed authentication attempt detected from <span className="font-medium">45.12.8.212</span>.</> },
-  { icon: FileText, time: '1 hour ago', text: <><span className="font-semibold">s_miller_op</span> exported monthly club membership report.</> },
-  { icon: Cloud, time: '2 hours ago', text: 'Cloud synchronization completed for all regional nodes.' },
 ];
 
-const VOLUME_TREND = [40, 60, 35, 90, 55, 70, 45];
+const FALLBACK_TREND = [40, 60, 35, 90, 55, 70, 45];
 
 export default function AuditLogPage() {
   useDocumentTitle('Audit Log — BOCC Admin');
+  
+  const { auditLogs, pulse, volumeTrend, fetchAuditLogs, isLoadingLogs } = useAdminDashboard();
+  const activeLogs = auditLogs?.length > 0 ? auditLogs : FALLBACK_LOGS;
+  const activeTimeline = pulse?.length > 0 ? pulse : FALLBACK_TIMELINE;
+  const activeTrend = volumeTrend?.length > 0 ? volumeTrend : FALLBACK_TREND;
+
+  useEffect(() => {
+    fetchAuditLogs();
+  }, [fetchAuditLogs]);
+
   const [moduleFilter, setModuleFilter] = useState('All');
   const [userFilter, setUserFilter] = useState('All');
   const [dateFrom, setDateFrom] = useState('');
@@ -37,13 +40,13 @@ export default function AuditLogPage() {
   const [dateFilterOpen, setDateFilterOpen] = useState(false);
 
   const filteredLogs = useMemo(
-    () => LOGS.filter((l) =>
+    () => activeLogs.filter((l) =>
       (moduleFilter === 'All' || l.module === moduleFilter) &&
       (userFilter === 'All' || l.user === userFilter) &&
       (!dateFrom || l.date >= dateFrom) &&
       (!dateTo || l.date <= dateTo)
     ),
-    [moduleFilter, userFilter, dateFrom, dateTo]
+    [activeLogs, moduleFilter, userFilter, dateFrom, dateTo]
   );
 
   const dateRangeLabel = dateFrom || dateTo ? `${dateFrom || '…'} → ${dateTo || '…'}` : 'Last 24 Hours';
@@ -148,7 +151,7 @@ export default function AuditLogPage() {
           <DataTable columns={columns} rows={filteredLogs} emptyMessage="No log entries match these filters." />
 
           <div className="flex items-center justify-between">
-            <span className="font-inter text-small text-text-muted">Showing {filteredLogs.length} of {LOGS.length} logs</span>
+            <span className="font-inter text-small text-text-muted">Showing {filteredLogs.length} of {activeLogs.length} logs</span>
             <div className="flex items-center gap-2">
               <button type="button" disabled className="p-1.5 border border-border-subtle rounded text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
                 <ChevronLeft size={16} strokeWidth={2} />
@@ -165,12 +168,12 @@ export default function AuditLogPage() {
           <h3 className="font-poppins font-semibold text-body text-text-heading mb-6">Activity Timeline</h3>
           <div className="relative space-y-6">
             <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-border-subtle" />
-            {TIMELINE.map(({ icon: Icon, time, text, flagged }, i) => (
+            {activeTimeline.map(({ icon: Icon, time, text, flagged }, i) => (
               <div key={i} className="relative pl-9">
                 <div className={`absolute left-0 top-0.5 w-6 h-6 rounded-full bg-surface-white border-2 flex items-center justify-center z-10 ${
                   flagged ? 'border-error' : i === 0 ? 'border-brand-black' : 'border-border-subtle'
                 }`}>
-                  <Icon size={13} strokeWidth={2} className={flagged ? 'text-error' : 'text-text-heading'} />
+                  {Icon ? <Icon size={13} strokeWidth={2} className={flagged ? 'text-error' : 'text-text-heading'} /> : <Zap size={13} strokeWidth={2} className={flagged ? 'text-error' : 'text-text-heading'} />}
                 </div>
                 <p className={`font-inter text-caption mb-0.5 ${flagged ? 'text-error' : 'text-text-muted'}`}>{time}</p>
                 <p className="font-inter text-small text-text-body leading-relaxed">{text}</p>
@@ -181,8 +184,8 @@ export default function AuditLogPage() {
           <div className="mt-6 pt-6 border-t border-divider-line">
             <p className="font-inter font-semibold text-caption text-text-muted uppercase tracking-wider mb-3">Volume Trend (24h)</p>
             <div className="h-16 w-full flex items-end gap-1">
-              {VOLUME_TREND.map((h, i) => (
-                <div key={i} className={`flex-1 rounded-t-sm ${h === Math.max(...VOLUME_TREND) ? 'bg-brand-black' : 'bg-border-subtle'}`} style={{ height: `${h}%` }} />
+              {activeTrend.map((h, i) => (
+                <div key={i} className={`flex-1 rounded-t-sm ${h === Math.max(...activeTrend) ? 'bg-brand-black' : 'bg-border-subtle'}`} style={{ height: `${h}%` }} />
               ))}
             </div>
           </div>

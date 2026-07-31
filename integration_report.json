@@ -1,0 +1,1561 @@
+{
+  "totalBackendRoutes": 327,
+  "totalFrontendStrings": 189,
+  "integratedRoutesCount": 224,
+  "missingInFrontendCount": 103,
+  "integratedRoutes": [
+    {
+      "method": "GET",
+      "path": "/chapter"
+    },
+    {
+      "method": "GET",
+      "path": "/:chapterId/stats"
+    },
+    {
+      "method": "GET",
+      "path": "/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/messages/:chatId"
+    },
+    {
+      "method": "POST",
+      "path": "/send/:chatId"
+    },
+    {
+      "method": "POST",
+      "path": "/investors/:investorId"
+    },
+    {
+      "method": "GET",
+      "path": "/investors"
+    },
+    {
+      "method": "POST",
+      "path": "/investors/:investorId/messages"
+    },
+    {
+      "method": "GET",
+      "path": "/investors/:investorId/messages"
+    },
+    {
+      "method": "POST",
+      "path": "/startups/:startupId"
+    },
+    {
+      "method": "GET",
+      "path": "/startups"
+    },
+    {
+      "method": "POST",
+      "path": "/startups/:startupId/messages"
+    },
+    {
+      "method": "GET",
+      "path": "/startups/:startupId/messages"
+    },
+    {
+      "method": "POST",
+      "path": "/opportunities"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities/:id"
+    },
+    {
+      "method": "PUT",
+      "path": "/opportunities/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/opportunities/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities/:id/applicants"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities/:id/stats"
+    },
+    {
+      "method": "GET",
+      "path": "/applications/:id"
+    },
+    {
+      "method": "PUT",
+      "path": "/applications/:id/status"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/:id/notes"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/:id/schedule-interview"
+    },
+    {
+      "method": "GET",
+      "path": "/applications/:id/resume"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/:id/message"
+    },
+    {
+      "method": "POST",
+      "path": "/incubation-verification"
+    },
+    {
+      "method": "GET",
+      "path": "/incubation-verification"
+    },
+    {
+      "method": "PUT",
+      "path": "/incubation-verification/:verificationId"
+    },
+    {
+      "method": "GET",
+      "path": "/startup/progress"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/traction"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/traction/checklist"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/traction/start"
+    },
+    {
+      "method": "POST",
+      "path": "/apply"
+    },
+    {
+      "method": "GET",
+      "path": "/application/:id"
+    },
+    {
+      "method": "PUT",
+      "path": "/application/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard/stats"
+    },
+    {
+      "method": "GET",
+      "path": "/pitches"
+    },
+    {
+      "method": "GET",
+      "path": "/pitches/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/pitch/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/pitch/view"
+    },
+    {
+      "method": "GET",
+      "path": "/watchlist"
+    },
+    {
+      "method": "POST",
+      "path": "/watchlist"
+    },
+    {
+      "method": "DELETE",
+      "path": "/watchlist/:startupId"
+    },
+    {
+      "method": "POST",
+      "path": "/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/conversations"
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/:conversationId"
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/:conversationId/messages"
+    },
+    {
+      "method": "POST",
+      "path": "/conversations/:conversationId/messages"
+    },
+    {
+      "method": "PUT",
+      "path": "/conversations/:conversationId/read"
+    },
+    {
+      "method": "GET",
+      "path": "/startups/search"
+    },
+    {
+      "method": "GET",
+      "path": "/startups"
+    },
+    {
+      "method": "GET",
+      "path": "/startups/:startupId"
+    },
+    {
+      "method": "GET",
+      "path": "/startups/:startupId/profile"
+    },
+    {
+      "method": "GET",
+      "path": "/startups/:startupId/pitch-deck"
+    },
+    {
+      "method": "GET",
+      "path": "/notifications"
+    },
+    {
+      "method": "PUT",
+      "path": "/notifications/:notificationId/read"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/:pitchId"
+    },
+    {
+      "method": "PATCH",
+      "path": "/:pitchId/status"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/checklist"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/start"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/submission/draft"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/submission"
+    },
+    {
+      "method": "PUT",
+      "path": "/stages/launch/submission"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/submission/submit"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard"
+    },
+    {
+      "method": "GET",
+      "path": "/profile"
+    },
+    {
+      "method": "PUT",
+      "path": "/profile"
+    },
+    {
+      "method": "GET",
+      "path": "/requests"
+    },
+    {
+      "method": "GET",
+      "path": "/student/:studentId/profile"
+    },
+    {
+      "method": "PATCH",
+      "path": "/requests/:requestId/accept"
+    },
+    {
+      "method": "PATCH",
+      "path": "/requests/:requestId/decline"
+    },
+    {
+      "method": "POST",
+      "path": "/meetings"
+    },
+    {
+      "method": "GET",
+      "path": "/meetings"
+    },
+    {
+      "method": "GET",
+      "path": "/meetings/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/meetings/:id/notes"
+    },
+    {
+      "method": "PUT",
+      "path": "/meetings/:id/complete"
+    },
+    {
+      "method": "GET",
+      "path": "/startups/:startupId"
+    },
+    {
+      "method": "GET",
+      "path": "/mvp/meeting"
+    },
+    {
+      "method": "POST",
+      "path": "/mvp/reschedule"
+    },
+    {
+      "method": "GET",
+      "path": "/mvp/review"
+    },
+    {
+      "method": "POST",
+      "path": "/mvp/submit"
+    },
+    {
+      "method": "GET",
+      "path": "/mvp"
+    },
+    {
+      "method": "PUT",
+      "path": "/mvp"
+    },
+    {
+      "method": "GET",
+      "path": "/status"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "POST",
+      "path": "/"
+    },
+    {
+      "method": "PUT",
+      "path": "/"
+    },
+    {
+      "method": "PUT",
+      "path": "/change-password"
+    },
+    {
+      "method": "GET",
+      "path": "/statistics/:pageType"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/result"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/mvp"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/mvp/checklist"
+    },
+    {
+      "method": "GET",
+      "path": "/progress"
+    },
+    {
+      "method": "GET",
+      "path": "/stages"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/mentorship/request"
+    },
+    {
+      "method": "POST",
+      "path": "/mentors/:mentorId/request"
+    },
+    {
+      "method": "GET",
+      "path": "/mentors"
+    },
+    {
+      "method": "GET",
+      "path": "/mentors/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/mentors/:id/reviews"
+    },
+    {
+      "method": "POST",
+      "path": "/mentors/:id/reviews"
+    },
+    {
+      "method": "GET",
+      "path": "/mentors/:id/availability"
+    },
+    {
+      "method": "GET",
+      "path": "/notifications"
+    },
+    {
+      "method": "PUT",
+      "path": "/notifications/:notificationId/read"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities/:opportunityId"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities/:opportunityId/details"
+    },
+    {
+      "method": "POST",
+      "path": "/opportunities/:opportunityId/save"
+    },
+    {
+      "method": "DELETE",
+      "path": "/opportunities/:opportunityId/save"
+    },
+    {
+      "method": "POST",
+      "path": "/applications"
+    },
+    {
+      "method": "GET",
+      "path": "/applications"
+    },
+    {
+      "method": "GET",
+      "path": "/applications/:applicationId"
+    },
+    {
+      "method": "PUT",
+      "path": "/applications/:applicationId"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/:applicationId/submit"
+    },
+    {
+      "method": "DELETE",
+      "path": "/applications/:applicationId/withdraw"
+    },
+    {
+      "method": "GET",
+      "path": "/applications/:applicationId/timeline"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard"
+    },
+    {
+      "method": "GET",
+      "path": "/timeline/:applicationId"
+    },
+    {
+      "method": "GET",
+      "path": "/onboarding"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/search"
+    },
+    {
+      "method": "GET",
+      "path": "/:investorId"
+    },
+    {
+      "method": "GET",
+      "path": "/:investorId/profile"
+    },
+    {
+      "method": "GET",
+      "path": "/:investorId/portfolio"
+    },
+    {
+      "method": "POST",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/:pitchId"
+    },
+    {
+      "method": "DELETE",
+      "path": "/:pitchId"
+    },
+    {
+      "method": "POST",
+      "path": "/submit"
+    },
+    {
+      "method": "PUT",
+      "path": "/save-draft"
+    },
+    {
+      "method": "GET",
+      "path": "/submission-status"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/traction"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/traction/start"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/traction/checklist"
+    },
+    {
+      "method": "POST",
+      "path": "/traction/metrics"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/metrics"
+    },
+    {
+      "method": "PUT",
+      "path": "/traction/metrics/:metricId"
+    },
+    {
+      "method": "DELETE",
+      "path": "/traction/metrics/:metricId"
+    },
+    {
+      "method": "POST",
+      "path": "/traction/feedback"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/feedback"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/feedback/:feedbackId"
+    },
+    {
+      "method": "PUT",
+      "path": "/traction/feedback/:feedbackId"
+    },
+    {
+      "method": "DELETE",
+      "path": "/traction/feedback/:feedbackId"
+    },
+    {
+      "method": "POST",
+      "path": "/traction/submission"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/submission"
+    },
+    {
+      "method": "PUT",
+      "path": "/traction/submission/:submissionId"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/review"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/review/status"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/review/timeline"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/review/comments"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/review-meeting"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/review-meeting/details"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/review-meeting/join-link"
+    },
+    {
+      "method": "POST",
+      "path": "/traction/review-meeting/confirm-attendance"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/result"
+    },
+    {
+      "method": "GET",
+      "path": "/traction/approval"
+    },
+    {
+      "method": "GET",
+      "path": "/status"
+    },
+    {
+      "method": "GET",
+      "path": "/checklist"
+    },
+    {
+      "method": "POST",
+      "path": "/evidence"
+    },
+    {
+      "method": "GET",
+      "path": "/evidence"
+    },
+    {
+      "method": "DELETE",
+      "path": "/evidence/:evidenceId"
+    },
+    {
+      "method": "GET",
+      "path": "/report"
+    },
+    {
+      "method": "PUT",
+      "path": "/report"
+    },
+    {
+      "method": "GET",
+      "path": "/meeting"
+    },
+    {
+      "method": "GET",
+      "path": "/result"
+    },
+    {
+      "method": "POST",
+      "path": "/statistics"
+    },
+    {
+      "method": "PUT",
+      "path": "/statistics/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/statistics/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/pulse"
+    },
+    {
+      "method": "GET",
+      "path": "/volume-trend"
+    },
+    {
+      "method": "GET",
+      "path": "/export"
+    },
+    {
+      "method": "GET",
+      "path": "/announcements"
+    },
+    {
+      "method": "POST",
+      "path": "/announcements"
+    },
+    {
+      "method": "GET",
+      "path": "/get-all-chapter"
+    },
+    {
+      "method": "POST",
+      "path": "/register"
+    },
+    {
+      "method": "GET",
+      "path": "/check-email"
+    },
+    {
+      "method": "POST",
+      "path": "/send-otp"
+    },
+    {
+      "method": "POST",
+      "path": "/verify-otp"
+    },
+    {
+      "method": "POST",
+      "path": "/login"
+    },
+    {
+      "method": "POST",
+      "path": "/forgot-password"
+    },
+    {
+      "method": "POST",
+      "path": "/reset-password"
+    },
+    {
+      "method": "POST",
+      "path": "/refresh-token"
+    },
+    {
+      "method": "GET",
+      "path": "/me"
+    },
+    {
+      "method": "GET",
+      "path": "/dashboard"
+    },
+    {
+      "method": "GET",
+      "path": "/profile-details"
+    },
+    {
+      "method": "PUT",
+      "path": "/profile-details"
+    },
+    {
+      "method": "GET",
+      "path": "/startup"
+    },
+    {
+      "method": "PUT",
+      "path": "/startup"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/pulse"
+    },
+    {
+      "method": "GET",
+      "path": "/volume-trend"
+    },
+    {
+      "method": "GET",
+      "path": "/export"
+    },
+    {
+      "method": "GET",
+      "path": "/:id/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/:id/students"
+    },
+    {
+      "method": "GET",
+      "path": "/:id/startups"
+    },
+    {
+      "method": "PUT",
+      "path": "/:id/assign-lead"
+    },
+    {
+      "method": "GET",
+      "path": "/:id/events"
+    },
+    {
+      "method": "POST",
+      "path": "/:id/events"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "GET",
+      "path": "/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/:id/approve"
+    },
+    {
+      "method": "POST",
+      "path": "/:id/reject"
+    },
+    {
+      "method": "POST",
+      "path": "/:id/request-changes"
+    },
+    {
+      "method": "POST",
+      "path": "/:id/notes"
+    },
+    {
+      "method": "GET",
+      "path": "/"
+    },
+    {
+      "method": "PUT",
+      "path": "/platform"
+    },
+    {
+      "method": "GET",
+      "path": "/export-config"
+    },
+    {
+      "method": "PUT",
+      "path": "/profile"
+    },
+    {
+      "method": "PUT",
+      "path": "/notifications"
+    },
+    {
+      "method": "GET",
+      "path": "/login-history"
+    },
+    {
+      "method": "POST",
+      "path": "/logout-all-devices"
+    },
+    {
+      "method": "POST",
+      "path": "/change-password"
+    },
+    {
+      "method": "GET",
+      "path": "/download-system-logs"
+    }
+  ],
+  "missingInFrontend": [
+    {
+      "method": "POST",
+      "path": "/assistance/request"
+    },
+    {
+      "method": "GET",
+      "path": "/assistance/status"
+    },
+    {
+      "method": "PUT",
+      "path": "/assistance/:requestId"
+    },
+    {
+      "method": "POST",
+      "path": "/request-chapter-change"
+    },
+    {
+      "method": "GET",
+      "path": "/conversations/search"
+    },
+    {
+      "method": "POST",
+      "path": "/upload/:chatId"
+    },
+    {
+      "method": "PATCH",
+      "path": "/read/:chatId"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/filter"
+    },
+    {
+      "method": "GET",
+      "path": "/incubation-verification/status"
+    },
+    {
+      "method": "GET",
+      "path": "/incubation-verification/timeline"
+    },
+    {
+      "method": "GET",
+      "path": "/incubation-verification/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/incubation-verification/result"
+    },
+    {
+      "method": "POST",
+      "path": "/withdraw"
+    },
+    {
+      "method": "POST",
+      "path": "/filter"
+    },
+    {
+      "method": "GET",
+      "path": "/recommendations"
+    },
+    {
+      "method": "POST",
+      "path": "/pitches/filter"
+    },
+    {
+      "method": "GET",
+      "path": "/watchlist/statistics"
+    },
+    {
+      "method": "POST",
+      "path": "/notes"
+    },
+    {
+      "method": "POST",
+      "path": "/request-meeting"
+    },
+    {
+      "method": "POST",
+      "path": "/startups/filter"
+    },
+    {
+      "method": "GET",
+      "path": "/activity-log"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/pitch-deck"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/pitch-deck/upload"
+    },
+    {
+      "method": "DELETE",
+      "path": "/stages/launch/pitch-deck/:documentId"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/pitch-deck/submit"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/insights"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/insights/save"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/evidence/upload"
+    },
+    {
+      "method": "DELETE",
+      "path": "/stages/launch/evidence/:fileId"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/insights/submit"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/evidence"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/verification"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/verification/status"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/verification/files"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/completion"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/certificate"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/alumni/join"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/mentor/apply"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/showcase/apply"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/statistics"
+    },
+    {
+      "method": "GET",
+      "path": "/requests/recent"
+    },
+    {
+      "method": "GET",
+      "path": "/meetings/upcoming"
+    },
+    {
+      "method": "GET",
+      "path": "/chats/recent"
+    },
+    {
+      "method": "POST",
+      "path": "/profile/photo"
+    },
+    {
+      "method": "PATCH",
+      "path": "/profile/visibility"
+    },
+    {
+      "method": "POST",
+      "path": "/startup/product-type"
+    },
+    {
+      "method": "GET",
+      "path": "/startup/product-type"
+    },
+    {
+      "method": "POST",
+      "path": "/upload-photo"
+    },
+    {
+      "method": "PUT",
+      "path": "/notification-preferences"
+    },
+    {
+      "method": "POST",
+      "path": "/skip"
+    },
+    {
+      "method": "GET",
+      "path": "/auth-redirects"
+    },
+    {
+      "method": "GET",
+      "path": "/faqs"
+    },
+    {
+      "method": "GET",
+      "path": "/partner-logos"
+    },
+    {
+      "method": "GET",
+      "path": "/featured-startups"
+    },
+    {
+      "method": "GET",
+      "path": "/success-stories"
+    },
+    {
+      "method": "POST",
+      "path": "/enquiries"
+    },
+    {
+      "method": "GET",
+      "path": "/documents/partnership-deck"
+    },
+    {
+      "method": "GET",
+      "path": "/mentorship/request-status"
+    },
+    {
+      "method": "POST",
+      "path": "/mentors/filter"
+    },
+    {
+      "method": "GET",
+      "path": "/activity-log"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities/search"
+    },
+    {
+      "method": "POST",
+      "path": "/opportunities/filter"
+    },
+    {
+      "method": "GET",
+      "path": "/applications/status"
+    },
+    {
+      "method": "GET",
+      "path": "/applications/interviews"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/upload-resume"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/upload-document"
+    },
+    {
+      "method": "GET",
+      "path": "/documents/:applicationId"
+    },
+    {
+      "method": "POST",
+      "path": "/upload-document"
+    },
+    {
+      "method": "GET",
+      "path": "/updates"
+    },
+    {
+      "method": "GET",
+      "path": "/acceptance"
+    },
+    {
+      "method": "POST",
+      "path": "/accept-offer"
+    },
+    {
+      "method": "GET",
+      "path": "/admission-documents"
+    },
+    {
+      "method": "POST",
+      "path": "/filter"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/traction/progress"
+    },
+    {
+      "method": "DELETE",
+      "path": "/traction/submission/document/:documentId"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/progress"
+    },
+    {
+      "method": "GET",
+      "path": "/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/surveys"
+    },
+    {
+      "method": "POST",
+      "path": "/surveys"
+    },
+    {
+      "method": "PUT",
+      "path": "/surveys/:surveyId"
+    },
+    {
+      "method": "DELETE",
+      "path": "/surveys/:surveyId"
+    },
+    {
+      "method": "POST",
+      "path": "/report/submit"
+    },
+    {
+      "method": "POST",
+      "path": "/meeting/reschedule"
+    },
+    {
+      "method": "GET",
+      "path": "/meeting/feedback"
+    },
+    {
+      "method": "GET",
+      "path": "/stage-progression"
+    },
+    {
+      "method": "POST",
+      "path": "/faqs"
+    },
+    {
+      "method": "PUT",
+      "path": "/faqs/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/faqs/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/partner-logos"
+    },
+    {
+      "method": "PUT",
+      "path": "/partner-logos/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/partner-logos/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/success-stories"
+    },
+    {
+      "method": "PUT",
+      "path": "/success-stories/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/success-stories/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/featured-startups"
+    },
+    {
+      "method": "PUT",
+      "path": "/featured-startups/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/featured-startups/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/users/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/chapter-change-requests"
+    },
+    {
+      "method": "GET",
+      "path": "/chapter-change-requests/:id"
+    },
+    {
+      "method": "PUT",
+      "path": "/chapter-change-requests/:id/approve"
+    },
+    {
+      "method": "PUT",
+      "path": "/chapter-change-requests/:id/reject"
+    },
+    {
+      "method": "POST",
+      "path": "/bulk-approve"
+    }
+  ],
+  "uniqueFrontendPaths": [
+    "/admin",
+    "/admin/announcements",
+    "/admin/verification",
+    "/admin/reviews",
+    "/admin/opportunities",
+    "/admin/chapters",
+    "/admin/audit-log",
+    "/admin/settings",
+    "/legal/privacy-policy",
+    "/email-verification",
+    "/login",
+    "/role-selection",
+    "/company/applicants",
+    "/company/dashboard",
+    "/company/post-opportunity/step-1",
+    "/company/my-opportunities",
+    "/dashboard",
+    "/build-startup/journey",
+    "/mentors",
+    "/investors",
+    "/incubators",
+    "/freelancing",
+    "/settings",
+    "/support",
+    "/notifications",
+    "/incubator",
+    "/incubator/applications",
+    "/incubator/messages",
+    "/incubator/settings",
+    "/investor",
+    "/investor/pitch-decks",
+    "/signup/incubator",
+    "/landing",
+    "/signup/student",
+    "/signup/mentor",
+    "/signup/investor",
+    "/signup/company",
+    "/landing/mentor",
+    "/landing/investor",
+    "/landing/companies",
+    "/landing/incubator",
+    "/mentor",
+    "/mentor/requests",
+    "/mentor/chats",
+    "/mentor/meetings",
+    "/mentor/profile",
+    "/admin/announcements/create",
+    "/admin/chapters/detail",
+    "/admin/opportunities/review",
+    "/admin/announcements/published",
+    "/admin/reviews/schedule-meeting",
+    "/admin/reviews/workspace",
+    "/admin/reviews/detail",
+    "/admin/reviews/outcome",
+    "/admin/verification/decision",
+    "/admin/verification/detail",
+    "/forgot-password",
+    "/company/applicants/detail",
+    "/company/post-opportunity/step-2",
+    "/company/post-opportunity/step-3",
+    "/company/post-opportunity/step-4",
+    "/incubator/applications/review",
+    "/chat/conversations",
+    "/build-startup/journey/ideation/submit",
+    "/build-startup/journey/ideation/review-meeting",
+    "/build-startup/journey/ideation/review-result",
+    "/build-startup/journey/ideation/resources",
+    "/build-startup/journey/ideation",
+    "/build-startup/journey/validation",
+    "/build-startup/journey/ideation/confirmation",
+    "/build-startup/journey/launch/proof-upload",
+    "/build-startup/journey/launch",
+    "/build-startup/journey/launch/verification",
+    "/build-startup/journey/launch/submission",
+    "/build-startup/journey/launch/pitch-deck",
+    "/build-startup/journey/mvp/submit",
+    "/build-startup/journey/mvp",
+    "/build-startup/journey/mvp/incubation-verification",
+    "/build-startup/journey/traction",
+    "/build-startup/journey/mvp/choose-product-type",
+    "/build-startup/journey/mvp/success",
+    "/build-startup/journey/mvp/incubation-proof",
+    "/build-startup/journey/traction/product-submission",
+    "/build-startup/journey/traction/review",
+    "/build-startup/journey/traction/acquisition-tracker",
+    "/build-startup/journey/traction/feedback-upload",
+    "/build-startup/journey/validation/report-submission",
+    "/build-startup/journey/validation/survey-tracker",
+    "/build-startup/journey/validation/confirmation",
+    "/build-startup/journey/validation/evidence-upload",
+    "/onboarding/verification-progress",
+    "/onboarding/verify-email",
+    "/freelancing/applications",
+    "/freelancing/applied",
+    "/freelancing/opportunity",
+    "/freelancing/apply",
+    "/incubators/profile",
+    "/incubators/confirmed",
+    "/incubators/apply",
+    "/mentors/messages",
+    "/investors/profile",
+    "/investors/send-pitch",
+    "/investors/chat",
+    "/mentors/profile",
+    "/mentors/chat",
+    "/mentors/request",
+    "/support/raise-ticket",
+    "/support/tickets",
+    "/support/tickets/detail",
+    "/reset-password",
+    "/onboarding/welcome",
+    "/onboarding/application-rejected",
+    "/onboarding/complete-profile/student",
+    "/onboarding/complete-profile/mentor",
+    "/onboarding/complete-profile/investor",
+    "/onboarding/complete-profile/incubator",
+    "/onboarding/complete-profile/company",
+    "/landing/student",
+    "/build-startup/journey/validation/review-meeting",
+    "/build-startup/journey/validation/review-result",
+    "/build-startup/journey/mvp/incubation-approved",
+    "/build-startup/journey/traction/review-meeting",
+    "/build-startup/journey/traction/approved",
+    "/build-startup/journey/complete",
+    "/incubators/tracker",
+    "/admin/announcements/preview",
+    "/investor/pitch-decks/review",
+    "/admin/settings/platform",
+    "/admin/settings/export-config",
+    "/admin/settings/profile",
+    "/admin/settings/notifications",
+    "/admin/settings/login-history",
+    "/admin/settings/logout-all-devices",
+    "/admin/settings/change-password",
+    "/admin/settings/download-system-logs",
+    "/admin/audit-log/pulse",
+    "/admin/audit-log/volume-trend",
+    "/admin/audit-log/export",
+    "/admin/statistics",
+    "/auth/register",
+    "/auth/login",
+    "/auth/check-email",
+    "/auth/send-otp",
+    "/auth/verify-otp",
+    "/auth/forgot-password",
+    "/auth/reset-password",
+    "/auth/refresh-token",
+    "/auth/me",
+    "/auth/get-all-chapter",
+    "/onboarding/status",
+    "/student/chapter",
+    "/student/dashboard",
+    "/student/profile-details",
+    "/startup/progress",
+    "/startup/stages",
+    "/startup/submit",
+    "/startup/save-draft",
+    "/startup/submission-status",
+    "/stages/launch/submission/draft",
+    "/stages/launch/submission/submit",
+    "/stages/launch/start",
+    "/stages/launch",
+    "/stages/launch/checklist",
+    "/stages/launch/submission",
+    "/stages/traction",
+    "/stages/traction/start",
+    "/stages/traction/checklist",
+    "/traction/metrics",
+    "/traction/submission",
+    "/traction/review/status",
+    "/traction/review/timeline",
+    "/traction/review/comments",
+    "/traction/review-meeting/details",
+    "/traction/review-meeting/join-link",
+    "/traction/review-meeting/confirm-attendance",
+    "/traction/result",
+    "/traction/approval",
+    "/stages/mvp",
+    "/stages/mvp/checklist",
+    "/mvp/meeting",
+    "/mvp/reschedule",
+    "/mvp/review",
+    "/watchlist",
+    "/dashboard/stats",
+    "/pitches",
+    "/startups/search",
+    "/pitch/view",
+    "/mentorship/requests",
+    "/mentorship/meetings"
+  ],
+  "apiCallsSample": [
+    "Frontend/src/components/ui/Logo.jsx:52:        fetchPriority={priority ? 'high' : 'auto'}",
+    "Frontend/src/components/ui/Logo.jsx:78:      fetchPriority={priority ? 'high' : 'auto'}",
+    "Frontend/src/pages/admin/AuditLog.jsx:27:  const { auditLogs, pulse, volumeTrend, fetchAuditLogs, isLoadingLogs } = useAdminDashboard();",
+    "Frontend/src/pages/admin/AuditLog.jsx:33:    fetchAuditLogs();",
+    "Frontend/src/pages/admin/AuditLog.jsx:34:  }, [fetchAuditLogs]);",
+    "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:50:  const fetchAnnouncementsData = useCallback(async () => {",
+    "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:71:    fetchAnnouncementsData();",
+    "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:72:  }, [fetchAnnouncementsData]);",
+    "Frontend/src/pages/auth/StudentSignup.jsx:47:    const fetchChapters = async () => {",
+    "Frontend/src/pages/auth/StudentSignup.jsx:67:    fetchChapters();",
+    "Frontend/src/pages/investor/PitchDeck.jsx:8:import api from '@/api/axiosInstance';",
+    "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:58:  const { submitLaunch, saveLaunchDraft, fetchLaunchSubmission, launchSubmission, isLoading: isContextLoading } = useIncubation();",
+    "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:63:    fetchLaunchSubmission();",
+    "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:64:  }, [fetchLaunchSubmission]);",
+    "Frontend/src/pages/onboarding/VerificationProgress.jsx:61:      console.error(\"Failed to fetch onboarding status:\", err);",
+    "Frontend/src/pages/onboarding/Welcome.jsx:29:    const fetchChapterAndStats = async () => {",
+    "Frontend/src/pages/onboarding/Welcome.jsx:51:    fetchChapterAndStats();",
+    "Frontend/src/pages/BuildStartupJourney.jsx:38:    async function fetchJourneyData() {",
+    "Frontend/src/pages/BuildStartupJourney.jsx:52:        console.error(\"Failed to fetch startup journey data:\", err);",
+    "Frontend/src/pages/BuildStartupJourney.jsx:69:    fetchJourneyData();",
+    "Frontend/src/pages/Dashboard.jsx:40:    async function fetchDashboardData() {",
+    "Frontend/src/pages/Dashboard.jsx:46:        console.error(\"Error fetching dashboard data:\", err);",
+    "Frontend/src/pages/Dashboard.jsx:62:    fetchDashboardData();",
+    "Frontend/src/api/admin/adminAnnouncementApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/admin/adminApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/auth/authApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/auth/onboardingApi.js:2:import axiosInstance from \"../axiosInstance\";",
+    "Frontend/src/api/auth/onboardingApi.js:5:  const response = await axiosInstance.get(\"/onboarding/status\");",
+    "Frontend/src/api/auth/profileApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/auth/studentChapterApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/axiosInstance.js:1:import axios from \"axios\";",
+    "Frontend/src/api/axiosInstance.js:3:const api = axios.create({",
+    "Frontend/src/api/dashboardApi.js:1:import api from \"./axiosInstance\";",
+    "Frontend/src/api/startup/startupApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/startup/submissionApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/startup/incubationApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/startup/tractionApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/startup/mvpApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/investorApi.js:1:import api from \"../axiosInstance\";",
+    "Frontend/src/api/mentorshipApi.js:1:import axiosInstance from './axiosInstance';",
+    "Frontend/src/api/mentorshipApi.js:4:  getMentors: (filters) => axiosInstance.get('/mentors', { params: filters }),",
+    "Frontend/src/api/mentorshipApi.js:5:  getMentorProfile: (mentorId) => axiosInstance.get(`/mentors/${mentorId}`),",
+    "Frontend/src/api/mentorshipApi.js:6:  requestMentorship: (mentorId, data) => axiosInstance.post(`/mentors/${mentorId}/request`, data),",
+    "Frontend/src/api/mentorshipApi.js:7:  getMentorshipRequests: () => axiosInstance.get('/mentorship/requests'),",
+    "Frontend/src/api/mentorshipApi.js:8:  updateRequestStatus: (requestId, status) => axiosInstance.patch(`/mentorship/requests/${requestId}`, { status }),",
+    "Frontend/src/api/mentorshipApi.js:9:  getMeetings: () => axiosInstance.get('/mentorship/meetings'),",
+    "Frontend/src/api/mentorshipApi.js:10:  scheduleMeeting: (data) => axiosInstance.post('/mentorship/meetings', data),",
+    "Frontend/src/context/IncubationContext.jsx:36:  const fetchLaunchOverview = useCallback(async () => {",
+    "Frontend/src/context/IncubationContext.jsx:45:  const fetchLaunchChecklist = useCallback(async () => {",
+    "Frontend/src/context/IncubationContext.jsx:54:  const fetchLaunchSubmission = useCallback(async () => {"
+  ]
+}

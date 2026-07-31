@@ -1,10 +1,13 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, MessageSquare, Calendar, BarChart3, Check, ExternalLink } from 'lucide-react';
 import InvestorShell from '@/components/investor/InvestorShell';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import api from '@/api/axiosInstance';
+import { useInvestor } from '@/hooks/useInvestor';
+
 
 const SLIDES = [
   { id: 1, label: 'Executive Summary' },
@@ -45,6 +48,16 @@ export default function PitchDeckPage() {
   const [currentSlide, setCurrentSlide] = useState(4);
   const [investorNotes, setInvestorNotes] = useState('');
   const [notesSaved, setNotesSaved] = useState(false);
+  const navigate = useNavigate();
+  const [isStartingChat, setIsStartingChat] = useState(false);
+  const { trackPitchView } = useInvestor();
+
+  // Using a mock valid ObjectId since this is a seeded example
+  const startupId = "5f8d0d55b54764421b7156c4";
+
+  useEffect(() => {
+    trackPitchView(startupId);
+  }, [trackPitchView, startupId]);
 
   const activeSlide = SLIDES.find((s) => s.id === currentSlide);
 
@@ -57,6 +70,20 @@ export default function PitchDeckPage() {
     // for them to belong to.
     setNotesSaved(true);
     setTimeout(() => setNotesSaved(false), 2000);
+  };
+
+  const handleStartConversation = async () => {
+    try {
+      setIsStartingChat(true);
+      const res = await api.post('/chat/conversations', { targetId: startupId });
+      // Optionally navigate to the chat room
+      // navigate(`/investor/messages/${res.data._id}`);
+      console.log("Conversation started:", res.data);
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
+    } finally {
+      setIsStartingChat(false);
+    }
   };
 
   return (
@@ -97,10 +124,14 @@ export default function PitchDeckPage() {
               <p className="font-inter text-caption text-text-muted truncate">Principal Investor</p>
             </div>
           </div>
-          <ComingSoon label="Start Conversation" position="top" inline={false} className="mt-3 flex items-center justify-center gap-2 border border-border-subtle text-text-heading font-inter font-medium text-small px-4 py-2.5 rounded-md">
+          <button 
+            onClick={handleStartConversation}
+            disabled={isStartingChat}
+            className="mt-3 flex items-center justify-center gap-2 border border-border-subtle text-text-heading font-inter font-medium text-small px-4 py-2.5 rounded-md hover:bg-canvas-bg transition-colors disabled:opacity-50"
+          >
             <MessageSquare size={16} strokeWidth={2} />
-            Start Conversation
-          </ComingSoon>
+            {isStartingChat ? 'Starting...' : 'Start Conversation'}
+          </button>
         </div>
 
         <div className="lg:col-span-6 flex flex-col">

@@ -1,0 +1,234 @@
+{
+  "todo_fixme": [],
+  "not_implemented": [],
+  "empty_catch": [],
+  "console_debug_leftover": [
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/adminSeed.js",
+      "line": 23,
+      "text": "console.log(\"MongoDB Connected for seeding.\");"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/adminSeed.js",
+      "line": 35,
+      "text": "console.log(`Admin user with email ${adminEmail} already exists.`);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/adminSeed.js",
+      "line": 51,
+      "text": "console.log(`Admin user ${adminEmail} seeded successfully!`);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/adminSeed.js",
+      "line": 57,
+      "text": "console.log(\"MongoDB connection closed.\");"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/landingPageSeed.js",
+      "line": 21,
+      "text": "console.log(\"Connected to Database. Purging old landing page data...\");"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/landingPageSeed.js",
+      "line": 32,
+      "text": "console.log(\"Inserting mock data...\");"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/landingPageSeed.js",
+      "line": 127,
+      "text": "console.log("
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/seedRequests.js",
+      "line": 21,
+      "text": "console.log(\"Connected to MongoDB...\");"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/seedRequests.js",
+      "line": 26,
+      "text": "console.log("
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/seedRequests.js",
+      "line": 31,
+      "text": "console.log(`Found Mentor: ${mentor.full_name} (${mentor.email})`);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/seeds/seedRequests.js",
+      "line": 112,
+      "text": "console.log("
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/auth.test.js",
+      "line": 111,
+      "text": "console.log(\"Mentor Registration Failed:\", res.body);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/fullJourney.integration.test.js",
+      "line": 340,
+      "text": "console.log(\"TEST 5.7 RESPONSE STATUS:\", res.status, \"BODY:\", res.body);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/mentorDashboard.test.js",
+      "line": 25,
+      "text": "console.log(\"Mock status called with:\", code);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/mentorDashboard.test.js",
+      "line": 29,
+      "text": "console.log(\"Mock json called with:\", data);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/mentorRequest.test.js",
+      "line": 23,
+      "text": "console.log(\"Mock status called with:\", code);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/mentorRequest.test.js",
+      "line": 27,
+      "text": "console.log(\"Mock json called with:\", data);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/cron/archiveLogs.js",
+      "line": 40,
+      "text": "console.log('No old audit logs to archive.');"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/cron/archiveLogs.js",
+      "line": 60,
+      "text": "console.log(`[Archive] Successfully uploaded ${oldLogs.length} logs to S3: ${fileName}`);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/cron/archiveLogs.js",
+      "line": 69,
+      "text": "console.log(`[Archive] Successfully saved ${oldLogs.length} logs to local disk: ${filePath}`);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/cron/archiveLogs.js",
+      "line": 75,
+      "text": "console.log(`[Archive] Deleted ${logIds.length} archived logs from MongoDB.`);"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/cron/archiveLogs.js",
+      "line": 85,
+      "text": "console.log('[Cron] Running daily audit log archive job...');"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/cron/archiveLogs.js",
+      "line": 88,
+      "text": "console.log('[Cron] Audit log archiving job initialized.');"
+    }
+  ],
+  "hardcoded_secret_shape": [
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/auth.test.js",
+      "line": 32,
+      "text": "password: \"Password123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/auth.test.js",
+      "line": 33,
+      "text": "confirm_password: \"Password123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/auth.test.js",
+      "line": 180,
+      "text": "password: \"Password123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/auth.test.js",
+      "line": 199,
+      "text": "password: \"Password123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/auth.test.js",
+      "line": 224,
+      "text": "new_password: \"NewPassword123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/auth.test.js",
+      "line": 225,
+      "text": "confirm_password: \"NewPassword123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/auth.test.js",
+      "line": 242,
+      "text": "password: \"NewPassword123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/fullJourney.integration.test.js",
+      "line": 45,
+      "text": "const adminApiKey = \"testadmin\";"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/fullJourney.integration.test.js",
+      "line": 47,
+      "text": "process.env.JWT_SECRET = \"DUMMY_SECRET_FOR_TESTING_ONLY\";"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/fullJourney.integration.test.js",
+      "line": 60,
+      "text": "password: \"Password123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/fullJourney.integration.test.js",
+      "line": 61,
+      "text": "confirm_password: \"Password123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/fullJourney.integration.test.js",
+      "line": 104,
+      "text": "password: \"Password123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/fullJourney.integration.test.js",
+      "line": 225,
+      "text": "password: \"Password123!\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/admin.test.js",
+      "line": 16,
+      "text": "process.env.ADMIN_API_KEY = \"DUMMY_SECRET_FOR_TESTING_ONLY\";"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/admin.test.js",
+      "line": 20,
+      "text": "const validApiKey = \"DUMMY_SECRET_FOR_TESTING_ONLY\";"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/admin.test.js",
+      "line": 116,
+      "text": "const validApiKey = \"DUMMY_SECRET_FOR_TESTING_ONLY\";"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/admin.transactions.test.js",
+      "line": 16,
+      "text": "process.env.ADMIN_API_KEY = \"DUMMY_SECRET_FOR_TESTING_ONLY\";"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/adminChapterChange.test.js",
+      "line": 13,
+      "text": "process.env.ADMIN_API_KEY = \"DUMMY_SECRET_FOR_TESTING_ONLY\";"
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/settings.test.js",
+      "line": 207,
+      "text": "current_password: \"CurrentPassword123\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/settings.test.js",
+      "line": 208,
+      "text": "new_password: \"NewPassword123!\""
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/settings.test.js",
+      "line": 219,
+      "text": "current_password: \"WrongPassword123\","
+    },
+    {
+      "file": "/home/jimfleax/Business-Orbit-Campus-Clubs-/Backend/tests/controllers/settings.test.js",
+      "line": 220,
+      "text": "new_password: \"NewPassword123!\""
+    }
+  ]
+}
