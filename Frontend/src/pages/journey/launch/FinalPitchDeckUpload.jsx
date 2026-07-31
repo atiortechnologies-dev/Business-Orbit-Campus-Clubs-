@@ -1,9 +1,11 @@
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ChevronRight, Upload, UploadCloud, FileText, Video, History, CheckCircle2, MoreVertical, Film, PieChart } from 'lucide-react';
+import { ChevronRight, Upload, UploadCloud, FileText, Video, History, CheckCircle2, MoreVertical, Film, PieChart, Trash } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { getPitchDeck, uploadPitchDeck, deletePitchDeck, submitPitchDeck } from '@/api/startup/launchApi';
 
 const MODULES = [
   { id: 'deck', title: 'Final Pitch Deck', required: true, icon: Upload, cta: <>Drag &amp; drop or <span className="underline">browse</span></>, formats: 'Supported formats: PDF, PPTX (max 50MB)' },
@@ -21,10 +23,59 @@ const MILESTONES = [
 export default function FinalPitchDeckUploadPage() {
   useDocumentTitle('Final Pitch Deck Upload — BOCC');
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
-  const handleContinue = () => {
-    // TODO(backend): persist uploaded documents and advance the launch flow.
-    navigate('/build-startup/journey/launch/proof-upload');
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const data = await getPitchDeck();
+      if (data && data.documents) {
+        setDocuments(data.documents);
+      }
+    } catch (err) {
+      console.error('Failed to fetch pitch deck data', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('document', file);
+    try {
+      await uploadPitchDeck(formData);
+      fetchData();
+    } catch (err) {
+      console.error('Upload failed', err);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deletePitchDeck(id);
+      fetchData();
+    } catch (err) {
+      console.error('Delete failed', err);
+    }
+  };
+
+  const handleContinue = async () => {
+    try {
+      await submitPitchDeck();
+      navigate('/build-startup/journey/launch/proof-upload');
+    } catch (err) {
+      console.error('Submit failed', err);
+    }
   };
 
   return (
@@ -67,7 +118,7 @@ export default function FinalPitchDeckUploadPage() {
                   </span>
                 </div>
                 <ComingSoon label={title} position="top">
-                  <div className="border-2 border-dashed border-border-subtle rounded-lg py-8 flex flex-col items-center justify-center bg-canvas-bg hover:bg-surface-white hover:border-brand-black transition-all cursor-pointer group w-full">
+                  <div className="border-2 border-dashed border-border-subtle rounded-lg py-8 flex flex-col items-center justify-center bg-canvas-bg hover:bg-surface-white hover:border-brand-black transition-all cursor-pointer group w-full" onClick={() => fileInputRef.current?.click()}>
                     <Icon size={32} strokeWidth={1.5} className="text-text-muted group-hover:text-text-heading transition-colors mb-2" />
                     <p className="font-inter text-small text-text-body">{cta}</p>
                   </div>
@@ -75,6 +126,7 @@ export default function FinalPitchDeckUploadPage() {
                 <p className="font-inter text-[11px] text-text-muted">{formats}</p>
               </div>
             ))}
+            <input type="file" ref={fileInputRef} className="hidden" onChange={handleUpload} />
           </div>
 
           <section>
@@ -93,46 +145,30 @@ export default function FinalPitchDeckUploadPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border-subtle">
-                  <tr className="hover:bg-canvas-bg transition-colors">
-                    <td className="py-4 px-6 flex items-center gap-3">
-                      <FileText size={18} strokeWidth={2} className="text-text-heading" />
-                      <span className="font-inter text-small text-text-body">Draft_PitchDeck_v2.pdf</span>
-                    </td>
-                    <td className="py-4 px-6 font-inter text-small text-text-muted">12.4 MB</td>
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-2 text-text-heading font-inter text-small">
-                        <CheckCircle2 size={16} strokeWidth={2} />
-                        Upload Success
-                      </div>
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <button type="button" className="text-text-muted hover:text-text-heading transition-colors">
-                        <MoreVertical size={18} strokeWidth={2} />
-                      </button>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-canvas-bg transition-colors">
-                    <td className="py-4 px-6 flex items-center gap-3">
-                      <Film size={18} strokeWidth={2} className="text-text-heading" />
-                      <span className="font-inter text-small text-text-body">Product_Demo_Final.mp4</span>
-                    </td>
-                    <td className="py-4 px-6 font-inter text-small text-text-muted">85.1 MB</td>
-                    <td className="py-4 px-6">
-                      <div className="w-full max-w-[140px]">
-                        <div className="flex justify-between mb-1">
-                          <span className="text-[10px] font-semibold text-text-muted">85%</span>
+                  {documents.length > 0 ? documents.map((doc, idx) => (
+                    <tr key={idx} className="hover:bg-canvas-bg transition-colors">
+                      <td className="py-4 px-6 flex items-center gap-3">
+                        <FileText size={18} strokeWidth={2} className="text-text-heading" />
+                        <span className="font-inter text-small text-text-body">{doc.fileName || doc.name || 'Document'}</span>
+                      </td>
+                      <td className="py-4 px-6 font-inter text-small text-text-muted">{(doc.size / 1024 / 1024).toFixed(2)} MB</td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-2 text-text-heading font-inter text-small">
+                          <CheckCircle2 size={16} strokeWidth={2} />
+                          Uploaded
                         </div>
-                        <div className="w-full bg-canvas-bg rounded-full h-1.5 overflow-hidden">
-                          <div className="bg-brand-black h-full rounded-full" style={{ width: '85%' }} />
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-6 text-right">
-                      <ComingSoon label="Cancel Upload" position="left" inline>
-                        <span className="text-red-600 hover:opacity-80 transition-opacity cursor-pointer text-small">✕</span>
-                      </ComingSoon>
-                    </td>
-                  </tr>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <button type="button" onClick={() => handleDelete(doc._id || doc.id)} className="text-text-muted hover:text-red-500 transition-colors">
+                          <Trash size={18} strokeWidth={2} />
+                        </button>
+                      </td>
+                    </tr>
+                  )) : (
+                    <tr>
+                      <td colSpan="4" className="py-4 px-6 text-center text-text-muted text-small">No documents uploaded yet.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

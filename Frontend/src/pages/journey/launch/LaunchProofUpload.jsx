@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ChevronRight,
@@ -19,6 +19,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { getInsights, saveInsights, submitInsights } from '@/api/startup/launchApi';
 
 const LAUNCH_TYPES = ['Select option', 'Demo Day', 'College Event', 'Startup Expo', 'Incubator Showcase', 'Product Release', 'Online Launch', 'Other'];
 
@@ -46,15 +47,41 @@ export default function LaunchProofUploadPage() {
     linkedin: '', instagram: '', twitter: '', youtube: '', website: '', notes: '',
   });
 
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getInsights();
+        if (data) {
+          setForm((prev) => ({ ...prev, ...data }));
+        }
+      } catch (err) {
+        console.error('Failed to load insights', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
   const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const handleSubmit = () => {
-    // TODO(backend): submit launch evidence for verification.
-    navigate('/build-startup/journey/launch/verification');
+  const handleSubmit = async () => {
+    try {
+      await submitInsights(form);
+      navigate('/build-startup/journey/launch/verification');
+    } catch (err) {
+      console.error('Failed to submit insights', err);
+    }
   };
 
-  const handleSaveDraft = () => {
-    // TODO(backend): persist as a draft against the student's account.
+  const handleSaveDraft = async () => {
+    try {
+      await saveInsights(form);
+    } catch (err) {
+      console.error('Failed to save draft', err);
+    }
   };
 
   return (
