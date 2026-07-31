@@ -4,6 +4,7 @@ import { Briefcase, Bookmark } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { filterOpportunities } from '@/api/opportunitiesApi';
 
 const TYPE_OPTIONS = ['Internship', 'Full-time', 'Part-time', 'Freelance'];
 const MODE_OPTIONS = ['Remote', 'Hybrid', 'On-site'];
@@ -35,6 +36,31 @@ export default function FreelancingOpportunitiesPage() {
   useDocumentTitle('Freelancing Opportunities — BOCC');
   const [industry, setIndustry] = useState(INDUSTRY_OPTIONS[0]);
   const [level, setLevel] = useState(LEVEL_OPTIONS[0]);
+  const [types, setTypes] = useState([]);
+  const [modes, setModes] = useState([]);
+  const [opportunities, setOpportunities] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchOpportunities() {
+      setLoading(true);
+      try {
+        const filters = { industry, level, types, modes };
+        const res = await filterOpportunities(filters);
+        setOpportunities(res.data || res || []);
+      } catch (err) {
+        console.error("Error fetching opportunities:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOpportunities();
+  }, [industry, level, types, modes]);
+
+  const toggleFilter = (list, item, setList) => {
+    if (list.includes(item)) setList(list.filter(i => i !== item));
+    else setList([...list, item]);
+  };
 
   return (
     <DashboardShell pageId="freelancing-opportunities">
@@ -62,7 +88,7 @@ export default function FreelancingOpportunitiesPage() {
             <div className="space-y-2">
               {TYPE_OPTIONS.map((t) => (
                 <label key={t} className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="h-4 w-4 rounded border-border-subtle text-brand-black focus:ring-brand-black" />
+                  <input type="checkbox" checked={types.includes(t)} onChange={() => toggleFilter(types, t, setTypes)} className="h-4 w-4 rounded border-border-subtle text-brand-black focus:ring-brand-black" />
                   <span className="font-inter text-small text-text-body">{t}</span>
                 </label>
               ))}
@@ -73,7 +99,7 @@ export default function FreelancingOpportunitiesPage() {
             <div className="space-y-2">
               {MODE_OPTIONS.map((m) => (
                 <label key={m} className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" className="h-4 w-4 rounded border-border-subtle text-brand-black focus:ring-brand-black" />
+                  <input type="checkbox" checked={modes.includes(m)} onChange={() => toggleFilter(modes, m, setModes)} className="h-4 w-4 rounded border-border-subtle text-brand-black focus:ring-brand-black" />
                   <span className="font-inter text-small text-text-body">{m}</span>
                 </label>
               ))}
@@ -95,10 +121,13 @@ export default function FreelancingOpportunitiesPage() {
 
         <div className="lg:col-span-9">
           <p className="font-inter text-small text-text-muted mb-4">
-            Showing <span className="font-bold text-text-heading">{OPPORTUNITIES.length}</span> of 24 opportunities
+            Showing <span className="font-bold text-text-heading">{opportunities.length}</span> opportunities
           </p>
           <div className="space-y-4">
-            {OPPORTUNITIES.map((o) => (
+            {loading ? (
+              <p className="text-text-muted">Loading opportunities...</p>
+            ) : opportunities.length > 0 ? (
+              opportunities.map((o) => (
               <div key={o.id} className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
                 <div className="flex justify-between items-start gap-4 mb-2">
                   <div>
@@ -128,7 +157,10 @@ export default function FreelancingOpportunitiesPage() {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+            ) : (
+              <p className="text-text-muted font-inter">No opportunities match the selected filters.</p>
+            )}
           </div>
         </div>
       </div>

@@ -11,3 +11,9 @@ export const getStartupStages = async () => {
   const res = await api.get("/startup/stages");
   return res?.data || res;
 };
+
+// POST /api/startups/filter
+export const filterStartups = async (filters) => {
+  const res = await api.post("/startups/filter", filters);
+  return res?.data || res;
+};

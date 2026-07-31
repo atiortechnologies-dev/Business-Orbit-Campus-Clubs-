@@ -19,7 +19,7 @@ import {
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { getDashboard } from "@/api/dashboardApi";
+import { getDashboard, getActivityLog } from "@/api/dashboardApi";
 
 const STAGES = [
   { label: "Ideation", status: "active" },
@@ -34,14 +34,18 @@ export default function DashboardPage() {
   const navigate = useNavigate();
 
   const [dashboardData, setDashboardData] = useState(null);
+  const [activityLog, setActivityLog] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchDashboardData() {
       try {
-        const res = await getDashboard();
-        const data = res?.data || res;
-        setDashboardData(data);
+        const [dashboardRes, activityRes] = await Promise.all([
+          getDashboard(),
+          getActivityLog(),
+        ]);
+        setDashboardData(dashboardRes?.data || dashboardRes);
+        setActivityLog(activityRes?.data || activityRes || []);
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
 
@@ -339,41 +343,25 @@ export default function DashboardPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="flex items-start gap-4 pb-4 border-b border-divider-line">
-              <div className="w-2 h-2 rounded-full bg-accent-neon mt-2 shrink-0" />
-              <div>
-                <p className="text-text-body font-inter font-normal text-body">
-                  New Startup Guide is now available.
-                </p>
-                <span className="text-text-muted font-inter font-normal text-small">
-                  2 hours ago
-                </span>
+            {activityLog.length > 0 ? (
+              activityLog.map((log, index) => (
+                <div key={log._id || index} className="flex items-start gap-4 pb-4 border-b border-divider-line last:border-0 last:pb-0">
+                  <div className="w-2 h-2 rounded-full bg-accent-neon mt-2 shrink-0" />
+                  <div>
+                    <p className="text-text-body font-inter font-normal text-body">
+                      {log.action}
+                    </p>
+                    <span className="text-text-muted font-inter font-normal text-small">
+                      {new Date(log.createdAt).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-text-muted font-inter text-small">
+                No recent activity.
               </div>
-            </div>
-
-            <div className="flex items-start gap-4 pb-4 border-b border-divider-line">
-              <div className="w-2 h-2 rounded-full bg-accent-neon mt-2 shrink-0" />
-              <div>
-                <p className="text-text-body font-inter font-normal text-body">
-                  Weekly Mentor Session recordings uploaded.
-                </p>
-                <span className="text-text-muted font-inter font-normal text-small">
-                  Yesterday
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="w-2 h-2 rounded-full bg-border-subtle mt-2 shrink-0" />
-              <div>
-                <p className="text-text-body font-inter font-normal text-body">
-                  Freelancing portal maintenance completed.
-                </p>
-                <span className="text-text-muted font-inter font-normal text-small">
-                  2 days ago
-                </span>
-              </div>
-            </div>
+            )}
           </div>
         </section>
 

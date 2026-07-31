@@ -41,3 +41,9 @@ export const trackPitchView = async (startupId) => {
   const res = await api.post("/pitch/view", { startupId });
   return res?.data || res;
 };
+
+// POST /pitches/filter
+export const filterPitches = async (filters) => {
+  const res = await api.post("/pitches/filter", filters);
+  return res?.data || res;
+};

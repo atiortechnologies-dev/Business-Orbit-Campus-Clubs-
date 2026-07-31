@@ -35,3 +35,9 @@ export const getRecentChats = async () => {
   const res = await api.get("/chats/recent");
   return res?.data || res;
 };
+
+// GET /activity-log
+export const getActivityLog = async (params) => {
+  const res = await api.get("/activity-log", { params });
+  return res?.data || res;
+};

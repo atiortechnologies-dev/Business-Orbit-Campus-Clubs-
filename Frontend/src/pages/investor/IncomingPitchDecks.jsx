@@ -17,9 +17,11 @@ export default function IncomingPitchDecksPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    investorApi.getPitches()
+    // Calling filterPitches with empty filter to fetch all initially,
+    // in real scenarios this could take filter state from UI.
+    investorApi.filterPitches({})
       .then((res) => {
-        setDecks(res.data || []);
+        setDecks(res.data || res || []);
       })
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));

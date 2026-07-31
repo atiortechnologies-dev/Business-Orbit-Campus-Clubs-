@@ -6,6 +6,8 @@ import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { filterStartups } from '@/api/startup/startupApi';
+import { useEffect, useState } from 'react';
 
 const STATS = [
   { label: 'Startups Available', value: '124', subtext: '+12% this month', trendDirection: 'up' },
@@ -14,12 +16,7 @@ const STATS = [
   { label: 'Watchlist Count', value: '31', subtext: 'Total items' },
 ];
 
-const SUBMISSIONS = [
-  { id: 1, name: 'NeuralEdge AI', sector: 'Software / AI', stage: 'Seed', submitted: '2h ago' },
-  { id: 2, name: 'GreenFlow Logistics', sector: 'Sustainability', stage: 'Series A', submitted: '5h ago' },
-  { id: 3, name: 'QuantumSecure', sector: 'Cybersecurity', stage: 'Seed', submitted: 'Yesterday' },
-  { id: 4, name: 'UrbanAero', sector: 'Mobility', stage: 'Pre-Seed', submitted: 'Oct 24' },
-];
+// Removed hardcoded SUBMISSIONS
 
 const STAGE_VARIANT = { Seed: 'info', 'Series A': 'success', 'Pre-Seed': 'neutral' };
 
@@ -31,6 +28,27 @@ const ALERTS = [
 
 export default function InvestorPage() {
   useDocumentTitle('Investor Dashboard — BOCC');
+
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    filterStartups({})
+      .then((res) => {
+        const data = res.data || res || [];
+        // Map to format required by DataTable if necessary
+        const mappedData = data.map(s => ({
+          id: s._id,
+          name: s.startup_name || s.name || 'Unknown',
+          sector: s.industry || s.sector || 'Unknown',
+          stage: s.funding_stage || 'Pre-Seed',
+          submitted: new Date(s.createdAt || Date.now()).toLocaleDateString()
+        }));
+        setSubmissions(mappedData.slice(0, 5));
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <InvestorShell>
@@ -88,7 +106,7 @@ export default function InvestorPage() {
               },
               { key: 'submitted', label: 'Submitted', className: 'text-text-muted' },
             ]}
-            rows={SUBMISSIONS}
+            rows={loading ? [] : submissions}
           />
         </div>
 
