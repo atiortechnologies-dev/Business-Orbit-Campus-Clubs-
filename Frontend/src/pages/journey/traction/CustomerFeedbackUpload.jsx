@@ -16,6 +16,7 @@ import DashboardShell from '@/components/dashboard/DashboardShell';
 import Input from '@/components/ui/Input';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import api from '@/api/axiosInstance';
 
 const CHECKLIST = [
   { icon: FileText, label: 'Survey Results' },
@@ -35,12 +36,23 @@ const TEXTAREA_CLASS =
 
 export default function CustomerFeedbackUploadPage() {
   useDocumentTitle('Customer Feedback — BOCC');
-
   const [summary, setSummary] = useState({ total: '', positive: '', suggestions: '', issues: '' });
   const [reflection, setReflection] = useState({ liked: '', challenges: '', improvements: '' });
+  const [documents, setDocuments] = useState([
+    { id: 'doc-1', name: 'survey_results.pdf', type: 'Survey' },
+    { id: 'doc-2', name: 'interview_notes.docx', type: 'Notes' }
+  ]);
 
   const updateSummary = (field) => (e) => setSummary((prev) => ({ ...prev, [field]: e.target.value }));
   const updateReflection = (field) => (e) => setReflection((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const handleDeleteDocument = (docId) => {
+    api.delete(`/traction/submission/document/${docId}`)
+      .then(() => {
+        setDocuments(prev => prev.filter(d => d.id !== docId));
+      })
+      .catch(err => console.error('Failed to delete document:', err));
+  };
 
   return (
     <DashboardShell pageId="customer-feedback-upload">
@@ -83,6 +95,23 @@ export default function CustomerFeedbackUploadPage() {
                 </span>
               </div>
             </ComingSoon>
+
+            {documents.length > 0 && (
+              <div className="mt-6 space-y-3">
+                <h4 className="font-inter font-semibold text-caption text-text-heading uppercase tracking-wider mb-2">Uploaded Documents</h4>
+                {documents.map(doc => (
+                  <div key={doc.id} className="flex items-center justify-between p-3 border border-border-subtle rounded-lg bg-surface-white">
+                    <div className="flex items-center gap-3">
+                      <FileText size={18} className="text-text-muted" />
+                      <span className="font-inter text-small text-text-body">{doc.name}</span>
+                    </div>
+                    <button onClick={() => handleDeleteDocument(doc.id)} className="text-error hover:opacity-80 transition-opacity font-inter text-small">
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div className="mt-8">
               <h4 className="font-inter font-semibold text-caption text-text-heading uppercase tracking-wider mb-4">

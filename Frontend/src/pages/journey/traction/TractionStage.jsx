@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '@/api/axiosInstance';
 import {
   TrendingUp,
   Target,
@@ -49,6 +50,13 @@ const ROADMAP = [
 export default function TractionStagePage() {
   useDocumentTitle('Stage 4: Traction — BOCC');
   const [starting, setStarting] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    api.get('/stages/traction/progress')
+      .then(res => setProgress(res.data?.progress || 0))
+      .catch(err => console.error('Failed to fetch traction progress:', err));
+  }, []);
 
   const handleStart = () => {
     setStarting(true);
@@ -199,7 +207,7 @@ export default function TractionStagePage() {
               <span className="font-inter text-caption text-text-muted">Locked</span>
             </div>
             <div className="h-2 bg-canvas-bg rounded-full overflow-hidden mb-4">
-              <div className="h-full bg-brand-black rounded-full transition-all" style={{ width: '75%' }} />
+              <div className="h-full bg-brand-black rounded-full transition-all" style={{ width: `${progress}%` }} />
             </div>
 
             <Link
