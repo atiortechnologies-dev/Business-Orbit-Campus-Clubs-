@@ -1,0 +1,152 @@
+{
+  "missing": [
+    {
+      "method": "GET",
+      "path": "/conversations/search"
+    },
+    {
+      "method": "PATCH",
+      "path": "/read/:chatId"
+    },
+    {
+      "method": "GET",
+      "path": "/recommendations"
+    },
+    {
+      "method": "GET",
+      "path": "/watchlist/statistics"
+    },
+    {
+      "method": "POST",
+      "path": "/notes"
+    },
+    {
+      "method": "POST",
+      "path": "/request-meeting"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/alumni/join"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/mentor/apply"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/showcase/apply"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/statistics"
+    },
+    {
+      "method": "POST",
+      "path": "/profile/photo"
+    },
+    {
+      "method": "PATCH",
+      "path": "/profile/visibility"
+    },
+    {
+      "method": "POST",
+      "path": "/startup/product-type"
+    },
+    {
+      "method": "GET",
+      "path": "/startup/product-type"
+    },
+    {
+      "method": "POST",
+      "path": "/upload-photo"
+    },
+    {
+      "method": "PUT",
+      "path": "/notification-preferences"
+    },
+    {
+      "method": "POST",
+      "path": "/skip"
+    },
+    {
+      "method": "GET",
+      "path": "/auth-redirects"
+    },
+    {
+      "method": "POST",
+      "path": "/enquiries"
+    },
+    {
+      "method": "GET",
+      "path": "/documents/partnership-deck"
+    },
+    {
+      "method": "GET",
+      "path": "/updates"
+    },
+    {
+      "method": "GET",
+      "path": "/acceptance"
+    },
+    {
+      "method": "POST",
+      "path": "/accept-offer"
+    },
+    {
+      "method": "GET",
+      "path": "/admission-documents"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/traction/progress"
+    },
+    {
+      "method": "DELETE",
+      "path": "/traction/submission/document/:documentId"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/progress"
+    },
+    {
+      "method": "GET",
+      "path": "/overview"
+    },
+    {
+      "method": "GET",
+      "path": "/surveys"
+    },
+    {
+      "method": "POST",
+      "path": "/surveys"
+    },
+    {
+      "method": "PUT",
+      "path": "/surveys/:surveyId"
+    },
+    {
+      "method": "DELETE",
+      "path": "/surveys/:surveyId"
+    },
+    {
+      "method": "POST",
+      "path": "/report/submit"
+    },
+    {
+      "method": "POST",
+      "path": "/meeting/reschedule"
+    },
+    {
+      "method": "GET",
+      "path": "/meeting/feedback"
+    },
+    {
+      "method": "GET",
+      "path": "/stage-progression"
+    },
+    {
+      "method": "DELETE",
+      "path": "/users/:id"
+    }
+  ]
+}

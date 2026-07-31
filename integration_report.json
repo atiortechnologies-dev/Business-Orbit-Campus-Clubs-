@@ -1,12 +1,28 @@
 {
   "totalBackendRoutes": 327,
-  "totalFrontendStrings": 189,
-  "integratedRoutesCount": 224,
-  "missingInFrontendCount": 103,
+  "totalFrontendStrings": 234,
+  "integratedRoutesCount": 290,
+  "missingInFrontendCount": 37,
   "integratedRoutes": [
+    {
+      "method": "POST",
+      "path": "/assistance/request"
+    },
+    {
+      "method": "GET",
+      "path": "/assistance/status"
+    },
+    {
+      "method": "PUT",
+      "path": "/assistance/:requestId"
+    },
     {
       "method": "GET",
       "path": "/chapter"
+    },
+    {
+      "method": "POST",
+      "path": "/request-chapter-change"
     },
     {
       "method": "GET",
@@ -23,6 +39,10 @@
     {
       "method": "POST",
       "path": "/send/:chatId"
+    },
+    {
+      "method": "POST",
+      "path": "/upload/:chatId"
     },
     {
       "method": "POST",
@@ -85,6 +105,10 @@
       "path": "/opportunities/:id/stats"
     },
     {
+      "method": "POST",
+      "path": "/applications/filter"
+    },
+    {
       "method": "GET",
       "path": "/applications/:id"
     },
@@ -122,6 +146,22 @@
     },
     {
       "method": "GET",
+      "path": "/incubation-verification/status"
+    },
+    {
+      "method": "GET",
+      "path": "/incubation-verification/timeline"
+    },
+    {
+      "method": "GET",
+      "path": "/incubation-verification/documents"
+    },
+    {
+      "method": "GET",
+      "path": "/incubation-verification/result"
+    },
+    {
+      "method": "GET",
       "path": "/startup/progress"
     },
     {
@@ -149,8 +189,16 @@
       "path": "/application/:id"
     },
     {
+      "method": "POST",
+      "path": "/withdraw"
+    },
+    {
       "method": "GET",
       "path": "/"
+    },
+    {
+      "method": "POST",
+      "path": "/filter"
     },
     {
       "method": "GET",
@@ -175,6 +223,10 @@
     {
       "method": "GET",
       "path": "/pitch/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/pitches/filter"
     },
     {
       "method": "POST",
@@ -229,6 +281,10 @@
       "path": "/startups/:startupId"
     },
     {
+      "method": "POST",
+      "path": "/startups/filter"
+    },
+    {
       "method": "GET",
       "path": "/startups/:startupId/profile"
     },
@@ -243,6 +299,10 @@
     {
       "method": "PUT",
       "path": "/notifications/:notificationId/read"
+    },
+    {
+      "method": "GET",
+      "path": "/activity-log"
     },
     {
       "method": "GET",
@@ -286,11 +346,83 @@
     },
     {
       "method": "GET",
+      "path": "/stages/launch/pitch-deck"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/pitch-deck/upload"
+    },
+    {
+      "method": "DELETE",
+      "path": "/stages/launch/pitch-deck/:documentId"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/pitch-deck/submit"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/insights"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/insights/save"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/evidence/upload"
+    },
+    {
+      "method": "DELETE",
+      "path": "/stages/launch/evidence/:fileId"
+    },
+    {
+      "method": "POST",
+      "path": "/stages/launch/insights/submit"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/evidence"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/verification"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/verification/status"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/verification/files"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/completion"
+    },
+    {
+      "method": "GET",
+      "path": "/stages/launch/certificate"
+    },
+    {
+      "method": "GET",
       "path": "/"
     },
     {
       "method": "GET",
       "path": "/dashboard"
+    },
+    {
+      "method": "GET",
+      "path": "/requests/recent"
+    },
+    {
+      "method": "GET",
+      "path": "/meetings/upcoming"
+    },
+    {
+      "method": "GET",
+      "path": "/chats/recent"
     },
     {
       "method": "GET",
@@ -386,7 +518,23 @@
     },
     {
       "method": "GET",
+      "path": "/faqs"
+    },
+    {
+      "method": "GET",
       "path": "/statistics/:pageType"
+    },
+    {
+      "method": "GET",
+      "path": "/partner-logos"
+    },
+    {
+      "method": "GET",
+      "path": "/featured-startups"
+    },
+    {
+      "method": "GET",
+      "path": "/success-stories"
     },
     {
       "method": "GET",
@@ -434,7 +582,15 @@
     },
     {
       "method": "GET",
+      "path": "/mentorship/request-status"
+    },
+    {
+      "method": "GET",
       "path": "/mentors"
+    },
+    {
+      "method": "POST",
+      "path": "/mentors/filter"
     },
     {
       "method": "GET",
@@ -462,7 +618,19 @@
     },
     {
       "method": "GET",
+      "path": "/activity-log"
+    },
+    {
+      "method": "GET",
       "path": "/opportunities"
+    },
+    {
+      "method": "GET",
+      "path": "/opportunities/search"
+    },
+    {
+      "method": "POST",
+      "path": "/opportunities/filter"
     },
     {
       "method": "GET",
@@ -490,11 +658,27 @@
     },
     {
       "method": "GET",
+      "path": "/applications/status"
+    },
+    {
+      "method": "GET",
+      "path": "/applications/interviews"
+    },
+    {
+      "method": "GET",
       "path": "/applications/:applicationId"
     },
     {
       "method": "PUT",
       "path": "/applications/:applicationId"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/upload-resume"
+    },
+    {
+      "method": "POST",
+      "path": "/applications/upload-document"
     },
     {
       "method": "POST",
@@ -518,6 +702,14 @@
     },
     {
       "method": "GET",
+      "path": "/documents/:applicationId"
+    },
+    {
+      "method": "POST",
+      "path": "/upload-document"
+    },
+    {
+      "method": "GET",
       "path": "/onboarding"
     },
     {
@@ -527,6 +719,10 @@
     {
       "method": "GET",
       "path": "/search"
+    },
+    {
+      "method": "POST",
+      "path": "/filter"
     },
     {
       "method": "GET",
@@ -706,6 +902,18 @@
     },
     {
       "method": "POST",
+      "path": "/faqs"
+    },
+    {
+      "method": "PUT",
+      "path": "/faqs/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/faqs/:id"
+    },
+    {
+      "method": "POST",
       "path": "/statistics"
     },
     {
@@ -715,6 +923,58 @@
     {
       "method": "DELETE",
       "path": "/statistics/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/partner-logos"
+    },
+    {
+      "method": "PUT",
+      "path": "/partner-logos/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/partner-logos/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/success-stories"
+    },
+    {
+      "method": "PUT",
+      "path": "/success-stories/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/success-stories/:id"
+    },
+    {
+      "method": "POST",
+      "path": "/featured-startups"
+    },
+    {
+      "method": "PUT",
+      "path": "/featured-startups/:id"
+    },
+    {
+      "method": "DELETE",
+      "path": "/featured-startups/:id"
+    },
+    {
+      "method": "GET",
+      "path": "/chapter-change-requests"
+    },
+    {
+      "method": "GET",
+      "path": "/chapter-change-requests/:id"
+    },
+    {
+      "method": "PUT",
+      "path": "/chapter-change-requests/:id/approve"
+    },
+    {
+      "method": "PUT",
+      "path": "/chapter-change-requests/:id/reject"
     },
     {
       "method": "GET",
@@ -845,6 +1105,10 @@
       "path": "/"
     },
     {
+      "method": "POST",
+      "path": "/bulk-approve"
+    },
+    {
       "method": "GET",
       "path": "/:id"
     },
@@ -903,68 +1167,16 @@
   ],
   "missingInFrontend": [
     {
-      "method": "POST",
-      "path": "/assistance/request"
-    },
-    {
-      "method": "GET",
-      "path": "/assistance/status"
-    },
-    {
-      "method": "PUT",
-      "path": "/assistance/:requestId"
-    },
-    {
-      "method": "POST",
-      "path": "/request-chapter-change"
-    },
-    {
       "method": "GET",
       "path": "/conversations/search"
-    },
-    {
-      "method": "POST",
-      "path": "/upload/:chatId"
     },
     {
       "method": "PATCH",
       "path": "/read/:chatId"
     },
     {
-      "method": "POST",
-      "path": "/applications/filter"
-    },
-    {
-      "method": "GET",
-      "path": "/incubation-verification/status"
-    },
-    {
-      "method": "GET",
-      "path": "/incubation-verification/timeline"
-    },
-    {
-      "method": "GET",
-      "path": "/incubation-verification/documents"
-    },
-    {
-      "method": "GET",
-      "path": "/incubation-verification/result"
-    },
-    {
-      "method": "POST",
-      "path": "/withdraw"
-    },
-    {
-      "method": "POST",
-      "path": "/filter"
-    },
-    {
       "method": "GET",
       "path": "/recommendations"
-    },
-    {
-      "method": "POST",
-      "path": "/pitches/filter"
     },
     {
       "method": "GET",
@@ -977,74 +1189,6 @@
     {
       "method": "POST",
       "path": "/request-meeting"
-    },
-    {
-      "method": "POST",
-      "path": "/startups/filter"
-    },
-    {
-      "method": "GET",
-      "path": "/activity-log"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/pitch-deck"
-    },
-    {
-      "method": "POST",
-      "path": "/stages/launch/pitch-deck/upload"
-    },
-    {
-      "method": "DELETE",
-      "path": "/stages/launch/pitch-deck/:documentId"
-    },
-    {
-      "method": "POST",
-      "path": "/stages/launch/pitch-deck/submit"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/insights"
-    },
-    {
-      "method": "POST",
-      "path": "/stages/launch/insights/save"
-    },
-    {
-      "method": "POST",
-      "path": "/stages/launch/evidence/upload"
-    },
-    {
-      "method": "DELETE",
-      "path": "/stages/launch/evidence/:fileId"
-    },
-    {
-      "method": "POST",
-      "path": "/stages/launch/insights/submit"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/evidence"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/verification"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/verification/status"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/verification/files"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/completion"
-    },
-    {
-      "method": "GET",
-      "path": "/stages/launch/certificate"
     },
     {
       "method": "POST",
@@ -1061,18 +1205,6 @@
     {
       "method": "GET",
       "path": "/stages/launch/statistics"
-    },
-    {
-      "method": "GET",
-      "path": "/requests/recent"
-    },
-    {
-      "method": "GET",
-      "path": "/meetings/upcoming"
-    },
-    {
-      "method": "GET",
-      "path": "/chats/recent"
     },
     {
       "method": "POST",
@@ -1107,72 +1239,12 @@
       "path": "/auth-redirects"
     },
     {
-      "method": "GET",
-      "path": "/faqs"
-    },
-    {
-      "method": "GET",
-      "path": "/partner-logos"
-    },
-    {
-      "method": "GET",
-      "path": "/featured-startups"
-    },
-    {
-      "method": "GET",
-      "path": "/success-stories"
-    },
-    {
       "method": "POST",
       "path": "/enquiries"
     },
     {
       "method": "GET",
       "path": "/documents/partnership-deck"
-    },
-    {
-      "method": "GET",
-      "path": "/mentorship/request-status"
-    },
-    {
-      "method": "POST",
-      "path": "/mentors/filter"
-    },
-    {
-      "method": "GET",
-      "path": "/activity-log"
-    },
-    {
-      "method": "GET",
-      "path": "/opportunities/search"
-    },
-    {
-      "method": "POST",
-      "path": "/opportunities/filter"
-    },
-    {
-      "method": "GET",
-      "path": "/applications/status"
-    },
-    {
-      "method": "GET",
-      "path": "/applications/interviews"
-    },
-    {
-      "method": "POST",
-      "path": "/applications/upload-resume"
-    },
-    {
-      "method": "POST",
-      "path": "/applications/upload-document"
-    },
-    {
-      "method": "GET",
-      "path": "/documents/:applicationId"
-    },
-    {
-      "method": "POST",
-      "path": "/upload-document"
     },
     {
       "method": "GET",
@@ -1189,10 +1261,6 @@
     {
       "method": "GET",
       "path": "/admission-documents"
-    },
-    {
-      "method": "POST",
-      "path": "/filter"
     },
     {
       "method": "GET",
@@ -1243,76 +1311,8 @@
       "path": "/stage-progression"
     },
     {
-      "method": "POST",
-      "path": "/faqs"
-    },
-    {
-      "method": "PUT",
-      "path": "/faqs/:id"
-    },
-    {
-      "method": "DELETE",
-      "path": "/faqs/:id"
-    },
-    {
-      "method": "POST",
-      "path": "/partner-logos"
-    },
-    {
-      "method": "PUT",
-      "path": "/partner-logos/:id"
-    },
-    {
-      "method": "DELETE",
-      "path": "/partner-logos/:id"
-    },
-    {
-      "method": "POST",
-      "path": "/success-stories"
-    },
-    {
-      "method": "PUT",
-      "path": "/success-stories/:id"
-    },
-    {
-      "method": "DELETE",
-      "path": "/success-stories/:id"
-    },
-    {
-      "method": "POST",
-      "path": "/featured-startups"
-    },
-    {
-      "method": "PUT",
-      "path": "/featured-startups/:id"
-    },
-    {
-      "method": "DELETE",
-      "path": "/featured-startups/:id"
-    },
-    {
       "method": "DELETE",
       "path": "/users/:id"
-    },
-    {
-      "method": "GET",
-      "path": "/chapter-change-requests"
-    },
-    {
-      "method": "GET",
-      "path": "/chapter-change-requests/:id"
-    },
-    {
-      "method": "PUT",
-      "path": "/chapter-change-requests/:id/approve"
-    },
-    {
-      "method": "PUT",
-      "path": "/chapter-change-requests/:id/reject"
-    },
-    {
-      "method": "POST",
-      "path": "/bulk-approve"
     }
   ],
   "uniqueFrontendPaths": [
@@ -1322,8 +1322,10 @@
     "/admin/reviews",
     "/admin/opportunities",
     "/admin/chapters",
+    "/admin/chapter-change-requests",
     "/admin/audit-log",
     "/admin/settings",
+    "/admin/user-management",
     "/legal/privacy-policy",
     "/email-verification",
     "/login",
@@ -1423,8 +1425,8 @@
     "/mentors/chat",
     "/mentors/request",
     "/support/raise-ticket",
-    "/support/tickets",
     "/support/tickets/detail",
+    "/support/tickets",
     "/reset-password",
     "/onboarding/welcome",
     "/onboarding/application-rejected",
@@ -1442,6 +1444,7 @@
     "/build-startup/journey/complete",
     "/incubators/tracker",
     "/admin/announcements/preview",
+    "/admin/cms",
     "/investor/pitch-decks/review",
     "/admin/settings/platform",
     "/admin/settings/export-config",
@@ -1455,6 +1458,8 @@
     "/admin/audit-log/volume-trend",
     "/admin/audit-log/export",
     "/admin/statistics",
+    "/chapter-change-requests",
+    "/bulk-approve",
     "/auth/register",
     "/auth/login",
     "/auth/check-email",
@@ -1467,10 +1472,16 @@
     "/auth/get-all-chapter",
     "/onboarding/status",
     "/student/chapter",
+    "/request-chapter-change",
     "/student/dashboard",
     "/student/profile-details",
+    "/requests/recent",
+    "/meetings/upcoming",
+    "/chats/recent",
+    "/activity-log",
     "/startup/progress",
     "/startup/stages",
+    "/startups/filter",
     "/startup/submit",
     "/startup/save-draft",
     "/startup/submission-status",
@@ -1483,6 +1494,10 @@
     "/stages/traction",
     "/stages/traction/start",
     "/stages/traction/checklist",
+    "/incubation-verification/status",
+    "/incubation-verification/timeline",
+    "/incubation-verification/documents",
+    "/incubation-verification/result",
     "/traction/metrics",
     "/traction/submission",
     "/traction/review/status",
@@ -1498,13 +1513,43 @@
     "/mvp/meeting",
     "/mvp/reschedule",
     "/mvp/review",
+    "/stages/launch/pitch-deck",
+    "/stages/launch/pitch-deck/upload",
+    "/stages/launch/pitch-deck/submit",
+    "/stages/launch/insights",
+    "/stages/launch/insights/save",
+    "/stages/launch/insights/submit",
+    "/stages/launch/evidence/upload",
+    "/stages/launch/evidence",
+    "/stages/launch/verification",
+    "/stages/launch/verification/status",
+    "/stages/launch/verification/files",
+    "/stages/launch/completion",
+    "/stages/launch/certificate",
     "/watchlist",
     "/dashboard/stats",
     "/pitches",
     "/startups/search",
     "/pitch/view",
+    "/pitches/filter",
     "/mentorship/requests",
-    "/mentorship/meetings"
+    "/mentorship/meetings",
+    "/mentors/filter",
+    "/mentorship/request-status",
+    "/assistance/request",
+    "/assistance/status",
+    "/applications/filter",
+    "/applications/status",
+    "/applications/interviews",
+    "/applications/upload-resume",
+    "/applications/upload-document",
+    "/withdraw",
+    "/faqs",
+    "/partner-logos",
+    "/success-stories",
+    "/featured-startups",
+    "/opportunities/search",
+    "/opportunities/filter"
   ],
   "apiCallsSample": [
     "Frontend/src/components/ui/Logo.jsx:52:        fetchPriority={priority ? 'high' : 'auto'}",
@@ -1515,47 +1560,47 @@
     "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:50:  const fetchAnnouncementsData = useCallback(async () => {",
     "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:71:    fetchAnnouncementsData();",
     "Frontend/src/pages/admin/AnnouncementsDashboard.jsx:72:  }, [fetchAnnouncementsData]);",
+    "Frontend/src/pages/admin/ChapterChangeRequests.jsx:10:    fetchRequests();",
+    "Frontend/src/pages/admin/ChapterChangeRequests.jsx:13:  const fetchRequests = async () => {",
+    "Frontend/src/pages/admin/ChapterChangeRequests.jsx:27:      fetchRequests();",
+    "Frontend/src/pages/admin/ChapterChangeRequests.jsx:36:      fetchRequests();",
+    "Frontend/src/pages/admin/ChapterChangeRequests.jsx:46:      fetchRequests();",
     "Frontend/src/pages/auth/StudentSignup.jsx:47:    const fetchChapters = async () => {",
     "Frontend/src/pages/auth/StudentSignup.jsx:67:    fetchChapters();",
+    "Frontend/src/pages/incubator/Applications.jsx:82:    const fetchApps = async () => {",
+    "Frontend/src/pages/incubator/Applications.jsx:95:        console.error(\"Failed to fetch applications\", err);",
+    "Frontend/src/pages/incubator/Applications.jsx:100:    fetchApps();",
+    "Frontend/src/pages/investor/IncomingPitchDecks.jsx:20:    // Calling filterPitches with empty filter to fetch all initially,",
     "Frontend/src/pages/investor/PitchDeck.jsx:8:import api from '@/api/axiosInstance';",
+    "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:32:    fetchData();",
+    "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:35:  const fetchData = async () => {",
+    "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:42:      console.error('Failed to fetch pitch deck data', err);",
+    "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:56:      fetchData();",
+    "Frontend/src/pages/journey/launch/FinalPitchDeckUpload.jsx:66:      fetchData();",
+    "Frontend/src/pages/journey/launch/LaunchProofUpload.jsx:54:    const fetchData = async () => {",
+    "Frontend/src/pages/journey/launch/LaunchProofUpload.jsx:70:    fetchData();",
     "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:58:  const { submitLaunch, saveLaunchDraft, fetchLaunchSubmission, launchSubmission, isLoading: isContextLoading } = useIncubation();",
     "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:63:    fetchLaunchSubmission();",
     "Frontend/src/pages/journey/launch/LaunchSubmission.jsx:64:  }, [fetchLaunchSubmission]);",
+    "Frontend/src/pages/journey/launch/LaunchVerificationReview.jsx:54:    const fetchData = async () => {",
+    "Frontend/src/pages/journey/launch/LaunchVerificationReview.jsx:68:    fetchData();",
+    "Frontend/src/pages/journey/mvp/IncubationVerificationReview.jsx:49:    const fetchData = async () => {",
+    "Frontend/src/pages/journey/mvp/IncubationVerificationReview.jsx:62:        console.error(\"Error fetching incubation verification details\", err);",
+    "Frontend/src/pages/journey/mvp/IncubationVerificationReview.jsx:67:    fetchData();",
+    "Frontend/src/pages/mentor/Mentor.jsx:23:    async function fetchData() {",
+    "Frontend/src/pages/mentor/Mentor.jsx:34:        console.error('Failed to fetch mentor dashboard data', err);",
+    "Frontend/src/pages/mentor/Mentor.jsx:39:    fetchData();",
     "Frontend/src/pages/onboarding/VerificationProgress.jsx:61:      console.error(\"Failed to fetch onboarding status:\", err);",
     "Frontend/src/pages/onboarding/Welcome.jsx:29:    const fetchChapterAndStats = async () => {",
     "Frontend/src/pages/onboarding/Welcome.jsx:51:    fetchChapterAndStats();",
-    "Frontend/src/pages/BuildStartupJourney.jsx:38:    async function fetchJourneyData() {",
-    "Frontend/src/pages/BuildStartupJourney.jsx:52:        console.error(\"Failed to fetch startup journey data:\", err);",
-    "Frontend/src/pages/BuildStartupJourney.jsx:69:    fetchJourneyData();",
-    "Frontend/src/pages/Dashboard.jsx:40:    async function fetchDashboardData() {",
-    "Frontend/src/pages/Dashboard.jsx:46:        console.error(\"Error fetching dashboard data:\", err);",
-    "Frontend/src/pages/Dashboard.jsx:62:    fetchDashboardData();",
-    "Frontend/src/api/admin/adminAnnouncementApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/admin/adminApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/auth/authApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/auth/onboardingApi.js:2:import axiosInstance from \"../axiosInstance\";",
-    "Frontend/src/api/auth/onboardingApi.js:5:  const response = await axiosInstance.get(\"/onboarding/status\");",
-    "Frontend/src/api/auth/profileApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/auth/studentChapterApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/axiosInstance.js:1:import axios from \"axios\";",
-    "Frontend/src/api/axiosInstance.js:3:const api = axios.create({",
-    "Frontend/src/api/dashboardApi.js:1:import api from \"./axiosInstance\";",
-    "Frontend/src/api/startup/startupApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/startup/submissionApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/startup/incubationApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/startup/tractionApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/startup/mvpApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/investorApi.js:1:import api from \"../axiosInstance\";",
-    "Frontend/src/api/mentorshipApi.js:1:import axiosInstance from './axiosInstance';",
-    "Frontend/src/api/mentorshipApi.js:4:  getMentors: (filters) => axiosInstance.get('/mentors', { params: filters }),",
-    "Frontend/src/api/mentorshipApi.js:5:  getMentorProfile: (mentorId) => axiosInstance.get(`/mentors/${mentorId}`),",
-    "Frontend/src/api/mentorshipApi.js:6:  requestMentorship: (mentorId, data) => axiosInstance.post(`/mentors/${mentorId}/request`, data),",
-    "Frontend/src/api/mentorshipApi.js:7:  getMentorshipRequests: () => axiosInstance.get('/mentorship/requests'),",
-    "Frontend/src/api/mentorshipApi.js:8:  updateRequestStatus: (requestId, status) => axiosInstance.patch(`/mentorship/requests/${requestId}`, { status }),",
-    "Frontend/src/api/mentorshipApi.js:9:  getMeetings: () => axiosInstance.get('/mentorship/meetings'),",
-    "Frontend/src/api/mentorshipApi.js:10:  scheduleMeeting: (data) => axiosInstance.post('/mentorship/meetings', data),",
-    "Frontend/src/context/IncubationContext.jsx:36:  const fetchLaunchOverview = useCallback(async () => {",
-    "Frontend/src/context/IncubationContext.jsx:45:  const fetchLaunchChecklist = useCallback(async () => {",
-    "Frontend/src/context/IncubationContext.jsx:54:  const fetchLaunchSubmission = useCallback(async () => {"
+    "Frontend/src/pages/freelancing/FreelancingOpportunities.jsx:45:    async function fetchOpportunities() {",
+    "Frontend/src/pages/freelancing/FreelancingOpportunities.jsx:52:        console.error(\"Error fetching opportunities:\", err);",
+    "Frontend/src/pages/freelancing/FreelancingOpportunities.jsx:57:    fetchOpportunities();",
+    "Frontend/src/pages/freelancing/MyApplications.jsx:35:    const fetchApplications = async () => {",
+    "Frontend/src/pages/freelancing/MyApplications.jsx:43:        console.error('Error fetching application statuses', err);",
+    "Frontend/src/pages/freelancing/MyApplications.jsx:48:    fetchApplications();",
+    "Frontend/src/pages/mentors/MentorDirectory.jsx:28:    async function fetchFiltered() {",
+    "Frontend/src/pages/mentors/MentorDirectory.jsx:45:    fetchFiltered();",
+    "Frontend/src/pages/support/SupportDashboard.jsx:71:    async function fetchTickets() {"
   ]
 }
