@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Download,
@@ -8,6 +8,7 @@ import {
 import IncubatorShell from '@/components/incubator/IncubatorShell';
 import { downloadCsv } from '@/utils/csv';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { filterApplications } from '@/api/applicationApi';
 
 const INITIAL_APPLICATIONS = [
   {
@@ -73,6 +74,31 @@ export default function ApplicationsQueue() {
   const [stageFilter, setStageFilter] = useState('All Stages');
   const [industryFilter, setIndustryFilter] = useState('All Industries');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  
+  const [applications, setApplications] = useState(INITIAL_APPLICATIONS);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchApps = async () => {
+      setLoading(true);
+      try {
+        const filters = {};
+        if (stageFilter !== 'All Stages') filters.stage = stageFilter;
+        if (industryFilter !== 'All Industries') filters.industry = industryFilter;
+        if (statusFilter !== 'ALL') filters.status = statusFilter;
+        
+        const data = await filterApplications(filters);
+        if (data && Array.isArray(data)) {
+          setApplications(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch applications", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchApps();
+  }, [stageFilter, industryFilter, statusFilter]);
 
   const handleClearFilters = (e) => {
     e.preventDefault();
@@ -81,12 +107,7 @@ export default function ApplicationsQueue() {
     setStatusFilter('ALL');
   };
 
-  const visibleApplications = INITIAL_APPLICATIONS.filter((app) => {
-    if (stageFilter !== 'All Stages' && app.stage !== stageFilter) return false;
-    if (industryFilter !== 'All Industries' && app.industry !== industryFilter) return false;
-    if (statusFilter !== 'ALL' && app.status !== statusFilter) return false;
-    return true;
-  });
+  const visibleApplications = applications;
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -222,14 +243,18 @@ export default function ApplicationsQueue() {
         </div>
 
         <div className="divide-y divide-border-subtle">
-          {visibleApplications.length === 0 && (
+          {loading ? (
+            <p className="px-6 py-10 text-center text-text-muted font-inter text-small">
+              Loading applications...
+            </p>
+          ) : visibleApplications.length === 0 ? (
             <p className="px-6 py-10 text-center text-text-muted font-inter text-small">
               No applications match the current filters.
             </p>
-          )}
-          {visibleApplications.map((app) => (
-            <Link
-              key={app.id}
+          ) : (
+            visibleApplications.map((app) => (
+              <Link
+                key={app.id || app._id}
               to="/incubator/applications/review"
               className="grid grid-cols-1 md:grid-cols-[80px_1.5fr_1fr_1fr_1fr_120px] gap-4 px-6 py-6 items-center hover:bg-canvas-bg/30 transition-colors group cursor-pointer"
             >
@@ -267,12 +292,13 @@ export default function ApplicationsQueue() {
                 </span>
               </div>
             </Link>
-          ))}
+            ))
+          )}
         </div>
 
         <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle bg-canvas-bg/20">
           <p className="text-small text-text-muted font-inter">
-            Showing {visibleApplications.length} of {INITIAL_APPLICATIONS.length} applications
+            Showing {visibleApplications.length} applications
           </p>
           <div className="flex items-center gap-2">
             <button type="button" disabled className="p-1 rounded border border-border-subtle text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">

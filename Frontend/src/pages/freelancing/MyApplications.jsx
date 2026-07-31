@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, MessageCircle, Compass } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { getApplicationStatus, withdrawApplication } from '@/api/applicationApi';
 
 const STEPS = ['Submitted', 'Viewed', 'Shortlisted', 'Interview', 'Selected/Rejected'];
 
@@ -27,8 +28,38 @@ const TABS = [
 export default function MyApplicationsPage() {
   useDocumentTitle('My Applications — BOCC');
   const [activeTab, setActiveTab] = useState('active');
+  const [applications, setApplications] = useState(APPLICATIONS);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchApplications = async () => {
+      setLoading(true);
+      try {
+        const data = await getApplicationStatus();
+        if (data && Array.isArray(data)) {
+          setApplications(data);
+        }
+      } catch (err) {
+        console.error('Error fetching application statuses', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchApplications();
+  }, []);
+
+  const handleWithdraw = async (appId) => {
+    try {
+      await withdrawApplication("User initiated withdrawal");
+      // Optionally remove it from the list or update status
+      setApplications(prev => prev.filter(a => a.id !== appId && a._id !== appId));
+    } catch (err) {
+      console.error('Error withdrawing application', err);
+    }
+  };
+
   const tab = TABS.find((t) => t.id === activeTab);
-  const visible = APPLICATIONS.filter(tab.match);
+  const visible = applications.filter(tab.match);
 
   return (
     <DashboardShell pageId="my-applications">
@@ -51,12 +82,14 @@ export default function MyApplicationsPage() {
             onClick={() => setActiveTab(t.id)}
             className={`px-6 py-3 font-inter text-small whitespace-nowrap transition-colors ${activeTab === t.id ? 'border-b-2 border-brand-black text-text-heading font-semibold' : 'text-text-muted hover:text-text-heading'}`}
           >
-            {t.label} ({APPLICATIONS.filter(t.match).length})
+            {t.label} ({applications.filter(t.match).length})
           </button>
         ))}
       </div>
 
-      {visible.length === 0 ? (
+      {loading ? (
+        <p className="font-inter text-small text-text-muted py-12 text-center">Loading your applications...</p>
+      ) : visible.length === 0 ? (
         <p className="font-inter text-small text-text-muted py-12 text-center">No applications in this category yet.</p>
       ) : (
         <div className="space-y-4">
@@ -94,9 +127,9 @@ export default function MyApplicationsPage() {
                   <span className="w-full flex items-center justify-center py-2 bg-brand-black text-white rounded-lg font-inter font-semibold text-small">{app.primaryAction}</span>
                 </ComingSoon>
                 {app.stage === 'viewed' ? (
-                  <ComingSoon label="Withdraw Application" position="top" className="w-full">
-                    <span className="w-full flex items-center justify-center py-2 border border-error text-error rounded-lg font-inter font-medium text-small">Withdraw Application</span>
-                  </ComingSoon>
+                  <button onClick={() => handleWithdraw(app.id || app._id)} className="w-full">
+                    <span className="w-full flex items-center justify-center py-2 border border-error text-error hover:bg-error/10 transition-colors rounded-lg font-inter font-medium text-small">Withdraw Application</span>
+                  </button>
                 ) : (
                   <ComingSoon label="Open Chat" position="top" className="w-full">
                     <span className="w-full flex items-center justify-center gap-2 py-2 border border-border-subtle rounded-lg font-inter font-medium text-small text-text-heading">

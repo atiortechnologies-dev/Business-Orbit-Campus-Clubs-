@@ -41,3 +41,27 @@ export const getTractionChecklist = async () => {
   const res = await api.get("/stages/traction/checklist");
   return res?.data || res;
 };
+
+// GET /incubation-verification/status
+export const getIncubationVerificationStatus = async () => {
+  const res = await api.get("/incubation-verification/status");
+  return res?.data || res;
+};
+
+// GET /incubation-verification/timeline
+export const getIncubationVerificationTimeline = async () => {
+  const res = await api.get("/incubation-verification/timeline");
+  return res?.data || res;
+};
+
+// GET /incubation-verification/documents
+export const getIncubationVerificationDocuments = async () => {
+  const res = await api.get("/incubation-verification/documents");
+  return res?.data || res;
+};
+
+// GET /incubation-verification/result
+export const getIncubationVerificationResult = async () => {
+  const res = await api.get("/incubation-verification/result");
+  return res?.data || res;
+};

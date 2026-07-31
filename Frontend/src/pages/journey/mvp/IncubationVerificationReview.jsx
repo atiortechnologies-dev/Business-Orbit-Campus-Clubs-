@@ -1,8 +1,14 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Check, FileText, Receipt, Info, AlertTriangle } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import Button from '@/components/ui/Button';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { 
+  getIncubationVerificationStatus, 
+  getIncubationVerificationTimeline, 
+  getIncubationVerificationDocuments 
+} from '@/api/startup/incubationApi';
 
 const STEPS = [
   { label: 'Proof Uploaded', status: 'done' },
@@ -33,6 +39,41 @@ const TIMELINE = [
 
 export default function IncubationVerificationReviewPage() {
   useDocumentTitle('Incubation Verification — BOCC');
+
+  const [statusData, setStatusData] = useState(null);
+  const [timeline, setTimeline] = useState(TIMELINE);
+  const [documents, setDocuments] = useState(DOCUMENTS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [statusRes, timelineRes, docsRes] = await Promise.all([
+          getIncubationVerificationStatus().catch(() => null),
+          getIncubationVerificationTimeline().catch(() => null),
+          getIncubationVerificationDocuments().catch(() => null)
+        ]);
+
+        if (statusRes?.data) setStatusData(statusRes.data);
+        if (timelineRes?.data) setTimeline(timelineRes.data);
+        if (docsRes?.data) setDocuments(docsRes.data);
+      } catch (err) {
+        console.error("Error fetching incubation verification details", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <DashboardShell pageId="incubation-verification-review">
+        <div className="p-8 text-center text-text-muted">Loading verification details...</div>
+      </DashboardShell>
+    );
+  }
 
   return (
     <DashboardShell pageId="incubation-verification-review">
@@ -99,7 +140,7 @@ export default function IncubationVerificationReviewPage() {
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Current Status</p>
                 <span className="inline-flex items-center px-3 py-1 bg-canvas-bg rounded-full font-inter text-caption border border-border-subtle">
                   <span className="w-2 h-2 rounded-full bg-text-muted mr-2" />
-                  Under Review
+                  {statusData?.status || 'Under Review'}
                 </span>
               </div>
             </div>
@@ -118,20 +159,23 @@ export default function IncubationVerificationReviewPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border-subtle">
-                {DOCUMENTS.map(({ icon: Icon, name, date }) => (
-                  <tr key={name} className="hover:bg-canvas-bg transition-colors">
-                    <td className="px-8 py-5">
-                      <div className="flex items-center gap-3">
-                        <Icon size={18} strokeWidth={2} className="text-text-muted" />
-                        <span className="font-inter text-small text-text-body">{name}</span>
-                      </div>
-                    </td>
-                    <td className="px-8 py-5 font-inter text-small text-text-muted">{date}</td>
-                    <td className="px-8 py-5">
-                      <span className="font-inter text-caption text-text-muted italic">Pending Verification</span>
-                    </td>
-                  </tr>
-                ))}
+                {documents.map(({ icon: Icon, name, date }) => {
+                  const DocIcon = Icon || FileText;
+                  return (
+                    <tr key={name} className="hover:bg-canvas-bg transition-colors">
+                      <td className="px-8 py-5">
+                        <div className="flex items-center gap-3">
+                          <DocIcon size={18} strokeWidth={2} className="text-text-muted" />
+                          <span className="font-inter text-small text-text-body">{name}</span>
+                        </div>
+                      </td>
+                      <td className="px-8 py-5 font-inter text-small text-text-muted">{date}</td>
+                      <td className="px-8 py-5">
+                        <span className="font-inter text-caption text-text-muted italic">Pending Verification</span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </section>
@@ -170,7 +214,7 @@ export default function IncubationVerificationReviewPage() {
             </h3>
             <div className="space-y-8 relative">
               <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-border-subtle" />
-              {TIMELINE.map((item) => (
+              {timeline.map((item) => (
                 <div key={item.label} className={`relative flex gap-4 ${item.status === 'upcoming' ? 'opacity-40' : ''}`}>
                   <div
                     className={`w-6 h-6 rounded-full flex items-center justify-center z-10 shrink-0 ${
