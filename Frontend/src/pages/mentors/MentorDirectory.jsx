@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { GraduationCap, Star } from 'lucide-react';
+import { GraduationCap, Star, Loader2 } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import Badge from '@/components/ui/Badge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { mentorshipApi } from '@/api/mentorshipApi';
 
 const INDUSTRY_OPTIONS = ['All Industries', 'FinTech', 'EdTech', 'SaaS', 'HealthTech'];
 const EXPERTISE_OPTIONS = ['All Expertise', 'GTM Strategy', 'Fundraising', 'Product Design', 'Scaling'];
@@ -20,6 +21,30 @@ export default function MentorDirectoryPage() {
   useDocumentTitle('Mentor Directory — BOCC');
   const [industry, setIndustry] = useState(INDUSTRY_OPTIONS[0]);
   const [expertise, setExpertise] = useState(EXPERTISE_OPTIONS[0]);
+  const [mentors, setMentors] = useState(MENTORS);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function fetchFiltered() {
+      setLoading(true);
+      try {
+        const filters = {
+          industry: industry === 'All Industries' ? '' : industry,
+          expertise: expertise === 'All Expertise' ? '' : expertise,
+        };
+        const res = await mentorshipApi.filterMentors(filters);
+        setMentors(res?.data || []);
+      } catch (err) {
+        console.error('Failed to filter mentors', err);
+        // Fallback to initial mentors if API fails
+        setMentors(MENTORS);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchFiltered();
+  }, [industry, expertise]);
+
 
   return (
     <DashboardShell pageId="mentor-directory">
@@ -49,40 +74,48 @@ export default function MentorDirectoryPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {MENTORS.map((m) => (
-          <div key={m.id} className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col">
-            <div className="flex justify-between items-start mb-4">
-              <div className="w-14 h-14 rounded-lg bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-body text-text-muted">
-                {m.name.split(' ').map((n) => n[0]).join('')}
-              </div>
-              <Badge variant={STATUS_VARIANT[m.status]}>{m.status}</Badge>
-            </div>
-            <h3 className="font-poppins font-semibold text-card text-text-heading">{m.name}</h3>
-            <p className="font-inter text-small text-text-muted">{m.role}</p>
-            <div className="flex items-center gap-1 mt-1 text-warning">
-              <Star size={16} strokeWidth={2} fill="currentColor" />
-              <span className="font-inter font-semibold text-small text-text-heading">{m.rating}</span>
-              <span className="font-inter text-small text-text-muted">({m.reviews} reviews)</span>
-            </div>
-            <div className="flex flex-wrap gap-2 my-4">
-              {m.tags.map((t) => <span key={t} className="px-2 py-1 bg-canvas-bg text-text-muted font-inter text-caption rounded">{t}</span>)}
-            </div>
-            <div className="grid grid-cols-2 gap-4 py-4 border-y border-divider-line mb-4">
-              <div><p className="font-inter text-caption text-text-muted uppercase mb-1">Experience</p><p className="font-inter font-medium text-small text-text-heading">{m.experience}</p></div>
-              <div><p className="font-inter text-caption text-text-muted uppercase mb-1">Mentored</p><p className="font-inter font-medium text-small text-text-heading">{m.mentored}</p></div>
-            </div>
-            <div className="flex gap-3 mt-auto">
-              <Link to="/mentors/profile" className="flex-1 text-center py-2.5 border border-border-subtle rounded-lg font-inter font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors">
-                View Profile
-              </Link>
-              <Link to="/mentors/request" className="flex-1 text-center py-2.5 bg-action-bg text-action-text rounded-lg font-inter font-semibold text-small hover:opacity-90 transition-all">
-                Request
-              </Link>
-            </div>
+        {loading ? (
+          <div className="col-span-full flex justify-center py-12">
+            <Loader2 className="animate-spin text-text-muted" size={32} />
           </div>
-        ))}
+        ) : mentors.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-text-muted font-inter">No mentors found for these filters.</div>
+        ) : (
+          mentors.map((m) => (
+            <div key={m.id} className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col">
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-14 h-14 rounded-lg bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-body text-text-muted">
+                  {m.name.split(' ').map((n) => n[0]).join('')}
+                </div>
+                <Badge variant={STATUS_VARIANT[m.status]}>{m.status}</Badge>
+              </div>
+              <h3 className="font-poppins font-semibold text-card text-text-heading">{m.name}</h3>
+              <p className="font-inter text-small text-text-muted">{m.role}</p>
+              <div className="flex items-center gap-1 mt-1 text-warning">
+                <Star size={16} strokeWidth={2} fill="currentColor" />
+                <span className="font-inter font-semibold text-small text-text-heading">{m.rating}</span>
+                <span className="font-inter text-small text-text-muted">({m.reviews} reviews)</span>
+              </div>
+              <div className="flex flex-wrap gap-2 my-4">
+                {m.tags.map((t) => <span key={t} className="px-2 py-1 bg-canvas-bg text-text-muted font-inter text-caption rounded">{t}</span>)}
+              </div>
+              <div className="grid grid-cols-2 gap-4 py-4 border-y border-divider-line mb-4">
+                <div><p className="font-inter text-caption text-text-muted uppercase mb-1">Experience</p><p className="font-inter font-medium text-small text-text-heading">{m.experience}</p></div>
+                <div><p className="font-inter text-caption text-text-muted uppercase mb-1">Mentored</p><p className="font-inter font-medium text-small text-text-heading">{m.mentored}</p></div>
+              </div>
+              <div className="flex gap-3 mt-auto">
+                <Link to="/mentors/profile" className="flex-1 text-center py-2.5 border border-border-subtle rounded-lg font-inter font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors">
+                  View Profile
+                </Link>
+                <Link to="/mentors/request" className="flex-1 text-center py-2.5 bg-action-bg text-action-text rounded-lg font-inter font-semibold text-small hover:opacity-90 transition-all">
+                  Request
+                </Link>
+              </div>
+            </div>
+          ))
+        )}
       </div>
-      <p className="font-inter text-small text-text-muted mt-6">Showing {MENTORS.length} of 124 mentors</p>
+      <p className="font-inter text-small text-text-muted mt-6">Showing {mentors.length} of 124 mentors</p>
     </DashboardShell>
   );
 }

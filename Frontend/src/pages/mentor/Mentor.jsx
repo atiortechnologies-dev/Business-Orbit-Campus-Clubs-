@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageSquare, Mail, Video } from 'lucide-react';
+import { MessageSquare, Mail, Video, Loader2 } from 'lucide-react';
 import MentorShell from '@/components/mentor/MentorShell';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { getRecentRequests, getUpcomingMeetings, getRecentChats } from '@/api/dashboardApi';
 
 const STATS = [
   { label: 'Active Students', value: '12', progress: 60 },
@@ -11,25 +12,32 @@ const STATS = [
   { label: 'Completed Sessions', value: '45', sub: '+8 this month' },
 ];
 
-const INITIAL_REQUESTS = [
-  { id: 1, name: 'James Whitfield', role: 'Founder, GreenScale AI', date: 'Oct 24, 2023' },
-  { id: 2, name: 'Samantha Chen', role: 'Founder, Orbit Logistics', date: 'Oct 23, 2023' },
-  { id: 3, name: 'Marcus Thorne', role: 'CEO, BioSynth Solutions', date: 'Oct 22, 2023' },
-];
-
-const UPCOMING_MEETINGS = [
-  { id: 1, day: '25', month: 'OCT', title: 'Strategy Deep Dive', time: '2:00 PM — 3:00 PM', location: 'Google Meet' },
-  { id: 2, day: '27', month: 'OCT', title: 'Project Review: Alpha', time: '10:30 AM — 11:30 AM', location: 'Zoom' },
-];
-
-const CONVERSATIONS = [
-  { id: 1, name: 'Emily Watson', preview: 'Thanks for the feedback on the pitch deck...', time: '12m ago' },
-  { id: 2, name: 'David Kim', preview: 'Are we still on for the technical interview?', time: '2h ago' },
-];
-
 export default function MentorPage() {
   useDocumentTitle('Mentor Dashboard — BOCC');
-  const [requests, setRequests] = useState(INITIAL_REQUESTS);
+  const [requests, setRequests] = useState([]);
+  const [meetings, setMeetings] = useState([]);
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [reqs, meets, chats] = await Promise.all([
+          getRecentRequests(),
+          getUpcomingMeetings(),
+          getRecentChats(),
+        ]);
+        setRequests(reqs?.data || []);
+        setMeetings(meets?.data || []);
+        setConversations(chats?.data || []);
+      } catch (err) {
+        console.error('Failed to fetch mentor dashboard data', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
 
   // TODO(backend): POST the accept/decline decision for this mentorship
   // request ({ requestId: id, decision: 'accepted' | 'declined' }); keep
@@ -93,10 +101,15 @@ export default function MentorPage() {
             <h2 className="font-poppins font-semibold text-card text-text-heading">Recent Mentorship Requests</h2>
             <Link to="/mentor/requests" className="font-inter text-small font-medium text-text-body hover:underline">View all</Link>
           </div>
-          {requests.length === 0 ? (
+          {loading ? (
+            <div className="flex justify-center items-center py-6">
+              <Loader2 className="animate-spin text-text-muted" size={24} />
+            </div>
+          ) : requests.length === 0 ? (
             <p className="font-inter text-small text-text-muted py-6 text-center">No pending requests right now.</p>
           ) : (
             <div className="flex flex-col gap-4">
+
               {requests.map((req) => (
                 <div key={req.id} className="flex items-center gap-3 pb-4 border-b border-border-subtle last:border-0 last:pb-0">
                   <div className="w-10 h-10 rounded-full bg-canvas-bg border border-border-subtle shrink-0" />
@@ -130,37 +143,54 @@ export default function MentorPage() {
           <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card p-6">
             <h2 className="font-poppins font-semibold text-card text-text-heading mb-4">Upcoming Meetings</h2>
             <div className="flex flex-col gap-4">
-              {UPCOMING_MEETINGS.map((meeting) => (
-                <div key={meeting.id} className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-md bg-canvas-bg border border-border-subtle flex flex-col items-center justify-center shrink-0">
-                    <span className="font-inter text-[10px] font-semibold uppercase text-text-muted leading-none">{meeting.month}</span>
-                    <span className="font-poppins font-bold text-small text-text-heading leading-none mt-0.5">{meeting.day}</span>
-                  </div>
-                  <div className="min-w-0">
-                    <p className="font-poppins font-semibold text-small text-text-heading">{meeting.title}</p>
-                    <p className="font-inter text-caption text-text-muted">{meeting.time}</p>
-                    <p className="font-inter text-caption text-text-muted flex items-center gap-1 mt-0.5">
-                      <Video size={12} strokeWidth={2} /> {meeting.location}
-                    </p>
-                  </div>
+              {loading ? (
+                <div className="flex justify-center items-center py-4">
+                  <Loader2 className="animate-spin text-text-muted" size={24} />
                 </div>
-              ))}
+              ) : meetings.length === 0 ? (
+                <p className="font-inter text-small text-text-muted text-center py-4">No upcoming meetings.</p>
+              ) : (
+                meetings.map((meeting) => (
+                  <div key={meeting.id} className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-md bg-canvas-bg border border-border-subtle flex flex-col items-center justify-center shrink-0">
+                      <span className="font-inter text-[10px] font-semibold uppercase text-text-muted leading-none">{meeting.month}</span>
+                      <span className="font-poppins font-bold text-small text-text-heading leading-none mt-0.5">{meeting.day}</span>
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-poppins font-semibold text-small text-text-heading">{meeting.title}</p>
+                      <p className="font-inter text-caption text-text-muted">{meeting.time}</p>
+                      <p className="font-inter text-caption text-text-muted flex items-center gap-1 mt-0.5">
+                        <Video size={12} strokeWidth={2} /> {meeting.location}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
+
           </div>
 
           <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card p-6">
             <h2 className="font-poppins font-semibold text-card text-text-heading mb-4">Recent Conversations</h2>
             <div className="flex flex-col gap-3">
-              {CONVERSATIONS.map((conv) => (
-                <div key={conv.id} className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-canvas-bg border border-border-subtle shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <p className="font-poppins font-semibold text-caption text-text-heading truncate">{conv.name}</p>
-                    <p className="font-inter text-caption text-text-muted truncate">{conv.preview}</p>
-                  </div>
-                  <span className="font-inter text-caption text-text-muted shrink-0">{conv.time}</span>
+              {loading ? (
+                <div className="flex justify-center items-center py-4">
+                  <Loader2 className="animate-spin text-text-muted" size={24} />
                 </div>
-              ))}
+              ) : conversations.length === 0 ? (
+                <p className="font-inter text-small text-text-muted text-center py-4">No recent conversations.</p>
+              ) : (
+                conversations.map((conv) => (
+                  <div key={conv.id} className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-canvas-bg border border-border-subtle shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-poppins font-semibold text-caption text-text-heading truncate">{conv.name}</p>
+                      <p className="font-inter text-caption text-text-muted truncate">{conv.preview}</p>
+                    </div>
+                    <span className="font-inter text-caption text-text-muted shrink-0">{conv.time}</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

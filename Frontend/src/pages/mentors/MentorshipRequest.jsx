@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Zap, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Calendar, Zap, Lightbulb, Loader2 } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import Button from '@/components/ui/Button';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { mentorshipApi } from '@/api/mentorshipApi';
 
 const STAGE_OPTIONS = ['Ideation', 'Prototype / MVP', 'Early Traction', 'Scaling'];
 const INDUSTRY_OPTIONS = ['SaaS / Enterprise Software', 'FinTech', 'HealthTech', 'CleanTech', 'EdTech'];
@@ -12,6 +13,23 @@ const MODE_OPTIONS = ['Video Call', 'Voice Call', 'In-person'];
 export default function MentorshipRequestPage() {
   useDocumentTitle('Request Mentorship — BOCC');
   const navigate = useNavigate();
+  const [requestStatus, setRequestStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkStatus() {
+      try {
+        const res = await mentorshipApi.getMentorshipRequestStatus();
+        setRequestStatus(res?.data || null);
+      } catch (err) {
+        console.error('Failed to get request status', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    checkStatus();
+  }, []);
+
 
   const [form, setForm] = useState({
     startupName: '', stage: STAGE_OPTIONS[0], industry: INDUSTRY_OPTIONS[0],
@@ -44,7 +62,14 @@ export default function MentorshipRequestPage() {
       <div className="mb-8">
         <h1 className="font-poppins font-semibold text-page text-text-heading mb-2">Request Mentorship</h1>
         <p className="font-inter text-body text-text-body">Fill out the details below to initiate a request with your selected mentor.</p>
+        {!loading && requestStatus && requestStatus.status === 'pending' && (
+          <div className="mt-4 p-4 bg-warning/10 border border-warning text-warning rounded-lg font-inter text-sm flex flex-col">
+            <span className="font-semibold mb-1">You already have a pending request.</span>
+            <span>Please wait for the mentor to respond before submitting a new request.</span>
+          </div>
+        )}
       </div>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
@@ -86,8 +111,14 @@ export default function MentorshipRequestPage() {
             <Link to="/mentors" className="px-6 py-2.5 font-inter font-semibold text-small text-text-muted hover:text-text-heading transition-colors">
               Cancel
             </Link>
-            <Button onClick={handleSubmit} disabled={!canSubmit}>Submit Request</Button>
+            <Button 
+              onClick={handleSubmit} 
+              disabled={!canSubmit || loading || (requestStatus && requestStatus.status === 'pending')}
+            >
+              {loading ? <Loader2 className="animate-spin" size={18} /> : 'Submit Request'}
+            </Button>
           </div>
+
         </div>
 
         <div className="lg:col-span-4 space-y-6">

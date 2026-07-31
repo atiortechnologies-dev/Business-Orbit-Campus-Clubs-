@@ -8,4 +8,6 @@ export const mentorshipApi = {
   updateRequestStatus: (requestId, status) => axiosInstance.patch(`/mentorship/requests/${requestId}`, { status }),
   getMeetings: () => axiosInstance.get('/mentorship/meetings'),
   scheduleMeeting: (data) => axiosInstance.post('/mentorship/meetings', data),
+  filterMentors: (filters) => axiosInstance.post('/mentors/filter', filters),
+  getMentorshipRequestStatus: () => axiosInstance.get('/mentorship/request-status'),
 };
