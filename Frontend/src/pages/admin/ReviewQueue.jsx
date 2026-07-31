@@ -10,13 +10,12 @@ import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { downloadCsv } from '@/utils/csv';
 
 const SUBMISSIONS = [
-  { id: 's1', name: 'Lumina AI', founder: 'Sarah Jenkins', chapter: 'Stanford Chapter', stage: 'MVP', date: '2024-10-24', reviewer: 'Alex Rivera', priority: 'High', status: 'Pending' },
-  { id: 's2', name: 'EcoFlow', founder: 'Mark Zuberi', chapter: 'MIT Tech Hub', stage: 'Traction', date: '2024-10-23', reviewer: 'Priya Sharma', priority: 'Medium', status: 'Under Review' },
-  { id: 's3', name: 'BlockDocs', founder: 'Elena Rodriguez', chapter: 'UC Berkeley', stage: 'Idea', date: '2024-10-23', reviewer: 'Alex Rivera', priority: 'Low', status: 'Pending' },
-  { id: 's4', name: 'StitchPoint', founder: 'James Chen', chapter: 'UT Austin', stage: 'Validation', date: '2024-10-22', reviewer: 'Jessica Wu', priority: 'High', status: 'Under Review' },
+  { id: 's1', name: 'Lumina AI', founder: 'Sarah Jenkins', chapter: 'Stanford Chapter', stage: 'MVP', date: '2024-10-24', status: 'Pending' },
+  { id: 's2', name: 'EcoFlow', founder: 'Mark Zuberi', chapter: 'MIT Tech Hub', stage: 'Traction', date: '2024-10-23', status: 'Under Review' },
+  { id: 's3', name: 'BlockDocs', founder: 'Elena Rodriguez', chapter: 'UC Berkeley', stage: 'Idea', date: '2024-10-23', status: 'Pending' },
+  { id: 's4', name: 'StitchPoint', founder: 'James Chen', chapter: 'UT Austin', stage: 'Validation', date: '2024-10-22', status: 'Under Review' },
 ];
 
-const PRIORITY_VARIANT = { High: 'error', Medium: 'warning', Low: 'neutral' };
 const STATUS_VARIANT = { Pending: 'info', 'Under Review': 'warning' };
 
 const STAGE_OPTIONS = ['All Stages', 'Idea', 'Validation', 'MVP', 'Traction'];
@@ -50,36 +49,27 @@ export default function ReviewQueuePage() {
   const columns = [
     {
       key: 'name',
-      label: 'Startup',
-      width: '1.6fr',
+      label: 'Startup Name',
+      width: '1.4fr',
       mobileLabel: false,
       render: (row) => (
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-xs select-none shrink-0">
             {row.name.charAt(0)}
           </div>
-          <div className="min-w-0">
-            <p className="font-poppins font-semibold text-small text-text-heading truncate">{row.name}</p>
-            <p className="font-inter text-caption text-text-muted truncate">{row.founder}</p>
-          </div>
+          <p className="font-poppins font-semibold text-small text-text-heading truncate">{row.name}</p>
         </div>
       ),
     },
-    { key: 'chapter', label: 'Chapter', width: '1.2fr' },
+    { key: 'founder', label: 'Founder', width: '1.1fr' },
+    { key: 'chapter', label: 'Chapter', width: '1.1fr' },
     {
       key: 'stage',
-      label: 'Stage',
+      label: 'Current Stage',
       width: '1fr',
       render: (row) => <Badge variant="brand">{row.stage}</Badge>,
     },
-    { key: 'date', label: 'Submitted', width: '1fr' },
-    { key: 'reviewer', label: 'Reviewer', width: '1.1fr' },
-    {
-      key: 'priority',
-      label: 'Priority',
-      width: '0.8fr',
-      render: (row) => <Badge variant={PRIORITY_VARIANT[row.priority]}>{row.priority}</Badge>,
-    },
+    { key: 'date', label: 'Submission Date', width: '1.1fr' },
     {
       key: 'status',
       label: 'Status',
@@ -117,18 +107,16 @@ export default function ReviewQueuePage() {
           <button
             type="button"
             onClick={() => downloadCsv('review-queue', [
-              { key: 'name', label: 'Startup' },
+              { key: 'name', label: 'Startup Name' },
               { key: 'founder', label: 'Founder' },
               { key: 'chapter', label: 'Chapter' },
-              { key: 'stage', label: 'Stage' },
-              { key: 'date', label: 'Submitted' },
-              { key: 'reviewer', label: 'Reviewer' },
-              { key: 'priority', label: 'Priority' },
+              { key: 'stage', label: 'Current Stage' },
+              { key: 'date', label: 'Submission Date' },
               { key: 'status', label: 'Status' },
             ], visibleSubmissions)}
             className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small hover:bg-canvas-bg transition-colors"
           >
-            <Download size={14} strokeWidth={2} /> Export CSV
+            <Download size={14} strokeWidth={2} /> Export Report
           </button>
         </div>
       </div>
