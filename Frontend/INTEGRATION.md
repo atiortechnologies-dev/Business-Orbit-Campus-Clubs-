@@ -769,43 +769,65 @@ finished.)*
   need real analytics data that doesn't exist yet.
 
 ### `/admin/verification` — `VerificationQueue.jsx`
-- **Real:** Role/Status/Chapter filters genuinely filter the visible rows
-  client-side. Export CSV downloads a real CSV of the currently-filtered
-  rows. Date Range is now a real popover with From/To date inputs that
-  filter by each user's actual `regDate`.
-- **Stub:** filtering only operates on 3 hardcoded rows; row click always
-  navigates to the same single detail page ("Alexander Vance") regardless
-  of which row was clicked.
-- **Coming Soon:** Bulk Action (no defined bulk operation to wire — needs a
-  product decision on what it actually does before it can be built, not
-  just a selection checkbox), Download Audit Trail (a real file that was
-  never generated anywhere).
+Rebuilt against the `user_verification_queue` wireframe — the previous
+version modeled an unrelated "chapter volunteer" concept (Org Admin/
+Chapter Lead/Volunteer) that had no connection to this platform's real
+signup roles or the now-integrated backend auth system. The queue now
+lists real registrants across all 5 signup roles (Student, Mentor,
+Investor, Incubator, Company).
+- **Real:** Role/Status filters genuinely filter the visible rows
+  client-side and apply instantly. Registration Date Range applies only
+  once "Apply Filters" is clicked (matches the wireframe's explicit
+  two-step date filter, not live-as-you-type). Export CSV downloads a
+  real CSV of the currently-filtered rows. Row/select-all checkboxes are
+  real local selection state. Each row's "View Details" routes to the
+  matching role's own verification screen (see below).
+- **Stub:** filtering only operates on 6 hardcoded rows.
+- **Coming Soon:** Bulk Actions — no defined bulk operation to wire yet,
+  needs a product decision before it can be built; the row checkboxes are
+  real (so a future bulk action has something to act on), only the action
+  itself is stubbed.
 
-### `/admin/verification/detail` — `VerificationDetail.jsx`
-- **Real:** Internal Command Notes — typing and adding a note appends to
-  local state immediately. Request More Info opens a real `Modal` with a
-  textarea; sending appends a note recording the request and shows a
-  transient success banner.
-- **Stub:** added notes (including Request More Info's) vanish on reload —
-  no `POST` anywhere; `// TODO(backend)` is at `handleAddNote` and
-  `handleSendRequestInfo`. Document flag states and the checklist are
-  hardcoded, not derived from the (also hardcoded) documents array.
-- **Coming Soon:** Download All, per-document Download, Replace document —
-  all real files that were never uploaded anywhere.
-
-### `/admin/verification/decision` — `VerificationDecision.jsx`
-- **Real:** Approve/Reject/Request Documents each open a real `Modal`;
-  confirming shows an instant inline banner (no fake delay).
+### Role verification screens — one per signup role
+`MentorVerification.jsx` (`/admin/verification/mentor`),
+`InvestorVerification.jsx` (`/admin/verification/investor`),
+`IncubatorVerification.jsx` (`/admin/verification/incubator`),
+`CompanyVerification.jsx` (`/admin/verification/company`), and
+`StudentVerification.jsx` (`/admin/verification/student`) replace the old
+generic two-page `VerificationDetail.jsx` → `VerificationDecision.jsx`
+flow. Each wireframe (mentor/investor/incubator/company) specced a
+single page per role with its own field set and the 3 verification
+actions built directly into that page — no separate decision screen.
+Student has no source wireframe; its fields (College/Chapter, Degree,
+Graduation Year, Skills) are sourced from the real `StudentSignup.jsx` +
+`complete-profile/Student.jsx` fields already in this codebase.
+- **Real:** Admin Remarks textarea is controlled state. Approve/Reject/
+  Request More Information each open a real `Modal`; confirming shows an
+  instant inline decision banner (no fake delay) and, for Request More
+  Information, gates Send on non-empty text.
 - **Stub:** none of the 3 decisions persist anywhere — reload and the
-  banner is gone, the user is still "pending."
+  banner is gone, the application is still "pending." Application data
+  is one hardcoded sample record per file.
+- **`// TODO(backend)`:** each file's decision handlers mark the exact
+  spot a real `POST /admin/users/verification/:id/decision` belongs.
 
 ### `/admin/reviews` — `ReviewQueue.jsx`
-- **Real:** Export CSV downloads a real CSV of the table's rows.
+- **Real:** Stage/Status/Chapter/Date filters (added to match the
+  `stage_approval_queue` wireframe's filter bar — the previous version
+  had no filters at all) genuinely filter the visible rows client-side,
+  with a Reset button. Export CSV downloads a real CSV of the
+  currently-filtered rows. Row click routes Idea-stage submissions to the
+  new `/admin/reviews/ideation` workspace and every other stage to the
+  existing `/admin/reviews/detail`.
 - **Stub:** all 4 stat cards and the table's 4 rows are hardcoded.
-- **Coming Soon:** Bulk Action (same "no defined operation yet" reasoning
-  as `VerificationQueue.jsx`'s).
+- **Coming Soon:** Bulk Actions (same "no defined operation yet" reasoning
+  as the Users queue's).
 
 ### `/admin/reviews/detail` — `ReviewDetail.jsx`
+Unchanged — still the generic review overview for Validation/MVP/
+Traction/Launch-stage submissions (Idea-stage now has its own dedicated
+workspace below; no wireframe exists yet for the other 4 stages, so this
+generic flow stays their entry point).
 - **Real:** "Schedule Meeting" → real navigation to
   `/admin/reviews/schedule-meeting`. "Begin Evaluation" → real navigation
   to `/admin/reviews/workspace`. "Request Revision" shows an instant inline
@@ -817,6 +839,27 @@ finished.)*
 - **Coming Soon:** MVP Links card, Pitch Deck card, Download All (evidence
   files), per-file Download, Download All Files — all real files that were
   never uploaded anywhere.
+
+### `/admin/reviews/ideation` — `IdeationReview.jsx`
+New — built from the `ideation_review` wireframe, which is specific to
+the Idea stage (its content sections mirror the real fields on
+`IdeaSubmission.jsx`: Problem Statement, Proposed Solution, Target
+Audience, Value Proposition, Competitors). Replaces the generic
+Detail→Workspace→Outcome 3-page flow for Idea-stage rows only — a single
+page combining the submission read-out, a vertical journey stepper, and
+one decision action, matching the wireframe exactly (no separate scoring
+workspace or publish step for this stage).
+- **Real:** Admin Remarks textarea is controlled state. "Approve &
+  Schedule Meeting" navigates to the existing
+  `/admin/reviews/schedule-meeting` (reuses that screen rather than
+  building a second scheduling flow). "Request Changes" opens a real
+  `Modal`; confirming shows an instant inline banner.
+- **Stub:** startup info, the 5 submission content blocks, and journey
+  progress % are one hardcoded sample record.
+- **Coming Soon:** Internal History — the wireframe itself renders this
+  card as a dashed/stub placeholder ("stub" is literally in its own
+  source comment), so it stays `ComingSoon`-wrapped rather than showing
+  fabricated history entries.
 
 ### `/admin/reviews/workspace` — `ReviewWorkspace.jsx`
 - **Real:** Evaluation Checklist (5 real checkboxes), the "Core Strengths"
@@ -847,11 +890,15 @@ finished.)*
   backend.
 
 ### `/admin/reviews/schedule-meeting` — `ScheduleMeeting.jsx`
+Now reachable from both the existing generic flow (`ReviewDetail.jsx`)
+and the new `IdeationReview.jsx`'s "Approve & Schedule Meeting" — one
+shared scheduling screen for every stage rather than a second one built
+for Idea-stage specifically.
 - **Real:** Reviewer select, Meeting Date/Time, Duration, Platform selects,
   Agenda textarea — all controlled inputs.
 - **Stub:** Startup Name / Primary Founder are prefilled and disabled
   (nothing to wire yet — no real "current startup" context passed in).
-  The October 2024 calendar grid is **decorative only**, not wired to the
+  The Availability Calendar grid is **decorative only**, not wired to the
   date field — don't assume clicking a calendar day sets the Meeting Date
   input, it doesn't.
 - **Coming Soon:** Generate Meeting Link, View Protocol Docs, Check
