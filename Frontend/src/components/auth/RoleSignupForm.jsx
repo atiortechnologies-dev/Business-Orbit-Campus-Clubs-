@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
 import { registerUser } from "@/api/auth/authApi";
+import { persistAuthTokens } from "@/api/auth/tokenStorage";
 
 function computeStrength(password) {
   if (!password) return 0;
@@ -80,12 +81,10 @@ export default function RoleSignupForm({
     try {
       const res = await registerUser(payload);
 
-      if (res.data?.accessToken) {
-        localStorage.setItem("accessToken", res.data.accessToken);
-      }
-      if (res.data?.refreshToken) {
-        localStorage.setItem("refreshToken", res.data.refreshToken);
-      }
+      persistAuthTokens({
+        accessToken: res.data?.accessToken,
+        refreshToken: res.data?.refreshToken,
+      });
 
       // Safe navigation using response payload
       const redirectTo = res.data?.redirect_to || "/email-verification";
