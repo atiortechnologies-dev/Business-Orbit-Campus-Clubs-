@@ -28,8 +28,10 @@ const NAV_ITEMS = [
   { icon: Rocket,          label: 'Startups',      href: '/admin/reviews', real: true },
   { icon: Lightbulb,       label: 'Opportunities', href: '/admin/opportunities', real: true },
   { icon: Building2,       label: 'Chapters',      href: '/admin/chapters', real: true },
+  { icon: Building2,       label: 'Chapter Requests', href: '/admin/chapter-change-requests', real: true },
   { icon: History,         label: 'Audit Log',     href: '/admin/audit-log', real: true },
   { icon: Settings,        label: 'Settings',      href: '/admin/settings', real: true },
+  { icon: ShieldCheck,     label: 'User Mgmt',     href: '/admin/user-management', real: true },
 ];
 
 // Same three-piece pattern (header + content slot + footer, shared

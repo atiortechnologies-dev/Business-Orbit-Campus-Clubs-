@@ -23,3 +23,14 @@ export const adminStatsApi = {
   getStatistics: () => api.get("/admin/statistics"),
   // Include endpoints for features if we need them, but the prompt says 25 orphaned endpoints.
 };
+
+export const adminChapterApi = {
+  getChangeRequests: () => api.get("/chapter-change-requests"),
+  approveChangeRequest: (id) => api.put(`/chapter-change-requests/${id}/approve`),
+  rejectChangeRequest: (id) => api.put(`/chapter-change-requests/${id}/reject`),
+  bulkApproveRequests: (data) => api.post("/bulk-approve", data),
+};
+
+export const adminUserApi = {
+  deleteUser: (id) => api.delete(`/users/${id}`),
+};
