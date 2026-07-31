@@ -20,17 +20,26 @@ const getProgress = asyncHandler(async (req, res) => {
 
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
 
-  const activeStage = await StartupStage.findOne({
+  // Find the current working or active stage.
+  // If a submission is under review, its status is "submitted", but it's still the current working stage.
+  let currentStage = await StartupStage.findOne({
     startup_id: startup._id,
-    status: "active",
-  });
+    status: { $in: ["active", "submitted", "rejected"] },
+  }).sort({ stage_number: 1 });
+
+  // Fallback: If all stages are approved or none match the above, grab the latest un-locked stage or Stage 1
+  if (!currentStage) {
+    currentStage = await StartupStage.findOne({
+      startup_id: startup._id,
+    }).sort({ stage_number: 1 });
+  }
 
   let submissionStatus = "not_started";
   let reviewStatus = "not_reviewed";
 
-  if (activeStage) {
+  if (currentStage) {
     const latestSubmission = await StageSubmission.findOne({
-      stage_id: activeStage._id,
+      stage_id: currentStage._id,
     }).sort({ createdAt: -1 });
 
     if (latestSubmission) {
@@ -49,14 +58,14 @@ const getProgress = asyncHandler(async (req, res) => {
   return res.status(200).json({
     success: true,
     data: {
-      currentStage: activeStage
+      currentStage: currentStage
         ? {
-            stageNumber: activeStage.stage_number,
-            stageName: activeStage.stage_name,
+            stageNumber: currentStage.stage_number,
+            stageName: currentStage.stage_name,
           }
         : null,
-      stageStatus: activeStage ? activeStage.status : null,
-      completionPercentage: startup.progress_percentage,
+      stageStatus: currentStage ? currentStage.status : null,
+      completionPercentage: startup.progress_percentage || 0,
       submissionStatus,
       reviewStatus,
     },
@@ -98,7 +107,7 @@ const getStages = asyncHandler(async (req, res) => {
     success: true,
     data: {
       startupName: startup.startup_name,
-      overallProgress: startup.progress_percentage,
+      overallProgress: startup.progress_percentage || 0,
       stages,
     },
   });
