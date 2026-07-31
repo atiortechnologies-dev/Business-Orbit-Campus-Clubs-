@@ -20,20 +20,14 @@ import DashboardShell from '@/components/dashboard/DashboardShell';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import api from '@/api/axiosInstance';
+import { useEffect } from 'react';
 
 const STEPS = [
   { label: 'Submission Completed', status: 'done' },
   { label: 'Under Review', status: 'done' },
   { label: 'Review Meeting', status: 'current' },
   { label: 'Stage Approved', status: 'upcoming' },
-];
-
-const AGENDA = [
-  "Introduction and Stage 4 Progress Overview (5 mins)",
-  'Deep-dive into User Acquisition and Retention Metrics (15 mins)',
-  'Review of Customer Feedback and Pivot Decisions (10 mins)',
-  "Resource Allocation and Roadmap for 'Launch' (10 mins)",
-  'Next Steps & Decision Timeline (5 mins)',
 ];
 
 const CHECKLIST = [
@@ -55,6 +49,13 @@ const SUMMARY = [
 export default function TractionReviewMeetingPage() {
   useDocumentTitle('Traction Review Meeting — BOCC');
   const [checklist, setChecklist] = useState(CHECKLIST);
+  const [rubrics, setRubrics] = useState([]);
+
+  useEffect(() => {
+    api.get('/evaluations/rubric/traction')
+      .then(res => setRubrics(res.data?.criteria || []))
+      .catch(err => console.error('Failed to fetch traction rubric:', err));
+  }, []);
 
   const toggle = (id) =>
     setChecklist((prev) => prev.map((item) => (item.id === id ? { ...item, done: !item.done } : item)));
@@ -159,11 +160,26 @@ export default function TractionReviewMeetingPage() {
 
             <div className="pt-6 border-t border-divider-line">
               <h4 className="font-inter font-semibold text-caption text-text-heading uppercase tracking-wider mb-3">
-                Meeting Agenda
+                Evaluation Rubric
               </h4>
-              <ul className="space-y-2 text-text-body font-inter text-small list-disc list-inside">
-                {AGENDA.map((item) => <li key={item}>{item}</li>)}
-              </ul>
+              <div className="space-y-4">
+                {rubrics.length > 0 ? (
+                  rubrics.map((criteriaItem, i) => (
+                    <div key={i} className="flex gap-3">
+                      <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center shrink-0 font-inter text-caption text-text-muted">
+                        {String(i + 1).padStart(2, '0')}
+                      </div>
+                      <div>
+                        <p className="font-poppins font-semibold text-small text-text-heading">{criteriaItem.name || criteriaItem.title || 'Criteria'}</p>
+                        <p className="font-inter text-small text-text-muted">{criteriaItem.description || criteriaItem.desc || ''}</p>
+                        {criteriaItem.weight && <span className="text-[10px] uppercase font-semibold text-text-muted mt-1 inline-block bg-canvas-bg px-2 py-0.5 rounded">Weight: {criteriaItem.weight}%</span>}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="font-inter text-small text-text-muted">Loading rubric criteria...</p>
+                )}
+              </div>
             </div>
           </section>
 

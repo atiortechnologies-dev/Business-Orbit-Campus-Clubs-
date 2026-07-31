@@ -1,20 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Video, ListChecks, CalendarCheck, ChevronRight, User, CheckCircle2 } from 'lucide-react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-
-const AGENDA = [
-  { title: 'Introduction', desc: 'Quick alignment on project vision and stage goals.' },
-  { title: 'Problem Deep Dive', desc: 'Review of the problem statement and hypothesis.' },
-  { title: 'Next Steps', desc: 'Action items and roadmap for the Validation stage.' },
-];
+import api from '@/api/axiosInstance';
 
 export default function IdeationReviewMeetingPage() {
   useDocumentTitle('Review Meeting — BOCC');
 
   const [checklist, setChecklist] = useState({ review: false, questions: false });
-  const [meetingStatus, setMeetingStatus] = useState(null); // null | 'confirmed' | 'reschedule'
+  const [meetingStatus, setMeetingStatus] = useState(null);
+  const [rubrics, setRubrics] = useState([]);
+
+  useEffect(() => {
+    api.get('/evaluations/rubric/ideation')
+      .then(res => setRubrics(res.data?.criteria || []))
+      .catch(err => console.error('Failed to fetch ideation rubric:', err));
+  }, []);
 
   const toggleCheck = (item) => setChecklist((prev) => ({ ...prev, [item]: !prev[item] }));
 
@@ -92,20 +94,25 @@ export default function IdeationReviewMeetingPage() {
           <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card p-6">
             <div className="flex items-center gap-2 mb-4">
               <ListChecks size={18} strokeWidth={2} className="text-text-body" />
-              <h3 className="font-poppins font-semibold text-body text-text-heading">Agenda</h3>
+              <h3 className="font-poppins font-semibold text-body text-text-heading">Evaluation Rubric</h3>
             </div>
             <div className="space-y-4">
-              {AGENDA.map(({ title, desc }, i) => (
-                <div key={title} className="flex gap-3">
-                  <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center shrink-0 font-inter text-caption text-text-muted">
-                    {String(i + 1).padStart(2, '0')}
+              {rubrics.length > 0 ? (
+                rubrics.map((criteriaItem, i) => (
+                  <div key={i} className="flex gap-3">
+                    <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center shrink-0 font-inter text-caption text-text-muted">
+                      {String(i + 1).padStart(2, '0')}
+                    </div>
+                    <div>
+                      <p className="font-poppins font-semibold text-small text-text-heading">{criteriaItem.name || criteriaItem.title || 'Criteria'}</p>
+                      <p className="font-inter text-small text-text-muted">{criteriaItem.description || criteriaItem.desc || ''}</p>
+                      {criteriaItem.weight && <span className="text-[10px] uppercase font-semibold text-text-muted mt-1 inline-block bg-canvas-bg px-2 py-0.5 rounded">Weight: {criteriaItem.weight}%</span>}
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-poppins font-semibold text-small text-text-heading">{title}</p>
-                    <p className="font-inter text-small text-text-muted">{desc}</p>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="font-inter text-small text-text-muted">Loading rubric criteria...</p>
+              )}
             </div>
           </div>
 
