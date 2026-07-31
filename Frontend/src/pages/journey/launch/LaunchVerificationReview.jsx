@@ -11,10 +11,12 @@ import {
   Star,
   Headset,
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import DashboardShell from '@/components/dashboard/DashboardShell';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { getLaunchVerificationStatus, getLaunchVerificationFiles, getLaunchCertificate } from '@/api/startup/launchApi';
 
 const STEPS = [
   { label: 'Launch Submitted', status: 'done' },
@@ -43,6 +45,31 @@ const UPCOMING = [
 
 export default function LaunchVerificationReviewPage() {
   useDocumentTitle('Launch Verification — BOCC');
+
+  const [statusData, setStatusData] = useState(null);
+  const [filesData, setFilesData] = useState([]);
+  const [certificate, setCertificate] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [statusRes, filesRes, certRes] = await Promise.all([
+          getLaunchVerificationStatus().catch(() => null),
+          getLaunchVerificationFiles().catch(() => null),
+          getLaunchCertificate().catch(() => null)
+        ]);
+        if (statusRes) setStatusData(statusRes);
+        if (filesRes) setFilesData(filesRes.files || filesRes.data || []);
+        if (certRes) setCertificate(certRes);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const displayFiles = filesData.length > 0 ? filesData : FILES;
+  const currentStatus = statusData?.status || 'PENDING';
 
   return (
     <DashboardShell pageId="launch-verification-review">
@@ -97,9 +124,9 @@ export default function LaunchVerificationReviewPage() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-inter text-caption uppercase tracking-widest text-text-muted">Current Status</span>
-                  <span className="bg-canvas-bg px-2 py-0.5 rounded text-[10px] font-semibold border border-border-subtle">PENDING</span>
+                  <span className="bg-canvas-bg px-2 py-0.5 rounded text-[10px] font-semibold border border-border-subtle">{currentStatus}</span>
                 </div>
-                <h3 className="font-poppins font-semibold text-card text-text-heading">Pending Review</h3>
+                <h3 className="font-poppins font-semibold text-card text-text-heading">{currentStatus === 'VERIFIED' ? 'Verified' : 'Pending Review'}</h3>
               </div>
               <Hourglass size={36} strokeWidth={1.5} className="text-text-muted" />
             </div>
@@ -144,10 +171,14 @@ export default function LaunchVerificationReviewPage() {
           <div className="bg-surface-white border border-border-subtle rounded-lg p-6">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-poppins font-semibold text-body text-text-heading">Uploaded Files &amp; Evidence</h3>
-              <span className="font-inter text-caption text-text-muted">{FILES.length} Files Uploaded</span>
+              <span className="font-inter text-caption text-text-muted">{displayFiles.length} Files Uploaded</span>
             </div>
             <div className="border border-border-subtle rounded divide-y divide-border-subtle">
-              {FILES.map(({ icon: Icon, name, meta }) => (
+              {displayFiles.map((file, i) => {
+                const name = file.name || file.filename || file.title || `File ${i+1}`;
+                const meta = file.meta || file.size || 'Uploaded Document';
+                const Icon = file.icon || FolderArchive;
+                return (
                 <div key={name} className="p-4 flex items-center justify-between hover:bg-canvas-bg transition-colors group">
                   <div className="flex items-center gap-4">
                     <Icon size={20} strokeWidth={2} className="text-text-muted" />
@@ -169,9 +200,20 @@ export default function LaunchVerificationReviewPage() {
                     </ComingSoon>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           </div>
+          
+          {certificate && (
+            <div className="bg-surface-white border border-border-subtle rounded-lg p-6 mt-6 bg-green-50">
+              <h3 className="font-poppins font-semibold text-body text-green-800 mb-4">Launch Certificate Awarded!</h3>
+              <p className="font-inter text-small text-green-700 mb-4">Congratulations, your launch is verified and you have completed the journey.</p>
+              <div className="flex gap-4">
+                <Button variant="outline" onClick={() => window.open(certificate.url || '#', '_blank')}>View Certificate</Button>
+                <Button onClick={() => window.open(certificate.downloadUrl || '#', '_blank')}>Download</Button>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-center justify-between py-4">
             <ComingSoon label="View Submission Full Details" position="top" inline>

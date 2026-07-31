@@ -19,7 +19,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-import { getInsights, saveInsights, submitInsights } from '@/api/startup/launchApi';
+import { getInsights, saveInsights, submitInsights, uploadLaunchEvidence, deleteLaunchEvidence, getLaunchEvidence } from '@/api/startup/launchApi';
 
 const LAUNCH_TYPES = ['Select option', 'Demo Day', 'College Event', 'Startup Expo', 'Incubator Showcase', 'Product Release', 'Online Launch', 'Other'];
 
@@ -48,6 +48,7 @@ export default function LaunchProofUploadPage() {
   });
 
   const [loading, setLoading] = useState(true);
+  const [evidenceFiles, setEvidenceFiles] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,6 +57,10 @@ export default function LaunchProofUploadPage() {
         if (data) {
           setForm((prev) => ({ ...prev, ...data }));
         }
+        try {
+          const filesData = await getLaunchEvidence();
+          if (filesData) setEvidenceFiles(filesData?.data || filesData || []);
+        } catch(e) {}
       } catch (err) {
         console.error('Failed to load insights', err);
       } finally {
@@ -73,6 +78,31 @@ export default function LaunchProofUploadPage() {
       navigate('/build-startup/journey/launch/verification');
     } catch (err) {
       console.error('Failed to submit insights', err);
+    }
+  };
+
+  const handleUpload = async (e, typeId) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', typeId);
+    try {
+      await uploadLaunchEvidence(formData);
+      const filesData = await getLaunchEvidence();
+      if (filesData) setEvidenceFiles(filesData?.data || filesData || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (fileId) => {
+    try {
+      await deleteLaunchEvidence(fileId);
+      const filesData = await getLaunchEvidence();
+      if (filesData) setEvidenceFiles(filesData?.data || filesData || []);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -145,12 +175,21 @@ export default function LaunchProofUploadPage() {
                 </div>
                 <div className="space-y-3">
                   <div className="text-[10px] text-text-muted font-inter">{formats}</div>
-                  <ComingSoon label={title} position="top">
-                    <div className="w-full border-2 border-dashed border-border-subtle py-4 rounded-lg text-text-muted flex flex-col items-center gap-1 hover:bg-canvas-bg transition-colors cursor-pointer">
+                  <div>
+                    <label className="w-full border-2 border-dashed border-border-subtle py-4 rounded-lg text-text-muted flex flex-col items-center gap-1 hover:bg-canvas-bg transition-colors cursor-pointer">
+                      <input type="file" className="hidden" onChange={(e) => handleUpload(e, id)} />
                       {optional ? <Plus size={16} strokeWidth={2} /> : <Upload size={16} strokeWidth={2} />}
                       <span className="text-[10px] font-poppins font-semibold uppercase">{optional ? 'Optional' : 'Browse Files'}</span>
+                    </label>
+                    <div className="mt-2 text-xs">
+                      {evidenceFiles && evidenceFiles.length > 0 && evidenceFiles.filter(f => f.type === id).map(f => (
+                        <div key={f._id || f.id} className="flex justify-between items-center text-text-heading bg-canvas-bg p-1 rounded">
+                          <span className="truncate max-w-[150px]">{f.name || f.filename || 'File'}</span>
+                          <button type="button" onClick={() => handleDelete(f._id || f.id)} className="text-red-500 hover:text-red-700 ml-2">X</button>
+                        </div>
+                      ))}
                     </div>
-                  </ComingSoon>
+                  </div>
                 </div>
               </div>
             ))}
