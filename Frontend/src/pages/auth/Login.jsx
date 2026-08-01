@@ -15,6 +15,7 @@ import Input from "@/components/ui/Input";
 import Logo from "@/components/ui/Logo";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { loginUser } from "@/api/auth/authApi";
+import { useAuth } from "@/context/AuthContext";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -33,6 +34,7 @@ function validateField(name, value) {
 export default function LoginPage() {
   useDocumentTitle("Login — BOCC");
   const navigate = useNavigate();
+  const { fetchUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -92,6 +94,8 @@ export default function LoginPage() {
 
         if (accessToken) localStorage.setItem("accessToken", accessToken);
         if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+
+        await fetchUser({ silent: false });
 
         console.log("NAVIGATING TO:", destination);
 

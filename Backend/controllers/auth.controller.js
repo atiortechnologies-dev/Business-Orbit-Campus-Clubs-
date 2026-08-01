@@ -382,7 +382,10 @@ const login = asyncHandler(async (req, res) => {
   }
 
   // 4. Check account status
-  if (user.account_status === "pending_verification") {
+  if (
+    user.account_status === "pending_verification" ||
+    user.account_status === "pending_approval"
+  ) {
     return res.status(403).json({
       success: false,
       message: "Account pending verification",
@@ -403,11 +406,12 @@ const login = asyncHandler(async (req, res) => {
   const refreshToken = generateRefreshToken(user);
 
   // 6. Determine target redirect URL dynamically (with Admin override)
-  const redirectTo = user.role === "admin"
-    ? "/admin"
-    : user.profile_status === "pending"
-      ? `/onboarding/complete-profile/${user.role}`
-      : roleConfig[user.role]?.dashboardRedirect || "/dashboard";
+  const redirectTo =
+    user.role === "admin"
+      ? "/admin"
+      : user.profile_status === "not_started"
+        ? `/onboarding/complete-profile/${user.role}`
+        : roleConfig[user.role]?.dashboardRedirect || "/dashboard";
 
   return res.status(200).json({
     success: true,
