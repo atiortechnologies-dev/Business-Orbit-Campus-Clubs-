@@ -10,17 +10,12 @@ const asyncHandler = require("./asyncHandler");
 
 /**
  * Middleware to protect routes by ensuring a valid JWT is present
- * in the Authorization header. Attaches the User document to req.user.
+ * in the httpOnly accessToken cookie. Attaches the User document to req.user.
  */
 const requireAuth = asyncHandler(async (req, res, next) => {
-  let token;
-
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
+  // Access token now arrives as an httpOnly cookie instead of a Bearer header
+  // sourced from localStorage.
+  const token = req.cookies?.accessToken;
 
   if (!token) {
     return res.status(401).json({

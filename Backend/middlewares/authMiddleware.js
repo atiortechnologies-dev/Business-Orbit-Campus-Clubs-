@@ -12,15 +12,15 @@ const asyncHandler = require("./asyncHandler");
  * @desc    Middleware to verify JWT and inject user context into request
  */
 const protect = asyncHandler(async (req, res, next) => {
-  const authHeader = req.headers.authorization || "";
+  // Access token now arrives as an httpOnly cookie (set by login/register/
+  // verify-otp/refresh-token) instead of an Authorization header + localStorage.
+  const token = req.cookies?.accessToken;
 
-  if (!authHeader.startsWith("Bearer ")) {
+  if (!token) {
     return res
       .status(401)
       .json({ success: false, message: "Not authorized, no token provided" });
   }
-
-  const token = authHeader.split(" ")[1];
 
   let decoded;
   try {
@@ -72,11 +72,11 @@ const requireRole = (role) => (req, res, next) => {
  * @desc    Middleware to validate a refresh token and inject basic user context
  */
 const verifyRefreshTokenMiddleware = asyncHandler(async (req, res, next) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken) {
     return res
-      .status(400)
+      .status(401)
       .json({ success: false, message: "Refresh token is required" });
   }
 

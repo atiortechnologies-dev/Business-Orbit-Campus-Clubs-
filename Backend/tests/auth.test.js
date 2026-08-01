@@ -164,7 +164,8 @@ describe("Auth Routes Tests", () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.accessToken).toBeDefined(); // Token is returned
+      // Tokens are now issued as httpOnly cookies, not in the JSON body.
+      expect(res.headers["set-cookie"].some((c) => c.startsWith("accessToken="))).toBe(true);
       expect(res.body.data.redirect_to).toBe("/student-dashboard"); // Redirect verified
 
       const updatedUser = await User.findById(user._id);
@@ -200,7 +201,8 @@ describe("Auth Routes Tests", () => {
       });
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.accessToken).toBeDefined();
+      // Tokens are now issued as httpOnly cookies, not in the JSON body.
+      expect(res.headers["set-cookie"].some((c) => c.startsWith("accessToken="))).toBe(true);
     });
   });
 
