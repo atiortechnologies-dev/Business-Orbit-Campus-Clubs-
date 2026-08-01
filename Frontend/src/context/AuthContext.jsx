@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
       const response = await getMe();
       const normalizedUser = normalizeUser(response);
       setUser(normalizedUser ?? null);
-    } catch (error) {
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);
@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }) => {
   const logout = useCallback(async () => {
     try {
       await logoutUser();
-    } catch (error) {
+    } catch {
       // Even if the request fails, clear local state so the UI reflects
       // a logged-out user; the cookies will simply expire on their own.
     } finally {
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUser({ silent: true });
-  }, []);
+  }, [fetchUser]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, loading, fetchUser, logout }}>

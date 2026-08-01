@@ -10,6 +10,7 @@ const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes"); // mine one : authRoute
 const onboardingRoutes = require("./routes/onboarding.routes");
+const uploadRouter = require("./routes/upload.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const startupRoutes = require("./routes/startup.routes");
 const resourceRoutes = require("./routes/resource.routes");
@@ -93,6 +94,9 @@ app.use("/api/mentor/profile", createProfileRouter("mentor"));
 app.use("/api/investor/profile", createProfileRouter("investor"));
 app.use("/api/incubator/profile", createProfileRouter("incubator"));
 app.use("/api/company/profile", createProfileRouter("company"));
+
+// uploads
+app.use("/api/uploads", uploadRouter);
 
 //
 app.use("/api/student", studentChapterRouter);

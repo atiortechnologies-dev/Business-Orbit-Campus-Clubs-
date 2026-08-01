@@ -11,6 +11,7 @@ const RESEND_TIMEOUT = 45;
 export default function VerifyEmailPage() {
   useDocumentTitle("Verify Your Email — BOCC");
   const navigate = useNavigate();
+  const { fetchUser } = useAuth();
 
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const [secondsLeft, setSecondsLeft] = useState(RESEND_TIMEOUT);
