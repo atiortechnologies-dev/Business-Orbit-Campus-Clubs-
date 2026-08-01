@@ -6,7 +6,6 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
 import { registerUser } from "@/api/auth/authApi";
-import { useAuth } from "@/context/AuthContext";
 
 function computeStrength(password) {
   if (!password) return 0;
@@ -88,8 +87,6 @@ export default function RoleSignupForm({
       if (res.data?.refreshToken) {
         localStorage.setItem("refreshToken", res.data.refreshToken);
       }
-
-      await fetchUser({ silent: false });
 
       // Safe navigation using response payload
       const redirectTo = res.data?.redirect_to || "/email-verification";

@@ -57,8 +57,15 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   // Check if route requires specific roles
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to="/unauthorized" replace />;
+  if (allowedRoles) {
+    const normalizedUserRole = typeof user.role === "string" ? user.role.toLowerCase() : "";
+    const hasAllowedRole = allowedRoles.some(
+      (role) => typeof role === "string" && role.toLowerCase() === normalizedUserRole,
+    );
+
+    if (!hasAllowedRole) {
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
 
   return <Outlet />;

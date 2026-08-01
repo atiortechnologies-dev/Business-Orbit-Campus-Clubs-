@@ -15,7 +15,7 @@ import Input from "@/components/ui/Input";
 import Logo from "@/components/ui/Logo";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { loginUser } from "@/api/auth/authApi";
-import { useAuth } from "@/context/AuthContext";
+import { persistAuthTokens } from "@/api/auth/tokenStorage";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -92,10 +92,10 @@ export default function LoginPage() {
           res?.data?.refreshToken ||
           res?.refreshToken;
 
-        if (accessToken) localStorage.setItem("accessToken", accessToken);
-        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-
-        await fetchUser({ silent: false });
+        persistAuthTokens({
+          accessToken,
+          refreshToken,
+        });
 
         console.log("NAVIGATING TO:", destination);
 

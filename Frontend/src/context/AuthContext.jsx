@@ -1,12 +1,5 @@
 import { getMe } from "@/api/auth/authApi";
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext(null);
 
@@ -30,21 +23,12 @@ const normalizeUser = (response) => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const tokenRefreshPromiseRef = useRef(null); // Prevent concurrent refreshes
 
-  // Fetch user from API
-  const fetchUser = useCallback(async (options = {}) => {
-    const { silent = false } = options;
-
-    if (!silent) {
-      setLoading(true);
-    }
-
+  const fetchUser = async () => {
     try {
+      setLoading(true);
       const response = await getMe();
-      const normalizedUser = normalizeUser(response);
-      setUser(normalizedUser ?? null);
-      return normalizedUser ?? null;
+      setUser(response.data.user || response.data);
     } catch (error) {
       setUser(null);
       return null;
@@ -108,29 +92,14 @@ export const AuthProvider = ({ children }) => {
 
   // Optional: Set up interval to refresh user every 10 minutes (keep-alive)
   useEffect(() => {
-    if (!user) return;
+    fetchUser();
+  }, []);
 
-    const interval = setInterval(
-      () => {
-        fetchUser({ silent: true }).catch(() => {
-          setUser(null);
-        });
-      },
-      10 * 60 * 1000,
-    ); // 10 minutes
-
-    return () => clearInterval(interval);
-  }, [user, fetchUser]);
-
-  const value = {
-    user,
-    setUser,
-    loading,
-    fetchUser,
-    isAuthenticated: !!user && !!localStorage.getItem("accessToken"),
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, setUser, loading, fetchUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

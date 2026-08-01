@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Mail, RefreshCw, Loader2, AlertCircle } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { sendOtp, verifyOtp, getMe } from "@/api/auth/authApi";
-import { useAuth } from "@/context/AuthContext";
+import { persistAuthTokens } from "@/api/auth/tokenStorage";
 
 const OTP_LENGTH = 6;
 const RESEND_TIMEOUT = 45;
@@ -161,14 +161,10 @@ export default function VerifyEmailPage() {
       const payload = res?.data || res;
 
       // Save updated access tokens if present
-      if (payload?.accessToken) {
-        localStorage.setItem("accessToken", payload.accessToken);
-      }
-      if (payload?.refreshToken) {
-        localStorage.setItem("refreshToken", payload.refreshToken);
-      }
-
-      await fetchUser({ silent: false });
+      persistAuthTokens({
+        accessToken: payload?.accessToken,
+        refreshToken: payload?.refreshToken,
+      });
 
       // 3. Resolve destination URL safely with fallback
       const destination =
