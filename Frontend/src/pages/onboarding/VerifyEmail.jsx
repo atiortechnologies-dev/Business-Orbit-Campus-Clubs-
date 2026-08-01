@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Mail, RefreshCw, Loader2, AlertCircle } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { sendOtp, verifyOtp, getMe } from "@/api/auth/authApi";
-import { persistAuthTokens } from "@/api/auth/tokenStorage";
+import { useAuth } from "@/context/AuthContext";
 
 const OTP_LENGTH = 6;
 const RESEND_TIMEOUT = 45;
@@ -33,7 +33,7 @@ export default function VerifyEmailPage() {
         setIsSendingOtp(true);
         setError("");
 
-        // Get authenticated user email using JWT token in localStorage
+        // Get authenticated user email using the httpOnly auth cookie
         const userRes = await getMe();
 
         // Handle response unwrapping safely
@@ -160,11 +160,10 @@ export default function VerifyEmailPage() {
       // Extract nested data from response
       const payload = res?.data || res;
 
-      // Save updated access tokens if present
-      persistAuthTokens({
-        accessToken: payload?.accessToken,
-        refreshToken: payload?.refreshToken,
-      });
+      // accessToken/refreshToken are now set as httpOnly cookies directly
+      // by the backend response — nothing to store client-side.
+
+      await fetchUser({ silent: false });
 
       // 3. Resolve destination URL safely with fallback
       const destination =

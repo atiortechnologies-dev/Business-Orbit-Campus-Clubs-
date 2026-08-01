@@ -15,7 +15,7 @@ import Input from "@/components/ui/Input";
 import Logo from "@/components/ui/Logo";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { loginUser } from "@/api/auth/authApi";
-import { persistAuthTokens } from "@/api/auth/tokenStorage";
+import { useAuth } from "@/context/AuthContext";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -82,20 +82,10 @@ export default function LoginPage() {
           res?.redirect_to ||
           "/dashboard";
 
-        const accessToken =
-          res?.data?.data?.accessToken ||
-          res?.data?.accessToken ||
-          res?.accessToken;
+        // accessToken/refreshToken are now set as httpOnly cookies directly
+        // by the backend response — nothing to store client-side.
 
-        const refreshToken =
-          res?.data?.data?.refreshToken ||
-          res?.data?.refreshToken ||
-          res?.refreshToken;
-
-        persistAuthTokens({
-          accessToken,
-          refreshToken,
-        });
+        await fetchUser({ silent: false });
 
         console.log("NAVIGATING TO:", destination);
 

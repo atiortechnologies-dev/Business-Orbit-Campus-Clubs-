@@ -6,6 +6,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
 import { registerUser } from "@/api/auth/authApi";
+import { useAuth } from "@/context/AuthContext";
 
 function computeStrength(password) {
   if (!password) return 0;
@@ -81,12 +82,10 @@ export default function RoleSignupForm({
     try {
       const res = await registerUser(payload);
 
-      if (res.data?.accessToken) {
-        localStorage.setItem("accessToken", res.data.accessToken);
-      }
-      if (res.data?.refreshToken) {
-        localStorage.setItem("refreshToken", res.data.refreshToken);
-      }
+      // accessToken/refreshToken are now set as httpOnly cookies directly
+      // by the backend response — nothing to store client-side.
+
+      await fetchUser({ silent: false });
 
       // Safe navigation using response payload
       const redirectTo = res.data?.redirect_to || "/email-verification";

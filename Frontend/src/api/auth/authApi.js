@@ -28,8 +28,13 @@ export const resetPassword = (data) => {
   return api.post("/auth/reset-password", data);
 };
 
-export const refreshAccessToken = (refreshToken) => {
-  return api.post("/auth/refresh-token", { refreshToken });
+export const refreshAccessToken = () => {
+  // Refresh token is read from the httpOnly cookie by the backend now.
+  return api.post("/auth/refresh-token");
+};
+
+export const logoutUser = () => {
+  return api.post("/auth/logout");
 };
 
 export const getMe = () => {

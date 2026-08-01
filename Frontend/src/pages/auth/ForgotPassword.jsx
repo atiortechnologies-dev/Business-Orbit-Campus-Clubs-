@@ -13,7 +13,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { forgotPassword } from "@/api/authApi";
+import { forgotPassword } from "@/api/auth/authApi";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

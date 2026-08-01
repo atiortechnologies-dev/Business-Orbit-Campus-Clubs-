@@ -22,6 +22,7 @@ const {
   verifyRefreshToken,
   generateRefreshToken,
 } = require("../utils/token");
+const { setAuthCookies, clearAuthCookies } = require("../utils/cookies");
 const roleConfig = require("../utils/roleConfig");
 const asyncHandler = require("../middlewares/asyncHandler");
 const { checkEmailSchema } = require("../utils/validators");
@@ -189,12 +190,14 @@ const register = asyncHandler(async (req, res) => {
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
 
+  // Tokens now live in httpOnly cookies instead of the JSON body, so the
+  // frontend never has to touch (or store) them in localStorage.
+  setAuthCookies(res, { accessToken, refreshToken });
+
   return res.status(201).json({
     success: true,
     message: "Registration successful. Please verify your email.",
     data: {
-      accessToken,
-      refreshToken,
       user: {
         id: user._id,
         role: user.role,
@@ -323,6 +326,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
   // Generate authentication token
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
+  setAuthCookies(res, { accessToken, refreshToken });
 
   const redirectTo =
     user.account_status === "active"
@@ -333,8 +337,6 @@ const verifyOtp = asyncHandler(async (req, res) => {
     success: true,
     message: "Email verified successfully",
     data: {
-      accessToken,
-      refreshToken,
       user: {
         id: user._id,
         email: user.email,
@@ -404,6 +406,7 @@ const login = asyncHandler(async (req, res) => {
   // 5. Generate authentication tokens
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
+  setAuthCookies(res, { accessToken, refreshToken });
 
   // 6. Determine target redirect URL dynamically (with Admin override)
   const redirectTo =
@@ -417,8 +420,6 @@ const login = asyncHandler(async (req, res) => {
     success: true,
     message: "Login successful",
     data: {
-      accessToken,
-      refreshToken,
       user: {
         id: user._id,
         email: user.email,
@@ -534,32 +535,58 @@ const resetPassword = asyncHandler(async (req, res) => {
 /**
  * @desc    Issue a new access token using a valid refresh token
  * @route   POST /api/auth/refresh-token
- * @access  Public (requires a valid refresh token in the body)
+ * @access  Public (requires a valid refresh token cookie, sent automatically by the browser)
  */
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const { refreshToken } = req.body;
+  // Refresh token now travels as an httpOnly cookie instead of a request body
+  // field, so it can't be read or tampered with by frontend JS.
+  const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken) {
     return res
-      .status(400)
+      .status(401)
       .json({ success: false, message: "Refresh token is required" });
   }
 
-  const decoded = verifyRefreshToken(refreshToken);
+  let decoded;
+  try {
+    decoded = verifyRefreshToken(refreshToken);
+  } catch (err) {
+    clearAuthCookies(res);
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired refresh token",
+      error: err.message,
+    });
+  }
+
   const user = await User.findById(decoded.id);
 
   if (!user) {
+    clearAuthCookies(res);
     return res.status(401).json({ success: false, message: "User not found" });
   }
 
   const newAccessToken = generateToken(user);
+  setAuthCookies(res, { accessToken: newAccessToken });
 
   return res.status(200).json({
     success: true,
     message: "Token refreshed successfully",
-    data: {
-      accessToken: newAccessToken,
-    },
+  });
+});
+
+/**
+ * @desc    Log the current user out by clearing the auth cookies
+ * @route   POST /api/auth/logout
+ * @access  Public
+ */
+const logout = asyncHandler(async (req, res) => {
+  clearAuthCookies(res);
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
   });
 });
 
@@ -598,6 +625,7 @@ module.exports = {
   forgotPassword,
   resetPassword,
   refreshAccessToken,
+  logout,
   getMe,
   getAllChapters,
 };

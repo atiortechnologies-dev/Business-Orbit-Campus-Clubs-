@@ -14,6 +14,7 @@ const {
   forgotPassword,
   resetPassword,
   refreshAccessToken,
+  logout,
   getMe,
   getAllChapters,
 } = require("../controllers/auth.controller");
@@ -27,7 +28,6 @@ const {
   loginSchema,
   forgotPasswordSchema,
   resetPasswordSchema,
-  refreshTokenSchema,
 } = require("../utils/validators");
 
 router.get("/get-all-chapter", getAllChapters);
@@ -65,12 +65,11 @@ router.post(
   resetPassword,
 );
 
-// POST /api/auth/refresh-token
-router.post(
-  "/refresh-token",
-  validateRequest(refreshTokenSchema, "body"),
-  refreshAccessToken,
-);
+// POST /api/auth/refresh-token (refresh token is read from the httpOnly cookie)
+router.post("/refresh-token", refreshAccessToken);
+
+// POST /api/auth/logout
+router.post("/logout", logout);
 
 // GET /api/auth/me
 router.get("/me", protect, getMe);
