@@ -60,7 +60,7 @@ export default function AdminSettingsPage() {
     updateProfile: submitProfile,
     updatePlatformSettings,
     updateNotifications,
-    isLoadingSettings,
+    _isLoadingSettings,
   } = useAdminDashboard();
 
   const [profile, setProfile] = useState({

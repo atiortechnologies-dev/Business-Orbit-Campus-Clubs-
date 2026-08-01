@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Building2, MapPin } from "lucide-react";
+import { Building2, _MapPin } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import Badge from "@/components/ui/Badge";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";

@@ -8,7 +8,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const MentorAssignment = require("../models/MentorAssignment");
 const MentorRequest = require("../models/MentorRequest");
 const MentorMeeting = require("../models/MentorMeeting");
-const ChatRoom = require("../models/ChatRoom");
+
 const { getHydratedChatRooms } = require("../services/chatRoomService");
 const {
   REQUEST_STATUS,

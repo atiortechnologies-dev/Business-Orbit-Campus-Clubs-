@@ -24,7 +24,7 @@ export default function RoleSignupForm({
   subtitle,
   icon,
   fields,
-  onSubmit,
+  _onSubmit,
   isLoadingChapters = false,
   globalError = null,
 }) {

@@ -178,7 +178,7 @@ exports.getPitchDetails = asyncHandler(async (req, res) => {
  * @route   POST /api/investor/pitches/filter
  */
 exports.filterPitches = asyncHandler(async (req, res) => {
-  const { industry, funding_stage, chapter, technology } = req.body;
+  const { industry, funding_stage, technology } = req.body;
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;

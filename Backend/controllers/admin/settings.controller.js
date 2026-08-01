@@ -10,8 +10,8 @@ const UserSession = require("../../models/UserSession");
 const User = require("../../models/User");
 const { logAudit } = require("../../services/auditLoggerService");
 const asyncHandler = require("../../middlewares/asyncHandler");
-const fs = require("fs");
-const path = require("path");
+const _fs = require("fs");
+const _path = require("path");
 const { hashPassword, comparePassword } = require("../../utils/password");
 
 /**
@@ -262,13 +262,11 @@ exports.logoutAllDevices = asyncHandler(async (req, res) => {
   const refreshToken = req.body?.refreshToken;
 
   if (!refreshToken) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message:
-          "Refresh token is required to identify and preserve the current session",
-      });
+    return res.status(400).json({
+      success: false,
+      message:
+        "Refresh token is required to identify and preserve the current session",
+    });
   }
 
   const crypto = require("crypto");
@@ -308,12 +306,10 @@ exports.changePassword = asyncHandler(async (req, res) => {
   const { current_password, new_password } = req.body;
 
   if (!current_password || !new_password) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Please provide current and new password",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Please provide current and new password",
+    });
   }
 
   const user = await User.findById(req.user.id).select("+password_hash");

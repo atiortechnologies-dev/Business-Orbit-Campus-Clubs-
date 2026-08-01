@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { GraduationCap, Star, Loader2, AlertCircle } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";

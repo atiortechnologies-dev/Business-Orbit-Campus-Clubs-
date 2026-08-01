@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { _useMemo, useState, useEffect } from "react";
 import { Search, Send, Paperclip, AlertCircle } from "lucide-react";
 import api from "@/api/axiosInstance";
 import MentorShell from "@/components/mentor/MentorShell";

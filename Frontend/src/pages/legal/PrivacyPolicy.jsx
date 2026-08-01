@@ -6,7 +6,7 @@ import {
   Database,
   LifeBuoy,
   Download,
-  ChevronRight,
+  _ChevronRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import ComingSoon from "@/components/ui/ComingSoon";

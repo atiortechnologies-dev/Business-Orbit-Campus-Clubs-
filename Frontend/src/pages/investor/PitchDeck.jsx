@@ -56,7 +56,7 @@ export default function PitchDeckPage() {
   const [currentSlide, setCurrentSlide] = useState(4);
   const [investorNotes, setInvestorNotes] = useState("");
   const [notesSaved, setNotesSaved] = useState(false);
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
   const [isStartingChat, setIsStartingChat] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const { trackPitchView } = useInvestor();

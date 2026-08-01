@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Leaf,
   CheckCircle,
-  Unlock,
+  _Unlock,
   Lock,
   Star,
   Upload,

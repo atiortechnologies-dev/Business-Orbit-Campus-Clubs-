@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import _React, { useEffect, useState } from "react";
 import { AlertCircle } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import { adminChapterApi } from "@/api/admin/adminApi";
@@ -12,7 +12,7 @@ export default function ChapterChangeRequests() {
     fetchRequests();
   }, []);
 
-  const fetchRequests = async () => {
+  async function fetchRequests() {
     try {
       setErrorMsg("");
       const data = await adminChapterApi.getChangeRequests();
@@ -27,7 +27,7 @@ export default function ChapterChangeRequests() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleApprove = async (id) => {
     try {

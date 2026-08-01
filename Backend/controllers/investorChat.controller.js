@@ -3,12 +3,12 @@
  * @description Handles chat functionalities between investors and startups.
  */
 
-const mongoose = require("mongoose");
+const _mongoose = require("mongoose");
 const asyncHandler = require("../middlewares/asyncHandler");
 const InvestorChatRoom = require("../models/InvestorChatRoom");
 const InvestorMessage = require("../models/InvestorMessage");
-const Notification = require("../models/Notification");
-const Startup = require("../models/Startup");
+const _Notification = require("../models/Notification");
+const _Startup = require("../models/Startup");
 
 // ==========================================
 // STUDENT -> INVESTOR
@@ -51,12 +51,10 @@ exports.getInvestorChats = asyncHandler(async (req, res) => {
   const { startup_id } = req.query; // Filter by startup
 
   if (!startup_id) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "startup_id query parameter is required",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "startup_id query parameter is required",
+    });
   }
 
   const chatRooms = await InvestorChatRoom.find({ startup_id }).populate(
@@ -111,12 +109,10 @@ exports.getInvestorMessages = asyncHandler(async (req, res) => {
   const { startup_id } = req.query;
 
   if (!startup_id) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "startup_id query parameter is required",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "startup_id query parameter is required",
+    });
   }
 
   const chatRoom = await InvestorChatRoom.findOne({

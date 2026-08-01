@@ -9,7 +9,7 @@ const StartupPitch = require("../../models/StartupPitch");
 const InvestorWatchlist = require("../../models/InvestorWatchlist");
 const PitchView = require("../../models/PitchView");
 const Startup = require("../../models/Startup");
-const User = require("../../models/User");
+const _User = require("../../models/User");
 
 describe("Investor Discovery Controller", () => {
   let investorId, founderId, startup, pitch;

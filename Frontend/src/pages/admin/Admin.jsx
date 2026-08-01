@@ -4,7 +4,7 @@ import {
   Rocket,
   ShieldAlert,
   DollarSign,
-  TrendingUp,
+  _TrendingUp,
   AlertTriangle,
   FileText,
   UserPlus,

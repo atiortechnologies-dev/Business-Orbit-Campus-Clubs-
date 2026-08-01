@@ -150,7 +150,7 @@ export default function ChapterManagementPage() {
       label: "Actions",
       width: "1fr",
       mobileLabel: false,
-      render: (row) => (
+      render: (_row) => (
         <div className="flex items-center gap-1">
           <Link
             to="/admin/chapters/detail"

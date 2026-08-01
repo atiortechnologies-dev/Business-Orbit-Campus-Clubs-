@@ -6,7 +6,7 @@
 
 const asyncHandler = require("../middlewares/asyncHandler");
 const Opportunity = require("../models/Opportunity");
-const cascadeService = require("../services/cascadeService");
+const _cascadeService = require("../services/cascadeService");
 
 /**
  * @desc    Create a new opportunity

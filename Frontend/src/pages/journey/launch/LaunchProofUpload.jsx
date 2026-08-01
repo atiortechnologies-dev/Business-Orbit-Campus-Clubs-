@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
-  Info,
+  _Info,
   Upload,
   Camera,
   Film,
@@ -19,7 +19,7 @@ import {
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import ComingSoon from "@/components/ui/ComingSoon";
+import _ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import {
   getInsights,
@@ -110,7 +110,7 @@ export default function LaunchProofUploadPage() {
     notes: "",
   });
 
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [evidenceFiles, setEvidenceFiles] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");

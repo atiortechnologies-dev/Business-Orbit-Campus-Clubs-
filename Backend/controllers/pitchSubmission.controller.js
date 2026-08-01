@@ -43,12 +43,10 @@ exports.submitPitch = asyncHandler(async (req, res) => {
       investor_id,
     }).session(session);
     if (existing) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "A pitch has already been submitted to this investor",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "A pitch has already been submitted to this investor",
+      });
     }
 
     const [submission] = await PitchSubmission.create(
@@ -157,12 +155,10 @@ exports.withdrawPitch = asyncHandler(async (req, res) => {
   }
 
   if (submission.status !== "draft" && submission.status !== "submitted") {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Cannot withdraw a pitch that is already under review",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Cannot withdraw a pitch that is already under review",
+    });
   }
 
   const session = await mongoose.startSession();

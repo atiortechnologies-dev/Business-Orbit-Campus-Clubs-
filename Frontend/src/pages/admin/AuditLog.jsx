@@ -4,10 +4,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
-  User as UserIcon,
+  User as _UserIcon,
   AlertTriangle,
-  FileText,
-  Cloud,
+  _FileText,
+  _Cloud,
   Download,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
@@ -63,7 +63,7 @@ export default function AuditLogPage() {
     pulse,
     volumeTrend,
     fetchAuditLogs,
-    isLoadingLogs,
+    _isLoadingLogs,
     error,
   } = useAdminDashboard();
   const activeLogs = auditLogs?.length > 0 ? auditLogs : FALLBACK_LOGS;

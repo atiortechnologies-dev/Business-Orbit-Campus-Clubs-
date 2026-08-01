@@ -6,9 +6,9 @@ const CompanyProfile = require("../../models/CompanyProfile");
 const Opportunity = require("../../models/Opportunity");
 const SavedOpportunity = require("../../models/SavedOpportunity");
 const Application = require("../../models/Application");
-const ApplicantStatus = require("../../models/ApplicantStatus");
-const ApplicationDocument = require("../../models/ApplicationDocument");
-const ApplicationInterview = require("../../models/ApplicationInterview");
+const _ApplicantStatus = require("../../models/ApplicantStatus");
+const _ApplicationDocument = require("../../models/ApplicationDocument");
+const _ApplicationInterview = require("../../models/ApplicationInterview");
 
 const { generateToken } = require("../../utils/token");
 
@@ -16,7 +16,7 @@ describe("Student Freelancing Controller", () => {
   let studentUser;
   let companyUser;
   let studentToken;
-  let companyToken;
+  let _companyToken;
   let opp1, opp2, opp3;
 
   beforeAll(async () => {
@@ -40,7 +40,7 @@ describe("Student Freelancing Controller", () => {
       account_status: "active",
       email_verified: true,
     });
-    companyToken = generateToken(companyUser);
+    _companyToken = generateToken(companyUser);
 
     await CompanyProfile.create({
       user_id: companyUser._id,

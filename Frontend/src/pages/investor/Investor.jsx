@@ -10,7 +10,7 @@ import { filterStartups } from "@/api/startup/startupApi";
 import { useEffect, useState } from "react";
 import api from "@/api/axiosInstance";
 
-const STATS = [
+const _STATS = [
   {
     label: "Startups Available",
     value: "124",

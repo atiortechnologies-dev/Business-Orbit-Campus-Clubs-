@@ -314,12 +314,10 @@ exports.createApplication = asyncHandler(async (req, res) => {
   });
 
   if (!opportunity) {
-    return res
-      .status(404)
-      .json({
-        success: false,
-        message: "Opportunity not found or no longer active",
-      });
+    return res.status(404).json({
+      success: false,
+      message: "Opportunity not found or no longer active",
+    });
   }
 
   if (
@@ -337,13 +335,11 @@ exports.createApplication = asyncHandler(async (req, res) => {
     student_id: studentId,
   });
   if (existingApp) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message:
-          "You have already applied or started an application for this opportunity",
-      });
+    return res.status(400).json({
+      success: false,
+      message:
+        "You have already applied or started an application for this opportunity",
+    });
   }
 
   if (!resume_url) {
@@ -471,12 +467,10 @@ exports.updateApplication = asyncHandler(async (req, res) => {
   }
 
   if (application.application_status !== "draft") {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Only draft applications can be updated",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Only draft applications can be updated",
+    });
   }
 
   application.resume_url = resume_url || application.resume_url;
@@ -524,12 +518,10 @@ exports.uploadDocument = asyncHandler(async (req, res) => {
 
   const { application_id, document_type } = req.body;
   if (!application_id || !document_type) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "application_id and document_type are required",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "application_id and document_type are required",
+    });
   }
 
   const studentId = req.user._id;
@@ -545,12 +537,10 @@ exports.uploadDocument = asyncHandler(async (req, res) => {
   }
 
   if (application.application_status !== "draft") {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Documents can only be uploaded to draft applications",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Documents can only be uploaded to draft applications",
+    });
   }
 
   const fileUrl = `/uploads/${req.file.filename}`;
@@ -590,12 +580,10 @@ exports.submitApplication = asyncHandler(async (req, res) => {
   }
 
   if (!application.resume_url) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Resume is required before submitting",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Resume is required before submitting",
+    });
   }
 
   // Check deadline again
@@ -620,13 +608,11 @@ exports.submitApplication = asyncHandler(async (req, res) => {
     remarks: "Application submitted successfully",
   });
 
-  res
-    .status(200)
-    .json({
-      success: true,
-      message: "Application submitted successfully",
-      data: application,
-    });
+  res.status(200).json({
+    success: true,
+    message: "Application submitted successfully",
+    data: application,
+  });
 });
 
 /**
@@ -653,12 +639,10 @@ exports.withdrawApplication = asyncHandler(async (req, res) => {
       application.application_status,
     )
   ) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Cannot withdraw application after interview stage",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Cannot withdraw application after interview stage",
+    });
   }
 
   application.application_status = "withdrawn";

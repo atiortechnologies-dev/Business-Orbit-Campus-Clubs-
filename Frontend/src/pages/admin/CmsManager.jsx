@@ -5,15 +5,15 @@ import { AlertCircle } from "lucide-react";
 export default function CmsManager() {
   const [faqs, setFaqs] = useState([]);
   const [logos, setLogos] = useState([]);
-  const [stories, setStories] = useState([]);
-  const [startups, setStartups] = useState([]);
+  const [_stories, setStories] = useState([]);
+  const [_startups, setStartups] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     loadData();
   }, []);
 
-  const loadData = async () => {
+  async function loadData() {
     try {
       const [faqsRes, logosRes, storiesRes, startupsRes] = await Promise.all([
         cmsApi.getFaqs(),
@@ -33,7 +33,7 @@ export default function CmsManager() {
           "Failed to load CMS data.",
       );
     }
-  };
+  }
 
   const handleCreateFaq = async () => {
     const question = prompt("Question?");

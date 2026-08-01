@@ -7,7 +7,7 @@ import {
   Eye,
   Edit,
   Zap,
-  Info,
+  _Info,
   Loader2,
   AlertCircle,
 } from "lucide-react";

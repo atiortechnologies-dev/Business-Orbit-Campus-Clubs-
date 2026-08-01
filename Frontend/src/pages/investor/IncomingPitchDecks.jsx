@@ -7,7 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Play,
-  Eye,
+  _Eye,
   Loader2,
   AlertCircle,
 } from "lucide-react";

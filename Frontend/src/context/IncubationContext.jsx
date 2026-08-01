@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from "react";
+import _React, { createContext, useState, useCallback } from "react";
 import * as incubationApi from "../api/startup/incubationApi";
 import * as submissionApi from "../api/startup/submissionApi";
 import * as tractionApi from "../api/startup/tractionApi";
@@ -16,12 +16,12 @@ export const IncubationProvider = ({ children }) => {
   const [tractionOverview, setTractionOverview] = useState(null);
   const [tractionChecklist, setTractionChecklist] = useState(null);
   const [tractionMetrics, setTractionMetrics] = useState([]);
-  const [tractionSubmission, setTractionSubmission] = useState(null);
-  const [tractionReviewStatus, setTractionReviewStatus] = useState(null);
+  const [tractionSubmission, _setTractionSubmission] = useState(null);
+  const [tractionReviewStatus, _setTractionReviewStatus] = useState(null);
 
   // MVP state
   const [mvpStage, setMvpStage] = useState(null);
-  const [mvpChecklist, setMvpChecklist] = useState(null);
+  const [mvpChecklist, _setMvpChecklist] = useState(null);
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);

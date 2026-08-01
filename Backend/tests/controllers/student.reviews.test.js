@@ -15,9 +15,9 @@ const MentorReview = require("../../models/MentorReview");
 const { generateToken } = require("../../utils/token");
 
 describe("Student Mentor Reviews Controller", () => {
-  let studentUser, mentorUser, otherMentorUser;
-  let studentToken, mentorToken;
-  let mentorProfile;
+  let studentUser, mentorUser, _otherMentorUser;
+  let studentToken, _mentorToken;
+  let _mentorProfile;
 
   beforeEach(async () => {
     // Clear collections
@@ -46,10 +46,10 @@ describe("Student Mentor Reviews Controller", () => {
       account_status: "active",
       email_verified: true,
     });
-    mentorToken = generateToken(mentorUser);
+    _mentorToken = generateToken(mentorUser);
 
     // Create other mentor
-    otherMentorUser = await User.create({
+    _otherMentorUser = await User.create({
       full_name: "Other Mentor",
       email: "othermentor@test.com",
       password_hash: "hashedpassword",
@@ -59,7 +59,7 @@ describe("Student Mentor Reviews Controller", () => {
     });
 
     // Create mentor profile
-    mentorProfile = await MentorProfile.create({
+    _mentorProfile = await MentorProfile.create({
       user_id: mentorUser._id,
       organization: "Tech Corp",
       designation: "Senior Engineer",

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import _React, { useState, useEffect } from "react";
 import { Trash2, Loader2, AlertCircle } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import { adminUserApi } from "@/api/admin/adminApi";
@@ -8,11 +8,7 @@ export default function UserManagement() {
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  async function fetchUsers() {
     try {
       setLoading(true);
       setErrorMsg("");
@@ -26,7 +22,13 @@ export default function UserManagement() {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+
 
   const handleDelete = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;

@@ -38,7 +38,7 @@ const REQUEST_DOCS = [
 
 export default function VerificationDecisionPage() {
   useDocumentTitle("User Review: #USR-88219 — BOCC Admin");
-  const navigate = useNavigate();
+  const _navigate = useNavigate();
 
   const [openModal, setOpenModal] = useState(null); // 'approve' | 'reject' | 'request' | null
   const [decision, setDecision] = useState(null); // 'approved' | 'rejected' | null

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback } from "react";
+import _React, { createContext, useState, useCallback } from "react";
 import * as investorApi from "../api/investorApi";
 
 export const InvestorContext = createContext(null);

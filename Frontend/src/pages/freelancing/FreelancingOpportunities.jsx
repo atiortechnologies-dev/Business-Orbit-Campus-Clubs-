@@ -17,7 +17,7 @@ const INDUSTRY_OPTIONS = [
 ];
 const LEVEL_OPTIONS = ["Any Level", "Entry Level", "Intermediate", "Senior"];
 
-const OPPORTUNITIES = [
+const _OPPORTUNITIES = [
   {
     id: "o1",
     title: "Lead UX Design Intern",

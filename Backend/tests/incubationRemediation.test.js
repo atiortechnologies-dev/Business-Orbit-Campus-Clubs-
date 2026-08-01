@@ -218,7 +218,7 @@ describe("Incubation Architectural Remediation Tests", () => {
         is_approved: true,
       });
 
-      const app1 = await IncubationApplication.create({
+      const _app1 = await IncubationApplication.create({
         student_id: studentId,
         startup_id: startupId,
         incubator_id: incubatorId,

@@ -11,9 +11,7 @@ const { validateRequest } = require("../middlewares/validateRequest");
 const upload = require("../utils/uploadService");
 const {
   scheduleMeetingSchema,
-  sendMessageSchema,
   addMeetingNotesSchema,
-  searchChatsQuerySchema,
   updateMentorProfileSchema,
 } = require("../middlewares/validators/mentorValidators");
 

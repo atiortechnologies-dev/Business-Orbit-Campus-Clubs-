@@ -11,7 +11,7 @@ const IncubatorProfile = require("../../models/IncubatorProfile");
 
 describe("Incubator Discovery API", () => {
   let incubator1Id;
-  let incubator2Id;
+  let _incubator2Id;
 
   beforeEach(async () => {
     await IncubatorProfile.deleteMany({});
@@ -42,7 +42,7 @@ describe("Incubator Discovery API", () => {
       is_approved: true,
       application_deadline: new Date(Date.now() + 86400000 * 5),
     });
-    incubator2Id = inc2._id;
+    _incubator2Id = inc2._id;
 
     // Unapproved incubator should not appear in search
     await IncubatorProfile.create({

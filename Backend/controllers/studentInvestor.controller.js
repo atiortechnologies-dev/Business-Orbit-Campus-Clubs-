@@ -34,12 +34,10 @@ exports.searchInvestors = async (req, res, next) => {
   try {
     const { keyword } = req.query;
     if (!keyword) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Keyword query parameter is required",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Keyword query parameter is required",
+      });
     }
 
     const regex = new RegExp(keyword, "i");
@@ -121,12 +119,10 @@ exports.getInvestorById = async (req, res, next) => {
     }).populate("user_id", "full_name email");
 
     if (!investor) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Investor not found or not approved",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Investor not found or not approved",
+      });
     }
 
     res.status(200).json({ success: true, data: investor });
@@ -149,21 +145,17 @@ exports.getInvestorPortfolio = async (req, res, next) => {
     }).select("portfolio_details");
 
     if (!investor) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Investor not found or not approved",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Investor not found or not approved",
+      });
     }
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        portfolio:
-          investor.portfolio_details || "No portfolio details available.",
-      });
+    res.status(200).json({
+      success: true,
+      portfolio:
+        investor.portfolio_details || "No portfolio details available.",
+    });
   } catch (error) {
     next(error);
   }

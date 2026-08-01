@@ -42,14 +42,14 @@ const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const BuildStartupJourney = lazy(() => import("@/pages/BuildStartupJourney"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const StudentSettings = lazy(() => import("@/pages/Settings"));
-const Incubator = lazy(() => import("@/pages/incubator/Incubator"));
-const Applications = lazy(() => import("@/pages/incubator/Applications"));
-const ApplicationReview = lazy(
+const _Incubator = lazy(() => import("@/pages/incubator/Incubator"));
+const _Applications = lazy(() => import("@/pages/incubator/Applications"));
+const _ApplicationReview = lazy(
   () => import("@/pages/incubator/ApplicationReview"),
 );
-const Messages = lazy(() => import("@/pages/incubator/Messages"));
-const Settings = lazy(() => import("@/pages/incubator/Settings"));
-const PrivacyPolicy = lazy(() => import("@/pages/legal/PrivacyPolicy"));
+const _Messages = lazy(() => import("@/pages/incubator/Messages"));
+const _Settings = lazy(() => import("@/pages/incubator/Settings"));
+const _PrivacyPolicy = lazy(() => import("@/pages/legal/PrivacyPolicy"));
 const IdeationOverview = lazy(
   () => import("@/pages/journey/ideation/IdeationOverview"),
 );

@@ -6,20 +6,20 @@
  */
 
 const request = require("supertest");
-const mongoose = require("mongoose");
+const _mongoose = require("mongoose");
 const argon2 = require("argon2");
 const { app } = require("../server");
 
 // Models for Direct DB Queries
 const User = require("../models/User");
 const EmailVerification = require("../models/EmailVerification");
-const StudentProfile = require("../models/StudentProfile");
+const _StudentProfile = require("../models/StudentProfile");
 const Startup = require("../models/Startup");
 const MentorRequest = require("../models/MentorRequest");
 const MentorAssignment = require("../models/MentorAssignment");
 const ChatRoom = require("../models/ChatRoom");
 const Message = require("../models/Message");
-const MentorMeeting = require("../models/MentorMeeting");
+const _MentorMeeting = require("../models/MentorMeeting");
 const FAQ = require("../models/FAQ");
 const PartnerLogo = require("../models/PartnerLogo");
 const ContactEnquiry = require("../models/ContactEnquiry");
@@ -36,11 +36,11 @@ jest.mock("../utils/email", () => ({
 }));
 
 // Test State Variables
-let studentJwt = "";
+let _studentJwt = "";
 let mentorJwt = "";
 let otpCode = "";
 let studentId, mentorId, startupId, requestId, chatId;
-let faqId, partnerLogoId, enquiryId;
+let _faqId, _partnerLogoId, _enquiryId;
 
 const adminApiKey = "testadmin";
 process.env.ADMIN_API_KEY = adminApiKey;
@@ -92,7 +92,7 @@ describe("Full Lifecycle Integration Journey", () => {
       expect(res.status).toBe(200);
       expect(res.body.data.accessToken).toBeDefined();
 
-      studentJwt = res.body.data.accessToken;
+      _studentJwt = res.body.data.accessToken;
 
       const user = await User.findById(studentId);
       expect(user.account_status).toBe("active");
@@ -128,7 +128,7 @@ describe("Full Lifecycle Integration Journey", () => {
 
       const faq = await FAQ.findOne({ question: "How do I join a chapter?" });
       expect(faq).not.toBeNull();
-      faqId = faq._id;
+      _faqId = faq._id;
     });
 
     it("Test 3.2: Admin Create Partner Logo", async () => {
@@ -147,7 +147,7 @@ describe("Full Lifecycle Integration Journey", () => {
 
       const logo = await PartnerLogo.findOne({ name: "Tech Corp Inc." });
       expect(logo).not.toBeNull();
-      partnerLogoId = logo._id;
+      _partnerLogoId = logo._id;
     });
 
     it("Test 4.1: Public Fetch FAQs", async () => {
@@ -180,7 +180,7 @@ describe("Full Lifecycle Integration Journey", () => {
         email: "john@futuretech.com",
       });
       expect(enquiry).not.toBeNull();
-      enquiryId = enquiry._id;
+      _enquiryId = enquiry._id;
     });
   });
 

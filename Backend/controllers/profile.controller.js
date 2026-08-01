@@ -200,12 +200,10 @@ const getMyProfile = asyncHandler(async (req, res) => {
 const changePassword = asyncHandler(async (req, res) => {
   const { current_password, new_password } = req.body;
   if (!current_password || !new_password) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Current and new passwords are required",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Current and new passwords are required",
+    });
   }
 
   const user = await User.findById(req.user.id).select("+password_hash");
@@ -253,13 +251,11 @@ const updateNotificationPreferences = asyncHandler(async (req, res) => {
     await profile.save();
   }
 
-  return res
-    .status(200)
-    .json({
-      success: true,
-      message: "Notification preferences updated",
-      data: profile.notification_preferences,
-    });
+  return res.status(200).json({
+    success: true,
+    message: "Notification preferences updated",
+    data: profile.notification_preferences,
+  });
 });
 
 /**
@@ -291,13 +287,11 @@ const uploadPhoto = asyncHandler(async (req, res) => {
   profile.profile_photo = photo_url;
   await profile.save();
 
-  return res
-    .status(200)
-    .json({
-      success: true,
-      message: "Photo uploaded successfully",
-      data: { profile_photo: photo_url },
-    });
+  return res.status(200).json({
+    success: true,
+    message: "Photo uploaded successfully",
+    data: { profile_photo: photo_url },
+  });
 });
 
 module.exports = {

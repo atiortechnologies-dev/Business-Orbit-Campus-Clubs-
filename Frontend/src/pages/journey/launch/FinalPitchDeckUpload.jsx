@@ -8,8 +8,8 @@ import {
   Video,
   History,
   CheckCircle2,
-  MoreVertical,
-  Film,
+  _MoreVertical,
+  _Film,
   PieChart,
   Trash,
   AlertCircle,
@@ -84,7 +84,7 @@ export default function FinalPitchDeckUploadPage() {
   const fileInputRef = useRef(null);
 
   const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [_loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,7 +93,7 @@ export default function FinalPitchDeckUploadPage() {
     fetchData();
   }, []);
 
-  const fetchData = async () => {
+  async function fetchData() {
     try {
       const data = await getPitchDeck();
       if (data && data.documents) {
@@ -108,7 +108,7 @@ export default function FinalPitchDeckUploadPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];

@@ -1,5 +1,5 @@
 import { Check, Download, Handshake } from "lucide-react";
-import ComingSoon from "@/components/ui/ComingSoon";
+import _ComingSoon from "@/components/ui/ComingSoon";
 import PlaceholderGraphic from "@/components/ui/PlaceholderGraphic";
 import api from "@/api/axiosInstance";
 
