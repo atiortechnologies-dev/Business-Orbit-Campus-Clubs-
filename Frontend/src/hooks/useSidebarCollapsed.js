@@ -1,14 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = "sidebarCollapsed";
+const STORAGE_KEY = 'sidebarCollapsed';
 
 // Shared across all portal shells so collapsing the sidebar is
 // remembered everywhere, not just on the page you were on.
 export function useSidebarCollapsed() {
   const [collapsed, setCollapsed] = useState(
-    () =>
-      typeof window !== "undefined" &&
-      localStorage.getItem(STORAGE_KEY) === "true",
+    () => typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) === 'true'
   );
 
   useEffect(() => {

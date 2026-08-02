@@ -8,7 +8,6 @@ import {
   Check,
   RotateCw,
   Loader2,
-  AlertCircle,
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -41,7 +40,6 @@ export default function VerificationProgressPage() {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastChecked, setLastChecked] = useState(null);
-  const [errorMsg, setErrorMsg] = useState("");
 
   // Poll server status to check if admin approved/rejected
   const checkStatus = useCallback(async () => {
@@ -61,11 +59,6 @@ export default function VerificationProgressPage() {
       }
     } catch (err) {
       console.error("Failed to fetch onboarding status:", err);
-      setErrorMsg(
-        err?.response?.data?.message ||
-          err?.message ||
-          "Failed to check status.",
-      );
     } finally {
       setIsRefreshing(false);
     }
@@ -101,13 +94,6 @@ export default function VerificationProgressPage() {
           documents. This process ensures all Business Orbit Campus Clubs meet
           our professional ecosystem standards.
         </p>
-
-        {errorMsg && (
-          <div className="mb-4 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 max-w-sm mx-auto">
-            <AlertCircle size={16} className="shrink-0" />
-            <span>{errorMsg}</span>
-          </div>
-        )}
 
         {/* Status Badge & Manual Refresh Button */}
         <div className="flex items-center justify-center gap-3 mb-6">

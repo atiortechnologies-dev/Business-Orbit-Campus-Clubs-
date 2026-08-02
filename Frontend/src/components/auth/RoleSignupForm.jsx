@@ -140,7 +140,7 @@ export default function RoleSignupForm({
                         isLoading ||
                         (field.name === "college" && isLoadingChapters)
                       }
-                      className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-11 px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black disabled:opacity-50"
+                      className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-[44px] px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black disabled:opacity-50"
                     >
                       <option value="" disabled>
                         {field.name === "college" && isLoadingChapters

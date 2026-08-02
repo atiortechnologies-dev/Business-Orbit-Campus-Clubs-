@@ -1,19 +1,9 @@
-/**
- * @file mvpReview.controller.js
- * @description Manages MVP review meetings and feedback.
- * @architecture Handles MVP review scheduling and feedback retrieval, interacting with MVPReview and MVPReviewMeeting models.
- */
 const asyncHandler = require("../middlewares/asyncHandler");
 const MVPReview = require("../models/MVPReview");
 const MVPReviewMeeting = require("../models/MVPReviewMeeting");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // GET /api/student/mvp/meeting
-/**
- * @desc    Get MVP review meeting details
- * @route   GET /api/student/mvp/meeting
- * @access  Private/Student
- */
 const getReviewMeeting = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -53,11 +43,6 @@ const getReviewMeeting = asyncHandler(async (req, res) => {
 });
 
 // POST /api/student/mvp/reschedule
-/**
- * @desc    Request MVP review meeting reschedule
- * @route   POST /api/student/mvp/reschedule
- * @access  Private/Student
- */
 const requestMeetingReschedule = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { reschedule_reason } = req.body;
@@ -98,11 +83,6 @@ const requestMeetingReschedule = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/mvp/review
-/**
- * @desc    Get MVP review feedback
- * @route   GET /api/student/mvp/review
- * @access  Private/Student
- */
 const getReviewFeedback = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

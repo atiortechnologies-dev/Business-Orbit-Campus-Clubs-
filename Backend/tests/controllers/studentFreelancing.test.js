@@ -6,9 +6,9 @@ const CompanyProfile = require("../../models/CompanyProfile");
 const Opportunity = require("../../models/Opportunity");
 const SavedOpportunity = require("../../models/SavedOpportunity");
 const Application = require("../../models/Application");
-const _ApplicantStatus = require("../../models/ApplicantStatus");
-const _ApplicationDocument = require("../../models/ApplicationDocument");
-const _ApplicationInterview = require("../../models/ApplicationInterview");
+const ApplicantStatus = require("../../models/ApplicantStatus");
+const ApplicationDocument = require("../../models/ApplicationDocument");
+const ApplicationInterview = require("../../models/ApplicationInterview");
 
 const { generateToken } = require("../../utils/token");
 
@@ -16,7 +16,7 @@ describe("Student Freelancing Controller", () => {
   let studentUser;
   let companyUser;
   let studentToken;
-  let _companyToken;
+  let companyToken;
   let opp1, opp2, opp3;
 
   beforeAll(async () => {
@@ -40,7 +40,7 @@ describe("Student Freelancing Controller", () => {
       account_status: "active",
       email_verified: true,
     });
-    _companyToken = generateToken(companyUser);
+    companyToken = generateToken(companyUser);
 
     await CompanyProfile.create({
       user_id: companyUser._id,
@@ -118,9 +118,7 @@ describe("Student Freelancing Controller", () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.length).toBe(2); // Should not see opp3
-      expect(res.body.data.some((o) => o._id === opp3._id.toString())).toBe(
-        false,
-      );
+      expect(res.body.data.some((o) => o._id === opp3._id.toString())).toBe(false);
     });
   });
 
@@ -207,7 +205,7 @@ describe("Student Freelancing Controller", () => {
       expect(res.status).toBe(400);
       expect(res.body.message).toBe("Opportunity is already saved");
     });
-
+    
     it("should return 404 for saving non-existent opportunity", async () => {
       const fakeId = new mongoose.Types.ObjectId();
       const res = await request(app)
@@ -251,7 +249,7 @@ describe("Student Freelancing Controller", () => {
         .set("Authorization", `Bearer ${studentToken}`)
         .send({
           opportunity_id: opp1._id,
-          resume_url: "http://example.com/resume.pdf",
+          resume_url: "http://example.com/resume.pdf"
         });
 
       expect(res.status).toBe(201);
@@ -265,7 +263,7 @@ describe("Student Freelancing Controller", () => {
         .set("Authorization", `Bearer ${studentToken}`)
         .send({
           opportunity_id: opp1._id,
-          resume_url: "http://example.com/resume2.pdf",
+          resume_url: "http://example.com/resume2.pdf"
         });
 
       expect(res.status).toBe(400);
@@ -277,7 +275,7 @@ describe("Student Freelancing Controller", () => {
         .post("/api/student/freelancing/applications")
         .set("Authorization", `Bearer ${studentToken}`)
         .send({
-          opportunity_id: opp2._id,
+          opportunity_id: opp2._id
         });
 
       expect(res.status).toBe(400);
@@ -297,7 +295,7 @@ describe("Student Freelancing Controller", () => {
         .put(`/api/student/freelancing/applications/${appId}`)
         .set("Authorization", `Bearer ${studentToken}`)
         .send({
-          cover_letter: "Updated cover letter",
+          cover_letter: "Updated cover letter"
         });
 
       expect(res.status).toBe(200);
@@ -309,9 +307,7 @@ describe("Student Freelancing Controller", () => {
   describe("GET /api/student/freelancing/applications/:applicationId", () => {
     let appId;
     beforeAll(async () => {
-      const application = await Application.findOne({
-        opportunity_id: opp1._id,
-      });
+      const application = await Application.findOne({ opportunity_id: opp1._id });
       appId = application._id;
     });
 
@@ -329,9 +325,7 @@ describe("Student Freelancing Controller", () => {
   describe("POST /api/student/freelancing/applications/:applicationId/submit", () => {
     let appId;
     beforeAll(async () => {
-      const application = await Application.findOne({
-        opportunity_id: opp1._id,
-      });
+      const application = await Application.findOne({ opportunity_id: opp1._id });
       appId = application._id;
     });
 
@@ -374,16 +368,14 @@ describe("Student Freelancing Controller", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.data.counts.total).toBe(1);
+      expect(res.body.data.total).toBe(1);
     });
   });
 
   describe("DELETE /api/student/freelancing/applications/:applicationId/withdraw", () => {
     let appId;
     beforeAll(async () => {
-      const application = await Application.findOne({
-        opportunity_id: opp1._id,
-      });
+      const application = await Application.findOne({ opportunity_id: opp1._id });
       appId = application._id;
     });
 
@@ -401,9 +393,7 @@ describe("Student Freelancing Controller", () => {
   describe("GET /api/student/freelancing/applications/:applicationId/timeline", () => {
     let appId;
     beforeAll(async () => {
-      const application = await Application.findOne({
-        opportunity_id: opp1._id,
-      });
+      const application = await Application.findOne({ opportunity_id: opp1._id });
       appId = application._id;
     });
 
@@ -414,7 +404,7 @@ describe("Student Freelancing Controller", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(Array.isArray(res.body.data.timeline)).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
     });
   });
 
@@ -426,7 +416,7 @@ describe("Student Freelancing Controller", () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(Array.isArray(res.body.data.interviews)).toBe(true);
+      expect(Array.isArray(res.body.data)).toBe(true);
     });
   });
 
@@ -439,7 +429,7 @@ describe("Student Freelancing Controller", () => {
         .set("Authorization", `Bearer ${studentToken}`)
         .send({
           opportunity_id: opp2._id,
-          resume_url: "http://example.com/initial.pdf",
+          resume_url: "initial"
         });
       appId = res.body.data._id;
     });
@@ -461,15 +451,12 @@ describe("Student Freelancing Controller", () => {
         .set("Authorization", `Bearer ${studentToken}`)
         .field("application_id", appId.toString())
         .field("document_type", "Portfolio")
-        .attach(
-          "file",
-          Buffer.from("dummy portfolio content"),
-          "portfolio.pdf",
-        );
+        .attach("file", Buffer.from("dummy portfolio content"), "portfolio.pdf");
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(res.body.data.document_type).toBe("Portfolio");
     });
   });
+
 });

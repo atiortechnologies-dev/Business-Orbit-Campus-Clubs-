@@ -49,8 +49,7 @@ exports.listOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort({ created_at: -1 })
     .skip(startIndex)
-    .limit(limit)
-    .lean();
+    .limit(limit);
 
   res.status(200).json({
     success: true,
@@ -97,8 +96,7 @@ exports.searchOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort({ score: { $meta: "textScore" } })
     .skip(startIndex)
-    .limit(limit)
-    .lean();
+    .limit(limit);
 
   res.status(200).json({
     success: true,
@@ -157,8 +155,7 @@ exports.filterOpportunities = asyncHandler(async (req, res) => {
     .populate("company_id", "full_name email")
     .sort(sortObj)
     .skip(startIndex)
-    .limit(limit)
-    .lean();
+    .limit(limit);
 
   res.status(200).json({
     success: true,
@@ -188,9 +185,7 @@ exports.getOpportunityDetails = asyncHandler(async (req, res) => {
     _id: opportunityId,
     status: { $in: ["open", "active"] },
     company_id: { $in: activeCompanyIds },
-  })
-    .populate("company_id", "full_name email")
-    .lean();
+  }).populate("company_id", "full_name email");
 
   if (!opportunity) {
     return res.status(404).json({
@@ -285,26 +280,18 @@ exports.unsaveOpportunity = asyncHandler(async (req, res) => {
   });
 });
 
+
 /**
  * @desc    Create a draft application for an opportunity
  * @route   POST /api/student/freelancing/applications
  * @access  Private (Student)
  */
 exports.createApplication = asyncHandler(async (req, res) => {
-  const {
-    opportunity_id,
-    resume_url,
-    cover_letter,
-    portfolio_url,
-    availability,
-    joining_date,
-  } = req.body;
+  const { opportunity_id, resume_url, cover_letter, portfolio_url, availability, joining_date } = req.body;
   const studentId = req.user._id;
 
   if (!opportunity_id) {
-    return res
-      .status(400)
-      .json({ success: false, message: "opportunity_id is required" });
+    return res.status(400).json({ success: false, message: "opportunity_id is required" });
   }
 
   // Check if opportunity is active
@@ -314,38 +301,21 @@ exports.createApplication = asyncHandler(async (req, res) => {
   });
 
   if (!opportunity) {
-    return res.status(404).json({
-      success: false,
-      message: "Opportunity not found or no longer active",
-    });
+    return res.status(404).json({ success: false, message: "Opportunity not found or no longer active" });
   }
 
-  if (
-    opportunity.application_deadline &&
-    new Date(opportunity.application_deadline) < new Date()
-  ) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Application deadline has passed" });
+  if (opportunity.application_deadline && new Date(opportunity.application_deadline) < new Date()) {
+    return res.status(400).json({ success: false, message: "Application deadline has passed" });
   }
 
   // Prevent duplicate applications
-  const existingApp = await Application.findOne({
-    opportunity_id,
-    student_id: studentId,
-  });
+  const existingApp = await Application.findOne({ opportunity_id, student_id: studentId });
   if (existingApp) {
-    return res.status(400).json({
-      success: false,
-      message:
-        "You have already applied or started an application for this opportunity",
-    });
+    return res.status(400).json({ success: false, message: "You have already applied or started an application for this opportunity" });
   }
 
   if (!resume_url) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Resume is required" });
+    return res.status(400).json({ success: false, message: "Resume is required" });
   }
 
   const application = await Application.create({
@@ -356,14 +326,14 @@ exports.createApplication = asyncHandler(async (req, res) => {
     cover_letter,
     portfolio_url,
     availability,
-    joining_date,
+    joining_date
   });
 
   await ApplicantStatus.create({
     application_id: application._id,
     status: "draft",
     updated_by: studentId,
-    remarks: "Application draft created",
+    remarks: "Application draft created"
   });
 
   res.status(201).json({ success: true, data: application });
@@ -377,13 +347,11 @@ exports.createApplication = asyncHandler(async (req, res) => {
 exports.getApplications = asyncHandler(async (req, res) => {
   const studentId = req.user._id;
   const { status } = req.query; // Active, Interviews, Selected, Rejected, Archived, etc.
-
+  
   let query = { student_id: studentId };
   if (status) {
     if (status === "Active") {
-      query.application_status = {
-        $in: ["draft", "submitted", "viewed", "shortlisted"],
-      };
+      query.application_status = { $in: ["draft", "submitted", "viewed", "shortlisted"] };
     } else if (status === "Interviews") {
       query.application_status = { $in: ["interviewing", "interview"] };
     } else if (status === "Selected") {
@@ -401,13 +369,11 @@ exports.getApplications = asyncHandler(async (req, res) => {
     .populate({
       path: "opportunity_id",
       select: "title company_id",
-      populate: { path: "company_id", select: "full_name email" },
+      populate: { path: "company_id", select: "full_name email" }
     })
     .sort({ updated_at: -1 });
 
-  res
-    .status(200)
-    .json({ success: true, count: applications.length, data: applications });
+  res.status(200).json({ success: true, count: applications.length, data: applications });
 });
 
 /**
@@ -419,24 +385,18 @@ exports.getApplicationDetails = asyncHandler(async (req, res) => {
   const { applicationId } = req.params;
   const studentId = req.user._id;
 
-  const application = await Application.findOne({
-    _id: applicationId,
-    student_id: studentId,
-  }).populate({
-    path: "opportunity_id",
-    populate: { path: "company_id", select: "full_name email" },
-  });
+  const application = await Application.findOne({ _id: applicationId, student_id: studentId })
+    .populate({
+      path: "opportunity_id",
+      populate: { path: "company_id", select: "full_name email" }
+    });
 
   if (!application) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Application not found" });
+    return res.status(404).json({ success: false, message: "Application not found" });
   }
 
-  const documents = await ApplicationDocument.find({
-    application_id: applicationId,
-  });
-
+  const documents = await ApplicationDocument.find({ application_id: applicationId });
+  
   res.status(200).json({ success: true, data: { application, documents } });
 });
 
@@ -448,40 +408,22 @@ exports.getApplicationDetails = asyncHandler(async (req, res) => {
 exports.updateApplication = asyncHandler(async (req, res) => {
   const { applicationId } = req.params;
   const studentId = req.user._id;
-  const {
-    resume_url,
-    cover_letter,
-    portfolio_url,
-    availability,
-    joining_date,
-  } = req.body;
+  const { resume_url, cover_letter, portfolio_url, availability, joining_date } = req.body;
 
-  let application = await Application.findOne({
-    _id: applicationId,
-    student_id: studentId,
-  });
+  let application = await Application.findOne({ _id: applicationId, student_id: studentId });
   if (!application) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Application not found" });
+    return res.status(404).json({ success: false, message: "Application not found" });
   }
 
   if (application.application_status !== "draft") {
-    return res.status(400).json({
-      success: false,
-      message: "Only draft applications can be updated",
-    });
+    return res.status(400).json({ success: false, message: "Only draft applications can be updated" });
   }
 
   application.resume_url = resume_url || application.resume_url;
-  application.cover_letter =
-    cover_letter !== undefined ? cover_letter : application.cover_letter;
-  application.portfolio_url =
-    portfolio_url !== undefined ? portfolio_url : application.portfolio_url;
-  application.availability =
-    availability !== undefined ? availability : application.availability;
-  application.joining_date =
-    joining_date !== undefined ? joining_date : application.joining_date;
+  application.cover_letter = cover_letter !== undefined ? cover_letter : application.cover_letter;
+  application.portfolio_url = portfolio_url !== undefined ? portfolio_url : application.portfolio_url;
+  application.availability = availability !== undefined ? availability : application.availability;
+  application.joining_date = joining_date !== undefined ? joining_date : application.joining_date;
 
   await application.save();
 
@@ -495,9 +437,7 @@ exports.updateApplication = asyncHandler(async (req, res) => {
  */
 exports.uploadResume = asyncHandler(async (req, res) => {
   if (!req.file) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Please upload a resume file" });
+    return res.status(400).json({ success: false, message: "Please upload a resume file" });
   }
 
   const fileUrl = `/uploads/${req.file.filename}`;
@@ -511,36 +451,23 @@ exports.uploadResume = asyncHandler(async (req, res) => {
  */
 exports.uploadDocument = asyncHandler(async (req, res) => {
   if (!req.file) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Please upload a document" });
+    return res.status(400).json({ success: false, message: "Please upload a document" });
   }
 
   const { application_id, document_type } = req.body;
   if (!application_id || !document_type) {
-    return res.status(400).json({
-      success: false,
-      message: "application_id and document_type are required",
-    });
+    return res.status(400).json({ success: false, message: "application_id and document_type are required" });
   }
 
   const studentId = req.user._id;
-  const application = await Application.findOne({
-    _id: application_id,
-    student_id: studentId,
-  });
-
+  const application = await Application.findOne({ _id: application_id, student_id: studentId });
+  
   if (!application) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Application not found" });
+    return res.status(404).json({ success: false, message: "Application not found" });
   }
 
   if (application.application_status !== "draft") {
-    return res.status(400).json({
-      success: false,
-      message: "Documents can only be uploaded to draft applications",
-    });
+    return res.status(400).json({ success: false, message: "Documents can only be uploaded to draft applications" });
   }
 
   const fileUrl = `/uploads/${req.file.filename}`;
@@ -548,7 +475,7 @@ exports.uploadDocument = asyncHandler(async (req, res) => {
     application_id,
     document_type,
     file_name: req.file.originalname,
-    file_url: fileUrl,
+    file_url: fileUrl
   });
 
   res.status(200).json({ success: true, data: doc });
@@ -563,39 +490,23 @@ exports.submitApplication = asyncHandler(async (req, res) => {
   const { applicationId } = req.params;
   const studentId = req.user._id;
 
-  let application = await Application.findOne({
-    _id: applicationId,
-    student_id: studentId,
-  }).populate("opportunity_id");
+  let application = await Application.findOne({ _id: applicationId, student_id: studentId }).populate("opportunity_id");
   if (!application) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Application not found" });
+    return res.status(404).json({ success: false, message: "Application not found" });
   }
 
   if (application.application_status !== "draft") {
-    return res
-      .status(400)
-      .json({ success: false, message: "Application is already submitted" });
+    return res.status(400).json({ success: false, message: "Application is already submitted" });
   }
 
   if (!application.resume_url) {
-    return res.status(400).json({
-      success: false,
-      message: "Resume is required before submitting",
-    });
+    return res.status(400).json({ success: false, message: "Resume is required before submitting" });
   }
 
   // Check deadline again
   const opportunity = application.opportunity_id;
-  if (
-    opportunity &&
-    opportunity.application_deadline &&
-    new Date(opportunity.application_deadline) < new Date()
-  ) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Application deadline has passed" });
+  if (opportunity && opportunity.application_deadline && new Date(opportunity.application_deadline) < new Date()) {
+    return res.status(400).json({ success: false, message: "Application deadline has passed" });
   }
 
   application.application_status = "submitted";
@@ -605,14 +516,10 @@ exports.submitApplication = asyncHandler(async (req, res) => {
     application_id: application._id,
     status: "submitted",
     updated_by: studentId,
-    remarks: "Application submitted successfully",
+    remarks: "Application submitted successfully"
   });
 
-  res.status(200).json({
-    success: true,
-    message: "Application submitted successfully",
-    data: application,
-  });
+  res.status(200).json({ success: true, message: "Application submitted successfully", data: application });
 });
 
 /**
@@ -624,35 +531,23 @@ exports.withdrawApplication = asyncHandler(async (req, res) => {
   const { applicationId } = req.params;
   const studentId = req.user._id;
 
-  let application = await Application.findOne({
-    _id: applicationId,
-    student_id: studentId,
-  });
+  let application = await Application.findOne({ _id: applicationId, student_id: studentId });
   if (!application) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Application not found" });
+    return res.status(404).json({ success: false, message: "Application not found" });
   }
 
-  if (
-    ["interview", "interviewing", "selected", "hired"].includes(
-      application.application_status,
-    )
-  ) {
-    return res.status(400).json({
-      success: false,
-      message: "Cannot withdraw application after interview stage",
-    });
+  if (["interview", "interviewing", "selected", "hired"].includes(application.application_status)) {
+    return res.status(400).json({ success: false, message: "Cannot withdraw application after interview stage" });
   }
 
-  application.application_status = "withdrawn";
+  application.application_status = "withdrawn"; 
   await application.save();
 
   await ApplicantStatus.create({
     application_id: application._id,
     status: "withdrawn",
     updated_by: studentId,
-    remarks: "Student withdrew application",
+    remarks: "Student withdrew application"
   });
 
   res.status(200).json({ success: true, message: "Application withdrawn" });
@@ -667,21 +562,14 @@ exports.getApplicationTimeline = asyncHandler(async (req, res) => {
   const { applicationId } = req.params;
   const studentId = req.user._id;
 
-  const application = await Application.findOne({
-    _id: applicationId,
-    student_id: studentId,
-  });
+  const application = await Application.findOne({ _id: applicationId, student_id: studentId });
   if (!application) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Application not found" });
+    return res.status(404).json({ success: false, message: "Application not found" });
   }
 
-  const timeline = await ApplicantStatus.find({ application_id: applicationId })
-    .populate("updated_by", "full_name _id")
-    .sort({ created_at: 1 });
-
-  res.status(200).json({ success: true, data: { timeline } });
+  const timeline = await ApplicantStatus.find({ application_id: applicationId }).sort({ created_at: 1 });
+  
+  res.status(200).json({ success: true, data: timeline });
 });
 
 /**
@@ -691,30 +579,24 @@ exports.getApplicationTimeline = asyncHandler(async (req, res) => {
  */
 exports.getInterviews = asyncHandler(async (req, res) => {
   const studentId = req.user._id;
-
+  
   // Find all applications for this student
-  const applications = await Application.find({ student_id: studentId }).select(
-    "_id",
-  );
-  const appIds = applications.map((app) => app._id);
+  const applications = await Application.find({ student_id: studentId }).select("_id");
+  const appIds = applications.map(app => app._id);
 
-  const interviews = await ApplicationInterview.find({
-    application_id: { $in: appIds },
-  })
+  const interviews = await ApplicationInterview.find({ application_id: { $in: appIds } })
     .populate({
       path: "application_id",
       select: "opportunity_id application_status",
       populate: {
         path: "opportunity_id",
         select: "title company_id",
-        populate: { path: "company_id", select: "full_name email" },
-      },
+        populate: { path: "company_id", select: "full_name email" }
+      }
     })
     .sort({ interview_date: 1 });
 
-  res
-    .status(200)
-    .json({ success: true, count: interviews.length, data: { interviews } });
+  res.status(200).json({ success: true, count: interviews.length, data: interviews });
 });
 
 /**
@@ -724,31 +606,26 @@ exports.getInterviews = asyncHandler(async (req, res) => {
  */
 exports.getApplicationStatusSummary = asyncHandler(async (req, res) => {
   const studentId = req.user._id;
-
-  const applications = await Application.find(
-    { student_id: studentId },
-    "application_status",
-  );
-
+  
+  const applications = await Application.find({ student_id: studentId }, "application_status");
+  
   const statusSummary = {
     total: applications.length,
     active: 0,
     interviews: 0,
     selected: 0,
     rejected: 0,
-    archived: 0,
+    archived: 0
   };
 
-  applications.forEach((app) => {
+  applications.forEach(app => {
     const stat = app.application_status;
-    if (["draft", "submitted", "viewed", "shortlisted"].includes(stat))
-      statusSummary.active++;
-    else if (["interviewing", "interview"].includes(stat))
-      statusSummary.interviews++;
+    if (["draft", "submitted", "viewed", "shortlisted"].includes(stat)) statusSummary.active++;
+    else if (["interviewing", "interview"].includes(stat)) statusSummary.interviews++;
     else if (["selected", "hired"].includes(stat)) statusSummary.selected++;
     else if (stat === "rejected") statusSummary.rejected++;
     else if (stat === "withdrawn") statusSummary.archived++;
   });
 
-  res.status(200).json({ success: true, data: { counts: statusSummary } });
+  res.status(200).json({ success: true, data: statusSummary });
 });

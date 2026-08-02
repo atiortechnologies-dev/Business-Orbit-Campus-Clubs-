@@ -157,7 +157,7 @@ export default function AdminShell({ children }) {
           </div>
         </header>
 
-        <div className="flex-1 p-6 md:p-8 max-w-[var(--spacing-container-max)] w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-(--spacing-container-max) w-full mx-auto flex flex-col">
           {children}
         </div>
 

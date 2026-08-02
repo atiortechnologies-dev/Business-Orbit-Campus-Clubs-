@@ -1,8 +1,3 @@
-/**
- * @file TractionMetrics.js
- * @description Mongoose model for recording a startup's performance and growth metrics, such as users, revenue, and retention.
- * @architecture Forms the data layer for tracking startup success metrics, utilized during traction evaluations and analytics reporting.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -94,8 +89,4 @@ const TractionMetricsSchema = mongoose.Schema(
 TractionMetricsSchema.index({ startup_id: 1 });
 TractionMetricsSchema.index({ student_id: 1 });
 
-/**
- * @module TractionMetrics
- * @description Exports the TractionMetrics Mongoose model.
- */
 module.exports = mongoose.model("TractionMetrics", TractionMetricsSchema);

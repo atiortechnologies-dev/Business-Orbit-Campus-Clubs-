@@ -12,8 +12,7 @@ beforeAll(async () => {
     await mongoose.disconnect();
   }
 
-  let uri =
-    process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/project_test_db";
+  let uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/project_test_db";
 
   // Automatically derive a test database name.
   if (uri.includes("mongodb+srv")) {
@@ -27,26 +26,20 @@ beforeAll(async () => {
   await mongoose.connect(uri);
 
   if (mongoose.connection.readyState !== 0 && mongoose.connection.db) {
-    const collections = await mongoose.connection.db.collections();
-    for (let collection of collections) {
-      await collection.deleteMany({});
-    }
+    await mongoose.connection.dropDatabase();
   }
 
   // Ensure all indexes are built before tests run to prevent WriteConflicts during transactions
   await Promise.all(
     Object.values(mongoose.models).map((model) => model.init()),
   );
-}, 60000);
+});
 
 afterAll(async () => {
   // Wait briefly for any pending operations
   await new Promise((resolve) => setTimeout(resolve, 500));
-  if (mongoose.connection.readyState !== 0 && mongoose.connection.db) {
-    const collections = await mongoose.connection.db.collections();
-    for (let collection of collections) {
-      await collection.deleteMany({});
-    }
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.connection.dropDatabase();
     await mongoose.disconnect();
   }
-}, 60000);
+}, 15000);

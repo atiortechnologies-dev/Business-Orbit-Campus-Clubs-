@@ -5,8 +5,10 @@ import { IncubationProvider } from "@/context/IncubationContext";
 import { InvestorProvider } from "@/context/InvestorContext";
 import { MentorshipProvider } from "@/context/MentorshipContext";
 import { AdminDashboardProvider } from "@/context/AdminDashboardContext";
-import StageGuard from "@/components/journey/StageGuard";
-import IdeationAccessGate from "@/components/journey/IdeationAccessGate";
+import PrivacyPolicyPage from "./pages/legal/PrivacyPolicy";
+import Unauthorized from "./pages/Unauthorized";
+import StageGuard from "./components/journey/StageGuard";
+import FreelancingOpportunitiesPage from "./pages/freelancing/FreelancingOpportunities";
 
 const Login = lazy(() => import("@/pages/auth/Login"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
@@ -44,7 +46,6 @@ const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const BuildStartupJourney = lazy(() => import("@/pages/BuildStartupJourney"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const StudentSettings = lazy(() => import("@/pages/Settings"));
-const StudentProfile = lazy(() => import("@/pages/Profile"));
 const _Incubator = lazy(() => import("@/pages/incubator/Incubator"));
 const _Applications = lazy(() => import("@/pages/incubator/Applications"));
 const _ApplicationReview = lazy(
@@ -52,7 +53,6 @@ const _ApplicationReview = lazy(
 );
 const _Messages = lazy(() => import("@/pages/incubator/Messages"));
 const _Settings = lazy(() => import("@/pages/incubator/Settings"));
-const _IncubatorOwnProfile = lazy(() => import("@/pages/incubator/Profile"));
 const _PrivacyPolicy = lazy(() => import("@/pages/legal/PrivacyPolicy"));
 const IdeationOverview = lazy(
   () => import("@/pages/journey/ideation/IdeationOverview"),
@@ -158,7 +158,7 @@ const IncubationConfirmed = lazy(
   () => import("@/pages/incubators/IncubationConfirmed"),
 );
 const MyIncubation = lazy(() => import("@/pages/incubators/MyIncubation"));
-const Freelancing = lazy(() => import("@/pages/freelancing/Freelancing"));
+// const Freelancing = lazy(() => import("@/pages/freelancing/Freelancing"));
 const OpportunityDetail = lazy(
   () => import("@/pages/freelancing/OpportunityDetail"),
 );
@@ -171,16 +171,26 @@ const ApplyConfirmation = lazy(
 const MyApplications = lazy(() => import("@/pages/freelancing/MyApplications"));
 const AdminDashboard = lazy(() => import("@/pages/admin/Admin"));
 const VerificationQueue = lazy(() => import("@/pages/admin/VerificationQueue"));
-const VerificationDetail = lazy(
-  () => import("@/pages/admin/VerificationDetail"),
-);
-const VerificationDecision = lazy(
-  () => import("@/pages/admin/VerificationDecision"),
-);
+// const StudentVerification = lazy(
+//   () => import("@/pages/admin/StudentVerification"),
+// );
+// const MentorVerification = lazy(
+//   () => import("@/pages/admin/MentorVerification"),
+// );
+// const InvestorVerification = lazy(
+//   () => import("@/pages/admin/InvestorVerification"),
+// );
+// const IncubatorVerification = lazy(
+//   () => import("@/pages/admin/IncubatorVerification"),
+// );
+// const CompanyVerification = lazy(
+//   () => import("@/pages/admin/CompanyVerification"),
+// );
 const ReviewQueue = lazy(() => import("@/pages/admin/ReviewQueue"));
 const ReviewDetail = lazy(() => import("@/pages/admin/ReviewDetail"));
 const ReviewWorkspace = lazy(() => import("@/pages/admin/ReviewWorkspace"));
 const ReviewOutcome = lazy(() => import("@/pages/admin/ReviewOutcome"));
+// const IdeationReview = lazy(() => import("@/pages/admin/IdeationReview"));
 const ScheduleMeeting = lazy(() => import("@/pages/admin/ScheduleMeeting"));
 const AuditLog = lazy(() => import("@/pages/admin/AuditLog"));
 const AnnouncementsDashboard = lazy(
@@ -202,11 +212,6 @@ const OpportunityApprovalQueue = lazy(
 );
 const OpportunityReview = lazy(() => import("@/pages/admin/OpportunityReview"));
 const AdminSettings = lazy(() => import("@/pages/admin/AdminSettings"));
-const ChapterChangeRequests = lazy(
-  () => import("@/pages/admin/ChapterChangeRequests"),
-);
-const UserManagement = lazy(() => import("@/pages/admin/UserManagement"));
-const CmsManager = lazy(() => import("@/pages/admin/CmsManager"));
 const LandingHome = lazy(() => import("@/pages/landing/Home"));
 const LandingStudent = lazy(() => import("@/pages/landing/Student"));
 const LandingMentor = lazy(() => import("@/pages/landing/Mentor"));
@@ -218,14 +223,14 @@ const IncomingPitchDecks = lazy(
   () => import("@/pages/investor/IncomingPitchDecks"),
 );
 const PitchDeck = lazy(() => import("@/pages/investor/PitchDeck"));
-const InvestorSettings = lazy(() => import("@/pages/investor/Settings"));
-const InvestorProfile = lazy(() => import("@/pages/investor/Profile"));
+// const InvestorSettings = lazy(() => import("@/pages/investor/Settings"));
+// const InvestorProfile = lazy(() => import("@/pages/investor/Profile"));
 const MentorPortal = lazy(() => import("@/pages/mentor/Mentor"));
 const MentorRequests = lazy(() => import("@/pages/mentor/Requests"));
 const MentorChats = lazy(() => import("@/pages/mentor/Chats"));
 const MentorMeetings = lazy(() => import("@/pages/mentor/Meetings"));
 const MentorProfile = lazy(() => import("@/pages/mentor/Profile"));
-const MentorSettings = lazy(() => import("@/pages/mentor/Settings"));
+// const MentorSettings = lazy(() => import("@/pages/mentor/Settings"));
 const CompanyDashboard = lazy(() => import("@/pages/company/Dashboard"));
 const CompanyMyOpportunities = lazy(
   () => import("@/pages/company/MyOpportunities"),
@@ -244,8 +249,8 @@ const PostOpportunityStep4 = lazy(
 );
 const ApplicantsList = lazy(() => import("@/pages/company/ApplicantsList"));
 const ApplicantDetail = lazy(() => import("@/pages/company/ApplicantDetail"));
-const CompanySettings = lazy(() => import("@/pages/company/Settings"));
-const CompanyProfile = lazy(() => import("@/pages/company/Profile"));
+// const CompanySettings = lazy(() => import("@/pages/company/Settings"));
+// const CompanyProfile = lazy(() => import("@/pages/company/Profile"));
 const MentorDirectory = lazy(() => import("@/pages/mentors/MentorDirectory"));
 const MentorProfileStudentView = lazy(
   () => import("@/pages/mentors/MentorProfile"),
@@ -295,6 +300,18 @@ function withSuspense(Component) {
 
 export const router = createBrowserRouter([
   { path: "/", element: <Navigate to="/login" replace /> },
+
+  // Public Landing Pages
+  { path: "/landing", element: withSuspense(LandingHome) },
+  { path: "/landing/student", element: withSuspense(LandingStudent) },
+  { path: "/landing/mentor", element: withSuspense(LandingMentor) },
+  { path: "/landing/investor", element: withSuspense(LandingInvestor) },
+  { path: "/landing/incubator", element: withSuspense(LandingIncubator) },
+  { path: "/landing/companies", element: withSuspense(LandingCompanies) },
+  { path: "/legal/privacy-policy", element: withSuspense(PrivacyPolicyPage) },
+  { path: "/unauthorized", element: withSuspense(Unauthorized) },
+
+  // Auth Routes
   {
     element: <AuthLayout />,
     children: [
@@ -365,48 +382,30 @@ export const router = createBrowserRouter([
     path: "/company/applicants/detail",
     element: withSuspense(ApplicantDetail),
   },
-  { path: "/company/settings", element: withSuspense(CompanySettings) },
-  { path: "/company/profile", element: withSuspense(CompanyProfile) },
   {
-    element: <IdeationAccessGate />,
+    element: (
+      <MentorshipProvider>
+        <Outlet />
+      </MentorshipProvider>
+    ),
     children: [
+      { path: "/mentors", element: withSuspense(MentorDirectory) },
       {
-        element: (
-          <MentorshipProvider>
-            <Outlet />
-          </MentorshipProvider>
-        ),
-        children: [
-          { path: "/mentors", element: withSuspense(MentorDirectory) },
-          {
-            path: "/mentors/profile",
-            element: withSuspense(MentorProfileStudentView),
-          },
-          {
-            path: "/mentors/request",
-            element: withSuspense(MentorshipRequest),
-          },
-          { path: "/mentors/chat", element: withSuspense(ChatConversation) },
-          { path: "/mentors/messages", element: withSuspense(ChatInbox) },
-        ],
+        path: "/mentors/profile",
+        element: withSuspense(MentorProfileStudentView),
       },
+      { path: "/mentors/request", element: withSuspense(MentorshipRequest) },
+      { path: "/mentors/chat", element: withSuspense(ChatConversation) },
+      { path: "/mentors/messages", element: withSuspense(ChatInbox) },
     ],
   },
+  { path: "/investors", element: withSuspense(InvestorDirectory) },
   {
-    element: <IdeationAccessGate />,
-    children: [
-      { path: "/investors", element: withSuspense(InvestorDirectory) },
-      {
-        path: "/investors/profile",
-        element: withSuspense(InvestorProfileStudentView),
-      },
-      { path: "/investors/send-pitch", element: withSuspense(SendPitchDeck) },
-      {
-        path: "/investors/chat",
-        element: withSuspense(InvestorConversation),
-      },
-    ],
+    path: "/investors/profile",
+    element: withSuspense(InvestorProfileStudentView),
   },
+  { path: "/investors/send-pitch", element: withSuspense(SendPitchDeck) },
+  { path: "/investors/chat", element: withSuspense(InvestorConversation) },
   { path: "/support", element: withSuspense(HelpCenter) },
   { path: "/support/tickets", element: withSuspense(SupportDashboard) },
   { path: "/support/raise-ticket", element: withSuspense(RaiseSupportTicket) },
@@ -420,7 +419,6 @@ export const router = createBrowserRouter([
   { path: "/dashboard", element: withSuspense(Dashboard) },
   { path: "/notifications", element: withSuspense(Notifications) },
   { path: "/settings", element: withSuspense(StudentSettings) },
-  { path: "/profile", element: withSuspense(StudentProfile) },
   {
     element: (
       <IncubationProvider>
@@ -586,26 +584,15 @@ export const router = createBrowserRouter([
       },
     ],
   },
+  { path: "/incubators", element: withSuspense(DiscoverIncubators) },
+  { path: "/incubators/profile", element: withSuspense(IncubatorProfile) },
   {
-    element: <IdeationAccessGate />,
-    children: [
-      { path: "/incubators", element: withSuspense(DiscoverIncubators) },
-      {
-        path: "/incubators/profile",
-        element: withSuspense(IncubatorProfile),
-      },
-      {
-        path: "/incubators/apply",
-        element: withSuspense(IncubatorApplicationForm),
-      },
-      {
-        path: "/incubators/confirmed",
-        element: withSuspense(IncubationConfirmed),
-      },
-      { path: "/incubators/tracker", element: withSuspense(MyIncubation) },
-    ],
+    path: "/incubators/apply",
+    element: withSuspense(IncubatorApplicationForm),
   },
-  { path: "/freelancing", element: withSuspense(Freelancing) },
+  { path: "/incubators/confirmed", element: withSuspense(IncubationConfirmed) },
+  { path: "/incubators/tracker", element: withSuspense(MyIncubation) },
+  { path: "/freelancing", element: withSuspense(FreelancingOpportunitiesPage) },
   {
     path: "/freelancing/opportunity",
     element: withSuspense(OpportunityDetail),
@@ -625,14 +612,14 @@ export const router = createBrowserRouter([
     children: [
       { path: "/admin", element: withSuspense(AdminDashboard) },
       { path: "/admin/verification", element: withSuspense(VerificationQueue) },
-      {
-        path: "/admin/verification/detail",
-        element: withSuspense(VerificationDetail),
-      },
-      {
-        path: "/admin/verification/decision",
-        element: withSuspense(VerificationDecision),
-      },
+      // {
+      //   path: "/admin/verification/detail",
+      //   element: withSuspense(VerificationDetail),
+      // },
+      // {
+      //   path: "/admin/verification/decision",
+      //   element: withSuspense(VerificationDecision),
+      // },
       { path: "/admin/reviews", element: withSuspense(ReviewQueue) },
       { path: "/admin/reviews/detail", element: withSuspense(ReviewDetail) },
       {
@@ -672,12 +659,12 @@ export const router = createBrowserRouter([
         element: withSuspense(OpportunityReview),
       },
       { path: "/admin/settings", element: withSuspense(AdminSettings) },
-      {
-        path: "/admin/chapter-change-requests",
-        element: withSuspense(ChapterChangeRequests),
-      },
-      { path: "/admin/user-management", element: withSuspense(UserManagement) },
-      { path: "/admin/cms", element: withSuspense(CmsManager) },
+      // {
+      //   path: "/admin/chapter-change-requests",
+      //   element: withSuspense(ChapterChangeRequests),
+      // },
+      // { path: "/admin/user-management", element: withSuspense(UserManagement) },
+      // { path: "/admin/cms", element: withSuspense(CmsManager) },
     ],
   },
   {
@@ -696,8 +683,6 @@ export const router = createBrowserRouter([
         path: "/investor/pitch-decks/review",
         element: withSuspense(PitchDeck),
       },
-      { path: "/investor/settings", element: withSuspense(InvestorSettings) },
-      { path: "/investor/profile", element: withSuspense(InvestorProfile) },
     ],
   },
   {
@@ -712,7 +697,6 @@ export const router = createBrowserRouter([
       { path: "/mentor/chats", element: withSuspense(MentorChats) },
       { path: "/mentor/meetings", element: withSuspense(MentorMeetings) },
       { path: "/mentor/profile", element: withSuspense(MentorProfile) },
-      { path: "/mentor/settings", element: withSuspense(MentorSettings) },
     ],
   },
 ]);

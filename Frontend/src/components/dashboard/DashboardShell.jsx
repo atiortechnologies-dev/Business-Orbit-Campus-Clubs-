@@ -17,6 +17,7 @@ import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
+import { useAuth } from "@/context/AuthContext";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard", real: true },
@@ -33,18 +34,30 @@ const NAV_ITEMS = [
   { icon: HelpCircle, label: "Help", href: "/support", real: true },
 ];
 
+// Helper: Extract initials safely from full_name, name, or email
+function getUserInitials(user) {
+  if (!user) return "GU";
+  const name = user.full_name || user.email || "";
+  if (!name) return "US";
+
+  const cleanName = name.split("@")[0].trim();
+  const parts = cleanName.split(" ").filter(Boolean);
+
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+  return cleanName.slice(0, 2).toUpperCase();
+}
+
 export default function DashboardShell({ pageId = "pg", children }) {
-  // Drawer state for the sidebar below `lg` — owned here (not inside
-  // Sidebar) because the header's Menu button that opens it lives in this
-  // file, not there.
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, onToggleCollapse] = useSidebarCollapsed();
+  const { user } = useAuth();
+
+  const initials = getUserInitials(user);
 
   return (
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen">
-      {/* Scoped responsive offsets — margin-left tracks the sidebar's own
-          collapsed/expanded width so the main canvas never leaves a gap or
-          gets covered. */}
       <style>{`
         @media (min-width: 1024px) {
           #${pageId}-main    { margin-left: ${collapsed ? "80px" : "var(--spacing-sidebar-width)"}; }
@@ -72,8 +85,6 @@ export default function DashboardShell({ pageId = "pg", children }) {
           }}
         >
           <div className="flex items-center gap-4">
-            {/* Opens the Sidebar drawer below `lg` — previously rendered
-                with no onClick at all, i.e. it did nothing when tapped. */}
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
@@ -84,10 +95,7 @@ export default function DashboardShell({ pageId = "pg", children }) {
             </button>
             <div className="hidden md:block">
               <p className="font-poppins font-semibold text-section text-text-heading whitespace-nowrap">
-                BOCC Student
-              </p>
-              <p className="font-inter text-caption text-text-muted whitespace-nowrap">
-                Founder Workspace
+                BOCC Campus Clubs
               </p>
             </div>
           </div>
@@ -119,7 +127,7 @@ export default function DashboardShell({ pageId = "pg", children }) {
                 to="/profile"
                 className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
               >
-                AC
+                {initials}
               </Link>
             </div>
           </div>
@@ -165,7 +173,7 @@ export default function DashboardShell({ pageId = "pg", children }) {
               Terms of Service
             </Link>
             <ComingSoon label="Contact Support" position="top" inline>
-              <span className="text-text-muted transition-colors font-inter font-normal text-small">
+              <span className="text-text-muted transition-colors font-inter font-normal text-small cursor-pointer">
                 Contact Support
               </span>
             </ComingSoon>

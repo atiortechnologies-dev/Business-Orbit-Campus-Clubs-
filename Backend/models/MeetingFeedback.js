@@ -1,8 +1,3 @@
-/**
- * @file MeetingFeedback.js
- * @description Mongoose model for capturing feedback from reviewers after a startup review meeting.
- * @architecture Defines the schema for post-meeting feedback and recommendations, integrating with the review meetings in the database.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -52,8 +47,4 @@ const MeetingFeedbackSchema = new mongoose.Schema(
 MeetingFeedbackSchema.index({ reviewer_id: 1 });
 MeetingFeedbackSchema.index({ student_id: 1 });
 
-/**
- * @module MeetingFeedback
- * @description Exports the MeetingFeedback Mongoose model.
- */
 module.exports = mongoose.model("MeetingFeedback", MeetingFeedbackSchema);

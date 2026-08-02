@@ -1,8 +1,3 @@
-/**
- * @file ValidationSurvey.js
- * @description Mongoose model for summarizing survey responses and interviews conducted during market validation.
- * @architecture Stores quantitative and qualitative survey data to support the validation report within the database.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -54,8 +49,4 @@ const ValidationSurveySchema = new mongoose.Schema(
 ValidationSurveySchema.index({ startup_id: 1, created_at: -1 });
 ValidationSurveySchema.index({ student_id: 1 });
 
-/**
- * @module ValidationSurvey
- * @description Exports the ValidationSurvey Mongoose model.
- */
 module.exports = mongoose.model("ValidationSurvey", ValidationSurveySchema);

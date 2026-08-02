@@ -58,11 +58,7 @@ export default function VerifyEmailPage() {
         }
       } catch (err) {
         if (isMounted) {
-          setError(
-            err.response?.data?.message ||
-              err.message ||
-              "Failed to send verification code.",
-          );
+          setError(err.message || "Failed to send verification code.");
         }
       } finally {
         if (isMounted) {
@@ -142,11 +138,7 @@ export default function VerifyEmailPage() {
       setSuccessMsg("A new verification code has been sent!");
       setSecondsLeft(RESEND_TIMEOUT);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to resend OTP. Please try again.",
-      );
+      setError(err.message || "Failed to resend OTP. Please try again.");
     } finally {
       setIsSendingOtp(false);
     }
@@ -182,11 +174,7 @@ export default function VerifyEmailPage() {
       // Trigger navigation
       navigate(destination, { replace: true });
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Invalid or expired verification code.",
-      );
+      setError(err.message || "Invalid or expired verification code.");
       setIsVerifying(false);
     }
   };

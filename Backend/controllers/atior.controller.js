@@ -1,18 +1,8 @@
-/**
- * @file atior.controller.js
- * @description Handles student assistance requests submitted to the Atior team.
- * @architecture Controller for Atior assistance logic, connecting student requests to the AtiorAssistanceRequest model.
- */
 const asyncHandler = require("../middlewares/asyncHandler");
 const AtiorAssistanceRequest = require("../models/AtiorAssistanceRequest");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // POST /api/student/assistance/request
-/**
- * @desc    Submit a new assistance request to Atior
- * @route   POST /api/student/assistance/request
- * @access  Private/Student
- */
 const submitAssistanceRequest = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const validatedData = req.validatedData;
@@ -61,11 +51,6 @@ const submitAssistanceRequest = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/assistance/status
-/**
- * @desc    Get the status of an assistance request
- * @route   GET /api/student/assistance/status
- * @access  Private/Student
- */
 const getAssistanceStatus = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -103,11 +88,6 @@ const getAssistanceStatus = asyncHandler(async (req, res) => {
 });
 
 // PUT /api/student/assistance/:requestId
-/**
- * @desc    Update an assistance request
- * @route   PUT /api/student/assistance/:requestId
- * @access  Private/Student
- */
 const updateAssistanceRequest = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { requestId } = req.params;

@@ -26,14 +26,6 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
-    avatar_url: {
-      type: String,
-      trim: true,
-    },
-    designation: {
-      type: String,
-      trim: true,
-    },
     password_hash: {
       type: String,
       required: true,
@@ -41,15 +33,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: [
-        "student",
-        "mentor",
-        "investor",
-        "incubator",
-        "company",
-        "admin",
-        "super_admin",
-      ],
+      enum: ["student", "mentor", "investor", "incubator", "company"],
       required: true,
     },
     account_status: {
@@ -71,6 +55,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["not_started", "skipped", "completed"],
       default: "not_started",
+    },
+    profile_remarks: {
+      type: String,
+      default: "",
     },
     otp_code_hash: {
       type: String,

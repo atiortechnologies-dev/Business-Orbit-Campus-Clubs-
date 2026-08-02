@@ -1,5 +1,4 @@
-import { useState, useRef, useEffect } from "react";
-import api from "@/api/axiosInstance";
+import { useState, useRef } from "react";
 import {
   Search,
   Edit,
@@ -10,16 +9,15 @@ import {
   Smile,
   Image as ImageIcon,
   Send,
-  _User,
-  _Calendar,
+  User,
+  Calendar,
   FileText,
   Milestone,
   ExternalLink,
   ChevronLeft,
-  _TrendingUp,
+  TrendingUp,
   Download,
   X,
-  AlertCircle,
 } from "lucide-react";
 import IncubatorShell from "@/components/incubator/IncubatorShell";
 import ComingSoon from "@/components/ui/ComingSoon";
@@ -112,45 +110,6 @@ export default function ChatsPage() {
   const fileInputRef = useRef(null);
   const imageInputRef = useRef(null);
 
-  const [conversationsList, setConversationsList] = useState(CONVERSATIONS);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  useEffect(() => {
-    const fetchConversations = async () => {
-      try {
-        const response = await api.get("/conversations/search", {
-          params: { q: searchQuery },
-        });
-        // Assuming backend returns an array of conversations. If response is wrapped, adjust accordingly.
-        if (Array.isArray(response)) {
-          setConversationsList(response.length ? response : CONVERSATIONS);
-        } else if (response.data && Array.isArray(response.data)) {
-          setConversationsList(
-            response.data.length ? response.data : CONVERSATIONS,
-          );
-        }
-      } catch (error) {
-        console.error("Failed to fetch conversations:", error);
-        setErrorMsg(
-          error?.response?.data?.message ||
-            error?.message ||
-            "Failed to fetch conversations.",
-        );
-      }
-    };
-    const timeoutId = setTimeout(fetchConversations, 300);
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
-
-  useEffect(() => {
-    if (activeConv) {
-      api
-        .patch(`/read/${activeConv}`)
-        .catch((err) => console.error("Failed to mark read:", err));
-    }
-  }, [activeConv]);
-
   const [messagesMap, setMessagesMap] = useState({
     acme: SEEDED_MESSAGES_ACME,
     ecostream: [
@@ -179,7 +138,7 @@ export default function ChatsPage() {
     ],
   });
 
-  const handleSendMessage = async (e) => {
+  const handleSendMessage = (e) => {
     e.preventDefault();
     if (!inputText.trim() && !pendingAttachment) return;
 
@@ -188,7 +147,7 @@ export default function ChatsPage() {
       sender: "me",
       text: inputText,
       time: "Just now",
-      status: "Sending...",
+      status: "Sent",
       ...(pendingAttachment && {
         attachment: {
           name: pendingAttachment.file.name,
@@ -199,43 +158,19 @@ export default function ChatsPage() {
       }),
     };
 
+    // TODO(backend): send `newMessage` over a real transport (websocket or
+    // polling) and persist it — this only appends to local React state, so
+    // it's gone on reload and the other party never actually receives it.
+    // The attachment's `url` is a local blob URL — real bytes for THIS
+    // session, but it needs a real upload endpoint to survive a reload or
+    // reach the other party.
     setMessagesMap((prev) => ({
       ...prev,
       [activeConv]: [...prev[activeConv], newMessage],
     }));
 
-    setErrorMsg("");
-
-    try {
-      const payload = new FormData();
-      if (inputText.trim()) payload.append("text", inputText.trim());
-      if (pendingAttachment) {
-        payload.append("attachment", pendingAttachment.file);
-      }
-      await api.post(`/chat/conversations/${activeConv}/messages`, payload, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      setMessagesMap((prev) => ({
-        ...prev,
-        [activeConv]: prev[activeConv].map((m) =>
-          m.id === newMessage.id ? { ...m, status: "Sent" } : m,
-        ),
-      }));
-      setInputText("");
-      setPendingAttachment(null);
-    } catch (err) {
-      console.error("Failed to send message:", err);
-      setMessagesMap((prev) => ({
-        ...prev,
-        [activeConv]: prev[activeConv].filter((m) => m.id !== newMessage.id),
-      }));
-      setErrorMsg(
-        err?.response?.data?.message ||
-          err?.message ||
-          "Failed to send message. Please try again.",
-      );
-    }
+    setInputText("");
+    setPendingAttachment(null);
   };
 
   const handleAttachFile = (e, isImage) => {
@@ -250,9 +185,8 @@ export default function ChatsPage() {
     setShowEmojiPicker(false);
   };
 
-  const activeDetails =
-    conversationsList.find((c) => c.id === activeConv) || CONVERSATIONS[0];
-  const activeMessages = messagesMap[activeConv] || [];
+  const activeDetails = CONVERSATIONS.find((c) => c.id === activeConv);
+  const activeMessages = messagesMap[activeConv];
 
   return (
     <IncubatorShell>
@@ -273,24 +207,8 @@ export default function ChatsPage() {
               <Edit size={18} strokeWidth={2} />
             </ComingSoon>
           </div>
-          <div className="p-4 border-b border-border-subtle bg-canvas-bg/30">
-            <div className="relative">
-              <Search
-                size={16}
-                strokeWidth={2}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search conversations..."
-                className="w-full bg-surface-white border border-border-subtle rounded-md pl-9 pr-3 py-2 font-inter text-small focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
-              />
-            </div>
-          </div>
           <div className="flex-1 overflow-y-auto divide-y divide-border-subtle/50">
-            {conversationsList.map((conv) => {
+            {CONVERSATIONS.map((conv) => {
               const isSelected = activeConv === conv.id;
               return (
                 <button
@@ -384,12 +302,6 @@ export default function ChatsPage() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-canvas-bg/10">
-            {errorMsg && (
-              <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 mb-4 mx-auto max-w-lg">
-                <AlertCircle size={16} className="shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
             <div className="flex justify-center select-none">
               <span className="px-3 py-1 bg-canvas-bg border border-border-subtle text-text-muted font-poppins font-semibold text-caption rounded-full">
                 August 24, 2024

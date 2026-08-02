@@ -22,7 +22,6 @@ const {
   createFeaturedStartup,
   updateFeaturedStartup,
   deleteFeaturedStartup,
-  getUsers,
   deleteUser,
   listChapterChangeRequests,
   getChapterChangeRequest,
@@ -58,19 +57,9 @@ router.delete("/success-stories/:id", deleteSuccessStory);
 // FeaturedStartup Routes
 router.post("/featured-startups", createFeaturedStartup);
 router.put("/featured-startups/:id", updateFeaturedStartup);
-
-// Opportunity Moderation Routes
-const opportunityRoutes = require("./admin/opportunity.routes");
-router.use("/opportunities", opportunityRoutes);
-
-// Chapter Governance Routes
-const chapterGovernanceRoutes = require("./admin/chapter.routes");
-router.use("/chapters", chapterGovernanceRoutes);
-
 router.delete("/featured-startups/:id", deleteFeaturedStartup);
 
 // User Management Routes
-router.get("/users", getUsers);
 router.delete("/users/:id", deleteUser);
 
 // Chapter Change Request Routes

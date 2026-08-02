@@ -14,7 +14,6 @@ import DashboardShell from "@/components/dashboard/DashboardShell";
 import StatCard from "@/components/ui/StatCard";
 import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import api from "@/api/axiosInstance";
 
 const SENTIMENT_LABELS = {
   positive: "Positive Sentiment",
@@ -67,45 +66,12 @@ export default function SurveyTrackerPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [draft, setDraft] = useState({ sentiment: "positive", tag: "" });
   const [queuedFiles, setQueuedFiles] = useState([]);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [savingDraft, setSavingDraft] = useState(false);
 
   const completion = Math.round((responses.total / responses.target) * 100);
 
-  const handleContinue = async () => {
-    setErrorMsg("");
-    setIsSubmitting(true);
-    try {
-      await api.post("/surveys", { responses, recent });
-      navigate("/build-startup/journey/validation/evidence-upload");
-    } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to persist survey state.",
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleSaveDraft = async () => {
-    setErrorMsg("");
-    setSuccessMsg("");
-    setSavingDraft(true);
-    try {
-      await api.patch("/surveys/draft", { responses, recent });
-      setSuccessMsg("Draft saved successfully.");
-      setTimeout(() => setSuccessMsg(""), 3000);
-    } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message || err.message || "Failed to save draft.",
-      );
-    } finally {
-      setSavingDraft(false);
-    }
+  const handleContinue = () => {
+    // TODO(backend): persist survey-tracker state for the current student.
+    navigate("/build-startup/journey/validation/evidence-upload");
   };
 
   const addResponse = () => {
@@ -130,23 +96,11 @@ export default function SurveyTrackerPage() {
     setAddOpen(false);
   };
 
-  const handleFileSelect = async (e) => {
+  const handleFileSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    try {
-      const formData = new FormData();
-      formData.append("surveyFile", file);
-      await api.post("/surveys/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setQueuedFiles((prev) => [...prev, { name: file.name, size: file.size }]);
-    } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to upload survey file.",
-      );
-    }
+    // TODO(backend): upload `file` and parse survey responses from it.
+    setQueuedFiles((prev) => [...prev, { name: file.name, size: file.size }]);
     e.target.value = "";
   };
 
@@ -191,20 +145,6 @@ export default function SurveyTrackerPage() {
           </p>
         </div>
       </div>
-
-      {errorMsg && (
-        <div className="mb-6 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
-          <AlertCircle size={16} className="shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="mb-6 p-3 bg-success/15 border border-success/30 text-success rounded-md text-small flex items-center gap-2">
-          <AlertCircle size={16} className="shrink-0" />
-          <span>{successMsg}</span>
-        </div>
-      )}
 
       <div className="h-2 bg-canvas-bg rounded-full overflow-hidden mb-8">
         <div
@@ -415,19 +355,17 @@ export default function SurveyTrackerPage() {
       <div className="flex items-center justify-between pt-6 border-t border-divider-line">
         <button
           type="button"
-          onClick={handleSaveDraft}
-          disabled={isSubmitting || savingDraft}
-          className="font-poppins font-semibold text-small text-text-heading hover:opacity-80 transition-opacity disabled:opacity-50"
+          // TODO(backend): persist as a draft against the student's account.
+          className="font-poppins font-semibold text-small text-text-heading hover:opacity-80 transition-opacity"
         >
-          {savingDraft ? "Saving..." : "Save Draft"}
+          Save Draft
         </button>
         <button
           type="button"
           onClick={handleContinue}
-          disabled={isSubmitting || savingDraft}
-          className="inline-flex items-center gap-2 bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-2 bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
         >
-          {isSubmitting ? "Continuing..." : "Continue"}
+          Continue
           <ArrowRight size={16} strokeWidth={2} />
         </button>
       </div>

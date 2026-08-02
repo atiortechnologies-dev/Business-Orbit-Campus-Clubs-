@@ -1,5 +1,5 @@
-import { Link, Outlet } from "react-router-dom";
-import PublicNav from "@/components/layout/PublicNav";
+import { Link, Outlet } from 'react-router-dom';
+import PublicNav from '@/components/layout/PublicNav';
 
 export default function AuthLayout() {
   return (

@@ -1,8 +1,3 @@
-/**
- * @file TractionReview.js
- * @description Mongoose model for capturing reviewer feedback and evaluation notes on a startup's traction stage submission.
- * @architecture Maps reviewer assessments to product submissions in the traction evaluation workflow.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -67,8 +62,4 @@ const TractionReviewSchema = new mongoose.Schema(
 TractionReviewSchema.index({ submission_id: 1 });
 TractionReviewSchema.index({ startup_id: 1 });
 
-/**
- * @module TractionReview
- * @description Exports the TractionReview Mongoose model.
- */
 module.exports = mongoose.model("TractionReview", TractionReviewSchema);

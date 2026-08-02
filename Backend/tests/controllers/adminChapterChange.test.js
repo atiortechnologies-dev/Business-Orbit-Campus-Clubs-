@@ -10,14 +10,14 @@ const adminRoutes = require("../../routes/admin.routes");
 
 const app = express();
 app.use(express.json());
-process.env.ADMIN_API_KEY = "TEST_API_KEY_123";
+process.env.ADMIN_API_KEY = "DUMMY_SECRET_FOR_TESTING_ONLY";
 app.use("/api/admin", adminRoutes);
 
 describe("Admin Chapter Change Review Lifecycle", () => {
   let studentUser;
   let currentChapter;
   let requestedChapter;
-  let _studentProfile;
+  let studentProfile;
   let changeRequest;
 
   beforeEach(async () => {
@@ -47,7 +47,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
       status: "Active",
     });
 
-    _studentProfile = await StudentProfile.create({
+    studentProfile = await StudentProfile.create({
       user_id: studentUser._id,
       college: "Old University",
       degree: "B.Tech",
@@ -69,7 +69,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
     it("should return a list of chapter change requests", async () => {
       const res = await request(app)
         .get("/api/admin/chapter-change-requests")
-        .set("x-api-key", "TEST_API_KEY_123");
+        .set("x-api-key", "test-secret-key");
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
@@ -81,7 +81,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
     it("should filter chapter change requests by status", async () => {
       const res = await request(app)
         .get("/api/admin/chapter-change-requests?status=approved")
-        .set("x-api-key", "TEST_API_KEY_123");
+        .set("x-api-key", "test-secret-key");
 
       expect(res.statusCode).toBe(200);
       expect(res.body.count).toBe(0);
@@ -92,7 +92,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
     it("should return details of a specific request", async () => {
       const res = await request(app)
         .get(`/api/admin/chapter-change-requests/${changeRequest._id}`)
-        .set("x-api-key", "TEST_API_KEY_123");
+        .set("x-api-key", "test-secret-key");
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
@@ -103,7 +103,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
       const fakeId = new mongoose.Types.ObjectId();
       const res = await request(app)
         .get(`/api/admin/chapter-change-requests/${fakeId}`)
-        .set("x-api-key", "TEST_API_KEY_123");
+        .set("x-api-key", "test-secret-key");
 
       expect(res.statusCode).toBe(404);
       expect(res.body.success).toBe(false);
@@ -114,7 +114,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
     it("should approve request and update student profile chapter_id atomically", async () => {
       const res = await request(app)
         .put(`/api/admin/chapter-change-requests/${changeRequest._id}/approve`)
-        .set("x-api-key", "TEST_API_KEY_123");
+        .set("x-api-key", "test-secret-key");
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);
@@ -137,7 +137,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
 
       const res = await request(app)
         .put(`/api/admin/chapter-change-requests/${changeRequest._id}/approve`)
-        .set("x-api-key", "TEST_API_KEY_123");
+        .set("x-api-key", "test-secret-key");
 
       expect(res.statusCode).toBe(400);
       expect(res.body.success).toBe(false);
@@ -148,7 +148,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
     it("should reject request without modifying student profile", async () => {
       const res = await request(app)
         .put(`/api/admin/chapter-change-requests/${changeRequest._id}/reject`)
-        .set("x-api-key", "TEST_API_KEY_123");
+        .set("x-api-key", "test-secret-key");
 
       expect(res.statusCode).toBe(200);
       expect(res.body.success).toBe(true);

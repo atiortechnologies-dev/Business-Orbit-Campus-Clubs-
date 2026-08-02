@@ -1,10 +1,9 @@
 import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronRight, Lock, Send, FileText, AlertCircle } from "lucide-react";
+import { ChevronRight, Lock, Send, FileText } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import Badge from "@/components/ui/Badge";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import api from "@/api/axiosInstance";
 
 const INITIAL_CHECKLIST = [
   { id: "c1", label: "Technical Whitepaper Review", done: true },
@@ -36,7 +35,6 @@ export default function ReviewWorkspacePage() {
   const [decision, setDecision] = useState(null);
   const [strengths, setStrengths] = useState("");
   const [draftSaved, setDraftSaved] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
 
   const completedCount = checklist.filter((c) => c.done).length;
   const consensus = useMemo(
@@ -61,25 +59,11 @@ export default function ReviewWorkspacePage() {
 
   const canSaveDraft = strengths.trim().length > 0;
 
-  async function handleSaveDraft() {
+  function handleSaveDraft() {
     if (!canSaveDraft) return;
-    try {
-      // In a real app we would use the specific submission ID from useParams()
-      await api.post("/applications/draft", {
-        checklist,
-        metrics,
-        strengths,
-        reviewStage: "seed",
-      });
-      setDraftSaved(true);
-      setErrorMsg("");
-      setTimeout(() => setDraftSaved(false), 2000);
-    } catch (e) {
-      console.error("Failed to save draft:", e);
-      setErrorMsg(
-        e?.response?.data?.message || e?.message || "Failed to save draft.",
-      );
-    }
+    // TODO(backend): POST the current checklist/metrics/notes as a draft.
+    setDraftSaved(true);
+    setTimeout(() => setDraftSaved(false), 2000);
   }
 
   return (
@@ -110,13 +94,6 @@ export default function ReviewWorkspacePage() {
         </div>
         <Badge variant="error">Priority Review</Badge>
       </div>
-
-      {errorMsg && (
-        <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 mb-6">
-          <AlertCircle size={16} className="shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-24">
         <div className="lg:col-span-8 space-y-6">

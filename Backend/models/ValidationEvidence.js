@@ -1,8 +1,3 @@
-/**
- * @file ValidationEvidence.js
- * @description Mongoose model for managing uploaded files (surveys, notes, photos) as proof of market validation.
- * @architecture Acts as the metadata and storage reference layer for evidence files submitted during the validation stage.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -61,8 +56,4 @@ ValidationEvidenceSchema.index(
 );
 ValidationEvidenceSchema.index({ student_id: 1 });
 
-/**
- * @module ValidationEvidence
- * @description Exports the ValidationEvidence Mongoose model.
- */
 module.exports = mongoose.model("ValidationEvidence", ValidationEvidenceSchema);

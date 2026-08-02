@@ -5,7 +5,7 @@
  */
 
 const mongoose = require("mongoose");
-const _cascadeService = require("../services/cascadeService");
+const cascadeService = require("../services/cascadeService");
 const FAQ = require("../models/FAQ");
 const User = require("../models/User");
 const ChapterChangeRequest = require("../models/ChapterChangeRequest");
@@ -123,44 +123,6 @@ exports.updateFeaturedStartup = updateResource(
 exports.deleteFeaturedStartup = deleteResource(FeaturedStartup);
 
 /**
- * @route   GET /api/admin/users
- * @desc    Get a list of users
- * @access  Private (Admin)
- */
-exports.getUsers = async (req, res, next) => {
-  try {
-    const query = {};
-    if (req.query.role) {
-      query.role = req.query.role;
-    }
-
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 50;
-    const startIndex = (page - 1) * limit;
-
-    const total = await User.countDocuments(query);
-    const users = await User.find(query)
-      .select("-password")
-      .sort({ created_at: -1 })
-      .skip(startIndex)
-      .limit(limit);
-
-    res.status(200).json({
-      success: true,
-      count: users.length,
-      pagination: {
-        total,
-        page,
-        limit,
-      },
-      data: users,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-/**
  * @route   DELETE /api/admin/users/:id
  * @desc    Delete a User (and automatically cascade delete all their dependencies)
  * @access  Private (Admin)
@@ -206,27 +168,15 @@ exports.listChapterChangeRequests = async (req, res, next) => {
       query.status = req.query.status;
     }
 
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const startIndex = (page - 1) * limit;
-
-    const total = await ChapterChangeRequest.countDocuments(query);
     const requests = await ChapterChangeRequest.find(query)
       .populate("student_id", "full_name email")
       .populate("current_chapter_id", "chapter_name college_name")
       .populate("requested_chapter_id", "chapter_name college_name")
-      .sort({ created_at: -1 })
-      .skip(startIndex)
-      .limit(limit);
+      .sort({ created_at: -1 });
 
     res.status(200).json({
       success: true,
       count: requests.length,
-      pagination: {
-        total,
-        page,
-        limit,
-      },
       data: requests,
     });
   } catch (error) {

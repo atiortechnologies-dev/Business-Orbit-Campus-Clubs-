@@ -61,9 +61,9 @@ export default function CompanyShell({ children }) {
       />
 
       <main
-        className={`${collapsed ? "lg:pl-20" : "lg:pl-[var(--spacing-sidebar-width)]"} min-h-screen flex flex-col`}
+        className={`${collapsed ? "lg:pl-20" : "lg:pl-(--spacing-sidebar-width)"} min-h-screen flex flex-col`}
       >
-        <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
+        <header className="sticky top-0 z-40 w-full h-18 bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -108,7 +108,7 @@ export default function CompanyShell({ children }) {
               </Link>
               <Link
                 to="/company/profile"
-                className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-gray-700 to-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
+                className="w-8 h-8 rounded-full overflow-hidden bg-linear-to-br from-gray-700 to-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
               >
                 AC
               </Link>
@@ -116,7 +116,7 @@ export default function CompanyShell({ children }) {
           </div>
         </header>
 
-        <div className="flex-1 p-6 md:p-8 max-w-[var(--spacing-container-max)] w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-(--spacing-container-max) w-full mx-auto flex flex-col">
           {children}
         </div>
 

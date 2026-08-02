@@ -18,7 +18,6 @@ import IncubatorShell from "@/components/incubator/IncubatorShell";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import api from "@/api/axiosInstance";
 
 const DEFAULT_FORM_STATE = {
   incubatorName: "BOCC Incubator",
@@ -67,7 +66,6 @@ export default function SettingsPage() {
   const [deactivateOpen, setDeactivateOpen] = useState(false);
   const [deactivateConfirmText, setDeactivateConfirmText] = useState("");
   const [deactivateRequested, setDeactivateRequested] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -91,24 +89,12 @@ export default function SettingsPage() {
 
   const canSave = form.incubatorName.trim().length > 0;
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!canSave) return;
-    try {
-      setErrorMsg("");
-      await api.patch("/incubator/profile", {
-        form,
-        industries,
-        workingDays,
-        emailNotifications,
-      });
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 2000);
-    } catch (err) {
-      console.error(err);
-      setErrorMsg(
-        err.response?.data?.message || err.message || "Failed to save changes.",
-      );
-    }
+    // TODO(backend): PATCH the incubator profile with `form`, `industries`,
+    // `workingDays`, and `emailNotifications`.
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2000);
   };
 
   const addIndustry = () => {
@@ -130,7 +116,7 @@ export default function SettingsPage() {
     setPasswordForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePasswordSubmit = async () => {
+  const handlePasswordSubmit = () => {
     if (passwordForm.next.length < 8) {
       setPasswordError("New password must be at least 8 characters.");
       return;
@@ -140,36 +126,21 @@ export default function SettingsPage() {
       return;
     }
     setPasswordError("");
-    try {
-      await api.put("/incubator/profile/change-password", {
-        current_password: passwordForm.current,
-        new_password: passwordForm.next,
-      });
-      setPasswordSuccess(true);
-      setPasswordForm({ current: "", next: "", confirm: "" });
-      setTimeout(() => {
-        setPasswordSuccess(false);
-        setPasswordOpen(false);
-      }, 1500);
-    } catch (err) {
-      setPasswordError(
-        err.response?.data?.message || "Failed to update password",
-      );
-    }
+    // TODO(backend): verify `passwordForm.current` and update the account
+    // password with `passwordForm.next`.
+    setPasswordSuccess(true);
+    setPasswordForm({ current: "", next: "", confirm: "" });
+    setTimeout(() => {
+      setPasswordSuccess(false);
+      setPasswordOpen(false);
+    }, 1500);
   };
 
-  const handleDeactivateConfirm = async () => {
-    try {
-      await api.post("/incubator/deactivate");
-      setDeactivateOpen(false);
-      setDeactivateConfirmText("");
-      setDeactivateRequested(true);
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-    } catch (err) {
-      console.error(err);
-    }
+  const handleDeactivateConfirm = () => {
+    // TODO(backend): deactivate the incubator account and sign out.
+    setDeactivateOpen(false);
+    setDeactivateConfirmText("");
+    setDeactivateRequested(true);
   };
 
   return (
@@ -182,13 +153,6 @@ export default function SettingsPage() {
           Manage your organization's presence and administrative settings.
         </p>
       </header>
-
-      {errorMsg && (
-        <div className="mb-6 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
-          <AlertTriangle size={16} className="shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
 
       <div className="grid grid-cols-12 gap-8 pb-24">
         <div className="col-span-12 lg:col-span-4 space-y-6">
@@ -634,9 +598,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setEmailNotifications(!emailNotifications)}
                   className={`w-10 h-6 rounded-full relative transition-colors focus:outline-none ${
-                    emailNotifications
-                      ? "bg-brand-black"
-                      : "bg-border-subtle"
+                    emailNotifications ? "bg-brand-black" : "bg-border-subtle"
                   }`}
                 >
                   <div

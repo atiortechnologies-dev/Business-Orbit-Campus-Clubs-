@@ -1,8 +1,3 @@
-/**
- * @file MVPReviewMeeting.js
- * @description Mongoose model for scheduling and managing MVP review meetings between students and reviewers.
- * @architecture Represents meeting entities in the database, facilitating the scheduling workflow within the MVP evaluation process.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -79,8 +74,4 @@ const MVPReviewMeetingSchema = new mongoose.Schema(
 MVPReviewMeetingSchema.index({ startup_id: 1 });
 MVPReviewMeetingSchema.index({ submission_id: 1 });
 
-/**
- * @module MVPReviewMeeting
- * @description Exports the MVPReviewMeeting Mongoose model.
- */
 module.exports = mongoose.model("MVPReviewMeeting", MVPReviewMeetingSchema);
