@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   ArrowLeft,
   Printer,
@@ -8,17 +8,19 @@ import {
   TrendingUp,
   Download,
   AlertCircle,
-} from 'lucide-react';
-import IncubatorShell from '@/components/incubator/IncubatorShell';
-import ComingSoon from '@/components/ui/ComingSoon';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+} from "lucide-react";
+import IncubatorShell from "@/components/incubator/IncubatorShell";
+import ComingSoon from "@/components/ui/ComingSoon";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import api from "@/api/axiosInstance";
 
 export default function ApplicationReview() {
-  useDocumentTitle('Application Review — BOCC Incubator Portal');
-  const [notes, setNotes] = useState('');
+  useDocumentTitle("Application Review — BOCC Incubator Portal");
+  const [notes, setNotes] = useState("");
   const [selectedDecision, setSelectedDecision] = useState(null); // 'approve' | 'revisions' | 'reject'
   const [draftSaved, setDraftSaved] = useState(false);
   const [decisionSubmitted, setDecisionSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     if (draftSaved) {
@@ -119,10 +121,15 @@ export default function ApplicationReview() {
             </h3>
             <div className="font-inter text-body text-text-body space-y-4">
               <p>
-                Currently, diagnostic radiology experiences a 30% bottleneck due to high volumes of routine screening scans. Radiologists spend significant time on baseline assessments, leading to burnout and delayed results for critical cases.
+                Currently, diagnostic radiology experiences a 30% bottleneck due
+                to high volumes of routine screening scans. Radiologists spend
+                significant time on baseline assessments, leading to burnout and
+                delayed results for critical cases.
               </p>
               <p>
-                Small to mid-sized clinical practices lack the budget for high-end enterprise AI suites, creating a gap in quality care for suburban and rural healthcare providers.
+                Small to mid-sized clinical practices lack the budget for
+                high-end enterprise AI suites, creating a gap in quality care
+                for suburban and rural healthcare providers.
               </p>
             </div>
           </section>
@@ -133,7 +140,12 @@ export default function ApplicationReview() {
             </h3>
             <div className="font-inter text-body text-text-body">
               <p>
-                NeuralPath AI is a lightweight, edge-computing based diagnostic assistant designed for cost-effective integration. We provide a 'First-Pass' analysis layer that flags potential anomalies and organizes queue priority based on severity detected in real-time. Our proprietary model reduces initial scan review time by 45%.
+                NeuralPath AI is a lightweight, edge-computing based diagnostic
+                assistant designed for cost-effective integration. We provide a
+                'First-Pass' analysis layer that flags potential anomalies and
+                organizes queue priority based on severity detected in
+                real-time. Our proprietary model reduces initial scan review
+                time by 45%.
               </p>
             </div>
           </section>
@@ -144,21 +156,33 @@ export default function ApplicationReview() {
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
-                <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
+                <CheckCircle
+                  size={18}
+                  className="text-success mt-0.5 flex-shrink-0"
+                />
                 <span className="font-inter text-small text-text-body">
-                  MVP successfully piloted at City General Hospital with 5,000 anonymized datasets.
+                  MVP successfully piloted at City General Hospital with 5,000
+                  anonymized datasets.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
+                <CheckCircle
+                  size={18}
+                  className="text-success mt-0.5 flex-shrink-0"
+                />
                 <span className="font-inter text-small text-text-body">
-                  92% accuracy in identifying stage-1 pulmonary nodules vs. 84% industry average.
+                  92% accuracy in identifying stage-1 pulmonary nodules vs. 84%
+                  industry average.
                 </span>
               </li>
               <li className="flex items-start gap-3">
-                <CheckCircle size={18} className="text-success mt-0.5 flex-shrink-0" />
+                <CheckCircle
+                  size={18}
+                  className="text-success mt-0.5 flex-shrink-0"
+                />
                 <span className="font-inter text-small text-text-body">
-                  Signed LOIs from 3 regional clinics for beta phase testing starting Q3 2024.
+                  Signed LOIs from 3 regional clinics for beta phase testing
+                  starting Q3 2024.
                 </span>
               </li>
             </ul>
@@ -169,7 +193,11 @@ export default function ApplicationReview() {
               Supporting Documents
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ComingSoon label="Download Pitch Deck" position="top" inline={false}>
+              <ComingSoon
+                label="Download Pitch Deck"
+                position="top"
+                inline={false}
+              >
                 <div className="flex items-center justify-between p-4 border border-border-subtle rounded-lg hover:bg-canvas-bg cursor-pointer transition-colors w-full">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-canvas-bg rounded flex items-center justify-center text-text-muted">
@@ -188,7 +216,11 @@ export default function ApplicationReview() {
                 </div>
               </ComingSoon>
 
-              <ComingSoon label="Download Financial Model" position="top" inline={false}>
+              <ComingSoon
+                label="Download Financial Model"
+                position="top"
+                inline={false}
+              >
                 <div className="flex items-center justify-between p-4 border border-border-subtle rounded-lg hover:bg-canvas-bg cursor-pointer transition-colors w-full">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-canvas-bg rounded flex items-center justify-center text-text-muted">
@@ -221,6 +253,13 @@ export default function ApplicationReview() {
               </p>
             </div>
 
+            {errorMsg && (
+              <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
+                <AlertCircle size={16} className="shrink-0" />
+                <span>{errorMsg}</span>
+              </div>
+            )}
+
             <div className="flex flex-col gap-2">
               <label className="font-poppins font-semibold text-small text-text-heading">
                 Reviewer Notes
@@ -237,11 +276,11 @@ export default function ApplicationReview() {
             <div className="flex flex-col gap-3">
               <button
                 type="button"
-                onClick={() => setSelectedDecision('approve')}
+                onClick={() => setSelectedDecision("approve")}
                 className={`w-full py-2.5 rounded-lg font-poppins font-semibold text-small transition-all flex items-center justify-center gap-2 border ${
-                  selectedDecision === 'approve'
-                    ? 'bg-action-bg text-action-text border-brand-black'
-                    : 'bg-canvas-bg text-text-heading border-border-subtle hover:bg-canvas-bg/80'
+                  selectedDecision === "approve"
+                    ? "bg-action-bg text-action-text border-brand-black"
+                    : "bg-canvas-bg text-text-heading border-border-subtle hover:bg-canvas-bg/80"
                 }`}
               >
                 Approve for Incubation
@@ -249,11 +288,11 @@ export default function ApplicationReview() {
 
               <button
                 type="button"
-                onClick={() => setSelectedDecision('revisions')}
+                onClick={() => setSelectedDecision("revisions")}
                 className={`w-full py-2.5 rounded-lg font-poppins font-semibold text-small transition-all flex items-center justify-center gap-2 border ${
-                  selectedDecision === 'revisions'
-                    ? 'bg-action-bg text-action-text border-brand-black'
-                    : 'bg-canvas-bg text-text-heading border-border-subtle hover:bg-canvas-bg/80'
+                  selectedDecision === "revisions"
+                    ? "bg-action-bg text-action-text border-brand-black"
+                    : "bg-canvas-bg text-text-heading border-border-subtle hover:bg-canvas-bg/80"
                 }`}
               >
                 Request Revisions
@@ -261,11 +300,11 @@ export default function ApplicationReview() {
 
               <button
                 type="button"
-                onClick={() => setSelectedDecision('reject')}
+                onClick={() => setSelectedDecision("reject")}
                 className={`w-full py-2.5 rounded-lg font-poppins font-semibold text-small transition-all flex items-center justify-center gap-2 border ${
-                  selectedDecision === 'reject'
-                    ? 'bg-error text-white border-error'
-                    : 'bg-transparent text-error border-transparent hover:bg-error/10'
+                  selectedDecision === "reject"
+                    ? "bg-error text-white border-error"
+                    : "bg-transparent text-error border-transparent hover:bg-error/10"
                 }`}
               >
                 Reject Application
@@ -276,10 +315,22 @@ export default function ApplicationReview() {
               <button
                 type="button"
                 disabled={!notes.trim()}
-                // TODO(backend): PATCH this review as a draft ({ applicationId,
-                // reviewerNotes, decision: selectedDecision }) so it survives
-                // a reload; currently only held in local state.
-                onClick={() => notes.trim() && setDraftSaved(true)}
+                onClick={() => {
+                  if (notes.trim()) {
+                    setErrorMsg("");
+                    api
+                      .post("/notes", { entityId: "app-2024-089", text: notes })
+                      .then(() => setDraftSaved(true))
+                      .catch((err) => {
+                        console.error("Failed to save notes:", err);
+                        setErrorMsg(
+                          err?.response?.data?.message ||
+                            err?.message ||
+                            "Failed to save notes.",
+                        );
+                      });
+                  }
+                }}
                 className="text-text-muted hover:text-text-heading font-poppins font-semibold text-small transition-colors focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Save Draft
@@ -288,14 +339,30 @@ export default function ApplicationReview() {
               <button
                 type="button"
                 disabled={!selectedDecision}
-                // TODO(backend): POST the final decision ({ applicationId,
-                // decision: selectedDecision, reviewerNotes }) once there's
-                // somewhere for a decision to go — see INTEGRATION.md.
-                onClick={() => setDecisionSubmitted(true)}
+                onClick={async () => {
+                  setErrorMsg("");
+                  try {
+                    await api.post(
+                      "/incubators/applications/app-2024-089/decision",
+                      {
+                        decision: selectedDecision,
+                        reviewerNotes: notes,
+                      },
+                    );
+                    setDecisionSubmitted(true);
+                  } catch (err) {
+                    console.error("Failed to submit decision:", err);
+                    setErrorMsg(
+                      err?.response?.data?.message ||
+                        err?.message ||
+                        "Failed to submit decision.",
+                    );
+                  }
+                }}
                 className={`px-5 py-2.5 rounded-md font-poppins font-semibold text-small transition-all ${
                   selectedDecision
-                    ? 'bg-action-bg text-action-text hover:opacity-90 active:scale-[0.98] cursor-pointer'
-                    : 'bg-canvas-bg text-text-muted cursor-not-allowed'
+                    ? "bg-action-bg text-action-text hover:opacity-90 active:scale-[0.98] cursor-pointer"
+                    : "bg-canvas-bg text-text-muted cursor-not-allowed"
                 }`}
               >
                 Submit Decision
@@ -303,7 +370,7 @@ export default function ApplicationReview() {
             </div>
 
             <div
-              className={`text-center font-inter text-small text-success mt-2 select-none transition-opacity duration-150 ${draftSaved ? 'opacity-100' : 'opacity-0'}`}
+              className={`text-center font-inter text-small text-success mt-2 select-none transition-opacity duration-150 ${draftSaved ? "opacity-100" : "opacity-0"}`}
               aria-live="polite"
             >
               Draft saved

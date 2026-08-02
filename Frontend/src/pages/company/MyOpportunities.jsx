@@ -1,11 +1,11 @@
-import { Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import CompanyShell from '@/components/company/CompanyShell';
-import OpportunitiesTable from '@/components/company/OpportunitiesTable';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { Plus } from "lucide-react";
+import { Link } from "react-router-dom";
+import CompanyShell from "@/components/company/CompanyShell";
+import OpportunitiesTable from "@/components/company/OpportunitiesTable";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 export default function MyOpportunitiesPage() {
-  useDocumentTitle('My Opportunities — BOCC Company Portal');
+  useDocumentTitle("My Opportunities — BOCC Company Portal");
 
   return (
     <CompanyShell>
@@ -19,7 +19,10 @@ export default function MyOpportunitiesPage() {
           </p>
         </div>
 
-        <Link to="/company/post-opportunity/step-1" className="flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small px-4 py-2.5 rounded-lg hover:opacity-90 transition-all">
+        <Link
+          to="/company/post-opportunity/step-1"
+          className="flex items-center justify-center gap-2 bg-action-bg text-action-text font-poppins font-semibold text-small px-4 py-2.5 rounded-lg hover:opacity-90 transition-all"
+        >
           <Plus size={16} strokeWidth={2} />
           New Opportunity
         </Link>

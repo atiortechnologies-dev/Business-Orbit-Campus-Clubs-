@@ -4,12 +4,12 @@
 // values between routes for the current session. Resets on full reload,
 // same as everything else here that isn't backed by a real API yet.
 export const postOpportunityDraft = {
-  title: '',
-  type: 'Full-time',
-  workMode: 'Remote',
-  location: '',
-  salaryRange: '',
-  overview: '',
+  title: "",
+  type: "Full-time",
+  workMode: "Remote",
+  location: "",
+  salaryRange: "",
+  overview: "",
   skills: [],
 };
 
