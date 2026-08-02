@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Building2,
@@ -8,6 +8,7 @@ import {
   Edit,
   Archive,
   Download,
+  Loader2,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import DataTable from "@/components/ui/DataTable";
@@ -15,59 +16,8 @@ import Badge from "@/components/ui/Badge";
 import StatCard from "@/components/ui/StatCard";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { adminChapterApi } from "@/api/admin/adminApi";
 
-const CHAPTERS = [
-  {
-    id: "c1",
-    name: "Stanford Alpha",
-    initial: "S",
-    institution: "Stanford University",
-    lead: "Marcus Chen",
-    students: 1240,
-    startups: 32,
-    status: "Active",
-  },
-  {
-    id: "c2",
-    name: "MIT Beta",
-    initial: "M",
-    institution: "MIT",
-    lead: "Elena Rodriguez",
-    students: 980,
-    startups: 28,
-    status: "Active",
-  },
-  {
-    id: "c3",
-    name: "Harvard Delta",
-    initial: "H",
-    institution: "Harvard University",
-    lead: "Jameson Blake",
-    students: 754,
-    startups: 14,
-    status: "Pending",
-  },
-  {
-    id: "c4",
-    name: "UCB Gamma",
-    initial: "U",
-    institution: "UC Berkeley",
-    lead: "Sarah Jenkins",
-    students: 1102,
-    startups: 41,
-    status: "Active",
-  },
-  {
-    id: "c5",
-    name: "CMU Sigma",
-    initial: "C",
-    institution: "Carnegie Mellon",
-    lead: "David Wu",
-    students: 540,
-    startups: 19,
-    status: "Probation",
-  },
-];
 
 const STATUS_VARIANT = {
   Active: "success",
@@ -85,8 +35,51 @@ export default function ChapterManagementPage() {
 
   const [stateFilter, setStateFilter] = useState("All States");
   const [statusFilter, setStatusFilter] = useState("Status: All");
+  const [chapters, setChapters] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const visible = CHAPTERS.filter((c) => {
+  useEffect(() => {
+    const fetchChapters = async () => {
+      try {
+        setIsLoading(true);
+        const { data } = await adminChapterApi.getChapters();
+        const chapterList = Array.isArray(data) ? data : (data?.data || []);
+        
+        const mapped = chapterList.map(c => {
+          // Normalize status from UPPERCASE to Title Case for UI variants
+          let uiStatus = "Pending";
+          if (c.status) {
+             const lower = c.status.toLowerCase();
+             if (lower === "active") uiStatus = "Active";
+             else if (lower === "probation") uiStatus = "Probation";
+             else if (lower === "pending") uiStatus = "Pending";
+             else uiStatus = c.status;
+          }
+          
+          return {
+            id: c.id || c._id,
+            name: c.name || c.chapter_name || "Unknown Chapter",
+            initial: (c.name || c.chapter_name || "U").charAt(0).toUpperCase(),
+            institution: c.college || c.college_name || c.institution || "Unknown Institution",
+            lead: c.lead || c.lead_name || "Unknown Lead",
+            students: c.members || c.total_members || c.students || 0,
+            startups: (c.health || c.health_score) ?? c.startups ?? 0, // Using health for the startups column based on mapping instructions
+            status: uiStatus,
+          };
+        });
+        setChapters(mapped);
+      } catch (err) {
+        console.error("Failed to fetch chapters:", err);
+        setError("Failed to load chapters. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchChapters();
+  }, []);
+
+  const visible = chapters.filter((c) => {
     if (statusFilter !== "Status: All" && c.status !== statusFilter)
       return false;
     if (
@@ -261,14 +254,33 @@ export default function ChapterManagementPage() {
         </ComingSoon>
       </div>
 
-      <DataTable
-        columns={columns}
-        rows={visible}
-        emptyMessage="No chapters match the current filters."
-      />
-      <p className="font-inter text-small text-text-muted mt-4 mb-8">
-        Showing {visible.length} of {CHAPTERS.length} entries
-      </p>
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-16 text-text-muted">
+          <Loader2 className="w-8 h-8 animate-spin mb-4" />
+          <p className="font-inter text-body">Loading chapters...</p>
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 border border-red-200 text-red-600 rounded-lg p-6 mb-8 text-center font-inter">
+          <p>{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-100 hover:bg-red-200 rounded-md font-semibold text-small transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      ) : (
+        <>
+          <DataTable
+            columns={columns}
+            rows={visible}
+            emptyMessage="No chapters match the current filters."
+          />
+          <p className="font-inter text-small text-text-muted mt-4 mb-8">
+            Showing {visible.length} of {chapters.length} entries
+          </p>
+        </>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">

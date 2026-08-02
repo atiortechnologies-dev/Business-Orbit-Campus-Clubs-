@@ -9,7 +9,6 @@ jest.mock("../../middlewares/requireAuth", () => (req, res, next) => {
   req.user = { id: "admin123", full_name: "Admin User" };
   next();
 });
-jest.mock("../../middlewares/adminAuth", () => (req, res, next) => next());
 
 // Add mock user middleware
 app.use((req, res, next) => {

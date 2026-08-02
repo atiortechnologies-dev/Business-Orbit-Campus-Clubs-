@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useParams } from "react-router-dom";
 import {
   ChevronRight,
   MapPin,
@@ -23,18 +23,10 @@ import StatCard from "@/components/ui/StatCard";
 import ComingSoon from "@/components/ui/ComingSoon";
 import PlaceholderGraphic from "@/components/ui/PlaceholderGraphic";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-
-const CHAPTER = {
-  name: "Stanford Alpha",
-  initial: "S",
-  institution: "Stanford University",
-  status: "Active",
-  location: "Palo Alto, USA",
-  lead: "Elena Rodriguez",
-  leadInitials: "ER",
-  contact: "elena.r@stanford.edu",
-  founded: "September 2022",
-};
+import { adminChapterDetailApi } from "@/api/admin/adminApi";
+import Modal from "@/components/ui/Modal";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
 
 const ACTIVITY = [
   {
@@ -57,159 +49,59 @@ const ACTIVITY = [
   },
 ];
 
-const STUDENTS = [
-  {
-    id: "s1",
-    name: "Alex Chen",
-    startup: "Eco-Track",
-    stage: "Seed",
-    mentor: "Sarah J.",
-    progress: 75,
-    status: "Active",
-  },
-  {
-    id: "s2",
-    name: "Jordan Smith",
-    startup: "FinFlow",
-    stage: "Pre-Seed",
-    mentor: "Michael R.",
-    progress: 40,
-    status: "Reviewing",
-  },
-  {
-    id: "s3",
-    name: "Maria Garcia",
-    startup: "HealthPulse",
-    stage: "Growth",
-    mentor: "Elena R.",
-    progress: 90,
-    status: "Active",
-  },
-  {
-    id: "s4",
-    name: "Sam Wilson",
-    startup: "Solaris",
-    stage: "Idea",
-    mentor: "David K.",
-    progress: 20,
-    status: "Pending",
-  },
-  {
-    id: "s5",
-    name: "Li Wei",
-    startup: "QuantumPay",
-    stage: "Seed",
-    mentor: "Sarah J.",
-    progress: 65,
-    status: "Active",
-  },
-];
-
-const STARTUPS = [
-  {
-    id: "st1",
-    name: "Vortex AI",
-    domain: "vortex-sys.io",
-    initials: "VX",
-    founder: "Alex Rivera",
-    industry: "SaaS / ML",
-    stage: "Series A",
-    progress: 75,
-    mentor: "Sarah Chen",
-    status: "Active",
-  },
-  {
-    id: "st2",
-    name: "Lumina Health",
-    domain: "lumina.health",
-    initials: "LP",
-    founder: "David Park",
-    industry: "Healthtech",
-    stage: "Seed",
-    progress: 40,
-    mentor: "Marcus Walberg",
-    status: "Pending",
-  },
-  {
-    id: "st3",
-    name: "Swiftly Fin",
-    domain: "swiftly.app",
-    initials: "SF",
-    founder: "Lina G.",
-    industry: "Fintech",
-    stage: "MVP",
-    progress: 95,
-    mentor: "John D.",
-    status: "Active",
-  },
-  {
-    id: "st4",
-    name: "EcoGrid",
-    domain: "ecogrid.io",
-    initials: "EG",
-    founder: "Sam Wilson",
-    industry: "Energy",
-    stage: "Growth",
-    progress: 20,
-    mentor: "Elena Ross",
-    status: "Rejected",
-  },
-];
-
-const EVENTS = [
-  {
-    id: "e1",
-    name: "Annual Tech Summit",
-    venue: "Grand Hall A",
-    category: "Networking",
-    date: "Oct 24, 2023",
-    registrations: 450,
-    capacity: 500,
-    status: "Active",
-  },
-  {
-    id: "e2",
-    name: "Founder's Workshop",
-    venue: "Online (Zoom)",
-    category: "Education",
-    date: "Nov 12, 2023",
-    registrations: 124,
-    capacity: 200,
-    status: "Pending",
-  },
-  {
-    id: "e3",
-    name: "Q3 Startup Mixer",
-    venue: "The Hub",
-    category: "Social",
-    date: "Sep 15, 2023",
-    registrations: 210,
-    capacity: 200,
-    status: "Completed",
-  },
-];
-
-const STUDENT_STATUS_VARIANT = {
-  Active: "success",
-  Reviewing: "warning",
-  Pending: "neutral",
-};
-const STARTUP_STATUS_VARIANT = {
-  Active: "success",
-  Pending: "warning",
-  Rejected: "neutral",
-};
-const EVENT_STATUS_VARIANT = {
-  Active: "success",
-  Pending: "neutral",
-  Completed: "neutral",
-};
 
 const TABS = ["Overview", "Students", "Startups", "Events"];
 
 export default function ChapterDetailPage() {
   useDocumentTitle("Chapter Detail — BOCC Admin");
+  const { id } = useParams();
   const [activeTab, setActiveTab] = useState("Overview");
+  
+  const [chapterData, setChapterData] = useState(null);
+  const [studentsData, setStudentsData] = useState([]);
+  const [startupsData, setStartupsData] = useState([]);
+  const [eventsData, setEventsData] = useState([]);
+  const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [leadUserId, setLeadUserId] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (activeTab === "Overview" && !chapterData) {
+          const res = await adminChapterDetailApi.getOverview(id);
+          setChapterData(res.data.data);
+        } else if (activeTab === "Students" && studentsData.length === 0) {
+          const res = await adminChapterDetailApi.getStudents(id);
+          setStudentsData(res.data.data || []);
+        } else if (activeTab === "Startups" && startupsData.length === 0) {
+          const res = await adminChapterDetailApi.getStartups(id);
+          setStartupsData(res.data.data || []);
+        } else if (activeTab === "Events" && eventsData.length === 0) {
+          const res = await adminChapterDetailApi.getEvents(id);
+          setEventsData(res.data.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch data", error);
+      }
+    };
+    fetchData();
+  }, [activeTab, id, chapterData, studentsData.length, startupsData.length, eventsData.length]);
+
+  const handleAssignLead = async () => {
+    try {
+      await adminChapterDetailApi.assignLead(id, { chapter_lead_id: leadUserId });
+      setAssignModalOpen(false);
+      setLeadUserId("");
+      const res = await adminChapterDetailApi.getOverview(id);
+      setChapterData(res.data.data);
+    } catch (error) {
+      console.error("Failed to assign lead", error);
+    }
+  };
+
+  const chapter = chapterData?.chapter || {};
+  const metrics = chapterData?.metrics || {};
+
 
   const studentColumns = [
     {
@@ -220,25 +112,20 @@ export default function ChapterDetailPage() {
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-canvas-bg border border-border-subtle" />
           <span className="font-inter font-medium text-small text-text-heading">
-            {row.name}
+            {row.user_id?.full_name || "Unknown"}
           </span>
         </div>
       ),
     },
-    { key: "startup", label: "Startup", width: "1.1fr" },
-    { key: "stage", label: "Stage", width: "0.9fr" },
-    { key: "mentor", label: "Mentor", width: "0.9fr" },
+    { key: "college", label: "College", width: "1.1fr", render: (row) => row.college },
+    { key: "degree", label: "Degree", width: "0.9fr", render: (row) => row.degree },
+    { key: "graduation_year", label: "Grad. Year", width: "0.9fr", render: (row) => row.graduation_year },
     {
-      key: "progress",
-      label: "Progress",
+      key: "profile_status",
+      label: "Profile Status",
       width: "1fr",
       render: (row) => (
-        <div className="w-24 h-1.5 bg-canvas-bg rounded-full overflow-hidden">
-          <div
-            className="bg-brand-black h-full rounded-full"
-            style={{ width: `${row.progress}%` }}
-          />
-        </div>
+        <Badge variant={row.profile_status === "completed" ? "success" : "warning"}>{row.profile_status}</Badge>
       ),
     },
     {
@@ -246,7 +133,7 @@ export default function ChapterDetailPage() {
       label: "Status",
       width: "0.9fr",
       render: (row) => (
-        <Badge variant={STUDENT_STATUS_VARIANT[row.status]}>{row.status}</Badge>
+        <Badge variant={row.status === "active" ? "success" : "neutral"}>{row.status || "Active"}</Badge>
       ),
     },
   ];
@@ -259,22 +146,22 @@ export default function ChapterDetailPage() {
       render: (row) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[10px] text-text-heading shrink-0">
-            {row.initials}
+            {(row.startup_name || "S").charAt(0)}
           </div>
           <div>
             <p className="font-inter font-medium text-small text-text-heading">
-              {row.name}
+              {row.startup_name}
             </p>
             <p className="font-inter text-caption text-text-muted">
-              {row.domain}
+              {row.industry}
             </p>
           </div>
         </div>
       ),
     },
-    { key: "founder", label: "Founder", width: "1fr" },
-    { key: "industry", label: "Industry", width: "1fr" },
-    { key: "stage", label: "Current Stage", width: "0.9fr" },
+    { key: "founder", label: "Student ID", width: "1fr", render: (row) => row.student_id },
+    { key: "category", label: "Category", width: "1fr", render: (row) => row.category },
+    { key: "stage", label: "Current Stage", width: "0.9fr", render: (row) => row.current_stage },
     {
       key: "progress",
       label: "Progress",
@@ -283,18 +170,18 @@ export default function ChapterDetailPage() {
         <div className="w-20 h-1.5 bg-canvas-bg rounded-full overflow-hidden">
           <div
             className="bg-brand-black h-full rounded-full"
-            style={{ width: `${row.progress}%` }}
+            style={{ width: `${row.progress_percentage || 0}%` }}
           />
         </div>
       ),
     },
-    { key: "mentor", label: "Mentor", width: "0.9fr" },
+    { key: "visibility", label: "Visibility", width: "0.9fr", render: (row) => row.visibility ? "Public" : "Private" },
     {
       key: "status",
       label: "Status",
       width: "0.9fr",
       render: (row) => (
-        <Badge variant={STARTUP_STATUS_VARIANT[row.status]}>{row.status}</Badge>
+        <Badge variant={row.funding_status ? "success" : "neutral"}>{row.funding_status || "Unknown"}</Badge>
       ),
     },
   ];
@@ -307,9 +194,9 @@ export default function ChapterDetailPage() {
       render: (row) => (
         <div>
           <p className="font-inter font-medium text-small text-text-heading">
-            {row.name}
+            {row.startup_name}
           </p>
-          <p className="font-inter text-caption text-text-muted">{row.venue}</p>
+          <p className="font-inter text-caption text-text-muted">{row.location_venue || row.venue}</p>
         </div>
       ),
     },
@@ -322,13 +209,13 @@ export default function ChapterDetailPage() {
       render: (row) => (
         <div className="flex flex-col gap-1">
           <span className="font-inter text-small text-text-body">
-            {row.registrations}/{row.capacity}
+            {row.total_registrations}/{row.max_capacity}
           </span>
           <div className="w-full h-1 bg-canvas-bg rounded-full overflow-hidden">
             <div
               className="bg-brand-black h-full rounded-full"
               style={{
-                width: `${Math.min(100, Math.round((row.registrations / row.capacity) * 100))}%`,
+                width: `${Math.min(100, Math.round((row.total_registrations / row.max_capacity) * 100))}%`,
               }}
             />
           </div>
@@ -340,7 +227,7 @@ export default function ChapterDetailPage() {
       label: "Status",
       width: "0.9fr",
       render: (row) => (
-        <Badge variant={EVENT_STATUS_VARIANT[row.status]}>{row.status}</Badge>
+        <Badge variant={row.status === "ACTIVE" ? "success" : row.status === "PENDING" ? "neutral" : "warning"}>{row.status}</Badge>
       ),
     },
   ];
@@ -355,7 +242,7 @@ export default function ChapterDetailPage() {
           Chapters
         </Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <span className="text-text-heading font-semibold">{CHAPTER.name}</span>
+        <span className="text-text-heading font-semibold">{chapter.chapter_name || "Unknown Chapter"}</span>
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -364,16 +251,16 @@ export default function ChapterDetailPage() {
           <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card lg:sticky lg:top-24">
             <div className="flex flex-col items-center text-center pb-6 border-b border-divider-line mb-6">
               <div className="w-20 h-20 rounded-xl bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-section text-text-heading mb-4">
-                {CHAPTER.initial}
+                {(chapter.chapter_name || "C").charAt(0)}
               </div>
               <h1 className="font-poppins font-semibold text-card text-text-heading">
-                {CHAPTER.name}
+                {chapter.chapter_name || "Unknown Chapter"}
               </h1>
               <p className="font-inter text-small text-text-muted">
-                {CHAPTER.institution}
+                {chapter.college_name || "Unknown Institution"}
               </p>
               <span className="mt-3">
-                <Badge variant="success">{CHAPTER.status}</Badge>
+                <Badge variant="success">{chapter.status || "Active"}</Badge>
               </span>
             </div>
             <div className="space-y-4">
@@ -387,7 +274,7 @@ export default function ChapterDetailPage() {
                     strokeWidth={2}
                     className="text-text-muted"
                   />{" "}
-                  {CHAPTER.location}
+                  {chapter.location || "Location not set"}
                 </p>
               </div>
               <div>
@@ -396,10 +283,10 @@ export default function ChapterDetailPage() {
                 </p>
                 <div className="flex items-center gap-2">
                   <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[9px] text-text-heading">
-                    {CHAPTER.leadInitials}
+                    {((typeof chapter.chapter_lead_id === "object" ? chapter.chapter_lead_id?.full_name : chapter.chapter_lead_id) || "U").charAt(0)}
                   </div>
                   <p className="font-inter text-small text-text-heading">
-                    {CHAPTER.lead}
+                    {typeof chapter.chapter_lead_id === "object" ? chapter.chapter_lead_id?.full_name : (chapter.chapter_lead_id || "Unassigned")}
                   </p>
                 </div>
               </div>
@@ -408,7 +295,7 @@ export default function ChapterDetailPage() {
                   Contact
                 </p>
                 <p className="font-inter text-small text-text-heading">
-                  {CHAPTER.contact}
+                  {typeof chapter.chapter_lead_id === "object" ? chapter.chapter_lead_id?.email : "No contact info"}
                 </p>
               </div>
               <div>
@@ -416,7 +303,7 @@ export default function ChapterDetailPage() {
                   Founded
                 </p>
                 <p className="font-inter text-small text-text-heading">
-                  {CHAPTER.founded}
+                  {chapter.created_at ? new Date(chapter.created_at).toLocaleDateString() : "-"}
                 </p>
               </div>
             </div>
@@ -447,20 +334,18 @@ export default function ChapterDetailPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard
                   label="Total Students"
-                  value="1,248"
+                  value={metrics.total_students || 0}
                   icon={<Users size={16} strokeWidth={2} />}
-                  subtext="+12%"
-                  trendDirection="up"
                   className="col-span-2"
                 />
                 <StatCard
                   label="Active Startups"
-                  value="42"
+                  value={metrics.active_startups || 0}
                   icon={<Rocket size={16} strokeWidth={2} />}
                 />
                 <StatCard
                   label="Mentors"
-                  value="18"
+                  value={metrics.mentors_count || 0}
                   icon={<GraduationCap size={16} strokeWidth={2} />}
                 />
               </div>
@@ -530,7 +415,7 @@ export default function ChapterDetailPage() {
               </div>
               <DataTable
                 columns={studentColumns}
-                rows={STUDENTS}
+                rows={studentsData}
                 emptyMessage="No students found."
               />
             </>
@@ -551,7 +436,7 @@ export default function ChapterDetailPage() {
               </div>
               <DataTable
                 columns={startupColumns}
-                rows={STARTUPS}
+                rows={startupsData}
                 emptyMessage="No startups found."
               />
             </>
@@ -576,7 +461,7 @@ export default function ChapterDetailPage() {
               </div>
               <DataTable
                 columns={eventColumns}
-                rows={EVENTS}
+                rows={eventsData}
                 emptyMessage="No events found."
               />
             </>
@@ -595,11 +480,9 @@ export default function ChapterDetailPage() {
                   Edit Chapter <Edit size={18} strokeWidth={2} />
                 </span>
               </ComingSoon>
-              <ComingSoon label="Assign Lead" position="top">
-                <span className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading">
-                  Assign Lead <UserPlus size={18} strokeWidth={2} />
-                </span>
-              </ComingSoon>
+              <button onClick={() => setAssignModalOpen(true)} className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors">
+  Assign Lead <UserPlus size={18} strokeWidth={2} />
+</button>
               <button
                 type="button"
                 onClick={() => setActiveTab("Students")}
@@ -660,6 +543,20 @@ export default function ChapterDetailPage() {
           />
         </div>
       </div>
+      <Modal isOpen={assignModalOpen} onClose={() => setAssignModalOpen(false)} title="Assign Chapter Lead">
+        <div className="space-y-4">
+          <Input 
+            label="Lead User ID" 
+            placeholder="Enter User ObjectId" 
+            value={leadUserId} 
+            onChange={(e) => setLeadUserId(e.target.value)} 
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setAssignModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleAssignLead}>Assign Lead</Button>
+          </div>
+        </div>
+      </Modal>
     </AdminShell>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { cmsApi } from "@/api/cmsApi";
 import { AlertCircle } from "lucide-react";
+import AdminShell from "@/components/admin/AdminShell";
 
 export default function CmsManager() {
   const [faqs, setFaqs] = useState([]);
@@ -102,8 +103,9 @@ export default function CmsManager() {
   };
 
   return (
-    <div className="p-8 space-y-12">
-      <h1 className="text-3xl font-bold">CMS Manager</h1>
+    <AdminShell>
+      <div className="p-8 space-y-12">
+        <h1 className="text-3xl font-bold">CMS Manager</h1>
 
       {errorMsg && (
         <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
@@ -182,8 +184,9 @@ export default function CmsManager() {
         </div>
       </section>
 
-      {/* Similar minimal sections for Stories and Featured Startups could be added,
-          but this is sufficient to show the integration exists */}
-    </div>
+        {/* Similar minimal sections for Stories and Featured Startups could be added,
+            but this is sufficient to show the integration exists */}
+      </div>
+    </AdminShell>
   );
 }

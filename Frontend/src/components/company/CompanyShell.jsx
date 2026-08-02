@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -51,6 +52,8 @@ const NAV_ITEMS = [
 // shell (matching every other portal) is the actual fix, not a style
 // preference.
 export default function CompanyShell({ children }) {
+  const { user } = useAuth();
+  const initials = user?.full_name ? user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : user?.first_name ? (user.first_name[0] + (user.last_name ? user.last_name[0] : '')).toUpperCase() : user?.name ? user.name.substring(0,2).toUpperCase() : '??';
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, onToggleCollapse] = useSidebarCollapsed();
 
@@ -58,9 +61,6 @@ export default function CompanyShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AC"
-        footerName="Acme Corp"
-        footerRole="Premium Account"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -110,7 +110,7 @@ export default function CompanyShell({ children }) {
               <ThemeToggle size={20} className="block" />
               <ComingSoon label="Profile" position="bottom" inline>
                 <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-gray-700 to-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
-                  AC
+                  {initials}
                 </div>
               </ComingSoon>
             </div>

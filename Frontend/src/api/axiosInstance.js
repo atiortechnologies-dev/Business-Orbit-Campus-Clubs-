@@ -24,6 +24,17 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    // Global 401 Unauthorized handling
+    if (error.response && error.response.status === 401) {
+      const url = error.config?.url || "";
+      // Exclude login and auth checking endpoints from forcing a redirect
+      if (!url.includes("/auth/login") && !url.includes("/auth/me")) {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+      }
+    }
+
     const customError = new Error(
       error.response?.data?.message || error.message || "Something went wrong",
     );

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -37,6 +38,8 @@ const NAV_ITEMS = [
 ];
 
 export default function DashboardShell({ pageId = "pg", children }) {
+  const { user } = useAuth();
+  const initials = user?.full_name ? user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : user?.first_name ? (user.first_name[0] + (user.last_name ? user.last_name[0] : '')).toUpperCase() : user?.name ? user.name.substring(0,2).toUpperCase() : '??';
   // Drawer state for the sidebar below `lg` — owned here (not inside
   // Sidebar) because the header's Menu button that opens it lives in this
   // file, not there.
@@ -59,9 +62,6 @@ export default function DashboardShell({ pageId = "pg", children }) {
 
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="A"
-        footerName="Alex"
-        footerRole="Student"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -126,7 +126,7 @@ export default function DashboardShell({ pageId = "pg", children }) {
                 to="/settings"
                 className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
               >
-                AC
+                {initials}
               </Link>
             </div>
           </div>

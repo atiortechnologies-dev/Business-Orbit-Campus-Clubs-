@@ -4,14 +4,11 @@ import {
   Rocket,
   ShieldAlert,
   DollarSign,
-  _TrendingUp,
   AlertTriangle,
   FileText,
   UserPlus,
   ArrowRight,
   RefreshCw,
-  Upload,
-  FolderPlus,
   Calendar,
   Map,
   AlertCircle,
@@ -23,60 +20,7 @@ import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import api from "@/api/axiosInstance";
 
-const USER_DISTRIBUTION = [
-  { label: "Students", pct: 65 },
-  { label: "Mentors", pct: 20 },
-  { label: "Investors", pct: 15 },
-];
-
-const FUNNEL_VIEWS = {
-  Daily: [
-    { label: "Idea", value: 1240 },
-    { label: "Validation", value: 840 },
-    { label: "MVP", value: 456 },
-    { label: "Traction", value: 182 },
-    { label: "Launch", value: 42 },
-  ],
-  Monthly: [
-    { label: "Idea", value: 5180 },
-    { label: "Validation", value: 3420 },
-    { label: "MVP", value: 1890 },
-    { label: "Traction", value: 705 },
-    { label: "Launch", value: 168 },
-  ],
-};
-
-const ACTIVITY_STREAM = [
-  { icon: RefreshCw, text: "System Upgrade Complete", time: "12m ago" },
-  { icon: UserPlus, text: "New User Registered", time: "38m ago" },
-  { icon: Upload, text: "Bulk Export Initiated", time: "1h ago" },
-  { icon: FolderPlus, text: 'Club Created "Fintech 2024"', time: "3h ago" },
-];
-
-const INITIAL_CRITICAL_ACTIONS = [
-  {
-    id: "ca1",
-    icon: AlertTriangle,
-    tone: "error",
-    title: "Identity Verification Loophole",
-    detail: "14 records flagged in batch #482",
-    reviewHref: "/admin/verification",
-  },
-  {
-    id: "ca2",
-    icon: FileText,
-    tone: "warning",
-    title: "Compliance Report Due",
-    detail: "Quarterly submission due in 3 days",
-  },
-  {
-    id: "ca3",
-    icon: UserPlus,
-    tone: "info",
-    title: "New Mentor Application",
-    detail: "Dr. Sarah Jenkins awaiting approval",
-  },
-];
+// Dummy data removed. Fallbacks now use 0s or empty arrays.
 
 const TONE_CLASSES = {
   error: "bg-error/15 text-error",
@@ -84,21 +28,39 @@ const TONE_CLASSES = {
   info: "bg-info/15 text-info",
 };
 
+const ICON_MAP = {
+  UserPlus: UserPlus,
+  FileText: FileText,
+  AlertTriangle: AlertTriangle,
+  RefreshCw: RefreshCw
+};
+
 export default function AdminDashboardPage() {
   useDocumentTitle("BOCC Command Center — Admin Dashboard");
   const [funnelView, setFunnelView] = useState("Daily");
-  const [criticalActions, setCriticalActions] = useState(
-    INITIAL_CRITICAL_ACTIONS,
-  );
+  const [criticalActions, setCriticalActions] = useState([]);
   const [overview, setOverview] = useState(null);
-  const [updates, setUpdates] = useState(ACTIVITY_STREAM);
+  const [updates, setUpdates] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
+  const [isLoadingOverview, setIsLoadingOverview] = useState(true);
+  const [isLoadingUpdates, setIsLoadingUpdates] = useState(true);
 
   useEffect(() => {
     setErrorMsg("");
+    
+    setIsLoadingOverview(true);
     api
-      .get("/overview")
-      .then((res) => setOverview(res.data))
+      .get("/admin/overview")
+      .then((res) => {
+        setOverview(res);
+        if (res?.criticalActions) {
+          const mappedActions = res.criticalActions.map(ca => ({
+            ...ca,
+            icon: ICON_MAP[ca.iconName] || AlertTriangle
+          }));
+          setCriticalActions(mappedActions);
+        }
+      })
       .catch((err) => {
         console.error("Failed to fetch overview", err);
         setErrorMsg(
@@ -108,14 +70,15 @@ export default function AdminDashboardPage() {
             err?.message ||
             "Failed to fetch overview",
         );
-      });
+      })
+      .finally(() => setIsLoadingOverview(false));
 
+    setIsLoadingUpdates(true);
     api
-      .get("/updates")
+      .get("/admin/updates")
       .then((res) => {
-        if (res.data?.updates && res.data.updates.length > 0) {
-          // map icons based on type if possible, otherwise use RefreshCw
-          const mappedUpdates = res.data.updates.map((u) => ({
+        if (res?.updates && res.updates.length > 0) {
+          const mappedUpdates = res.updates.map((u) => ({
             icon: RefreshCw,
             text: u.message || u.text || "System Update",
             time: u.time || "Recently",
@@ -132,11 +95,22 @@ export default function AdminDashboardPage() {
             err?.message ||
             "Failed to fetch updates",
         );
-      });
+      })
+      .finally(() => setIsLoadingUpdates(false));
   }, []);
 
-  const funnel = FUNNEL_VIEWS[funnelView];
-  const funnelMax = funnel[0].value;
+  const activeFunnelViews = overview?.funnelViews || {
+    Daily: [
+      { label: "Idea", value: 0 },
+      { label: "Validation", value: 0 },
+      { label: "MVP", value: 0 },
+      { label: "Traction", value: 0 },
+      { label: "Launch", value: 0 },
+    ]
+  };
+  const activeDistribution = overview?.userDistribution || [];
+  const funnel = activeFunnelViews[funnelView] || activeFunnelViews["Daily"];
+  const funnelMax = funnel[0]?.value || 1;
 
   const dismissAction = async (id) => {
     setErrorMsg("");
@@ -153,40 +127,70 @@ export default function AdminDashboardPage() {
 
   return (
     <AdminShell>
-      {errorMsg && (
+      {errorMsg && overview && (
         <div className="mb-6 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
           <AlertCircle size={16} className="shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          label="Total Users"
-          value={overview?.totalUsers || "12,482"}
-          icon={<Users size={18} strokeWidth={2} />}
-          subtext="+8.4% this month"
-          trendDirection="up"
-        />
-        <StatCard
-          label="Active Startups"
-          value={overview?.activeStartups || "456"}
-          icon={<Rocket size={18} strokeWidth={2} />}
-          subtext="92% engagement"
-        />
-        <StatCard
-          label="Pending Verifications"
-          value={overview?.pendingVerifications || "24"}
-          icon={<ShieldAlert size={18} strokeWidth={2} />}
-          subtext="8 critical alerts"
-          trendDirection="down"
-          className="border-error/40"
-        />
-        <StatCard
-          label="Investor Capital"
-          value={overview?.investorCapital || "$24.8M"}
-          icon={<DollarSign size={18} strokeWidth={2} />}
-          subtext="Tracked across all rounds"
-        />
+
+      {!isLoadingOverview && !overview ? (
+        <div className="flex flex-col items-center justify-center p-12 bg-surface-white border border-border-subtle rounded-lg text-center min-h-[50vh] mb-8">
+          <div className="w-16 h-16 bg-error/10 text-error rounded-full flex items-center justify-center mb-4">
+            <AlertCircle size={32} />
+          </div>
+          <h2 className="font-poppins font-semibold text-h4 text-text-heading mb-2">
+            Unable to Load Dashboard Data
+          </h2>
+          <p className="font-inter text-text-body mb-6 max-w-md">
+            The server could not be reached or the database connection failed.
+          </p>
+          {errorMsg && (
+            <div className="p-3 bg-error/5 border border-error/20 text-error rounded-md text-small max-w-lg text-left overflow-auto w-full">
+              <code className="break-words">{errorMsg}</code>
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {isLoadingOverview ? (
+          <>
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse bg-surface-white border border-border-subtle rounded-lg p-5 h-[116px]"></div>
+            ))}
+          </>
+        ) : (
+          <>
+            <StatCard
+              label="Total Users"
+              value={overview?.totalUsers || "0"}
+              icon={<Users size={18} strokeWidth={2} />}
+              subtext="+8.4% this month"
+              trendDirection="up"
+            />
+            <StatCard
+              label="Active Startups"
+              value={overview?.activeStartups || "0"}
+              icon={<Rocket size={18} strokeWidth={2} />}
+              subtext="92% engagement"
+            />
+            <StatCard
+              label="Pending Verifications"
+              value={overview?.pendingVerifications || "0"}
+              icon={<ShieldAlert size={18} strokeWidth={2} />}
+              subtext="8 critical alerts"
+              trendDirection="down"
+              className="border-error/40"
+            />
+            <StatCard
+              label="Investor Capital"
+              value={overview?.investorCapital || "$0M"}
+              icon={<DollarSign size={18} strokeWidth={2} />}
+              subtext="Tracked across all rounds"
+            />
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
@@ -195,24 +199,32 @@ export default function AdminDashboardPage() {
             User Distribution
           </h3>
           <div className="space-y-4 mb-6">
-            {USER_DISTRIBUTION.map(({ label, pct }) => (
-              <div key={label}>
-                <div className="flex justify-between mb-1.5">
-                  <span className="font-inter text-small text-text-body">
-                    {label}
-                  </span>
-                  <span className="font-inter font-semibold text-small text-text-heading">
-                    {pct}%
-                  </span>
-                </div>
-                <div className="w-full bg-divider-line h-2 rounded-full overflow-hidden">
-                  <div
-                    className="bg-brand-black h-full rounded-full"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
+            {isLoadingOverview ? (
+              <div className="animate-pulse space-y-4">
+                <div className="h-[28px] bg-divider-line rounded w-full"></div>
+                <div className="h-[28px] bg-divider-line rounded w-full"></div>
+                <div className="h-[28px] bg-divider-line rounded w-full"></div>
               </div>
-            ))}
+            ) : (
+              activeDistribution.map(({ label, pct }) => (
+                <div key={label}>
+                  <div className="flex justify-between mb-1.5">
+                    <span className="font-inter text-small text-text-body">
+                      {label}
+                    </span>
+                    <span className="font-inter font-semibold text-small text-text-heading">
+                      {pct}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-divider-line h-2 rounded-full overflow-hidden">
+                    <div
+                      className="bg-brand-black h-full rounded-full"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
           <ComingSoon label="Demographic Map" position="top">
             <div className="w-full h-32 rounded-lg border-2 border-dashed border-border-subtle bg-canvas-bg flex flex-col items-center justify-center gap-1.5">
@@ -230,7 +242,7 @@ export default function AdminDashboardPage() {
               Startup Journey Funnel
             </h3>
             <div className="flex items-center gap-1 bg-canvas-bg rounded-md p-1">
-              {Object.keys(FUNNEL_VIEWS).map((view) => (
+              {Object.keys(activeFunnelViews).map((view) => (
                 <button
                   key={view}
                   type="button"
@@ -247,25 +259,37 @@ export default function AdminDashboardPage() {
             </div>
           </div>
           <div className="flex items-end gap-3 h-32 mb-3">
-            {funnel.map(({ label, value }) => (
-              <div
-                key={label}
-                className="flex-1 flex flex-col items-center justify-end gap-2 h-full"
-              >
-                <span className="font-inter font-semibold text-caption text-text-heading">
-                  {value.toLocaleString()}
-                </span>
+            {isLoadingOverview ? (
+               <div className="flex w-full items-end gap-3 h-full">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center justify-end gap-2 h-full">
+                      <div className="w-1/2 bg-divider-line h-4 rounded animate-pulse"></div>
+                      <div className="w-full bg-divider-line rounded-t animate-pulse" style={{ height: `${20 + i * 15}%` }}></div>
+                      <div className="w-2/3 bg-divider-line h-3 rounded animate-pulse"></div>
+                    </div>
+                  ))}
+               </div>
+            ) : (
+              funnel.map(({ label, value }) => (
                 <div
-                  className="w-full bg-brand-black rounded-t transition-all"
-                  style={{
-                    height: `${Math.max((value / funnelMax) * 100, 4)}%`,
-                  }}
-                />
-                <span className="font-inter text-caption text-text-muted">
-                  {label}
-                </span>
-              </div>
-            ))}
+                  key={label}
+                  className="flex-1 flex flex-col items-center justify-end gap-2 h-full"
+                >
+                  <span className="font-inter font-semibold text-caption text-text-heading">
+                    {value.toLocaleString()}
+                  </span>
+                  <div
+                    className="w-full bg-brand-black rounded-t transition-all"
+                    style={{
+                      height: `${Math.max((value / funnelMax) * 100, 4)}%`,
+                    }}
+                  />
+                  <span className="font-inter text-caption text-text-muted">
+                    {label}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
           <div className="flex items-center justify-between pt-4 border-t border-divider-line">
             <div className="flex gap-6">
@@ -303,7 +327,19 @@ export default function AdminDashboardPage() {
               Critical Actions
             </h3>
           </div>
-          {criticalActions.length === 0 ? (
+          {isLoadingOverview ? (
+            <div className="divide-y divide-border-subtle animate-pulse">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="p-6 flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-full bg-divider-line shrink-0"></div>
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="h-5 bg-divider-line rounded w-1/3"></div>
+                    <div className="h-4 bg-divider-line rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : criticalActions.length === 0 ? (
             <p className="p-6 font-inter text-small text-text-muted">
               No critical actions — you're all caught up.
             </p>
@@ -356,19 +392,31 @@ export default function AdminDashboardPage() {
             </h3>
           </div>
           <div className="divide-y divide-border-subtle">
-            {updates.map(({ icon: Icon, text, time }, i) => (
-              <div key={i} className="px-6 py-4 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center text-text-muted shrink-0">
-                  <Icon size={16} strokeWidth={2} />
-                </div>
-                <p className="flex-1 font-inter text-small text-text-body">
-                  {text}
-                </p>
-                <span className="font-inter text-caption text-text-muted whitespace-nowrap">
-                  {time}
-                </span>
+            {isLoadingUpdates ? (
+              <div className="animate-pulse">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="px-6 py-4 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-divider-line shrink-0"></div>
+                    <div className="h-4 bg-divider-line rounded flex-1"></div>
+                    <div className="h-3 w-10 bg-divider-line rounded"></div>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              updates.map(({ icon: Icon, text, time }, i) => (
+                <div key={i} className="px-6 py-4 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center text-text-muted shrink-0">
+                    <Icon size={16} strokeWidth={2} />
+                  </div>
+                  <p className="flex-1 font-inter text-small text-text-body">
+                    {text}
+                  </p>
+                  <span className="font-inter text-caption text-text-muted whitespace-nowrap">
+                    {time}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </section>
       </div>
@@ -434,6 +482,8 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </section>
+      </>
+      )}
     </AdminShell>
   );
 }

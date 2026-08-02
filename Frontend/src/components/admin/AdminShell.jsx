@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -14,6 +15,7 @@ import {
   Search,
   Bell,
   Menu,
+  FileText,
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
@@ -57,6 +59,12 @@ const NAV_ITEMS = [
     href: "/admin/user-management",
     real: true,
   },
+  {
+    icon: FileText,
+    label: "Content Mgmt",
+    href: "/admin/content-management",
+    real: true,
+  },
 ];
 
 // Same three-piece pattern (header + content slot + footer, shared
@@ -64,6 +72,8 @@ const NAV_ITEMS = [
 // reasoning; this is the third instance of one pattern, not a fourth
 // divergent one.
 export default function AdminShell({ children }) {
+  const { user } = useAuth();
+  const initials = user?.full_name ? user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : user?.first_name ? (user.first_name[0] + (user.last_name ? user.last_name[0] : '')).toUpperCase() : user?.name ? user.name.substring(0,2).toUpperCase() : '??';
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, onToggleCollapse] = useSidebarCollapsed();
 
@@ -71,9 +81,6 @@ export default function AdminShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AR"
-        footerName="Alex Rivera"
-        footerRole="Super Admin"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -155,7 +162,7 @@ export default function AdminShell({ children }) {
               <ThemeToggle size={20} className="block" />
               <ComingSoon label="User" position="bottom" inline>
                 <div className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
-                  AR
+                  {initials}
                 </div>
               </ComingSoon>
             </div>

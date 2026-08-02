@@ -1,5 +1,5 @@
 import { getMe } from "@/api/auth/authApi";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 
 const AuthContext = createContext(null);
 
@@ -24,18 +24,18 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async (silent = false) => {
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      }
       const response = await getMe();
-      setUser(response.data.user || response.data);
-    } catch (error) {
+      setUser(normalizeUser(response));
+    } catch (_error) {
       setUser(null);
       return null;
     } finally {
-      if (!silent) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   }, []); // ✅ FIXED: No external dependencies
 
@@ -93,10 +93,10 @@ export const AuthProvider = ({ children }) => {
   // Optional: Set up interval to refresh user every 10 minutes (keep-alive)
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [fetchUser]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, fetchUser }}>
+    <AuthContext.Provider value={{ user, setUser, loading, fetchUser, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

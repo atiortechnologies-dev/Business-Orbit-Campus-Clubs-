@@ -29,6 +29,47 @@ const formatPaginatedResponse = (
   metrics,
 });
 
+
+/**
+ * @desc    Get all chapters with relevant statistics
+ * @route   GET /api/admin/chapters
+ * @access  Private (Admin)
+ */
+exports.getAllChapters = asyncHandler(async (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 50;
+  const skip = (page - 1) * limit;
+
+  const totalRecords = await Chapter.countDocuments();
+  const chapters = await Chapter.find()
+    .populate("chapter_lead_id", "full_name")
+    .sort({ created_at: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  const formattedChapters = chapters.map((chapter) => ({
+    id: chapter._id,
+    name: chapter.chapter_name,
+    college: chapter.college_name,
+    members: chapter.total_members || 0,
+    eventsThisMonth: chapter.events_conducted || 0,
+    health: chapter.health_score,
+    status: chapter.status,
+    lead: chapter.chapter_lead_id ? chapter.chapter_lead_id.full_name : "Unassigned",
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: formattedChapters,
+    page: Number(page),
+    limit: Number(limit),
+    total_records: totalRecords,
+    total_pages: Math.ceil(totalRecords / limit),
+    metrics: {}
+  });
+});
+
 /**
  * @desc    Get chapter overview and high-level stats
  * @route   GET /api/admin/chapters/:id/overview
