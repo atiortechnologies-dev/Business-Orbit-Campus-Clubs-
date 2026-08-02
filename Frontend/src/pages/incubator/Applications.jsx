@@ -1,156 +1,117 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Download, ChevronLeft, ChevronRight, AlertCircle } from "lucide-react";
-import IncubatorShell from "@/components/incubator/IncubatorShell";
-import { downloadCsv } from "@/utils/csv";
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { filterApplications } from "@/api/applicationApi";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  Download,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import IncubatorShell from '@/components/incubator/IncubatorShell';
+import { downloadCsv } from '@/utils/csv';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const INITIAL_APPLICATIONS = [
   {
-    id: "nexus-ai",
-    name: "Nexus AI",
-    founder: "Sarah Chen",
-    chapter: "SF Chapter",
-    stage: "Seed Stage",
-    industry: "DeepTech",
-    status: "NEW", // neutral
+    id: 'nexus-ai',
+    name: 'Nexus AI',
+    founder: 'Sarah Chen',
+    chapter: 'SF Chapter',
+    stage: 'Seed Stage',
+    industry: 'DeepTech',
+    status: 'NEW', // neutral
   },
   {
-    id: "greenroot",
-    name: "GreenRoot",
-    founder: "Marcus Aurelius",
-    chapter: "Austin Chapter",
-    stage: "Pre-Seed",
-    industry: "Agritech",
-    status: "UNDER_REVIEW", // warning
+    id: 'greenroot',
+    name: 'GreenRoot',
+    founder: 'Marcus Aurelius',
+    chapter: 'Austin Chapter',
+    stage: 'Pre-Seed',
+    industry: 'Agritech',
+    status: 'UNDER_REVIEW', // warning
   },
   {
-    id: "ledgerflow",
-    name: "LedgerFlow",
-    founder: "Jordan Belfort",
-    chapter: "NYC Chapter",
-    stage: "Series A",
-    industry: "Fintech",
-    status: "INTERVIEW_SCHEDULED", // info
+    id: 'ledgerflow',
+    name: 'LedgerFlow',
+    founder: 'Jordan Belfort',
+    chapter: 'NYC Chapter',
+    stage: 'Series A',
+    industry: 'Fintech',
+    status: 'INTERVIEW_SCHEDULED', // info
   },
   {
-    id: "healthsync",
-    name: "HealthSync",
-    founder: "Elena Rodriguez",
-    chapter: "Chicago Chapter",
-    stage: "Ideation",
-    industry: "Healthtech",
-    status: "NEW", // neutral
+    id: 'healthsync',
+    name: 'HealthSync',
+    founder: 'Elena Rodriguez',
+    chapter: 'Chicago Chapter',
+    stage: 'Ideation',
+    industry: 'Healthtech',
+    status: 'NEW', // neutral
   },
   {
-    id: "orbit-analytics",
-    name: "Orbit Analytics",
-    founder: "Sam Altman Jr.",
-    chapter: "LA Chapter",
-    stage: "MVP",
-    industry: "Big Data",
-    status: "REJECTED", // muted
+    id: 'orbit-analytics',
+    name: 'Orbit Analytics',
+    founder: 'Sam Altman Jr.',
+    chapter: 'LA Chapter',
+    stage: 'MVP',
+    industry: 'Big Data',
+    status: 'REJECTED', // muted
   },
 ];
 
 // Every value below appears on at least one row above, so no filter combination silently returns zero results.
-const STAGE_OPTIONS = [
-  "All Stages",
-  "Ideation",
-  "MVP",
-  "Pre-Seed",
-  "Seed Stage",
-  "Series A",
-];
-const INDUSTRY_OPTIONS = [
-  "All Industries",
-  "DeepTech",
-  "Agritech",
-  "Fintech",
-  "Healthtech",
-  "Big Data",
-];
+const STAGE_OPTIONS = ['All Stages', 'Ideation', 'MVP', 'Pre-Seed', 'Seed Stage', 'Series A'];
+const INDUSTRY_OPTIONS = ['All Industries', 'DeepTech', 'Agritech', 'Fintech', 'Healthtech', 'Big Data'];
 const STATUS_OPTIONS = [
-  { label: "All Status", value: "ALL" },
-  { label: "New", value: "NEW" },
-  { label: "Under Review", value: "UNDER_REVIEW" },
-  { label: "Interview Scheduled", value: "INTERVIEW_SCHEDULED" },
-  { label: "Rejected", value: "REJECTED" },
+  { label: 'All Status', value: 'ALL' },
+  { label: 'New', value: 'NEW' },
+  { label: 'Under Review', value: 'UNDER_REVIEW' },
+  { label: 'Interview Scheduled', value: 'INTERVIEW_SCHEDULED' },
+  { label: 'Rejected', value: 'REJECTED' },
 ];
 
 export default function ApplicationsQueue() {
-  useDocumentTitle("Applications — BOCC Incubator Portal");
-  const [stageFilter, setStageFilter] = useState("All Stages");
-  const [industryFilter, setIndustryFilter] = useState("All Industries");
-  const [statusFilter, setStatusFilter] = useState("ALL");
-
-  const [applications, setApplications] = useState(INITIAL_APPLICATIONS);
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  useEffect(() => {
-    const fetchApps = async () => {
-      setLoading(true);
-      try {
-        const filters = {};
-        if (stageFilter !== "All Stages") filters.stage = stageFilter;
-        if (industryFilter !== "All Industries")
-          filters.industry = industryFilter;
-        if (statusFilter !== "ALL") filters.status = statusFilter;
-
-        const data = await filterApplications(filters);
-        if (data && Array.isArray(data)) {
-          setApplications(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch applications", err);
-        setApplications([]);
-        setErrorMsg(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to load applications. Please try again.",
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchApps();
-  }, [stageFilter, industryFilter, statusFilter]);
+  useDocumentTitle('Applications — BOCC Incubator Portal');
+  const [stageFilter, setStageFilter] = useState('All Stages');
+  const [industryFilter, setIndustryFilter] = useState('All Industries');
+  const [statusFilter, setStatusFilter] = useState('ALL');
 
   const handleClearFilters = (e) => {
     e.preventDefault();
-    setStageFilter("All Stages");
-    setIndustryFilter("All Industries");
-    setStatusFilter("ALL");
+    setStageFilter('All Stages');
+    setIndustryFilter('All Industries');
+    setStatusFilter('ALL');
   };
 
-  const visibleApplications = applications;
+  const visibleApplications = INITIAL_APPLICATIONS.filter((app) => {
+    if (stageFilter !== 'All Stages' && app.stage !== stageFilter) return false;
+    if (industryFilter !== 'All Industries' && app.industry !== industryFilter) return false;
+    if (statusFilter !== 'ALL' && app.status !== statusFilter) return false;
+    return true;
+  });
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case "NEW":
+      case 'NEW':
         return (
           <span className="flex items-center gap-1.5 font-poppins font-bold text-xs text-text-heading uppercase select-none">
             <span className="w-2 h-2 rounded-full bg-brand-black dark:bg-white"></span>
             New
           </span>
         );
-      case "UNDER_REVIEW":
+      case 'UNDER_REVIEW':
         return (
           <span className="flex items-center gap-1.5 font-poppins font-bold text-xs text-text-muted uppercase select-none">
             <span className="w-2 h-2 rounded-full bg-border-subtle"></span>
             Under Review
           </span>
         );
-      case "INTERVIEW_SCHEDULED":
+      case 'INTERVIEW_SCHEDULED':
         return (
           <span className="flex items-center gap-1.5 font-poppins font-bold text-xs text-text-heading uppercase select-none">
             <span className="w-2 h-2 rounded-full bg-brand-black dark:bg-white"></span>
             Interview Scheduled
           </span>
         );
-      case "REJECTED":
+      case 'REJECTED':
       default:
         return (
           <span className="flex items-center gap-1.5 font-poppins font-bold text-xs text-text-muted/50 dark:text-text-muted/30 uppercase select-none">
@@ -169,27 +130,20 @@ export default function ApplicationsQueue() {
             Incoming Applications
           </h2>
           <p className="text-text-muted mt-1 font-inter text-small">
-            Review and manage new startup applications for the Spring 2024
-            cohort.
+            Review and manage new startup applications for the Spring 2024 cohort.
           </p>
         </div>
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() =>
-              downloadCsv(
-                "applications",
-                [
-                  { key: "name", label: "Startup" },
-                  { key: "founder", label: "Founder" },
-                  { key: "chapter", label: "Chapter" },
-                  { key: "stage", label: "Stage" },
-                  { key: "industry", label: "Industry" },
-                  { key: "status", label: "Status" },
-                ],
-                visibleApplications,
-              )
-            }
+            onClick={() => downloadCsv('applications', [
+              { key: 'name', label: 'Startup' },
+              { key: 'founder', label: 'Founder' },
+              { key: 'chapter', label: 'Chapter' },
+              { key: 'stage', label: 'Stage' },
+              { key: 'industry', label: 'Industry' },
+              { key: 'status', label: 'Status' },
+            ], visibleApplications)}
             className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg hover:bg-canvas-bg text-text-heading font-poppins font-semibold text-small cursor-pointer transition-colors"
           >
             <Download size={14} strokeWidth={2} />
@@ -208,9 +162,7 @@ export default function ApplicationsQueue() {
             onChange={(e) => setStageFilter(e.target.value)}
             className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-small py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
           >
-            {STAGE_OPTIONS.map((opt) => (
-              <option key={opt}>{opt}</option>
-            ))}
+            {STAGE_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
           </select>
         </div>
         <div className="space-y-1">
@@ -222,9 +174,7 @@ export default function ApplicationsQueue() {
             onChange={(e) => setIndustryFilter(e.target.value)}
             className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-small py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
           >
-            {INDUSTRY_OPTIONS.map((opt) => (
-              <option key={opt}>{opt}</option>
-            ))}
+            {INDUSTRY_OPTIONS.map((opt) => <option key={opt}>{opt}</option>)}
           </select>
         </div>
         <div className="space-y-1">
@@ -236,11 +186,7 @@ export default function ApplicationsQueue() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="w-full bg-canvas-bg border border-border-subtle rounded-lg text-text-body font-inter text-small py-2 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black transition-all"
           >
-            {STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
+            {STATUS_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
         </div>
         <div className="flex items-end">
@@ -252,13 +198,6 @@ export default function ApplicationsQueue() {
           </button>
         </div>
       </section>
-
-      {errorMsg && (
-        <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 mb-6">
-          <AlertCircle size={16} className="shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
 
       <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card overflow-hidden transition-colors duration-150 ease-linear">
         <div className="hidden md:grid grid-cols-[80px_1.5fr_1fr_1fr_1fr_120px] gap-4 px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
@@ -283,67 +222,60 @@ export default function ApplicationsQueue() {
         </div>
 
         <div className="divide-y divide-border-subtle">
-          {loading ? (
-            <p className="px-6 py-10 text-center text-text-muted font-inter text-small">
-              Loading applications...
-            </p>
-          ) : visibleApplications.length === 0 ? (
+          {visibleApplications.length === 0 && (
             <p className="px-6 py-10 text-center text-text-muted font-inter text-small">
               No applications match the current filters.
             </p>
-          ) : (
-            visibleApplications.map((app) => (
-              <Link
-                key={app.id || app._id}
-                to="/incubator/applications/review"
-                className="grid grid-cols-1 md:grid-cols-[80px_1.5fr_1fr_1fr_1fr_120px] gap-4 px-6 py-6 items-center hover:bg-canvas-bg/30 transition-colors group cursor-pointer"
-              >
-                <div className="w-12 h-12 rounded-lg bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading select-none text-sm">
-                  {app.name.charAt(0)}
-                </div>
-                <div>
-                  {/* text-heading is already the boldest token here — a fixed group-hover color has no darker token to go to and went invisible in dark mode, so opacity is used for the hover cue instead */}
-                  <p className="font-poppins font-bold text-card text-text-heading group-hover:opacity-70 transition-opacity">
-                    {app.name}
-                  </p>
-                  <p className="font-inter text-small text-text-muted">
-                    {app.founder}
-                  </p>
-                </div>
-                <div>
-                  <p className="font-inter text-small text-text-heading">
-                    {app.chapter}
-                  </p>
-                  <p className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase tracking-wider">
-                    {app.stage}
-                  </p>
-                </div>
-                <div>
-                  <span className="inline-block bg-canvas-bg border border-border-subtle px-2.5 py-1 rounded text-caption font-inter text-text-muted font-medium">
-                    {app.industry}
-                  </span>
-                </div>
-                <div>{getStatusBadge(app.status)}</div>
-                <div className="flex flex-col gap-1 items-end md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                  <span className="text-text-heading font-poppins font-semibold text-small hover:underline">
-                    View Review
-                  </span>
-                </div>
-              </Link>
-            ))
           )}
+          {visibleApplications.map((app) => (
+            <Link
+              key={app.id}
+              to="/incubator/applications/review"
+              className="grid grid-cols-1 md:grid-cols-[80px_1.5fr_1fr_1fr_1fr_120px] gap-4 px-6 py-6 items-center hover:bg-canvas-bg/30 transition-colors group cursor-pointer"
+            >
+              <div className="w-12 h-12 rounded-lg bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading select-none text-sm">
+                {app.name.charAt(0)}
+              </div>
+              <div>
+                {/* text-heading is already the boldest token here — a fixed group-hover color has no darker token to go to and went invisible in dark mode, so opacity is used for the hover cue instead */}
+                <p className="font-poppins font-bold text-card text-text-heading group-hover:opacity-70 transition-opacity">
+                  {app.name}
+                </p>
+                <p className="font-inter text-small text-text-muted">
+                  {app.founder}
+                </p>
+              </div>
+              <div>
+                <p className="font-inter text-small text-text-heading">
+                  {app.chapter}
+                </p>
+                <p className="font-poppins font-semibold text-[11px] leading-[16px] text-text-muted uppercase tracking-wider">
+                  {app.stage}
+                </p>
+              </div>
+              <div>
+                <span className="inline-block bg-canvas-bg border border-border-subtle px-2.5 py-1 rounded text-caption font-inter text-text-muted font-medium">
+                  {app.industry}
+                </span>
+              </div>
+              <div>
+                {getStatusBadge(app.status)}
+              </div>
+              <div className="flex flex-col gap-1 items-end md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <span className="text-text-heading font-poppins font-semibold text-small hover:underline">
+                  View Review
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
 
         <div className="flex items-center justify-between px-6 py-4 border-t border-border-subtle bg-canvas-bg/20">
           <p className="text-small text-text-muted font-inter">
-            Showing {visibleApplications.length} applications
+            Showing {visibleApplications.length} of {INITIAL_APPLICATIONS.length} applications
           </p>
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled
-              className="p-1 rounded border border-border-subtle text-text-muted disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <button type="button" disabled className="p-1 rounded border border-border-subtle text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
               <ChevronLeft size={16} strokeWidth={2} />
             </button>
 
@@ -351,11 +283,7 @@ export default function ApplicationsQueue() {
               1
             </span>
 
-            <button
-              type="button"
-              disabled
-              className="p-1 rounded border border-border-subtle text-text-muted disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+            <button type="button" disabled className="p-1 rounded border border-border-subtle text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
               <ChevronRight size={16} strokeWidth={2} />
             </button>
           </div>

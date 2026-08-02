@@ -39,7 +39,7 @@ const requireAuth = asyncHandler(async (req, res, next) => {
     // Attach the user to the request object
     req.user = user;
     next();
-  } catch (_error) {
+  } catch (error) {
     return res.status(401).json({
       success: false,
       message: "Not authorized to access this route. Invalid or expired token.",

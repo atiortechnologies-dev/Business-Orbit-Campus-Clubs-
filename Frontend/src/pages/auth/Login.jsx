@@ -34,6 +34,7 @@ function validateField(name, value) {
 export default function LoginPage() {
   useDocumentTitle("Login — BOCC");
   const navigate = useNavigate();
+  const { fetchUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -85,9 +86,6 @@ export default function LoginPage() {
         // by the backend response — nothing to store client-side.
 
         await fetchUser({ silent: false });
-
-        // Update the AuthContext state so ProtectedRoute recognizes the new user
-        await fetchUser();
 
         console.log("NAVIGATING TO:", destination);
 

@@ -1,8 +1,3 @@
-/**
- * @file ValidationReport.js
- * @description Mongoose model for aggregating validation metrics, key findings, and next steps into a comprehensive report.
- * @architecture Represents the primary submission document for Stage 2 (Validation), linking to startups and submissions.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -86,8 +81,4 @@ const ValidationReportSchema = new mongoose.Schema(
 ValidationReportSchema.index({ student_id: 1 });
 ValidationReportSchema.index({ status: 1 });
 
-/**
- * @module ValidationReport
- * @description Exports the ValidationReport Mongoose model.
- */
 module.exports = mongoose.model("ValidationReport", ValidationReportSchema);

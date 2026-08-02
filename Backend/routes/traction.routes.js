@@ -1,14 +1,4 @@
-/**
- * @file traction.routes.js
- * @description Routes for traction and Stage 4 progression.
- * @architecture Handles endpoints related to user acquisition tracking, customer feedback, and traction review.
- */
 const express = require("express");
-/**
- * @desc    Traction and Stage 4 routing module
- * @route   /api/traction
- * @access  Private (Student)
- */
 const router = express.Router();
 const { requireRole, protect } = require("../middlewares/authMiddleware");
 const tractionController = require("../controllers/traction.controller");

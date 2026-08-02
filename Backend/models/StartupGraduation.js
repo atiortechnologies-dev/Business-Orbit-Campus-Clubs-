@@ -1,8 +1,3 @@
-/**
- * @file StartupGraduation.js
- * @description Mongoose model for managing the graduation data of a startup, including alumni status and final ratings.
- * @architecture Records the final completion state of a startup's journey on the platform, facilitating post-graduation features like mentorship applications.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -68,8 +63,4 @@ const StartupGraduationSchema = new mongoose.Schema(
 StartupGraduationSchema.index({ startup_id: 1 });
 StartupGraduationSchema.index({ student_id: 1 });
 
-/**
- * @module StartupGraduation
- * @description Exports the StartupGraduation Mongoose model.
- */
 module.exports = mongoose.model("StartupGraduation", StartupGraduationSchema);

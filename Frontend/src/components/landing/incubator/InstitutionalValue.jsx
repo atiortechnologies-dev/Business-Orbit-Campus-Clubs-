@@ -1,29 +1,17 @@
-import { Check, Download, Handshake } from "lucide-react";
-import _ComingSoon from "@/components/ui/ComingSoon";
-import PlaceholderGraphic from "@/components/ui/PlaceholderGraphic";
-import api from "@/api/axiosInstance";
+import { Check, Download, Handshake } from 'lucide-react';
+import ComingSoon from '@/components/ui/ComingSoon';
+import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 
 const BENEFITS = [
-  "Standardized startup evaluation framework",
-  "Dedicated mentor network",
-  "Global investor connections",
-  "Startup performance analytics",
-  "Co-branding opportunities",
-  "Access to BOCC innovation ecosystem",
+  'Standardized startup evaluation framework',
+  'Dedicated mentor network',
+  'Global investor connections',
+  'Startup performance analytics',
+  'Co-branding opportunities',
+  'Access to BOCC innovation ecosystem',
 ];
 
 export default function InstitutionalValue() {
-  const handleDownloadDeck = () => {
-    api
-      .get("/documents/partnership-deck")
-      .then((res) => {
-        if (res.data?.url) {
-          window.open(res.data.url, "_blank", "noopener,noreferrer");
-        }
-      })
-      .catch((err) => console.error("Failed to fetch partnership deck", err));
-  };
-
   return (
     <section id="institutional" className="py-20 lg:py-28">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -34,9 +22,7 @@ export default function InstitutionalValue() {
             className="rounded-lg overflow-hidden shadow-card aspect-[4/3]"
           >
             <div className="absolute bottom-4 left-4 bg-surface-white/90 backdrop-blur rounded-md px-4 py-3 shadow-card border border-border-subtle">
-              <div className="font-inter text-caption text-text-muted">
-                Funding Readiness
-              </div>
+              <div className="font-inter text-caption text-text-muted">Funding Readiness</div>
               <div className="font-poppins font-bold text-2xl text-text-heading">
                 92<span className="text-accent-neon">%</span>
               </div>
@@ -60,26 +46,17 @@ export default function InstitutionalValue() {
             {BENEFITS.map((b) => (
               <div key={b} className="flex items-center gap-3">
                 <span className="shrink-0 w-6 h-6 rounded-full bg-accent-neon flex items-center justify-center">
-                  <Check
-                    size={14}
-                    strokeWidth={3}
-                    className="text-brand-black"
-                  />
+                  <Check size={14} strokeWidth={3} className="text-brand-black" />
                 </span>
-                <span className="font-inter text-small font-medium text-text-body">
-                  {b}
-                </span>
+                <span className="font-inter text-small font-medium text-text-body">{b}</span>
               </div>
             ))}
           </div>
 
-          <button
-            onClick={handleDownloadDeck}
-            className="inline-flex items-center gap-2 mt-8 font-inter text-small font-semibold text-text-heading border-b-2 border-accent-neon pb-1 hover:opacity-80 transition-opacity cursor-pointer"
-          >
+          <ComingSoon label="Download Partnership Brochure" position="top" inline className="inline-flex items-center gap-2 mt-8 font-inter text-small font-semibold text-text-heading border-b-2 border-accent-neon pb-1">
             <Download size={16} strokeWidth={2} />
             Download Partnership Brochure
-          </button>
+          </ComingSoon>
         </div>
       </div>
     </section>

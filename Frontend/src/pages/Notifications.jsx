@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Search,
   Megaphone,
@@ -9,13 +9,11 @@ import {
   Trash2,
   X,
   CalendarPlus,
-  AlertCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import api from "@/api/axiosInstance";
 
 const TABS = [
   "All",
@@ -97,26 +95,6 @@ export default function NotificationsPage() {
   const [activeTab, setActiveTab] = useState("All");
   const [query, setQuery] = useState("");
   const [detailId, setDetailId] = useState(null);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  useEffect(() => {
-    api
-      .get("/notifications")
-      .then((res) => {
-        if (res.data && res.data.length > 0) {
-          setNotifications(res.data);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch notifications", err);
-        setNotifications([]);
-        setErrorMsg(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to load notifications. Please try again.",
-        );
-      });
-  }, []);
 
   const filtered = useMemo(() => {
     let list = notifications;
@@ -134,22 +112,8 @@ export default function NotificationsPage() {
     return list;
   }, [notifications, activeTab, query]);
 
-  const markAllRead = () => {
-    setErrorMsg("");
-    api
-      .patch("/notifications/mark-read")
-      .then(() =>
-        setNotifications((prev) => prev.map((n) => ({ ...n, unread: false }))),
-      )
-      .catch((err) => {
-        console.error("Failed to mark notifications read", err);
-        setErrorMsg(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to mark notifications as read.",
-        );
-      });
-  };
+  const markAllRead = () =>
+    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));
   const clearAll = () => setNotifications([]);
   const dismiss = (id) =>
     setNotifications((prev) => prev.filter((n) => n.id !== id));
@@ -188,13 +152,6 @@ export default function NotificationsPage() {
           </button>
         </div>
       </div>
-
-      {errorMsg && (
-        <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 mb-6">
-          <AlertCircle size={16} className="shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
 
       <div className="flex flex-col md:flex-row gap-6 items-center mb-6 border-b border-divider-line pb-2">
         <div className="relative w-full md:w-96 shrink-0 h-11">

@@ -1,15 +1,10 @@
-/**
- * @file meeting.controller.js
- * @description Handles operations related to scheduling and viewing meetings.
- * @architecture Retrieves a sorted list of upcoming scheduled meetings for a user's startup, including populated reviewer details.
- */
-
 const asyncHandler = require("../middlewares/asyncHandler");
 const Meeting = require("../models/Meeting");
+const StageSubmission = require("../models/StageSubmission");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 /**
- * @desc    List all upcoming and past meetings for the student's startup
+ * @desc    Get current active review meeting for the student's startup
  * @route   GET /api/meetings
  * @access  Private (Student)
  */
@@ -18,21 +13,70 @@ const listMeetings = asyncHandler(async (req, res) => {
 
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
 
-  const meetings = await Meeting.find({ startup_id: startup._id })
-    .populate("reviewer_id", "full_name email")
-    .sort({ meeting_date: 1 });
+  // 1. Check if the startup has an approved submission for the active stage
+  const approvedSubmission = await StageSubmission.findOne({
+    startup_id: startup._id,
+    status: "approved",
+  });
+
+  if (!approvedSubmission) {
+    return res.status(200).json({
+      success: true,
+      message:
+        "No approved stage submission found. Meeting scheduling is locked.",
+      data: {
+        isApproved: false,
+        meeting: null,
+      },
+    });
+  }
+
+  // 2. Fetch scheduled or completed meeting for the startup
+  const meeting = await Meeting.findOne({
+    startup_id: startup._id,
+    status: { $in: ["scheduled", "completed"] },
+  })
+    .populate("reviewer_id", "full_name email role")
+    .sort({ meeting_date: -1 });
+
+  if (!meeting) {
+    return res.status(200).json({
+      success: true,
+      message:
+        "Stage submission is approved, but no review meeting is scheduled yet.",
+      data: {
+        isApproved: true,
+        meeting: null,
+      },
+    });
+  }
+
+  // Parse agenda string into list items
+  const agendaList = meeting.agenda
+    ? meeting.agenda.split("\n").filter((line) => line.trim().length > 0)
+    : [];
 
   return res.status(200).json({
     success: true,
-    data: meetings.map((m) => ({
-      meetingId: m._id,
-      reviewer: m.reviewer_id
-        ? { name: m.reviewer_id.full_name, email: m.reviewer_id.email }
-        : null,
-      meetingDate: m.meeting_date,
-      meetingLink: m.meeting_link,
-      status: m.status,
-    })),
+    data: {
+      isApproved: true,
+      meeting: {
+        id: meeting._id,
+        reviewer: meeting.reviewer_id
+          ? {
+              name: meeting.reviewer_id.full_name,
+              email: meeting.reviewer_id.email,
+              role: meeting.reviewer_id.role,
+            }
+          : null,
+        meetingDate: meeting.meeting_date,
+        meetingLink: meeting.meeting_link,
+        duration: meeting.duration,
+        platform: meeting.platform,
+        agenda: agendaList,
+        status: meeting.status,
+      },
+    },
   });
 });
 

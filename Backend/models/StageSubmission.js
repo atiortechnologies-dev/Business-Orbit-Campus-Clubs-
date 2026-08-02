@@ -30,19 +30,40 @@ const StageSubmissionSchema = mongoose.Schema(
       trim: true,
       maxlength: 5000,
     },
+    solution: {
+      type: String,
+      default: "",
+    },
+    target_audience: {
+      type: String,
+      default: "",
+    },
+    value_proposition: {
+      type: String,
+      default: "",
+    },
+    competitors: {
+      type: String,
+      default: "",
+    },
     attachment_url: {
       type: String,
       default: "",
     },
     status: {
       type: String,
-      enum: ["draft", "pending_review", "approved", "rejected"],
+      enum: [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "request_changes",
+      ],
       default: "draft",
     },
-    assigned_reviewer_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      default: null,
+    request_changes: {
+      type: String,
+      default: "",
     },
     submitted_at: {
       type: Date,

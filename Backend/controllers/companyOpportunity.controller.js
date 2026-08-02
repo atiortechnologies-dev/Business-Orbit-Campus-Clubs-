@@ -6,7 +6,7 @@
 
 const asyncHandler = require("../middlewares/asyncHandler");
 const Opportunity = require("../models/Opportunity");
-const _cascadeService = require("../services/cascadeService");
+const cascadeService = require("../services/cascadeService");
 
 /**
  * @desc    Create a new opportunity
@@ -117,11 +117,7 @@ exports.deleteOpportunity = asyncHandler(async (req, res) => {
   session.startTransaction();
 
   try {
-    // Delete the opportunity itself.
-    // This will trigger the findOneAndDelete middleware in Opportunity.js,
-    // which in turn calls cascadeService.deleteOpportunityDependencies automatically.
-    await Opportunity.findByIdAndDelete(opportunity._id).session(session);
-
+    await cascadeService.deleteOpportunityDependencies(opportunity._id, session);
     await session.commitTransaction();
 
     res.status(200).json({

@@ -1,8 +1,3 @@
-/**
- * @file traction.controller.js
- * @description Controller for Stage 4 (Traction & Growth).
- * @architecture Manages metrics, customer feedback, product submissions, reviews, and progress tracking for startup traction stage.
- */
 const asyncHandler = require("../middlewares/asyncHandler");
 const CustomerFeedback = require("../models/CustomerFeedback");
 const ProductSubmission = require("../models/ProductSubmission");
@@ -14,11 +9,6 @@ const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // ========= SCREEN 1: STAGE INITIALIZATION =========
 
-/**
- * @desc    Get Stage 4 overview
- * @route   GET /api/student/stages/traction/overview
- * @access  Private/Student
- */
 const getStage4Overview = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -56,11 +46,6 @@ const getStage4Overview = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get Stage 4 progress
- * @route   GET /api/student/stages/traction/progress
- * @access  Private/Student
- */
 const getStage4Progress = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -93,11 +78,6 @@ const getStage4Progress = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Start Stage 4
- * @route   POST /api/student/stages/traction/start
- * @access  Private/Student
- */
 const startStage4 = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -115,11 +95,6 @@ const startStage4 = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get Stage 4 checklist
- * @route   GET /api/student/stages/traction/checklist
- * @access  Private/Student
- */
 const getStage4Checklist = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
@@ -136,11 +111,6 @@ const getStage4Checklist = asyncHandler(async (req, res) => {
 
 // ========= SCREEN 2: USER ACQUISITION TRACKER =========
 
-/**
- * @desc    Submit user acquisition metrics
- * @route   POST /api/student/stages/traction/metrics
- * @access  Private/Student
- */
 const submitMetrics = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const metricsData = req.validatedData;
@@ -171,11 +141,6 @@ const submitMetrics = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get user acquisition metrics
- * @route   GET /api/student/stages/traction/metrics
- * @access  Private/Student
- */
 const getMetrics = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -193,11 +158,6 @@ const getMetrics = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: metrics });
 });
 
-/**
- * @desc    Update user acquisition metrics
- * @route   PUT /api/student/stages/traction/metrics/:metricId
- * @access  Private/Student
- */
 const updateMetrics = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { metricId } = req.params;
@@ -221,11 +181,6 @@ const updateMetrics = asyncHandler(async (req, res) => {
     .json({ success: true, message: "Metrics updated", data: metrics });
 });
 
-/**
- * @desc    Delete user acquisition metrics
- * @route   DELETE /api/student/stages/traction/metrics/:metricId
- * @access  Private/Student
- */
 const deleteMetrics = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { metricId } = req.params;
@@ -241,11 +196,6 @@ const deleteMetrics = asyncHandler(async (req, res) => {
 
 // ========= SCREEN 3: CUSTOMER FEEDBACK =========
 
-/**
- * @desc    Submit customer feedback
- * @route   POST /api/student/stages/traction/feedback
- * @access  Private/Student
- */
 const submitFeedback = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const feedbackData = req.validatedData;
@@ -266,11 +216,6 @@ const submitFeedback = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get all customer feedback
- * @route   GET /api/student/stages/traction/feedback
- * @access  Private/Student
- */
 const getFeedback = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -292,11 +237,6 @@ const getFeedback = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: feedback, stats });
 });
 
-/**
- * @desc    Get customer feedback by ID
- * @route   GET /api/student/stages/traction/feedback/:feedbackId
- * @access  Private/Student
- */
 const getFeedbackById = asyncHandler(async (req, res) => {
   const { feedbackId } = req.params;
   const { id: userId } = req.user;
@@ -316,11 +256,6 @@ const getFeedbackById = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: feedback });
 });
 
-/**
- * @desc    Update customer feedback
- * @route   PUT /api/student/stages/traction/feedback/:feedbackId
- * @access  Private/Student
- */
 const updateFeedback = asyncHandler(async (req, res) => {
   const { feedbackId } = req.params;
   const { id: userId } = req.user;
@@ -344,11 +279,6 @@ const updateFeedback = asyncHandler(async (req, res) => {
     .json({ success: true, message: "Feedback updated", data: feedback });
 });
 
-/**
- * @desc    Delete customer feedback
- * @route   DELETE /api/student/stages/traction/feedback/:feedbackId
- * @access  Private/Student
- */
 const deleteFeedback = asyncHandler(async (req, res) => {
   const { feedbackId } = req.params;
   const { id: userId } = req.user;
@@ -363,11 +293,6 @@ const deleteFeedback = asyncHandler(async (req, res) => {
 });
 
 // ========= SCREEN 4: PRODUCT SUBMISSION =========
-/**
- * @desc    Submit product submission
- * @route   POST /api/student/stages/traction/product
- * @access  Private/Student
- */
 const submitProduct = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const productData = req.validatedData;
@@ -398,11 +323,6 @@ const submitProduct = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get product submission details
- * @route   GET /api/student/stages/traction/product
- * @access  Private/Student
- */
 const getProductSubmission = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -420,11 +340,6 @@ const getProductSubmission = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: submission });
 });
 
-/**
- * @desc    Update product submission
- * @route   PUT /api/student/stages/traction/product/:submissionId
- * @access  Private/Student
- */
 const updateProductSubmission = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { submissionId } = req.params;
@@ -455,11 +370,6 @@ const updateProductSubmission = asyncHandler(async (req, res) => {
 
 // upload document route leaved for now
 
-/**
- * @desc    Delete product document
- * @route   DELETE /api/student/stages/traction/product/document/:documentId
- * @access  Private/Student
- */
 const deleteDocument = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { documentId } = req.params;
@@ -474,11 +384,6 @@ const deleteDocument = asyncHandler(async (req, res) => {
 });
 
 // ========= SCREEN 5: TRACTION REVIEW =========
-/**
- * @desc    Get traction review
- * @route   GET /api/student/stages/traction/review
- * @access  Private/Student
- */
 const getReview = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -494,11 +399,6 @@ const getReview = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: review });
 });
 
-/**
- * @desc    Get traction review status
- * @route   GET /api/student/stages/traction/review/status
- * @access  Private/Student
- */
 const getReviewStatus = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -517,11 +417,6 @@ const getReviewStatus = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get traction review timeline
- * @route   GET /api/student/stages/traction/review/timeline
- * @access  Private/Student
- */
 const getReviewTimeline = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -541,11 +436,6 @@ const getReviewTimeline = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get traction review comments
- * @route   GET /api/student/stages/traction/review/comments
- * @access  Private/Student
- */
 const getReviewComments = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -569,11 +459,6 @@ const getReviewComments = asyncHandler(async (req, res) => {
 });
 
 // ========= SCREEN 6: REVIEW MEETING =========
-/**
- * @desc    Get traction review meeting
- * @route   GET /api/student/stages/traction/meeting
- * @access  Private/Student
- */
 const getReviewMeeting = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -591,11 +476,6 @@ const getReviewMeeting = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: meeting });
 });
 
-/**
- * @desc    Get traction review meeting details
- * @route   GET /api/student/stages/traction/meeting/details
- * @access  Private/Student
- */
 const getReviewMeetingDetails = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -615,11 +495,6 @@ const getReviewMeetingDetails = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: meeting });
 });
 
-/**
- * @desc    Get traction meeting join link
- * @route   GET /api/student/stages/traction/meeting/link
- * @access  Private/Student
- */
 const getMeetingJoinLink = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -643,11 +518,6 @@ const getMeetingJoinLink = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Confirm meeting attendance
- * @route   POST /api/student/stages/traction/meeting/confirm
- * @access  Private/Student
- */
 const confirmAttendance = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -671,11 +541,6 @@ const confirmAttendance = asyncHandler(async (req, res) => {
 
 // ========= SCREEN 7: TRACTION APPROVAL =========
 
-/**
- * @desc    Get traction stage result
- * @route   GET /api/student/stages/traction/result
- * @access  Private/Student
- */
 const getTractionResult = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -704,11 +569,6 @@ const getTractionResult = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get traction stage approval status
- * @route   GET /api/student/stages/traction/approval
- * @access  Private/Student
- */
 const getTractionApproval = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -727,11 +587,6 @@ const getTractionApproval = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get all stages progress
- * @route   GET /api/student/stages/progress
- * @access  Private/Student
- */
 const getStagesProgress = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);

@@ -1,8 +1,3 @@
-/**
- * @file MVPSubmission.js
- * @description Mongoose model for capturing details of a startup's MVP submission including code, designs, and pitch deck.
- * @architecture Defines the core data structure for MVP submissions, interacting with review and meeting models to drive the MVP stage of the platform.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -103,8 +98,4 @@ const MVPSubmissionSchema = new mongoose.Schema(
 MVPSubmissionSchema.index({ student_id: 1 });
 MVPSubmissionSchema.index({ submission_status: 1 });
 
-/**
- * @module MVPSubmission
- * @description Exports the MVPSubmission Mongoose model.
- */
 module.exports = mongoose.model("MVPSubmission", MVPSubmissionSchema);

@@ -1,12 +1,12 @@
-import { Image as ImageIcon } from "lucide-react";
-import CompanyShell from "@/components/company/CompanyShell";
-import StatsRow from "@/components/company/StatsRow";
-import ApplicantTable from "@/components/company/ApplicantTable";
-import RightPanel from "@/components/company/RightPanel";
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { Image as ImageIcon } from 'lucide-react';
+import CompanyShell from '@/components/company/CompanyShell';
+import StatsRow from '@/components/company/StatsRow';
+import ApplicantTable from '@/components/company/ApplicantTable';
+import RightPanel from '@/components/company/RightPanel';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function CompanyDashboardPage() {
-  useDocumentTitle("Company Dashboard — BOCC");
+  useDocumentTitle('Company Dashboard — BOCC');
 
   return (
     <CompanyShell>

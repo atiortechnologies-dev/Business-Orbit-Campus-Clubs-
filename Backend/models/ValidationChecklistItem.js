@@ -1,8 +1,3 @@
-/**
- * @file ValidationChecklistItem.js
- * @description Mongoose model for individual tasks within a startup's validation stage checklist.
- * @architecture Structures the granular tasks required for market validation into a checklist schema for the database.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -53,10 +48,6 @@ ValidationChecklistItemSchema.index(
   { unique: true },
 );
 
-/**
- * @module ValidationChecklistItem
- * @description Exports the ValidationChecklistItem Mongoose model.
- */
 module.exports = mongoose.model(
   "ValidationChecklistItem",
   ValidationChecklistItemSchema,

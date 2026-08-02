@@ -12,7 +12,6 @@ import {
   Users,
   CheckCircle2,
   Loader2,
-  AlertCircle,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -34,7 +33,6 @@ export default function JourneyPage() {
   const [progressData, setProgressData] = useState(null);
   const [stagesData, setStagesData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     async function fetchJourneyData() {
@@ -62,12 +60,6 @@ export default function JourneyPage() {
 
         if (redirectDestination) {
           navigate(redirectDestination, { replace: true });
-        } else {
-          setErrorMsg(
-            err?.response?.data?.message ||
-              err?.message ||
-              "Failed to load journey data.",
-          );
         }
       } finally {
         setLoading(false);
@@ -127,13 +119,6 @@ export default function JourneyPage() {
       <h1 className="text-text-heading font-poppins font-semibold text-page mb-8">
         Startup Journey
       </h1>
-
-      {errorMsg && (
-        <div className="mb-8 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
-          <AlertCircle size={16} className="shrink-0" />
-          <span>{errorMsg}</span>
-        </div>
-      )}
 
       <section
         className="grid grid-cols-1 md:grid-cols-12 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card mb-12 items-center"
