@@ -140,6 +140,26 @@ export default function AdminSettingsPage() {
     }
   };
 
+  const handleCancel = () => {
+    if (settings) {
+      setProfile((prev) => ({ ...prev, ...settings.profile }));
+      setPlatform((prev) => ({ ...prev, ...settings.platform }));
+      if (settings.notifications) {
+        setNotifyInApp(settings.notifications.inApp ?? true);
+        setNotifyEmail(settings.notifications.email ?? true);
+        if (settings.notifications.events) {
+          setEventToggles((prev) => ({
+            ...prev,
+            ...settings.notifications.events,
+          }));
+        }
+      }
+    }
+    setError(null);
+    setSaved(false);
+  };
+
+
   return (
     <AdminShell>
       <div className="mb-8">
@@ -567,7 +587,7 @@ export default function AdminSettingsPage() {
             Changes saved.
           </span>
         )}
-        <Button variant="outline">Cancel</Button>
+        <Button variant="outline" onClick={handleCancel}>Cancel</Button>
         <Button onClick={handleSaveChanges}>Save Changes</Button>
       </div>
     </AdminShell>

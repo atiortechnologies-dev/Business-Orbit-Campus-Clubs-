@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.77% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/9</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.77% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/9</span>
+                <span class='fraction'>0/9</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -190,11 +190,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -202,7 +200,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -246,7 +246,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -287,18 +287,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -311,9 +311,9 @@
  * @architecture Enforces payload correctness and required fields before reaching controllers.
  */
 &nbsp;
-const { z } = require("zod");
+const { z } = <span class="cstat-no" title="statement not covered" >require("zod");</span>
 &nbsp;
-const filterIncubatorsSchema = z.object({
+const filterIncubatorsSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   search: z.string().optional(),
   industry: z.string().optional(),
   stage: z.string().optional(),
@@ -323,7 +323,7 @@ const filterIncubatorsSchema = z.object({
   limit: z.union([z.string(), z.number()]).optional(),
 });
 &nbsp;
-const applyIncubationSchema = z.object({
+const applyIncubationSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   incubator_id: z.string().min(1, "Incubator ID is required"),
   startup_info: z.object({
     startup_name: z.string().min(1, "Startup name is required"),
@@ -367,7 +367,7 @@ const applyIncubationSchema = z.object({
   }),
 });
 &nbsp;
-const updateApplicationSchema = z.object({
+const updateApplicationSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   startup_info: z
     .object({
       startup_name: z.string().optional(),
@@ -408,18 +408,18 @@ const updateApplicationSchema = z.object({
     .optional(),
 });
 &nbsp;
-const uploadDocumentSchema = z.object({
+const uploadDocumentSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   application_id: z.string().min(1, "Application ID is required"),
   document_type: z.string().min(1, "Document type is required"),
   file_name: z.string().min(1, "File name is required"),
   file_url: z.string().url("File URL must be valid"),
 });
 &nbsp;
-const acceptOfferSchema = z.object({
+const acceptOfferSchema = <span class="cstat-no" title="statement not covered" >z.object({</span>
   application_id: z.string().min(1, "Application ID is required"),
 });
 &nbsp;
-module.exports = {
+<span class="cstat-no" title="statement not covered" >module.exports = {</span>
   filterIncubatorsSchema,
   applyIncubationSchema,
   updateApplicationSchema,
@@ -433,7 +433,7 @@ module.exports = {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-28T09:37:19.438Z
+                at 2026-08-01T23:32:15.339Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

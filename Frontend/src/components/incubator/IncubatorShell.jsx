@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -43,6 +44,8 @@ const NAV_ITEMS = [
 ];
 
 export default function IncubatorShell({ children }) {
+  const { user } = useAuth();
+  const initials = user?.full_name ? user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : user?.first_name ? (user.first_name[0] + (user.last_name ? user.last_name[0] : '')).toUpperCase() : user?.name ? user.name.substring(0,2).toUpperCase() : '??';
   // See DashboardShell.jsx for why this lives here rather than in Sidebar
   // itself — the header button that opens it lives in this file.
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -52,9 +55,6 @@ export default function IncubatorShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AU"
-        footerName="Admin User"
-        footerRole="Reviewer"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -149,8 +149,8 @@ export default function IncubatorShell({ children }) {
               to="/incubator/settings"
               className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
             >
-              AU
-            </Link>
+                {initials}
+              </Link>
           </div>
         </header>
 

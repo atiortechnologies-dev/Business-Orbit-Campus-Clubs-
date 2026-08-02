@@ -33,7 +33,7 @@ export default function VerifyEmailPage() {
         setIsSendingOtp(true);
         setError("");
 
-        // Get authenticated user email using JWT token in localStorage
+        // Get authenticated user email using the httpOnly auth cookie
         const userRes = await getMe();
 
         // Handle response unwrapping safely
@@ -160,13 +160,10 @@ export default function VerifyEmailPage() {
       // Extract nested data from response
       const payload = res?.data || res;
 
-      // Save updated access tokens if present
-      if (payload?.accessToken) {
-        localStorage.setItem("accessToken", payload.accessToken);
-      }
-      if (payload?.refreshToken) {
-        localStorage.setItem("refreshToken", payload.refreshToken);
-      }
+      // accessToken/refreshToken are now set as httpOnly cookies directly
+      // by the backend response — nothing to store client-side.
+
+      await fetchUser({ silent: false });
 
       await fetchUser({ silent: false });
 

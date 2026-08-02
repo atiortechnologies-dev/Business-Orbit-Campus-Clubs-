@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Download,
@@ -15,48 +15,15 @@ import Badge from "@/components/ui/Badge";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { downloadCsv } from "@/utils/csv";
-
-const USERS = [
-  {
-    id: "u1",
-    name: "Elena Rodriguez",
-    email: "elena.rodriguez@oxford.ac.uk",
-    initials: "ER",
-    role: "Chapter Lead",
-    org: "Oxford Chapter",
-    regDate: "2024-10-18",
-    status: "Pending",
-    docs: 3,
-  },
-  {
-    id: "u2",
-    name: "Marcus Thorne",
-    email: "marcus.thorne@berlinhub.de",
-    initials: "MT",
-    role: "Organization Admin",
-    org: "Berlin Hub",
-    regDate: "2024-10-17",
-    status: "Pending",
-    docs: 2,
-  },
-  {
-    id: "u3",
-    name: "Suki Tanaka",
-    email: "suki.tanaka@kyotofoundation.jp",
-    initials: "ST",
-    role: "Volunteer",
-    org: "Kyoto Foundation",
-    regDate: "2024-10-15",
-    status: "Flagged",
-    docs: 1,
-  },
-];
+import api from "@/api/axiosInstance";
 
 const ROLE_OPTIONS = [
   "All Roles",
-  "Organization Admin",
-  "Chapter Lead",
-  "Volunteer",
+  "student",
+  "mentor",
+  "investor",
+  "incubator",
+  "company",
 ];
 const STATUS_OPTIONS = ["All Status", "Pending", "Flagged"];
 const CHAPTER_OPTIONS = [
@@ -79,7 +46,37 @@ export default function VerificationQueuePage() {
   const [dateTo, setDateTo] = useState("");
   const [dateFilterOpen, setDateFilterOpen] = useState(false);
 
-  const visibleUsers = USERS.filter((u) => {
+  const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    setIsLoading(true);
+    api.get("/admin/users?account_status=pending_verification,pending_approval")
+      .then((res) => {
+        if (res?.data) {
+          const mapped = res.data.map((u) => ({
+            id: u._id,
+            name: u.full_name,
+            email: u.email,
+            initials: u.full_name.substring(0, 2).toUpperCase(),
+            role: u.role,
+            org: "Unknown", // Org mapped from profile later
+            regDate: new Date(u.created_at).toISOString().split("T")[0],
+            status: u.account_status === "suspended" ? "Flagged" : "Pending",
+            docs: 0,
+          }));
+          setUsers(mapped);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch pending users:", err);
+        setErrorMsg("Failed to load verification queue.");
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const visibleUsers = users.filter((u) => {
     if (roleFilter !== "All Roles" && u.role !== roleFilter) return false;
     if (statusFilter !== "All Status" && u.status !== statusFilter)
       return false;
@@ -321,15 +318,27 @@ export default function VerificationQueuePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-9">
-          <DataTable
-            columns={columns}
-            rows={visibleUsers}
-            onRowClick={() => navigate("/admin/verification/detail")}
-            emptyMessage="No users match the current filters."
-          />
+          {errorMsg ? (
+            <div className="text-center py-8 text-error">{errorMsg}</div>
+          ) : isLoading ? (
+            <div className="flex flex-col items-center justify-center p-12">
+              <div className="animate-pulse space-y-4 w-full">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="h-16 bg-surface-white border border-border-subtle rounded-lg w-full"></div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              rows={visibleUsers}
+              emptyMessage="No pending verifications found."
+              onRowClick={() => navigate("/admin/verification/detail")}
+            />
+          )}
           <div className="flex justify-between items-center mt-4">
             <span className="font-inter text-small text-text-muted">
-              Showing {visibleUsers.length} of {USERS.length} entries
+              Showing {visibleUsers.length} of {users.length} entries
             </span>
           </div>
         </div>

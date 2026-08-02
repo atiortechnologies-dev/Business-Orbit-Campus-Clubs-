@@ -4,11 +4,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
-  User as _UserIcon,
   AlertTriangle,
-  _FileText,
-  _Cloud,
   Download,
+  Loader2,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import DataTable from "@/components/ui/DataTable";
@@ -17,43 +15,14 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { downloadCsv } from "@/utils/csv";
 import { useAdminDashboard } from "@/context/AdminDashboardContext";
 
-const FALLBACK_LOGS = [
-  {
-    id: "l1",
-    timestamp: "2024-10-24 14:22:01",
-    date: "2024-10-24",
-    initials: "JD",
-    user: "j_doe_admin",
-    module: "Security",
-    action: "Updated User Permissions",
-    target: "ID: 8829-X-22",
-    status: "Success",
-    ip: "192.168.1.104",
-  },
-];
-
 const MODULES = ["All", "Security", "Clubs", "Auth", "System", "Content"];
+
 const USERS = ["All", "j_doe_admin", "s_miller_op", "a_kapoor_sys", "Unknown"];
 const STATUS_VARIANT = {
   Success: "success",
   Rejected: "error",
   Pending: "warning",
 };
-
-const FALLBACK_TIMELINE = [
-  {
-    icon: Zap,
-    time: "Just now",
-    text: (
-      <>
-        <span className="font-semibold">System</span> triggered an automated
-        database optimization.
-      </>
-    ),
-  },
-];
-
-const FALLBACK_TREND = [40, 60, 35, 90, 55, 70, 45];
 
 export default function AuditLogPage() {
   useDocumentTitle("Audit Log — BOCC Admin");
@@ -63,12 +32,12 @@ export default function AuditLogPage() {
     pulse,
     volumeTrend,
     fetchAuditLogs,
-    _isLoadingLogs,
+    isLoadingLogs,
     error,
   } = useAdminDashboard();
-  const activeLogs = auditLogs?.length > 0 ? auditLogs : FALLBACK_LOGS;
-  const activeTimeline = pulse?.length > 0 ? pulse : FALLBACK_TIMELINE;
-  const activeTrend = volumeTrend?.length > 0 ? volumeTrend : FALLBACK_TREND;
+  const activeLogs = auditLogs || [];
+  const activeTimeline = pulse || [];
+  const activeTrend = volumeTrend || [];
 
   useEffect(() => {
     fetchAuditLogs();
@@ -80,17 +49,16 @@ export default function AuditLogPage() {
   const [dateTo, setDateTo] = useState("");
   const [dateFilterOpen, setDateFilterOpen] = useState(false);
 
-  const filteredLogs = useMemo(
-    () =>
-      activeLogs.filter(
-        (l) =>
-          (moduleFilter === "All" || l.module === moduleFilter) &&
-          (userFilter === "All" || l.user === userFilter) &&
-          (!dateFrom || l.date >= dateFrom) &&
-          (!dateTo || l.date <= dateTo),
-      ),
-    [activeLogs, moduleFilter, userFilter, dateFrom, dateTo],
-  );
+  const filteredLogs = useMemo(() => {
+    const baseLogs = auditLogs || [];
+    return baseLogs.filter(
+      (l) =>
+        (moduleFilter === "All" || l.module === moduleFilter) &&
+        (userFilter === "All" || l.user === userFilter) &&
+        (!dateFrom || l.date >= dateFrom) &&
+        (!dateTo || l.date <= dateTo),
+    );
+  }, [auditLogs, moduleFilter, userFilter, dateFrom, dateTo]);
 
   const dateRangeLabel =
     dateFrom || dateTo
@@ -272,11 +240,18 @@ export default function AuditLogPage() {
             </button>
           </div>
 
-          <DataTable
-            columns={columns}
-            rows={filteredLogs}
-            emptyMessage="No log entries match these filters."
-          />
+          {isLoadingLogs ? (
+            <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card p-10 text-center flex flex-col items-center gap-3">
+              <Loader2 className="animate-spin text-brand-black" size={24} />
+              <p className="font-inter text-small text-text-muted">Loading audit logs...</p>
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              rows={filteredLogs}
+              emptyMessage="No log entries match these filters."
+            />
+          )}
 
           <div className="flex items-center justify-between">
             <span className="font-inter text-small text-text-muted">
@@ -310,56 +285,76 @@ export default function AuditLogPage() {
           </h3>
           <div className="relative space-y-6">
             <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-border-subtle" />
-            {activeTimeline.map(({ icon: Icon, time, text, flagged }, i) => (
-              <div key={i} className="relative pl-9">
-                <div
-                  className={`absolute left-0 top-0.5 w-6 h-6 rounded-full bg-surface-white border-2 flex items-center justify-center z-10 ${
-                    flagged
-                      ? "border-error"
-                      : i === 0
-                        ? "border-brand-black"
-                        : "border-border-subtle"
-                  }`}
-                >
-                  {Icon ? (
-                    <Icon
-                      size={13}
-                      strokeWidth={2}
-                      className={flagged ? "text-error" : "text-text-heading"}
-                    />
-                  ) : (
-                    <Zap
-                      size={13}
-                      strokeWidth={2}
-                      className={flagged ? "text-error" : "text-text-heading"}
-                    />
-                  )}
-                </div>
-                <p
-                  className={`font-inter text-caption mb-0.5 ${flagged ? "text-error" : "text-text-muted"}`}
-                >
-                  {time}
-                </p>
-                <p className="font-inter text-small text-text-body leading-relaxed">
-                  {text}
-                </p>
+            {isLoadingLogs ? (
+              <div className="py-4 text-center">
+                <Loader2 className="animate-spin text-brand-black mx-auto" size={20} />
               </div>
-            ))}
+            ) : activeTimeline.length === 0 ? (
+              <div className="py-4 text-center pl-9">
+                <p className="font-inter text-small text-text-muted">No recent activity.</p>
+              </div>
+            ) : (
+              activeTimeline.map(({ icon: Icon, time, text, flagged }, i) => (
+                <div key={i} className="relative pl-9">
+                  <div
+                    className={`absolute left-0 top-0.5 w-6 h-6 rounded-full bg-surface-white border-2 flex items-center justify-center z-10 ${
+                      flagged
+                        ? "border-error"
+                        : i === 0
+                          ? "border-brand-black"
+                          : "border-border-subtle"
+                    }`}
+                  >
+                    {Icon ? (
+                      <Icon
+                        size={13}
+                        strokeWidth={2}
+                        className={flagged ? "text-error" : "text-text-heading"}
+                      />
+                    ) : (
+                      <Zap
+                        size={13}
+                        strokeWidth={2}
+                        className={flagged ? "text-error" : "text-text-heading"}
+                      />
+                    )}
+                  </div>
+                  <p
+                    className={`font-inter text-caption mb-0.5 ${flagged ? "text-error" : "text-text-muted"}`}
+                  >
+                    {time}
+                  </p>
+                  <p className="font-inter text-small text-text-body leading-relaxed">
+                    {text}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="mt-6 pt-6 border-t border-divider-line">
             <p className="font-inter font-semibold text-caption text-text-muted uppercase tracking-wider mb-3">
               Volume Trend (24h)
             </p>
-            <div className="h-16 w-full flex items-end gap-1">
-              {activeTrend.map((h, i) => (
-                <div
-                  key={i}
-                  className={`flex-1 rounded-t-sm ${h === Math.max(...activeTrend) ? "bg-brand-black" : "bg-border-subtle"}`}
-                  style={{ height: `${h}%` }}
-                />
-              ))}
-            </div>
+            {isLoadingLogs ? (
+              <div className="h-16 w-full flex items-center justify-center">
+                <Loader2 className="animate-spin text-brand-black" size={20} />
+              </div>
+            ) : activeTrend.length === 0 ? (
+              <div className="h-16 w-full flex items-center justify-center">
+                <p className="font-inter text-small text-text-muted">No data available.</p>
+              </div>
+            ) : (
+              <div className="h-16 w-full flex items-end gap-1">
+                {activeTrend.map((h, i) => (
+                  <div
+                    key={i}
+                    className={`flex-1 rounded-t-sm ${h === Math.max(...activeTrend) ? "bg-brand-black" : "bg-border-subtle"}`}
+                    style={{ height: `${h}%` }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </aside>
       </div>
