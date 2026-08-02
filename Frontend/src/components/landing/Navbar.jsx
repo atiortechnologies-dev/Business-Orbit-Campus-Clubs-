@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 
 // In-page anchor links, not site-wide navigation — this is a single long
 // scroll page, unlike PublicNav's site-section links (Clubs/Events/etc.),
@@ -73,7 +72,6 @@ export default function Navbar({ links = HOME_LINKS }) {
           >
             Explore
           </Link>
-          <ThemeToggle size={18} />
         </div>
 
         <button
@@ -114,7 +112,6 @@ export default function Navbar({ links = HOME_LINKS }) {
               >
                 Explore
               </Link>
-              <ThemeToggle size={18} />
             </li>
           </ul>
         </div>

@@ -1,5 +1,3 @@
-import { useTheme } from "@/components/ui/ThemeProvider";
-
 // Natural PNG dimensions, measured via `sips -g pixelWidth -g pixelHeight`
 // against the real files in /public/logos/. A previous guessed-from-Figma
 // version of this table was wrong in both size and aspect ratio for all
@@ -33,8 +31,7 @@ export default function Logo({
   priority = false,
   className = "",
 }) {
-  const { theme } = useTheme();
-  const resolvedTheme = force ?? theme;
+  const resolvedTheme = force ?? "light";
 
   const { w: nw, h: nh } = DIMS[variant] ?? DIMS.horizontal;
   const filename = FILENAME[variant] ?? FILENAME.horizontal;

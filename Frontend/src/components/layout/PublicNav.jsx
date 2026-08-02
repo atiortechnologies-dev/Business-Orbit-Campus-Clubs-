@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 
 // 'href' only set where a real destination exists — 'About' is the one
 // genuine match among the four (the general landing page's own intro
@@ -74,12 +73,6 @@ export default function PublicNav() {
               Register
             </button>
           </Link>
-          {/* Kept from AuthLayout's previous header even though the older
-              Privacy Policy nav this was extracted from didn't have one —
-              every authenticated shell (Dashboard/Incubator) exposes a
-              theme toggle too, so dropping it here would be a regression,
-              not a fix for consistency. */}
-          <ThemeToggle size={18} />
         </div>
       </div>
     </nav>

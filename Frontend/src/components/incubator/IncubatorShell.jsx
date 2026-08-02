@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
@@ -142,8 +141,6 @@ export default function IncubatorShell({ children }) {
             >
               <MessageSquare size={20} strokeWidth={2} />
             </Link>
-
-            <ThemeToggle size={20} />
 
             <Link
               to="/incubator/settings"

@@ -693,7 +693,7 @@ export default function ChatsPage() {
               </div>
               <div className="h-1.5 w-full bg-border-subtle rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-brand-black dark:bg-white"
+                  className="h-full bg-brand-black"
                   style={{ width: "65%" }}
                 ></div>
               </div>

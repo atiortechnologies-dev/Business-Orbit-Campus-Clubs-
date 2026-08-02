@@ -338,7 +338,7 @@ export default function SurveyTrackerPage() {
                   }
                   className={`flex-1 py-2 rounded-md border font-inter text-small transition-colors ${
                     draft.sentiment === key
-                      ? "bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black"
+                      ? "bg-brand-black text-white border-brand-black"
                       : "border-border-subtle text-text-body hover:bg-canvas-bg"
                   }`}
                 >

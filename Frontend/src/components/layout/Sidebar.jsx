@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ChevronsLeft, ChevronsRight, LogOut } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
+import { useAuth } from "@/context/AuthContext";
 
 // Shared "Dashboard Control Sidebar" (fixed 264px, brand-black canvas,
 // neon-yellow active border) used by DashboardShell/IncubatorShell/
@@ -25,6 +26,13 @@ export default function Sidebar({
   onToggleCollapse = () => {},
 }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/login", { replace: true });
+  }
 
   // Escape closes the drawer — only matters below `lg`, but harmless to
   // register unconditionally since `onClose` no-ops when nothing's using
@@ -212,6 +220,24 @@ export default function Sidebar({
               </span>
             </div>
           </div>
+        </div>
+
+        <div className="px-4 mt-2">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className={`flex items-center gap-2 w-full py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors ${
+              collapsed ? "lg:justify-center lg:px-0" : "px-3"
+            }`}
+            title={collapsed ? "Log Out" : undefined}
+          >
+            <LogOut size={18} strokeWidth={2} />
+            <span
+              className={`font-inter text-caption ${collapsed ? "lg:hidden" : ""}`}
+            >
+              Log Out
+            </span>
+          </button>
         </div>
       </aside>
     </>

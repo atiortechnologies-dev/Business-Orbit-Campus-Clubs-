@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
@@ -21,7 +20,6 @@ const NAV_ITEMS = [
   { icon: Mail, label: "Requests", href: "/mentor/requests", real: true },
   { icon: MessageSquare, label: "Chats", href: "/mentor/chats", real: true },
   { icon: Calendar, label: "Meetings", href: "/mentor/meetings", real: true },
-  { icon: UserCircle2, label: "Profile", href: "/mentor/profile", real: true },
 ];
 
 // Fifth instance of the three-piece shell pattern (header + content slot +
@@ -93,12 +91,12 @@ export default function MentorShell({ children }) {
                   <Settings size={20} strokeWidth={2} />
                 </span>
               </ComingSoon>
-              <ThemeToggle size={20} className="block" />
-              <ComingSoon label="User" position="bottom" inline>
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
-                  PA
-                </div>
-              </ComingSoon>
+              <Link
+                to="/mentor/profile"
+                className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
+              >
+                PA
+              </Link>
             </div>
           </div>
         </header>

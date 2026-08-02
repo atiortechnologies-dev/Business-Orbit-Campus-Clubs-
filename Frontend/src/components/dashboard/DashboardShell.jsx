@@ -7,7 +7,6 @@ import {
   Wallet,
   Building2,
   Briefcase,
-  User,
   HelpCircle,
   Search,
   Bell,
@@ -16,7 +15,6 @@ import {
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
@@ -31,8 +29,7 @@ const NAV_ITEMS = [
   { icon: GraduationCap, label: "Mentors", href: "/mentors", real: true },
   { icon: Wallet, label: "Investors", href: "/investors", real: true },
   { icon: Building2, label: "Incubators", href: "/incubators", real: true },
-  { icon: Briefcase, label: "Freelancing", href: "/freelancing", real: true },
-  { icon: User, label: "Profile", href: "/settings", real: true },
+  { icon: Briefcase, label: "Freelancing", href: "/freelancing", real: false },
   { icon: HelpCircle, label: "Help", href: "/support", real: true },
 ];
 
@@ -121,7 +118,6 @@ export default function DashboardShell({ pageId = "pg", children }) {
               >
                 <Settings size={20} strokeWidth={2} />
               </Link>
-              <ThemeToggle size={20} className="block" />
               <Link
                 to="/settings"
                 className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"

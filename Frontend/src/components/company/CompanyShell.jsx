@@ -5,7 +5,6 @@ import {
   Plus,
   FolderOpen,
   Users,
-  UserCircle,
   Settings,
   Search,
   Bell,
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
@@ -37,7 +35,6 @@ const NAV_ITEMS = [
     real: true,
   },
   { icon: Users, label: "Applicants", href: "/company/applicants", real: true },
-  { icon: UserCircle, label: "Profile", href: "#", real: false },
   { icon: Settings, label: "Settings", href: "#", real: false },
 ];
 
@@ -107,12 +104,12 @@ export default function CompanyShell({ children }) {
                   <Bell size={20} strokeWidth={2} />
                 </span>
               </ComingSoon>
-              <ThemeToggle size={20} className="block" />
-              <ComingSoon label="Profile" position="bottom" inline>
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-gray-700 to-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
-                  AC
-                </div>
-              </ComingSoon>
+              <Link
+                to="/company/settings"
+                className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-gray-700 to-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
+              >
+                AC
+              </Link>
             </div>
           </div>
         </header>

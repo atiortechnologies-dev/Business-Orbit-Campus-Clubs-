@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
@@ -88,17 +87,18 @@ export default function InvestorShell({ children }) {
                   <Bell size={20} strokeWidth={2} />
                 </span>
               </ComingSoon>
-              <ComingSoon label="Settings" position="bottom" inline>
-                <span className="block p-2 rounded-full transition-colors hover:bg-canvas-bg">
-                  <Settings size={20} strokeWidth={2} />
-                </span>
-              </ComingSoon>
-              <ThemeToggle size={20} className="block" />
-              <ComingSoon label="User" position="bottom" inline>
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
-                  MW
-                </div>
-              </ComingSoon>
+              <Link
+                to="/investor/settings"
+                className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted hover:text-text-heading"
+              >
+                <Settings size={20} strokeWidth={2} />
+              </Link>
+              <Link
+                to="/investor/settings"
+                className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
+              >
+                MW
+              </Link>
             </div>
           </div>
         </header>

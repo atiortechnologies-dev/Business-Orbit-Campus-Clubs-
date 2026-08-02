@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const NAV_LINKS = ["Study", "Mentors"];
 
@@ -52,7 +51,6 @@ export default function Header() {
             >
               Sign Up
             </Link>
-            <ThemeToggle size={18} />
           </nav>
 
           <button

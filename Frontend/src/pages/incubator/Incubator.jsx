@@ -179,7 +179,7 @@ export default function IncubatorDashboard() {
               <h4 className="font-poppins font-semibold text-small text-text-heading">
                 Pending Reviews
               </h4>
-              <span className="bg-brand-black text-white px-2 py-0.5 rounded text-[11px] font-poppins font-bold select-none dark:bg-canvas-bg dark:text-text-heading">
+              <span className="bg-brand-black text-white px-2 py-0.5 rounded text-[11px] font-poppins font-bold select-none">
                 {PENDING_REVIEWS.length}
               </span>
             </div>

@@ -1,22 +1,9 @@
 @import "tailwindcss";
 
-/* Tailwind v4 defaults the `dark:` variant to `@media
- * (prefers-color-scheme: dark)` unless a custom variant is registered —
- * without this line, every `dark:*` utility class in the app (there are
- * ~12 of them, all in src/pages/incubator/*.jsx) responds to the OS-level
- * color scheme setting and completely ignores the in-app theme toggle
- * button (ThemeProvider.jsx's `.dark` class on <html>). This line makes
- * `dark:` mean "inside .dark", matching how every color TOKEN in this file
- * already behaves. Confirmed missing and confirmed broken before this fix:
- * with the OS set to dark and the in-app toggle set to light, `dark:*`
- * classes were still applying. */
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ══════════════════════════════════════════════════════════════
    DESIGN SYSTEM — BOCC v1.0
    Monochrome base (black/white/gray) + a single neon accent, used
-   sparingly for interactive signals. Full light/dark pairs below;
-   brand-black and accent-neon are fixed and do not change by theme.
+   sparingly for interactive signals. Light theme only — no dark mode.
 ══════════════════════════════════════════════════════════════ */
 
 @theme {
@@ -90,32 +77,6 @@
   --color-action-text: #ffffff;
 }
 
-/* ── Dark mode overrides ─────────────────────────────────────────────
-   Class-based: .dark on <html>.
-   brand-black and accent-neon are FIXED — no change from light mode.
-   Everything else flips to its dark-mode equivalent below.
-─────────────────────────────────────────────────────────────────── */
-.dark {
-  --color-brand-black: #0b0b0b; /* FIXED */
-  --color-accent-neon: #e8f012; /* FIXED */
-  --color-surface-white: #1a1a1a; /* card surface in dark */
-  --color-canvas-bg: #111111; /* page background in dark */
-  --color-text-heading: #f9fafb; /* near-white headings */
-  --color-text-body: #d1d5db; /* body copy */
-  --color-text-muted: #9ca3af; /* muted / secondary */
-  --color-border-subtle: #2d2d2d; /* card borders */
-  --color-divider-line: #1f1f1f; /* subtle dividers */
-  --color-success: #22c55e; /* FIXED */
-  --color-warning: #f59e0b; /* FIXED */
-  --color-error: #f87171; /* softened in dark */
-  --color-info: #60a5fa; /* softened in dark */
-
-  /* ── Action tokens — dark mode ───────────────────────────────────── */
-  /*   Inverted from light mode: light fill on dark canvas = visible CTA  */
-  --color-action-bg: #f3f4f6; /* near-white fill — legible on #111111 bg */
-  --color-action-text: #0b0b0b; /* brand-black text on light fill */
-}
-
 /* ── Base layer ───────────────────────────────────────────────────── */
 @layer base {
   *,
@@ -181,5 +142,26 @@
 @layer utilities {
   .animate-slide-in {
     animation: slide-in 150ms ease-out both;
+  }
+}
+
+/* ── Cookie banner entry animation ───────────────────────────────── */
+/* Floats up from below the viewport — a different direction than
+   slide-in above (that one's a top-down fade for inline validation
+   errors, wrong direction for a bottom-fixed banner). */
+@keyframes slide-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-slide-up-in {
+    animation: slide-up-in 250ms ease-out both;
   }
 }

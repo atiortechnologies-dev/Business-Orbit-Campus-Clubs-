@@ -8,14 +8,13 @@ import "@fontsource/poppins/500.css";
 import "@fontsource/poppins/600.css";
 import "@fontsource/poppins/700.css";
 import "./index.css";
-import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { router } from "@/router";
 import { AuthProvider } from "./context/AuthContext";
+import CookieBanner from "@/components/ui/CookieBanner";
 
 createRoot(document.getElementById("root")).render(
-  <ThemeProvider>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  </ThemeProvider>,
+  <AuthProvider>
+    <RouterProvider router={router} />
+    <CookieBanner />
+  </AuthProvider>,
 );

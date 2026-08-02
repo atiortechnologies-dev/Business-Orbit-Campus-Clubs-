@@ -5,6 +5,7 @@ import { IncubationProvider } from "@/context/IncubationContext";
 import { InvestorProvider } from "@/context/InvestorContext";
 import { MentorshipProvider } from "@/context/MentorshipContext";
 import { AdminDashboardProvider } from "@/context/AdminDashboardContext";
+import StageGuard from "@/components/journey/StageGuard";
 
 const Login = lazy(() => import("@/pages/auth/Login"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
@@ -216,6 +217,7 @@ const IncomingPitchDecks = lazy(
   () => import("@/pages/investor/IncomingPitchDecks"),
 );
 const PitchDeck = lazy(() => import("@/pages/investor/PitchDeck"));
+const InvestorSettings = lazy(() => import("@/pages/investor/Settings"));
 const MentorPortal = lazy(() => import("@/pages/mentor/Mentor"));
 const MentorRequests = lazy(() => import("@/pages/mentor/Requests"));
 const MentorChats = lazy(() => import("@/pages/mentor/Chats"));
@@ -239,6 +241,7 @@ const PostOpportunityStep4 = lazy(
 );
 const ApplicantsList = lazy(() => import("@/pages/company/ApplicantsList"));
 const ApplicantDetail = lazy(() => import("@/pages/company/ApplicantDetail"));
+const CompanySettings = lazy(() => import("@/pages/company/Settings"));
 const MentorDirectory = lazy(() => import("@/pages/mentors/MentorDirectory"));
 const MentorProfileStudentView = lazy(
   () => import("@/pages/mentors/MentorProfile"),
@@ -358,6 +361,7 @@ export const router = createBrowserRouter([
     path: "/company/applicants/detail",
     element: withSuspense(ApplicantDetail),
   },
+  { path: "/company/settings", element: withSuspense(CompanySettings) },
   {
     element: (
       <MentorshipProvider>
@@ -431,108 +435,128 @@ export const router = createBrowserRouter([
         element: withSuspense(IdeationResources),
       },
       {
-        path: "/build-startup/journey/validation",
-        element: withSuspense(ValidationOverview),
+        element: <StageGuard requiredStage="validation" />,
+        children: [
+          {
+            path: "/build-startup/journey/validation",
+            element: withSuspense(ValidationOverview),
+          },
+          {
+            path: "/build-startup/journey/validation/survey-tracker",
+            element: withSuspense(SurveyTracker),
+          },
+          {
+            path: "/build-startup/journey/validation/evidence-upload",
+            element: withSuspense(EvidenceUpload),
+          },
+          {
+            path: "/build-startup/journey/validation/report-submission",
+            element: withSuspense(ValidationReportSubmission),
+          },
+          {
+            path: "/build-startup/journey/validation/confirmation",
+            element: withSuspense(ValidationSubmissionConfirmation),
+          },
+          {
+            path: "/build-startup/journey/validation/review-meeting",
+            element: withSuspense(ValidationReviewMeeting),
+          },
+          {
+            path: "/build-startup/journey/validation/review-result",
+            element: withSuspense(ValidationReviewResult),
+          },
+        ],
       },
       {
-        path: "/build-startup/journey/validation/survey-tracker",
-        element: withSuspense(SurveyTracker),
+        element: <StageGuard requiredStage="mvp" />,
+        children: [
+          {
+            path: "/build-startup/journey/mvp",
+            element: withSuspense(MvpOverview),
+          },
+          {
+            path: "/build-startup/journey/mvp/choose-product-type",
+            element: withSuspense(ChooseProductType),
+          },
+          {
+            path: "/build-startup/journey/mvp/submit",
+            element: withSuspense(MvpSubmission),
+          },
+          {
+            path: "/build-startup/journey/mvp/success",
+            element: withSuspense(MvpSubmissionSuccess),
+          },
+          {
+            path: "/build-startup/journey/mvp/incubation-proof",
+            element: withSuspense(IncubationProofSubmission),
+          },
+          {
+            path: "/build-startup/journey/mvp/incubation-verification",
+            element: withSuspense(IncubationVerificationReview),
+          },
+          {
+            path: "/build-startup/journey/mvp/incubation-approved",
+            element: withSuspense(IncubationVerificationApproved),
+          },
+        ],
       },
       {
-        path: "/build-startup/journey/validation/evidence-upload",
-        element: withSuspense(EvidenceUpload),
+        element: <StageGuard requiredStage="traction" />,
+        children: [
+          {
+            path: "/build-startup/journey/traction",
+            element: withSuspense(TractionStage),
+          },
+          {
+            path: "/build-startup/journey/traction/acquisition-tracker",
+            element: withSuspense(UserAcquisitionTracker),
+          },
+          {
+            path: "/build-startup/journey/traction/feedback-upload",
+            element: withSuspense(CustomerFeedbackUpload),
+          },
+          {
+            path: "/build-startup/journey/traction/product-submission",
+            element: withSuspense(TractionProductSubmission),
+          },
+          {
+            path: "/build-startup/journey/traction/review",
+            element: withSuspense(TractionReview),
+          },
+          {
+            path: "/build-startup/journey/traction/review-meeting",
+            element: withSuspense(TractionReviewMeeting),
+          },
+          {
+            path: "/build-startup/journey/traction/approved",
+            element: withSuspense(TractionApproved),
+          },
+        ],
       },
       {
-        path: "/build-startup/journey/validation/report-submission",
-        element: withSuspense(ValidationReportSubmission),
-      },
-      {
-        path: "/build-startup/journey/validation/confirmation",
-        element: withSuspense(ValidationSubmissionConfirmation),
-      },
-      {
-        path: "/build-startup/journey/validation/review-meeting",
-        element: withSuspense(ValidationReviewMeeting),
-      },
-      {
-        path: "/build-startup/journey/validation/review-result",
-        element: withSuspense(ValidationReviewResult),
-      },
-      {
-        path: "/build-startup/journey/mvp",
-        element: withSuspense(MvpOverview),
-      },
-      {
-        path: "/build-startup/journey/mvp/choose-product-type",
-        element: withSuspense(ChooseProductType),
-      },
-      {
-        path: "/build-startup/journey/mvp/submit",
-        element: withSuspense(MvpSubmission),
-      },
-      {
-        path: "/build-startup/journey/mvp/success",
-        element: withSuspense(MvpSubmissionSuccess),
-      },
-      {
-        path: "/build-startup/journey/mvp/incubation-proof",
-        element: withSuspense(IncubationProofSubmission),
-      },
-      {
-        path: "/build-startup/journey/mvp/incubation-verification",
-        element: withSuspense(IncubationVerificationReview),
-      },
-      {
-        path: "/build-startup/journey/mvp/incubation-approved",
-        element: withSuspense(IncubationVerificationApproved),
-      },
-      {
-        path: "/build-startup/journey/traction",
-        element: withSuspense(TractionStage),
-      },
-      {
-        path: "/build-startup/journey/traction/acquisition-tracker",
-        element: withSuspense(UserAcquisitionTracker),
-      },
-      {
-        path: "/build-startup/journey/traction/feedback-upload",
-        element: withSuspense(CustomerFeedbackUpload),
-      },
-      {
-        path: "/build-startup/journey/traction/product-submission",
-        element: withSuspense(TractionProductSubmission),
-      },
-      {
-        path: "/build-startup/journey/traction/review",
-        element: withSuspense(TractionReview),
-      },
-      {
-        path: "/build-startup/journey/traction/review-meeting",
-        element: withSuspense(TractionReviewMeeting),
-      },
-      {
-        path: "/build-startup/journey/traction/approved",
-        element: withSuspense(TractionApproved),
-      },
-      {
-        path: "/build-startup/journey/launch",
-        element: withSuspense(LaunchStage),
-      },
-      {
-        path: "/build-startup/journey/launch/submission",
-        element: withSuspense(LaunchSubmission),
-      },
-      {
-        path: "/build-startup/journey/launch/pitch-deck",
-        element: withSuspense(FinalPitchDeckUpload),
-      },
-      {
-        path: "/build-startup/journey/launch/proof-upload",
-        element: withSuspense(LaunchProofUpload),
-      },
-      {
-        path: "/build-startup/journey/launch/verification",
-        element: withSuspense(LaunchVerificationReview),
+        element: <StageGuard requiredStage="launch" />,
+        children: [
+          {
+            path: "/build-startup/journey/launch",
+            element: withSuspense(LaunchStage),
+          },
+          {
+            path: "/build-startup/journey/launch/submission",
+            element: withSuspense(LaunchSubmission),
+          },
+          {
+            path: "/build-startup/journey/launch/pitch-deck",
+            element: withSuspense(FinalPitchDeckUpload),
+          },
+          {
+            path: "/build-startup/journey/launch/proof-upload",
+            element: withSuspense(LaunchProofUpload),
+          },
+          {
+            path: "/build-startup/journey/launch/verification",
+            element: withSuspense(LaunchVerificationReview),
+          },
+        ],
       },
       {
         path: "/build-startup/journey/complete",
@@ -639,6 +663,7 @@ export const router = createBrowserRouter([
         path: "/investor/pitch-decks/review",
         element: withSuspense(PitchDeck),
       },
+      { path: "/investor/settings", element: withSuspense(InvestorSettings) },
     ],
   },
   {

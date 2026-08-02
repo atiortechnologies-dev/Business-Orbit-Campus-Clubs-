@@ -249,7 +249,7 @@ export default function ReviewWorkspacePage() {
                     decision === id
                       ? id === "reject"
                         ? "bg-error text-white border-error"
-                        : "bg-action-bg text-action-text border-brand-black dark:border-white"
+                        : "bg-action-bg text-action-text border-brand-black"
                       : "bg-canvas-bg text-text-heading border-border-subtle hover:bg-canvas-bg/70"
                   }`}
                 >

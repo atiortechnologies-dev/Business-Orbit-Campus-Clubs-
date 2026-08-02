@@ -216,7 +216,7 @@ export default function SettingsPage() {
                   <span>85%</span>
                 </div>
                 <div className="w-full h-2 bg-canvas-bg rounded-full overflow-hidden border border-border-subtle">
-                  <div className="h-full bg-brand-black dark:bg-white w-[85%]"></div>
+                  <div className="h-full bg-brand-black w-[85%]"></div>
                 </div>
               </div>
 
@@ -518,7 +518,7 @@ export default function SettingsPage() {
                             onClick={() => handleToggleDay(key)}
                             className={`w-8 h-8 rounded border flex items-center justify-center font-poppins font-bold text-xs select-none transition-all active:scale-[0.98] ${
                               isSet
-                                ? "bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black"
+                                ? "bg-brand-black text-white border-brand-black"
                                 : "bg-transparent text-text-muted border-border-subtle hover:bg-canvas-bg"
                             }`}
                           >
@@ -637,12 +637,12 @@ export default function SettingsPage() {
                   onClick={() => setEmailNotifications(!emailNotifications)}
                   className={`w-10 h-6 rounded-full relative transition-colors focus:outline-none ${
                     emailNotifications
-                      ? "bg-brand-black dark:bg-white"
+                      ? "bg-brand-black"
                       : "bg-border-subtle"
                   }`}
                 >
                   <div
-                    className={`w-4 h-4 bg-surface-white dark:bg-brand-black rounded-full absolute top-1 transition-all ${
+                    className={`w-4 h-4 bg-surface-white rounded-full absolute top-1 transition-all ${
                       emailNotifications ? "right-1" : "left-1"
                     }`}
                   />
