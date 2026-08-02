@@ -1,29 +1,40 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Plus,
   FolderOpen,
   Users,
-  UserCircle,
   Settings,
   Search,
   Bell,
   Menu,
-} from 'lucide-react';
-import ComingSoon from '@/components/ui/ComingSoon';
-import Logo from '@/components/ui/Logo';
-import ThemeToggle from '@/components/ui/ThemeToggle';
-import Sidebar from '@/components/layout/Sidebar';
-import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
+} from "lucide-react";
+import ComingSoon from "@/components/ui/ComingSoon";
+import Logo from "@/components/ui/Logo";
+import Sidebar from "@/components/layout/Sidebar";
+import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: 'Dashboard',        href: '/company/dashboard', real: true },
-  { icon: Plus,            label: 'Post Opportunity', href: '/company/post-opportunity/step-1', real: true },
-  { icon: FolderOpen,      label: 'My Opportunities', href: '/company/my-opportunities', real: true },
-  { icon: Users,           label: 'Applicants',       href: '/company/applicants', real: true },
-  { icon: UserCircle,      label: 'Profile',          href: '#', real: false },
-  { icon: Settings,        label: 'Settings',         href: '#', real: false },
+  {
+    icon: LayoutDashboard,
+    label: "Dashboard",
+    href: "/company/dashboard",
+    real: true,
+  },
+  {
+    icon: Plus,
+    label: "Post Opportunity",
+    href: "/company/post-opportunity/step-1",
+    real: true,
+  },
+  {
+    icon: FolderOpen,
+    label: "My Opportunities",
+    href: "/company/my-opportunities",
+    real: true,
+  },
+  { icon: Users, label: "Applicants", href: "/company/applicants", real: true },
 ];
 
 // Same three-piece pattern as DashboardShell/IncubatorShell/AdminShell/
@@ -43,17 +54,16 @@ export default function CompanyShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AC"
-        footerName="Acme Corp"
-        footerRole="Premium Account"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
         onToggleCollapse={onToggleCollapse}
       />
 
-      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[var(--spacing-sidebar-width)]'} min-h-screen flex flex-col`}>
-        <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
+      <main
+        className={`${collapsed ? "lg:pl-20" : "lg:pl-(--spacing-sidebar-width)"} min-h-screen flex flex-col`}
+      >
+        <header className="sticky top-0 z-40 w-full h-18 bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -90,17 +100,23 @@ export default function CompanyShell({ children }) {
                   <Bell size={20} strokeWidth={2} />
                 </span>
               </ComingSoon>
-              <ThemeToggle size={20} className="block" />
-              <ComingSoon label="Profile" position="bottom" inline>
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-gray-700 to-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
-                  AC
-                </div>
-              </ComingSoon>
+              <Link
+                to="/company/settings"
+                className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted hover:text-text-heading"
+              >
+                <Settings size={20} strokeWidth={2} />
+              </Link>
+              <Link
+                to="/company/profile"
+                className="w-8 h-8 rounded-full overflow-hidden bg-linear-to-br from-gray-700 to-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
+              >
+                AC
+              </Link>
             </div>
           </div>
         </header>
 
-        <div className="flex-1 p-6 md:p-8 max-w-[var(--spacing-container-max)] w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-(--spacing-container-max) w-full mx-auto flex flex-col">
           {children}
         </div>
 
@@ -112,10 +128,16 @@ export default function CompanyShell({ children }) {
             </p>
           </div>
           <div className="flex gap-8">
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Privacy Policy
             </Link>
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Terms of Service
             </Link>
             <ComingSoon label="Contact Support" position="top" inline>

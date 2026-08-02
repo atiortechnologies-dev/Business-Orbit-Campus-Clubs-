@@ -10,16 +10,6 @@
       name="description"
       content="Turn a student startup idea into a working business, guided step by step by mentors, incubators, and investors."
     />
-    <script>
-      (function () {
-        try {
-          var s = localStorage.getItem("theme");
-          var q = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          if (s === "dark" || (!s && q))
-            document.documentElement.classList.add("dark");
-        } catch (_) {}
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -9,15 +9,16 @@ a different screen of the _same_ portal at the same time as you.
 ## 1. Where things live
 
 ```
-index.html                 Entry HTML — favicons, theme-init script (don't
-                            touch unless you're changing something global)
+index.html                 Entry HTML — favicons (don't touch unless
+                            you're changing something global)
 
 src/
-  main.jsx                 App entry point — ThemeProvider + RouterProvider
+  main.jsx                 App entry point — AuthProvider + RouterProvider
+                             + CookieBanner
   router.jsx                Every route in the app lives in this one table
   index.css                 ALL design tokens (colors, type scale, spacing,
-                             radius) — light values in @theme, dark
-                             overrides in .dark. No tailwind.config.js.
+                             radius) in @theme. Light theme only — no dark
+                             mode. No tailwind.config.js.
 
   layouts/
     AuthLayout.jsx           Wraps /login, /forgot-password,
@@ -144,8 +145,8 @@ src/
 
   components/
     ui/          Generic, reusable anywhere: Button, Card, Input, Logo,
-                 ComingSoon, ThemeToggle, ThemeProvider, Badge, StatCard,
-                 DataTable, Modal
+                 ComingSoon, CookieBanner, Badge, StatCard, DataTable,
+                 Modal
     layout/      PublicNav (shared top nav for all public/auth pages),
                  Sidebar (shared side panel — used by every authenticated
                  portal's shell: Student, Incubator, Admin, Investor,
@@ -231,8 +232,9 @@ Before writing a new component, check `components/ui/` and
 | A text input                                                                                                                                       | `components/ui/Input.jsx`                                                                                                                                                                                                                                                                                                       |
 | The BOCC logo                                                                                                                                      | `components/ui/Logo.jsx` — **never** a raw `<img src="/logos/...">`, the sizing/theme-switching logic lives in this component                                                                                                                                                                                                   |
 | A "not built yet" marker                                                                                                                           | `components/ui/ComingSoon.jsx`                                                                                                                                                                                                                                                                                                  |
-| Light/dark toggle                                                                                                                                  | `components/ui/ThemeToggle.jsx`                                                                                                                                                                                                                                                                                                 |
-| Reading/toggling theme                                                                                                                             | `useTheme()` from `components/ui/ThemeProvider.jsx`                                                                                                                                                                                                                                                                             |
+| Cookie consent banner                                                                                                                              | `components/ui/CookieBanner.jsx` — already mounted globally in `main.jsx`, you should never need to import this directly                                                                                                                                                                                                       |
+| A full-page "not available yet" notice (shell chrome stays, content area shows the message) — different from `ComingSoon` above, which is for a single disabled button/nav item, not a whole page | `components/ui/FeatureLockedNotice.jsx` — icon + heading + message; see `pages/freelancing/Freelancing.jsx` or `components/journey/IdeationAccessGate.jsx` for the two existing call sites |
+| Gating a route behind startup-stage progress                                                                                                       | `components/journey/StageGuard.jsx` (redirects to the journey hub if the target stage isn't reachable) or `components/journey/IdeationAccessGate.jsx` (renders `FeatureLockedNotice` in place instead of redirecting — use this shape when the user should see *why* it's locked, not just bounce away) |
 | Top nav on a public/auth page                                                                                                                      | `components/layout/PublicNav.jsx` — already wired into `AuthLayout`, only import it directly if you're building a new _public_ page outside that layout                                                                                                                                                                         |
 | Dashboard side panel                                                                                                                               | `components/layout/Sidebar.jsx` — already wired into all six portal shells (Dashboard/Incubator/Admin/Investor/Mentor/Company), you should never need to import this directly                                                                                                                                                   |
 | A status/category pill                                                                                                                             | `components/ui/Badge.jsx` — `variant="success\|warning\|error\|info\|neutral\|brand"`, Title Case content (not uppercase — the component doesn't force a case, older screens' own inline badges predate this and are uppercase, don't "fix" them to match unless you're already touching that file)                             |
@@ -286,24 +288,14 @@ lines, don't take "theirs" or "mine."
   already wired to `src/index.css`'s tokens: `bg-brand-black`,
   `bg-canvas-bg`, `text-text-heading`, `text-text-body`, `text-text-muted`,
   `border-border-subtle`, `text-body`, `text-small`, `text-caption`, etc.
-- **Watch which tokens are theme-reactive vs fixed.** Most tokens
-  (`canvas-bg`, `surface-white`, `text-heading`, `text-body`, `text-muted`,
-  `border-subtle`, `divider-line`) flip value between light and dark mode —
-  that's the point of them. `brand-black` and `accent-neon` are the two
-  _fixed_ tokens, identical in both themes.
-  **The bug this causes:** if you put an element on a surface that is
-  itself always one fixed color (like the dashboard `Sidebar`, which is
-  always `bg-brand-black` regardless of theme) and then color its text
-  with a theme-reactive token like `text-canvas-bg`, it looks fine in
-  light mode and goes **nearly invisible in dark mode** — because
-  `canvas-bg` itself flips to a near-black value in dark mode, and you'd
-  be rendering near-black text on a permanently-black background. This
-  exact bug shipped in `Sidebar.jsx` once already (inactive nav labels
-  were unreadable in dark mode) and was fixed by switching to fixed
-  `white/70`-style values. **Rule of thumb:** if the surface you're
-  styling never changes with the theme, none of the colors on top of it
-  should be theme-reactive tokens either — use `white`/`black` at whatever
-  opacity you need instead.
+- **There is no dark mode.** Every token in `src/index.css`'s `@theme`
+  block is a single fixed value — light theme only, by design (see the
+  file's own header comment). Don't reintroduce a `.dark {}` override
+  block, a `dark:` variant, or a theme toggle; a prior version of this app
+  had exactly that infrastructure and it was deliberately removed. On a
+  permanently-dark surface like the `Sidebar` (always `bg-brand-black`),
+  just use `white`/`black` at whatever opacity you need for contrast —
+  there's no second theme to keep in sync with.
 - **Fonts:** Poppins for headings/buttons/nav labels, Inter for body text/
   forms/tables/captions — this is enforced by which `font-*` class you use
   with which `text-*` size token, check an existing similar element rather
@@ -311,28 +303,20 @@ lines, don't take "theirs" or "mine."
 
 ## 6. Gotchas we've already hit (read this before you rediscover them)
 
-- **`dark:` utility classes require the custom variant registered in
-  `src/index.css`.** Tailwind v4 defaults `dark:*` to
-  `@media (prefers-color-scheme: dark)` — the OS setting — unless a custom
-  variant is declared. This app's theme toggle is class-based (`.dark` on
-  `<html>`, via `ThemeProvider`), completely independent of the OS. The line
-  `@custom-variant dark (&:where(.dark, .dark *));` near the top of
-  `src/index.css` is what makes `dark:*` actually track the in-app toggle
-  instead of silently tracking the OS setting regardless of what the user
-  clicked. **Do not delete that line.** Before this was added, ~12 `dark:*`
-  usages across the Incubator pages looked like they worked (because dev
-  machines often have OS dark mode on) but were completely disconnected
-  from the actual toggle — confirmed by testing with the OS in dark mode
-  and the in-app toggle in light mode, where they still applied.
-- **Never hardcode a hover/disabled color on an `action-bg`/`action-text`
-  button.** `action-bg` inverts between themes (black-on-white in light,
-  light-fill-on-dark in dark — see `src/index.css`). A hardcoded hover like
-  `hover:bg-[#1F2937]` only reads correctly in whichever theme it was
-  designed against; in the other theme it makes the button's text
-  illegible on hover. Use `hover:opacity-90` instead — it dims/brightens
-  whatever the current theme's real colors already are, so it's correct in
-  both automatically. This shipped broken on 10 different buttons across
-  the app before being caught.
+- **Don't add a `dark:` utility class.** There's no custom variant
+  registered for it in `src/index.css` (removed along with the rest of the
+  theme-toggle infrastructure), so `dark:*` would silently fall back to
+  Tailwind's default `@media (prefers-color-scheme: dark)` behavior — the
+  OS setting — completely disconnected from anything in this app, since
+  there's no in-app toggle to track anymore. A prior version of this app
+  shipped ~12 `dark:*` usages across the Incubator pages that looked like
+  they worked (dev machines often have OS dark mode on) but were never
+  actually reachable through the UI; all were removed.
+- **Prefer `hover:opacity-90` over a hardcoded hover color on an
+  `action-bg`/`action-text` button** — dims whatever `action-bg`/
+  `action-text` already are rather than guessing a literal hex value, and
+  keeps every button's hover state deriving from the same tokens instead
+  of drifting independently.
 - **Never ship a `grid-cols-N` (N > 1) with no responsive prefix on a
   content page.** `grid-cols-5` with nothing else forces 5 columns at
   _every_ viewport, including a 375px phone. Always give it a mobile-safe
@@ -454,27 +438,8 @@ download>`/`<img>`, don't wrap it in `ComingSoon`. That's different
     ("Showing 1-4 of 142", "12,482 logs") — when you unstub the real rows,
     fix the count to match what's actually loaded rather than leaving an
     old placeholder total next to real data.
-- **Custom SVG illustrations inside a fixed-black container need literal
-  `white`, not the `surface-white` token.** Same root cause as the
-  Sidebar's own fixed-vs-reactive rule above, but it bit an inline SVG
-  this time: `journey/mvp/MvpOverview.jsx`'s "assembling blocks"
-  illustration sits inside its own `fill="var(--color-brand-black)"` rect
-  (a fixed-black surface, like the sidebar), but the blocks inside it were
-  first written with `var(--color-surface-white)` — which flips to a dark
-  color in dark mode and went nearly invisible against a background that
-  never inverts. Caught by an actual dark-mode screenshot, not by reading
-  the code. Fixed by using the literal string `"white"` (optionally with
-  `fillOpacity`/`strokeOpacity`) for anything drawn on that fixed surface.
-  Contrast with `Dashboard.jsx`'s "idea spark" SVG, which correctly uses
-  `var(--color-border-subtle)` for its rings — that illustration has no
-  background fill of its own, it sits directly on the page's own
-  theme-reactive canvas, so the reactive token is the right call there.
-  Rule of thumb: the token choice depends on what's _behind_ the shape,
-  not on what the shape depicts.
-
 ## 7. Before calling a screen "done"
 
-- Test it in **both light and dark theme**.
 - Test it at **desktop (≥1024px) and mobile (<768px)** widths — the
   sidebar/nav collapse differently at each.
 - Check the browser console for errors on the route.

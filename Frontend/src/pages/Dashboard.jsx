@@ -268,7 +268,7 @@ export default function DashboardPage() {
               </div>
               <div className="space-y-1">
                 <h5 className="font-poppins font-medium text-card text-text-heading">
-                  Profile
+                  Settings
                 </h5>
                 <p className="text-text-muted font-inter font-normal text-small">
                   Manage your account.

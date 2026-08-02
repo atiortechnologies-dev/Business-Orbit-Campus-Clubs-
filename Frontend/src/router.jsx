@@ -1,8 +1,14 @@
 import { lazy, Suspense } from "react";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import { IncubationProvider } from "@/context/IncubationContext";
+import { InvestorProvider } from "@/context/InvestorContext";
+import { MentorshipProvider } from "@/context/MentorshipContext";
+import { AdminDashboardProvider } from "@/context/AdminDashboardContext";
+import PrivacyPolicyPage from "./pages/legal/PrivacyPolicy";
 import Unauthorized from "./pages/Unauthorized";
+import StageGuard from "./components/journey/StageGuard";
+import FreelancingOpportunitiesPage from "./pages/freelancing/FreelancingOpportunities";
 
 const Login = lazy(() => import("@/pages/auth/Login"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
@@ -40,14 +46,14 @@ const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const BuildStartupJourney = lazy(() => import("@/pages/BuildStartupJourney"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const StudentSettings = lazy(() => import("@/pages/Settings"));
-const Incubator = lazy(() => import("@/pages/incubator/Incubator"));
-const Applications = lazy(() => import("@/pages/incubator/Applications"));
-const ApplicationReview = lazy(
+const _Incubator = lazy(() => import("@/pages/incubator/Incubator"));
+const _Applications = lazy(() => import("@/pages/incubator/Applications"));
+const _ApplicationReview = lazy(
   () => import("@/pages/incubator/ApplicationReview"),
 );
-const Messages = lazy(() => import("@/pages/incubator/Messages"));
-const Settings = lazy(() => import("@/pages/incubator/Settings"));
-const PrivacyPolicy = lazy(() => import("@/pages/legal/PrivacyPolicy"));
+const _Messages = lazy(() => import("@/pages/incubator/Messages"));
+const _Settings = lazy(() => import("@/pages/incubator/Settings"));
+const _PrivacyPolicy = lazy(() => import("@/pages/legal/PrivacyPolicy"));
 const IdeationOverview = lazy(
   () => import("@/pages/journey/ideation/IdeationOverview"),
 );
@@ -152,9 +158,7 @@ const IncubationConfirmed = lazy(
   () => import("@/pages/incubators/IncubationConfirmed"),
 );
 const MyIncubation = lazy(() => import("@/pages/incubators/MyIncubation"));
-const FreelancingOpportunities = lazy(
-  () => import("@/pages/freelancing/FreelancingOpportunities"),
-);
+// const Freelancing = lazy(() => import("@/pages/freelancing/Freelancing"));
 const OpportunityDetail = lazy(
   () => import("@/pages/freelancing/OpportunityDetail"),
 );
@@ -167,26 +171,26 @@ const ApplyConfirmation = lazy(
 const MyApplications = lazy(() => import("@/pages/freelancing/MyApplications"));
 const AdminDashboard = lazy(() => import("@/pages/admin/Admin"));
 const VerificationQueue = lazy(() => import("@/pages/admin/VerificationQueue"));
-const StudentVerification = lazy(
-  () => import("@/pages/admin/StudentVerification"),
-);
-const MentorVerification = lazy(
-  () => import("@/pages/admin/MentorVerification"),
-);
-const InvestorVerification = lazy(
-  () => import("@/pages/admin/InvestorVerification"),
-);
-const IncubatorVerification = lazy(
-  () => import("@/pages/admin/IncubatorVerification"),
-);
-const CompanyVerification = lazy(
-  () => import("@/pages/admin/CompanyVerification"),
-);
+// const StudentVerification = lazy(
+//   () => import("@/pages/admin/StudentVerification"),
+// );
+// const MentorVerification = lazy(
+//   () => import("@/pages/admin/MentorVerification"),
+// );
+// const InvestorVerification = lazy(
+//   () => import("@/pages/admin/InvestorVerification"),
+// );
+// const IncubatorVerification = lazy(
+//   () => import("@/pages/admin/IncubatorVerification"),
+// );
+// const CompanyVerification = lazy(
+//   () => import("@/pages/admin/CompanyVerification"),
+// );
 const ReviewQueue = lazy(() => import("@/pages/admin/ReviewQueue"));
 const ReviewDetail = lazy(() => import("@/pages/admin/ReviewDetail"));
 const ReviewWorkspace = lazy(() => import("@/pages/admin/ReviewWorkspace"));
 const ReviewOutcome = lazy(() => import("@/pages/admin/ReviewOutcome"));
-const IdeationReview = lazy(() => import("@/pages/admin/IdeationReview"));
+// const IdeationReview = lazy(() => import("@/pages/admin/IdeationReview"));
 const ScheduleMeeting = lazy(() => import("@/pages/admin/ScheduleMeeting"));
 const AuditLog = lazy(() => import("@/pages/admin/AuditLog"));
 const AnnouncementsDashboard = lazy(
@@ -219,11 +223,14 @@ const IncomingPitchDecks = lazy(
   () => import("@/pages/investor/IncomingPitchDecks"),
 );
 const PitchDeck = lazy(() => import("@/pages/investor/PitchDeck"));
+// const InvestorSettings = lazy(() => import("@/pages/investor/Settings"));
+// const InvestorProfile = lazy(() => import("@/pages/investor/Profile"));
 const MentorPortal = lazy(() => import("@/pages/mentor/Mentor"));
 const MentorRequests = lazy(() => import("@/pages/mentor/Requests"));
 const MentorChats = lazy(() => import("@/pages/mentor/Chats"));
 const MentorMeetings = lazy(() => import("@/pages/mentor/Meetings"));
 const MentorProfile = lazy(() => import("@/pages/mentor/Profile"));
+// const MentorSettings = lazy(() => import("@/pages/mentor/Settings"));
 const CompanyDashboard = lazy(() => import("@/pages/company/Dashboard"));
 const CompanyMyOpportunities = lazy(
   () => import("@/pages/company/MyOpportunities"),
@@ -242,6 +249,8 @@ const PostOpportunityStep4 = lazy(
 );
 const ApplicantsList = lazy(() => import("@/pages/company/ApplicantsList"));
 const ApplicantDetail = lazy(() => import("@/pages/company/ApplicantDetail"));
+// const CompanySettings = lazy(() => import("@/pages/company/Settings"));
+// const CompanyProfile = lazy(() => import("@/pages/company/Profile"));
 const MentorDirectory = lazy(() => import("@/pages/mentors/MentorDirectory"));
 const MentorProfileStudentView = lazy(
   () => import("@/pages/mentors/MentorProfile"),
@@ -299,7 +308,7 @@ export const router = createBrowserRouter([
   { path: "/landing/investor", element: withSuspense(LandingInvestor) },
   { path: "/landing/incubator", element: withSuspense(LandingIncubator) },
   { path: "/landing/companies", element: withSuspense(LandingCompanies) },
-  { path: "/legal/privacy-policy", element: withSuspense(PrivacyPolicy) },
+  { path: "/legal/privacy-policy", element: withSuspense(PrivacyPolicyPage) },
   { path: "/unauthorized", element: withSuspense(Unauthorized) },
 
   // Auth Routes
@@ -347,35 +356,270 @@ export const router = createBrowserRouter([
       },
     ],
   },
-
-  // PROTECTED ROUTES GROUPED BY USER ROLES
-
-  // 1. ADMIN ROUTES
+  { path: "/company/dashboard", element: withSuspense(CompanyDashboard) },
   {
-    element: <ProtectedRoute allowedRoles={["admin"]} />,
+    path: "/company/my-opportunities",
+    element: withSuspense(CompanyMyOpportunities),
+  },
+  {
+    path: "/company/post-opportunity/step-1",
+    element: withSuspense(PostOpportunityStep1),
+  },
+  {
+    path: "/company/post-opportunity/step-2",
+    element: withSuspense(PostOpportunityStep2),
+  },
+  {
+    path: "/company/post-opportunity/step-3",
+    element: withSuspense(PostOpportunityStep3),
+  },
+  {
+    path: "/company/post-opportunity/step-4",
+    element: withSuspense(PostOpportunityStep4),
+  },
+  { path: "/company/applicants", element: withSuspense(ApplicantsList) },
+  {
+    path: "/company/applicants/detail",
+    element: withSuspense(ApplicantDetail),
+  },
+  {
+    element: (
+      <MentorshipProvider>
+        <Outlet />
+      </MentorshipProvider>
+    ),
+    children: [
+      { path: "/mentors", element: withSuspense(MentorDirectory) },
+      {
+        path: "/mentors/profile",
+        element: withSuspense(MentorProfileStudentView),
+      },
+      { path: "/mentors/request", element: withSuspense(MentorshipRequest) },
+      { path: "/mentors/chat", element: withSuspense(ChatConversation) },
+      { path: "/mentors/messages", element: withSuspense(ChatInbox) },
+    ],
+  },
+  { path: "/investors", element: withSuspense(InvestorDirectory) },
+  {
+    path: "/investors/profile",
+    element: withSuspense(InvestorProfileStudentView),
+  },
+  { path: "/investors/send-pitch", element: withSuspense(SendPitchDeck) },
+  { path: "/investors/chat", element: withSuspense(InvestorConversation) },
+  { path: "/support", element: withSuspense(HelpCenter) },
+  { path: "/support/tickets", element: withSuspense(SupportDashboard) },
+  { path: "/support/raise-ticket", element: withSuspense(RaiseSupportTicket) },
+  { path: "/support/tickets/detail", element: withSuspense(TicketDetail) },
+  { path: "/landing", element: withSuspense(LandingHome) },
+  { path: "/landing/student", element: withSuspense(LandingStudent) },
+  { path: "/landing/mentor", element: withSuspense(LandingMentor) },
+  { path: "/landing/investor", element: withSuspense(LandingInvestor) },
+  { path: "/landing/incubator", element: withSuspense(LandingIncubator) },
+  { path: "/landing/companies", element: withSuspense(LandingCompanies) },
+  { path: "/dashboard", element: withSuspense(Dashboard) },
+  { path: "/notifications", element: withSuspense(Notifications) },
+  { path: "/settings", element: withSuspense(StudentSettings) },
+  {
+    element: (
+      <IncubationProvider>
+        <Outlet />
+      </IncubationProvider>
+    ),
+    children: [
+      {
+        path: "/build-startup/journey",
+        element: withSuspense(BuildStartupJourney),
+      },
+      {
+        path: "/build-startup/journey/ideation",
+        element: withSuspense(IdeationOverview),
+      },
+      {
+        path: "/build-startup/journey/ideation/submit",
+        element: withSuspense(IdeaSubmission),
+      },
+      {
+        path: "/build-startup/journey/ideation/confirmation",
+        element: withSuspense(IdeationSubmissionConfirmation),
+      },
+      {
+        path: "/build-startup/journey/ideation/review-meeting",
+        element: withSuspense(IdeationReviewMeeting),
+      },
+      {
+        path: "/build-startup/journey/ideation/review-result",
+        element: withSuspense(IdeationReviewResult),
+      },
+      {
+        path: "/build-startup/journey/ideation/resources",
+        element: withSuspense(IdeationResources),
+      },
+      {
+        element: <StageGuard requiredStage="validation" />,
+        children: [
+          {
+            path: "/build-startup/journey/validation",
+            element: withSuspense(ValidationOverview),
+          },
+          {
+            path: "/build-startup/journey/validation/survey-tracker",
+            element: withSuspense(SurveyTracker),
+          },
+          {
+            path: "/build-startup/journey/validation/evidence-upload",
+            element: withSuspense(EvidenceUpload),
+          },
+          {
+            path: "/build-startup/journey/validation/report-submission",
+            element: withSuspense(ValidationReportSubmission),
+          },
+          {
+            path: "/build-startup/journey/validation/confirmation",
+            element: withSuspense(ValidationSubmissionConfirmation),
+          },
+          {
+            path: "/build-startup/journey/validation/review-meeting",
+            element: withSuspense(ValidationReviewMeeting),
+          },
+          {
+            path: "/build-startup/journey/validation/review-result",
+            element: withSuspense(ValidationReviewResult),
+          },
+        ],
+      },
+      {
+        element: <StageGuard requiredStage="mvp" />,
+        children: [
+          {
+            path: "/build-startup/journey/mvp",
+            element: withSuspense(MvpOverview),
+          },
+          {
+            path: "/build-startup/journey/mvp/choose-product-type",
+            element: withSuspense(ChooseProductType),
+          },
+          {
+            path: "/build-startup/journey/mvp/submit",
+            element: withSuspense(MvpSubmission),
+          },
+          {
+            path: "/build-startup/journey/mvp/success",
+            element: withSuspense(MvpSubmissionSuccess),
+          },
+          {
+            path: "/build-startup/journey/mvp/incubation-proof",
+            element: withSuspense(IncubationProofSubmission),
+          },
+          {
+            path: "/build-startup/journey/mvp/incubation-verification",
+            element: withSuspense(IncubationVerificationReview),
+          },
+          {
+            path: "/build-startup/journey/mvp/incubation-approved",
+            element: withSuspense(IncubationVerificationApproved),
+          },
+        ],
+      },
+      {
+        element: <StageGuard requiredStage="traction" />,
+        children: [
+          {
+            path: "/build-startup/journey/traction",
+            element: withSuspense(TractionStage),
+          },
+          {
+            path: "/build-startup/journey/traction/acquisition-tracker",
+            element: withSuspense(UserAcquisitionTracker),
+          },
+          {
+            path: "/build-startup/journey/traction/feedback-upload",
+            element: withSuspense(CustomerFeedbackUpload),
+          },
+          {
+            path: "/build-startup/journey/traction/product-submission",
+            element: withSuspense(TractionProductSubmission),
+          },
+          {
+            path: "/build-startup/journey/traction/review",
+            element: withSuspense(TractionReview),
+          },
+          {
+            path: "/build-startup/journey/traction/review-meeting",
+            element: withSuspense(TractionReviewMeeting),
+          },
+          {
+            path: "/build-startup/journey/traction/approved",
+            element: withSuspense(TractionApproved),
+          },
+        ],
+      },
+      {
+        element: <StageGuard requiredStage="launch" />,
+        children: [
+          {
+            path: "/build-startup/journey/launch",
+            element: withSuspense(LaunchStage),
+          },
+          {
+            path: "/build-startup/journey/launch/submission",
+            element: withSuspense(LaunchSubmission),
+          },
+          {
+            path: "/build-startup/journey/launch/pitch-deck",
+            element: withSuspense(FinalPitchDeckUpload),
+          },
+          {
+            path: "/build-startup/journey/launch/proof-upload",
+            element: withSuspense(LaunchProofUpload),
+          },
+          {
+            path: "/build-startup/journey/launch/verification",
+            element: withSuspense(LaunchVerificationReview),
+          },
+        ],
+      },
+      {
+        path: "/build-startup/journey/complete",
+        element: withSuspense(JourneyComplete),
+      },
+    ],
+  },
+  { path: "/incubators", element: withSuspense(DiscoverIncubators) },
+  { path: "/incubators/profile", element: withSuspense(IncubatorProfile) },
+  {
+    path: "/incubators/apply",
+    element: withSuspense(IncubatorApplicationForm),
+  },
+  { path: "/incubators/confirmed", element: withSuspense(IncubationConfirmed) },
+  { path: "/incubators/tracker", element: withSuspense(MyIncubation) },
+  { path: "/freelancing", element: withSuspense(FreelancingOpportunitiesPage) },
+  {
+    path: "/freelancing/opportunity",
+    element: withSuspense(OpportunityDetail),
+  },
+  {
+    path: "/freelancing/apply",
+    element: withSuspense(FreelancingApplicationForm),
+  },
+  { path: "/freelancing/applied", element: withSuspense(ApplyConfirmation) },
+  { path: "/freelancing/applications", element: withSuspense(MyApplications) },
+  {
+    element: (
+      <AdminDashboardProvider>
+        <Outlet />
+      </AdminDashboardProvider>
+    ),
     children: [
       { path: "/admin", element: withSuspense(AdminDashboard) },
       { path: "/admin/verification", element: withSuspense(VerificationQueue) },
-      {
-        path: "/admin/verification/student",
-        element: withSuspense(StudentVerification),
-      },
-      {
-        path: "/admin/verification/mentor",
-        element: withSuspense(MentorVerification),
-      },
-      {
-        path: "/admin/verification/investor",
-        element: withSuspense(InvestorVerification),
-      },
-      {
-        path: "/admin/verification/incubator",
-        element: withSuspense(IncubatorVerification),
-      },
-      {
-        path: "/admin/verification/company",
-        element: withSuspense(CompanyVerification),
-      },
+      // {
+      //   path: "/admin/verification/detail",
+      //   element: withSuspense(VerificationDetail),
+      // },
+      // {
+      //   path: "/admin/verification/decision",
+      //   element: withSuspense(VerificationDecision),
+      // },
       { path: "/admin/reviews", element: withSuspense(ReviewQueue) },
       { path: "/admin/reviews/detail", element: withSuspense(ReviewDetail) },
       {
@@ -383,10 +627,6 @@ export const router = createBrowserRouter([
         element: withSuspense(ReviewWorkspace),
       },
       { path: "/admin/reviews/outcome", element: withSuspense(ReviewOutcome) },
-      {
-        path: "/admin/reviews/ideation",
-        element: withSuspense(IdeationReview),
-      },
       {
         path: "/admin/reviews/schedule-meeting",
         element: withSuspense(ScheduleMeeting),
@@ -419,45 +659,20 @@ export const router = createBrowserRouter([
         element: withSuspense(OpportunityReview),
       },
       { path: "/admin/settings", element: withSuspense(AdminSettings) },
+      // {
+      //   path: "/admin/chapter-change-requests",
+      //   element: withSuspense(ChapterChangeRequests),
+      // },
+      // { path: "/admin/user-management", element: withSuspense(UserManagement) },
+      // { path: "/admin/cms", element: withSuspense(CmsManager) },
     ],
   },
-
-  // 2. COMPANY ROUTES
   {
-    element: <ProtectedRoute allowedRoles={["company"]} />,
-    children: [
-      { path: "/company/dashboard", element: withSuspense(CompanyDashboard) },
-      {
-        path: "/company/my-opportunities",
-        element: withSuspense(CompanyMyOpportunities),
-      },
-      {
-        path: "/company/post-opportunity/step-1",
-        element: withSuspense(PostOpportunityStep1),
-      },
-      {
-        path: "/company/post-opportunity/step-2",
-        element: withSuspense(PostOpportunityStep2),
-      },
-      {
-        path: "/company/post-opportunity/step-3",
-        element: withSuspense(PostOpportunityStep3),
-      },
-      {
-        path: "/company/post-opportunity/step-4",
-        element: withSuspense(PostOpportunityStep4),
-      },
-      { path: "/company/applicants", element: withSuspense(ApplicantsList) },
-      {
-        path: "/company/applicants/detail",
-        element: withSuspense(ApplicantDetail),
-      },
-    ],
-  },
-
-  // 3. INVESTOR ROUTES
-  {
-    element: <ProtectedRoute allowedRoles={["investor"]} />,
+    element: (
+      <InvestorProvider>
+        <Outlet />
+      </InvestorProvider>
+    ),
     children: [
       { path: "/investor", element: withSuspense(InvestorPortal) },
       {
@@ -470,228 +685,18 @@ export const router = createBrowserRouter([
       },
     ],
   },
-
-  // 4. MENTOR ROUTES
   {
-    element: <ProtectedRoute allowedRoles={["mentor"]} />,
+    element: (
+      <MentorshipProvider>
+        <Outlet />
+      </MentorshipProvider>
+    ),
     children: [
       { path: "/mentor", element: withSuspense(MentorPortal) },
       { path: "/mentor/requests", element: withSuspense(MentorRequests) },
       { path: "/mentor/chats", element: withSuspense(MentorChats) },
       { path: "/mentor/meetings", element: withSuspense(MentorMeetings) },
       { path: "/mentor/profile", element: withSuspense(MentorProfile) },
-    ],
-  },
-
-  // 5. INCUBATOR ROUTES
-  {
-    element: <ProtectedRoute allowedRoles={["incubator"]} />,
-    children: [
-      { path: "/incubator", element: withSuspense(Incubator) },
-      { path: "/incubator/applications", element: withSuspense(Applications) },
-      {
-        path: "/incubator/applications/review",
-        element: withSuspense(ApplicationReview),
-      },
-      { path: "/incubator/messages", element: withSuspense(Messages) },
-      { path: "/incubator/settings", element: withSuspense(Settings) },
-    ],
-  },
-
-  // 6. STUDENT ROUTES
-  {
-    element: <ProtectedRoute allowedRoles={["student"]} />,
-    children: [
-      { path: "/dashboard", element: withSuspense(Dashboard) },
-      {
-        path: "/build-startup/journey",
-        element: withSuspense(BuildStartupJourney),
-      },
-      { path: "/notifications", element: withSuspense(Notifications) },
-      { path: "/settings", element: withSuspense(StudentSettings) },
-      { path: "/mentors", element: withSuspense(MentorDirectory) },
-      {
-        path: "/mentors/profile",
-        element: withSuspense(MentorProfileStudentView),
-      },
-      { path: "/mentors/request", element: withSuspense(MentorshipRequest) },
-      { path: "/mentors/chat", element: withSuspense(ChatConversation) },
-      { path: "/mentors/messages", element: withSuspense(ChatInbox) },
-      { path: "/investors", element: withSuspense(InvestorDirectory) },
-      {
-        path: "/investors/profile",
-        element: withSuspense(InvestorProfileStudentView),
-      },
-      { path: "/investors/send-pitch", element: withSuspense(SendPitchDeck) },
-      { path: "/investors/chat", element: withSuspense(InvestorConversation) },
-      { path: "/freelancing", element: withSuspense(FreelancingOpportunities) },
-      {
-        path: "/freelancing/opportunity",
-        element: withSuspense(OpportunityDetail),
-      },
-      {
-        path: "/freelancing/apply",
-        element: withSuspense(FreelancingApplicationForm),
-      },
-      {
-        path: "/freelancing/applied",
-        element: withSuspense(ApplyConfirmation),
-      },
-      {
-        path: "/freelancing/applications",
-        element: withSuspense(MyApplications),
-      },
-      // Startup journey sub-routes
-      {
-        path: "/build-startup/journey/ideation",
-        element: withSuspense(IdeationOverview),
-      },
-      {
-        path: "/build-startup/journey/ideation/submit",
-        element: withSuspense(IdeaSubmission),
-      },
-      {
-        path: "/build-startup/journey/ideation/confirmation",
-        element: withSuspense(IdeationSubmissionConfirmation),
-      },
-      {
-        path: "/build-startup/journey/ideation/review-meeting",
-        element: withSuspense(IdeationReviewMeeting),
-      },
-      {
-        path: "/build-startup/journey/ideation/review-result",
-        element: withSuspense(IdeationReviewResult),
-      },
-      {
-        path: "/build-startup/journey/ideation/resources",
-        element: withSuspense(IdeationResources),
-      },
-      {
-        path: "/build-startup/journey/validation",
-        element: withSuspense(ValidationOverview),
-      },
-      {
-        path: "/build-startup/journey/validation/survey-tracker",
-        element: withSuspense(SurveyTracker),
-      },
-      {
-        path: "/build-startup/journey/validation/evidence-upload",
-        element: withSuspense(EvidenceUpload),
-      },
-      {
-        path: "/build-startup/journey/validation/report-submission",
-        element: withSuspense(ValidationReportSubmission),
-      },
-      {
-        path: "/build-startup/journey/validation/confirmation",
-        element: withSuspense(ValidationSubmissionConfirmation),
-      },
-      {
-        path: "/build-startup/journey/validation/review-meeting",
-        element: withSuspense(ValidationReviewMeeting),
-      },
-      {
-        path: "/build-startup/journey/validation/review-result",
-        element: withSuspense(ValidationReviewResult),
-      },
-      {
-        path: "/build-startup/journey/mvp",
-        element: withSuspense(MvpOverview),
-      },
-      {
-        path: "/build-startup/journey/mvp/choose-product-type",
-        element: withSuspense(ChooseProductType),
-      },
-      {
-        path: "/build-startup/journey/mvp/submit",
-        element: withSuspense(MvpSubmission),
-      },
-      {
-        path: "/build-startup/journey/mvp/success",
-        element: withSuspense(MvpSubmissionSuccess),
-      },
-      {
-        path: "/build-startup/journey/mvp/incubation-proof",
-        element: withSuspense(IncubationProofSubmission),
-      },
-      {
-        path: "/build-startup/journey/mvp/incubation-verification",
-        element: withSuspense(IncubationVerificationReview),
-      },
-      {
-        path: "/build-startup/journey/mvp/incubation-approved",
-        element: withSuspense(IncubationVerificationApproved),
-      },
-      {
-        path: "/build-startup/journey/traction",
-        element: withSuspense(TractionStage),
-      },
-      {
-        path: "/build-startup/journey/traction/acquisition-tracker",
-        element: withSuspense(UserAcquisitionTracker),
-      },
-      {
-        path: "/build-startup/journey/traction/feedback-upload",
-        element: withSuspense(CustomerFeedbackUpload),
-      },
-      {
-        path: "/build-startup/journey/traction/product-submission",
-        element: withSuspense(TractionProductSubmission),
-      },
-      {
-        path: "/build-startup/journey/traction/review",
-        element: withSuspense(TractionReview),
-      },
-      {
-        path: "/build-startup/journey/traction/review-meeting",
-        element: withSuspense(TractionReviewMeeting),
-      },
-      {
-        path: "/build-startup/journey/traction/approved",
-        element: withSuspense(TractionApproved),
-      },
-      {
-        path: "/build-startup/journey/launch",
-        element: withSuspense(LaunchStage),
-      },
-      {
-        path: "/build-startup/journey/launch/submission",
-        element: withSuspense(LaunchSubmission),
-      },
-      {
-        path: "/build-startup/journey/launch/pitch-deck",
-        element: withSuspense(FinalPitchDeckUpload),
-      },
-      {
-        path: "/build-startup/journey/launch/proof-upload",
-        element: withSuspense(LaunchProofUpload),
-      },
-      {
-        path: "/build-startup/journey/launch/verification",
-        element: withSuspense(LaunchVerificationReview),
-      },
-      {
-        path: "/build-startup/journey/complete",
-        element: withSuspense(JourneyComplete),
-      },
-      { path: "/incubators", element: withSuspense(DiscoverIncubators) },
-      { path: "/incubators/profile", element: withSuspense(IncubatorProfile) },
-      {
-        path: "/incubators/apply",
-        element: withSuspense(IncubatorApplicationForm),
-      },
-      {
-        path: "/incubators/confirmed",
-        element: withSuspense(IncubationConfirmed),
-      },
-      { path: "/incubators/tracker", element: withSuspense(MyIncubation) },
-      { path: "/support", element: withSuspense(HelpCenter) },
-      { path: "/support/tickets", element: withSuspense(SupportDashboard) },
-      {
-        path: "/support/raise-ticket",
-        element: withSuspense(RaiseSupportTicket),
-      },
-      { path: "/support/tickets/detail", element: withSuspense(TicketDetail) },
     ],
   },
 ]);

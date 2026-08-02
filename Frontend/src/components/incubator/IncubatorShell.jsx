@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
   FileText,
@@ -11,20 +11,28 @@ import {
   Search,
   Bell,
   Menu,
-} from 'lucide-react';
-import ComingSoon from '@/components/ui/ComingSoon';
-import Logo from '@/components/ui/Logo';
-import ThemeToggle from '@/components/ui/ThemeToggle';
-import Sidebar from '@/components/layout/Sidebar';
-import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
+} from "lucide-react";
+import ComingSoon from "@/components/ui/ComingSoon";
+import Logo from "@/components/ui/Logo";
+import Sidebar from "@/components/layout/Sidebar";
+import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: 'Dashboard',     href: '/incubator', real: true },
-  { icon: FileText,        label: 'Applications',  href: '/incubator/applications', real: true },
-  { icon: MessageSquare,   label: 'Chats',         href: '/incubator/messages', real: true },
-  { icon: Rocket,          label: 'Incubators',    href: '#', real: false },
-  { icon: FolderOpen,      label: 'Resources',     href: '#', real: false },
-  { icon: Settings,        label: 'Settings',      href: '/incubator/settings', real: true },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/incubator", real: true },
+  {
+    icon: FileText,
+    label: "Applications",
+    href: "/incubator/applications",
+    real: true,
+  },
+  {
+    icon: MessageSquare,
+    label: "Chats",
+    href: "/incubator/messages",
+    real: true,
+  },
+  { icon: Rocket, label: "Incubators", href: "#", real: false },
+  { icon: FolderOpen, label: "Resources", href: "#", real: false },
 ];
 
 export default function IncubatorShell({ children }) {
@@ -37,9 +45,6 @@ export default function IncubatorShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AU"
-        footerName="Admin User"
-        footerRole="Reviewer"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -52,17 +57,24 @@ export default function IncubatorShell({ children }) {
             Sidebar.jsx — this renders inside the permanently-black
             sidebar, not the theme-reactive page canvas. */}
         <div className="border-t border-white/10 pt-4 mb-4">
-          <ComingSoon label="Help Center" position="top" inline={false} className="flex items-center gap-3 py-2 px-3 text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200">
+          <ComingSoon
+            label="Help Center"
+            position="top"
+            inline={false}
+            className="flex items-center gap-3 py-2 px-3 text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
             <HelpCircle size={20} strokeWidth={2} />
-            <span className="font-poppins font-medium text-body">Help Center</span>
+            <span className="font-poppins font-medium text-body">
+              Help Center
+            </span>
           </ComingSoon>
         </div>
       </Sidebar>
 
-      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[var(--spacing-sidebar-width)]'} min-h-screen flex flex-col`}>
-        <header
-          className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear"
-        >
+      <main
+        className={`${collapsed ? "lg:pl-20" : "lg:pl-[var(--spacing-sidebar-width)]"} min-h-screen flex flex-col`}
+      >
+        <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-6 flex-1 min-w-0">
             {/* Opens the Sidebar drawer below `lg` — Incubator had no
                 mobile nav trigger at all before this (Dashboard at least
@@ -88,7 +100,11 @@ export default function IncubatorShell({ children }) {
             <div className="relative w-full max-w-md">
               <ComingSoon label="Search" position="bottom" inline={false}>
                 <div className="relative w-full">
-                  <Search size={18} strokeWidth={2} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+                  <Search
+                    size={18}
+                    strokeWidth={2}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+                  />
                   <input
                     type="text"
                     disabled
@@ -117,10 +133,15 @@ export default function IncubatorShell({ children }) {
               <MessageSquare size={20} strokeWidth={2} />
             </Link>
 
-            <ThemeToggle size={20} />
-
             <Link
               to="/incubator/settings"
+              className="p-2 rounded-full text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors"
+            >
+              <Settings size={20} strokeWidth={2} />
+            </Link>
+
+            <Link
+              to="/incubator/profile"
               className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
             >
               AU
@@ -132,9 +153,7 @@ export default function IncubatorShell({ children }) {
           {children}
         </div>
 
-        <footer
-          className="flex flex-col md:flex-row justify-between items-center w-full bg-canvas-bg border-t border-divider-line py-6 px-4 lg:px-10 mt-auto transition-colors duration-150 ease-linear"
-        >
+        <footer className="flex flex-col md:flex-row justify-between items-center w-full bg-canvas-bg border-t border-divider-line py-6 px-4 lg:px-10 mt-auto transition-colors duration-150 ease-linear">
           <div className="mb-4 md:mb-0">
             <Logo variant="mark" size={20} />
             <p className="text-text-muted font-inter font-normal text-small mt-1">
@@ -142,10 +161,16 @@ export default function IncubatorShell({ children }) {
             </p>
           </div>
           <div className="flex gap-8">
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Privacy Policy
             </Link>
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Terms of Service
             </Link>
             <ComingSoon label="Contact Support" position="top" inline>

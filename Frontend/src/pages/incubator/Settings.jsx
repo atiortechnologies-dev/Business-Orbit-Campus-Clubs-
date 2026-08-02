@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Building,
   Info,
@@ -12,26 +13,27 @@ import {
   CheckCircle,
   AlertTriangle,
   ChevronDown,
-} from 'lucide-react';
-import IncubatorShell from '@/components/incubator/IncubatorShell';
-import ComingSoon from '@/components/ui/ComingSoon';
-import Modal from '@/components/ui/Modal';
-import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+} from "lucide-react";
+import IncubatorShell from "@/components/incubator/IncubatorShell";
+import ComingSoon from "@/components/ui/ComingSoon";
+import Modal from "@/components/ui/Modal";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 
 const DEFAULT_FORM_STATE = {
-  incubatorName: 'BOCC Incubator',
-  repName: 'Sarah Jenkins',
-  phone: '+1 (555) 012-3456',
-  website: 'https://www.incubatorhub.io',
-  address: '42 Innovation Drive, Suite 100, San Francisco, CA',
-  about: 'We provide early-stage tech startups with the capital, mentorship, and network they need to scale rapidly. Our focus is on sustainable AI and fintech solutions.',
-  stages: 'Pre-seed to Seed',
-  maxStartups: '25',
-  meetingPreference: 'Video Call (Remote)',
-  primaryComm: 'Email',
+  incubatorName: "BOCC Incubator",
+  repName: "Sarah Jenkins",
+  phone: "+1 (555) 012-3456",
+  website: "https://www.incubatorhub.io",
+  address: "42 Innovation Drive, Suite 100, San Francisco, CA",
+  about:
+    "We provide early-stage tech startups with the capital, mentorship, and network they need to scale rapidly. Our focus is on sustainable AI and fintech solutions.",
+  stages: "Pre-seed to Seed",
+  maxStartups: "25",
+  meetingPreference: "Video Call (Remote)",
+  primaryComm: "Email",
 };
 
-const INITIAL_INDUSTRIES = ['Artificial Intelligence', 'Fintech', 'SaaS'];
+const INITIAL_INDUSTRIES = ["Artificial Intelligence", "Fintech", "SaaS"];
 
 const INITIAL_WORKING_DAYS = {
   M: true,
@@ -44,21 +46,25 @@ const INITIAL_WORKING_DAYS = {
 };
 
 export default function SettingsPage() {
-  useDocumentTitle('Settings — BOCC Incubator Portal');
+  useDocumentTitle("Settings — BOCC Incubator Portal");
   const [form, setForm] = useState(DEFAULT_FORM_STATE);
   const [industries, setIndustries] = useState(INITIAL_INDUSTRIES);
   const [workingDays, setWorkingDays] = useState(INITIAL_WORKING_DAYS);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [industryDraft, setIndustryDraft] = useState('');
+  const [industryDraft, setIndustryDraft] = useState("");
   const [addingIndustry, setAddingIndustry] = useState(false);
   const [logoUrl, setLogoUrl] = useState(null);
   const [passwordOpen, setPasswordOpen] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({ current: '', next: '', confirm: '' });
-  const [passwordError, setPasswordError] = useState('');
+  const [passwordForm, setPasswordForm] = useState({
+    current: "",
+    next: "",
+    confirm: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState(false);
   const [deactivateOpen, setDeactivateOpen] = useState(false);
-  const [deactivateConfirmText, setDeactivateConfirmText] = useState('');
+  const [deactivateConfirmText, setDeactivateConfirmText] = useState("");
   const [deactivateRequested, setDeactivateRequested] = useState(false);
 
   const handleInputChange = (e) => {
@@ -93,8 +99,9 @@ export default function SettingsPage() {
 
   const addIndustry = () => {
     const trimmed = industryDraft.trim();
-    if (trimmed && !industries.includes(trimmed)) setIndustries((prev) => [...prev, trimmed]);
-    setIndustryDraft('');
+    if (trimmed && !industries.includes(trimmed))
+      setIndustries((prev) => [...prev, trimmed]);
+    setIndustryDraft("");
     setAddingIndustry(false);
   };
 
@@ -111,25 +118,28 @@ export default function SettingsPage() {
 
   const handlePasswordSubmit = () => {
     if (passwordForm.next.length < 8) {
-      setPasswordError('New password must be at least 8 characters.');
+      setPasswordError("New password must be at least 8 characters.");
       return;
     }
     if (passwordForm.next !== passwordForm.confirm) {
-      setPasswordError('New password and confirmation do not match.');
+      setPasswordError("New password and confirmation do not match.");
       return;
     }
-    setPasswordError('');
+    setPasswordError("");
     // TODO(backend): verify `passwordForm.current` and update the account
     // password with `passwordForm.next`.
     setPasswordSuccess(true);
-    setPasswordForm({ current: '', next: '', confirm: '' });
-    setTimeout(() => { setPasswordSuccess(false); setPasswordOpen(false); }, 1500);
+    setPasswordForm({ current: "", next: "", confirm: "" });
+    setTimeout(() => {
+      setPasswordSuccess(false);
+      setPasswordOpen(false);
+    }, 1500);
   };
 
   const handleDeactivateConfirm = () => {
     // TODO(backend): deactivate the incubator account and sign out.
     setDeactivateOpen(false);
-    setDeactivateConfirmText('');
+    setDeactivateConfirmText("");
     setDeactivateRequested(true);
   };
 
@@ -150,9 +160,11 @@ export default function SettingsPage() {
             <div className="flex flex-col items-center text-center">
               <div
                 className="w-24 h-24 rounded-2xl bg-canvas-bg border border-border-subtle mb-4 flex items-center justify-center font-poppins font-bold text-text-heading text-4xl select-none bg-cover bg-center"
-                style={logoUrl ? { backgroundImage: `url(${logoUrl})` } : undefined}
+                style={
+                  logoUrl ? { backgroundImage: `url(${logoUrl})` } : undefined
+                }
               >
-                {!logoUrl && 'BI'}
+                {!logoUrl && "BI"}
               </div>
               <div className="flex items-center gap-1 mb-1">
                 <h3 className="font-poppins font-bold text-card text-text-heading">
@@ -162,23 +174,24 @@ export default function SettingsPage() {
               <p className="font-inter text-small text-text-muted mb-6">
                 Sarah Jenkins • Lead Representative
               </p>
-              
+
               <div className="w-full space-y-2 mb-6">
                 <div className="flex justify-between font-poppins font-semibold text-caption text-text-heading">
                   <span>Profile Completion</span>
                   <span>85%</span>
                 </div>
                 <div className="w-full h-2 bg-canvas-bg rounded-full overflow-hidden border border-border-subtle">
-                  <div className="h-full bg-brand-black dark:bg-white w-[85%]"></div>
+                  <div className="h-full bg-brand-black w-[85%]"></div>
                 </div>
               </div>
 
-              <ComingSoon label="View Public Profile" position="top" inline={false}>
-                <div className="w-full flex items-center justify-center gap-2 py-2.5 border border-border-subtle text-text-heading font-poppins font-semibold text-small rounded-lg hover:bg-canvas-bg cursor-pointer transition-colors">
-                  <ExternalLink size={16} strokeWidth={2} />
-                  View Public Profile
-                </div>
-              </ComingSoon>
+              <Link
+                to="/incubator/profile"
+                className="w-full flex items-center justify-center gap-2 py-2.5 border border-border-subtle text-text-heading font-poppins font-semibold text-small rounded-lg hover:bg-canvas-bg cursor-pointer transition-colors"
+              >
+                <ExternalLink size={16} strokeWidth={2} />
+                View Public Profile
+              </Link>
             </div>
 
             <div className="mt-8 pt-6 border-t border-divider-line">
@@ -186,17 +199,32 @@ export default function SettingsPage() {
                 Quick Actions
               </h4>
               <div className="space-y-2">
-                <ComingSoon label="Download Data Audit" position="top" inline={false}>
+                <ComingSoon
+                  label="Download Data Audit"
+                  position="top"
+                  inline={false}
+                >
                   <div className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-small text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
                     <span>Download Data Audit</span>
-                    <Download size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Download
+                      size={16}
+                      className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity"
+                    />
                   </div>
                 </ComingSoon>
 
                 <label className="w-full text-left p-3 rounded-lg hover:bg-canvas-bg font-inter text-small text-text-heading flex items-center justify-between cursor-pointer group border border-transparent hover:border-border-subtle transition-all">
                   <span>Update Organization Logo</span>
-                  <Camera size={16} className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <input type="file" accept="image/*" onChange={handleLogoChange} className="sr-only" />
+                  <Camera
+                    size={16}
+                    className="text-text-muted opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    className="sr-only"
+                  />
                 </label>
               </div>
             </div>
@@ -327,14 +355,16 @@ export default function SettingsPage() {
                       </button>
                     </span>
                   ))}
-                  
+
                   {addingIndustry ? (
                     <input
                       type="text"
                       autoFocus
                       value={industryDraft}
                       onChange={(e) => setIndustryDraft(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addIndustry())}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && (e.preventDefault(), addIndustry())
+                      }
                       onBlur={addIndustry}
                       placeholder="Industry name..."
                       className="px-3 py-1 border border-border-subtle rounded-full font-inter text-xs text-text-body focus:outline-none focus:ring-1 focus:ring-brand-black w-32"
@@ -434,13 +464,13 @@ export default function SettingsPage() {
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {[
-                        { key: 'M', label: 'M' },
-                        { key: 'T', label: 'T' },
-                        { key: 'W', label: 'W' },
-                        { key: 'T2', label: 'T' },
-                        { key: 'F', label: 'F' },
-                        { key: 'S', label: 'S' },
-                        { key: 'S2', label: 'S' },
+                        { key: "M", label: "M" },
+                        { key: "T", label: "T" },
+                        { key: "W", label: "W" },
+                        { key: "T2", label: "T" },
+                        { key: "F", label: "F" },
+                        { key: "S", label: "S" },
+                        { key: "S2", label: "S" },
                       ].map(({ key, label }) => {
                         const isSet = workingDays[key];
                         return (
@@ -450,8 +480,8 @@ export default function SettingsPage() {
                             onClick={() => handleToggleDay(key)}
                             className={`w-8 h-8 rounded border flex items-center justify-center font-poppins font-bold text-xs select-none transition-all active:scale-[0.98] ${
                               isSet
-                                ? 'bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black'
-                                : 'bg-transparent text-text-muted border-border-subtle hover:bg-canvas-bg'
+                                ? "bg-brand-black text-white border-brand-black"
+                                : "bg-transparent text-text-muted border-border-subtle hover:bg-canvas-bg"
                             }`}
                           >
                             {label}
@@ -497,14 +527,19 @@ export default function SettingsPage() {
                   </div>
                   <span className="px-4 py-2 border border-border-subtle rounded-lg font-poppins font-semibold text-small hover:bg-canvas-bg flex items-center gap-1.5 shrink-0">
                     Update Password
-                    <ChevronDown size={14} strokeWidth={2} className={`transition-transform ${passwordOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown
+                      size={14}
+                      strokeWidth={2}
+                      className={`transition-transform ${passwordOpen ? "rotate-180" : ""}`}
+                    />
                   </span>
                 </button>
                 {passwordOpen && (
                   <div className="mt-4 space-y-3 max-w-sm">
                     {passwordSuccess ? (
                       <p className="flex items-center gap-2 text-success font-inter text-small">
-                        <CheckCircle size={16} strokeWidth={2} /> Password updated.
+                        <CheckCircle size={16} strokeWidth={2} /> Password
+                        updated.
                       </p>
                     ) : (
                       <>
@@ -532,7 +567,11 @@ export default function SettingsPage() {
                           placeholder="Confirm new password"
                           className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-small py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
                         />
-                        {passwordError && <p className="text-error font-inter text-small">{passwordError}</p>}
+                        {passwordError && (
+                          <p className="text-error font-inter text-small">
+                            {passwordError}
+                          </p>
+                        )}
                         <button
                           type="button"
                           onClick={handlePasswordSubmit}
@@ -559,12 +598,12 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setEmailNotifications(!emailNotifications)}
                   className={`w-10 h-6 rounded-full relative transition-colors focus:outline-none ${
-                    emailNotifications ? 'bg-brand-black dark:bg-white' : 'bg-border-subtle'
+                    emailNotifications ? "bg-brand-black" : "bg-border-subtle"
                   }`}
                 >
                   <div
-                    className={`w-4 h-4 bg-surface-white dark:bg-brand-black rounded-full absolute top-1 transition-all ${
-                      emailNotifications ? 'right-1' : 'left-1'
+                    className={`w-4 h-4 bg-surface-white rounded-full absolute top-1 transition-all ${
+                      emailNotifications ? "right-1" : "left-1"
                     }`}
                   />
                 </button>
@@ -572,7 +611,8 @@ export default function SettingsPage() {
 
               {deactivateRequested ? (
                 <div className="py-4 flex items-center gap-2.5 text-warning font-inter text-small">
-                  <AlertTriangle size={16} strokeWidth={2} /> Deactivation requested — our team will follow up by email.
+                  <AlertTriangle size={16} strokeWidth={2} /> Deactivation
+                  requested — our team will follow up by email.
                 </div>
               ) : (
                 <div className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -616,7 +656,7 @@ export default function SettingsPage() {
           >
             Cancel Changes
           </button>
-          
+
           <button
             type="button"
             onClick={handleSave}
@@ -628,9 +668,17 @@ export default function SettingsPage() {
         </div>
       </footer>
 
-      <Modal isOpen={deactivateOpen} onClose={() => { setDeactivateOpen(false); setDeactivateConfirmText(''); }} title="Deactivate account">
+      <Modal
+        isOpen={deactivateOpen}
+        onClose={() => {
+          setDeactivateOpen(false);
+          setDeactivateConfirmText("");
+        }}
+        title="Deactivate account"
+      >
         <p className="font-inter text-small text-text-body mb-4">
-          This temporarily disables your incubator profile and hides it from applicants. Type <strong>DEACTIVATE</strong> to confirm.
+          This temporarily disables your incubator profile and hides it from
+          applicants. Type <strong>DEACTIVATE</strong> to confirm.
         </p>
         <input
           type="text"
@@ -642,7 +690,10 @@ export default function SettingsPage() {
         <div className="flex justify-end gap-3">
           <button
             type="button"
-            onClick={() => { setDeactivateOpen(false); setDeactivateConfirmText(''); }}
+            onClick={() => {
+              setDeactivateOpen(false);
+              setDeactivateConfirmText("");
+            }}
             className="border border-border-subtle text-text-heading px-5 py-2 rounded-md hover:bg-canvas-bg transition-colors font-poppins font-semibold text-small"
           >
             Cancel
@@ -650,7 +701,7 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={handleDeactivateConfirm}
-            disabled={deactivateConfirmText !== 'DEACTIVATE'}
+            disabled={deactivateConfirmText !== "DEACTIVATE"}
             className="bg-error text-white px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Deactivate Account

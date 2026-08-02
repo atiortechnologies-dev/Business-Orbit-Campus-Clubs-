@@ -1,49 +1,36 @@
 @import "tailwindcss";
 
-/* Tailwind v4 defaults the `dark:` variant to `@media
- * (prefers-color-scheme: dark)` unless a custom variant is registered —
- * without this line, every `dark:*` utility class in the app (there are
- * ~12 of them, all in src/pages/incubator/*.jsx) responds to the OS-level
- * color scheme setting and completely ignores the in-app theme toggle
- * button (ThemeProvider.jsx's `.dark` class on <html>). This line makes
- * `dark:` mean "inside .dark", matching how every color TOKEN in this file
- * already behaves. Confirmed missing and confirmed broken before this fix:
- * with the OS set to dark and the in-app toggle set to light, `dark:*`
- * classes were still applying. */
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ══════════════════════════════════════════════════════════════
    DESIGN SYSTEM — BOCC v1.0
    Monochrome base (black/white/gray) + a single neon accent, used
-   sparingly for interactive signals. Full light/dark pairs below;
-   brand-black and accent-neon are fixed and do not change by theme.
+   sparingly for interactive signals. Light theme only — no dark mode.
 ══════════════════════════════════════════════════════════════ */
 
-@theme {
-  --color-brand-black: #0B0B0B;
-  --color-accent-neon: #E8F012;
-  --color-surface-white: #FFFFFF;
-  --color-canvas-bg: #F9FAFB;
+:root {
+  --color-brand-black: #0b0b0b;
+  --color-accent-neon: #e8f012;
+  --color-surface-white: #ffffff;
+  --color-canvas-bg: #f9fafb;
   --color-text-heading: #111827;
   --color-text-body: #374151;
-  --color-text-muted: #6B7280;
-  --color-border-subtle: #E5E7EB;
-  --color-divider-line: #F3F4F6;
-  --color-success: #22C55E;
-  --color-warning: #F59E0B;
-  --color-error: #EF4444;
-  --color-info: #3B82F6;
+  --color-text-muted: #6b7280;
+  --color-border-subtle: #e5e7eb;
+  --color-divider-line: #f3f4f6;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
 
   /* ── Typography scale — Inter / Poppins (loaded via @fontsource) ── */
   --font-sans: var(--font-inter), system-ui, sans-serif;
 
   /* ── Spacing tokens ─────────────────────────────────────────────── */
-  --spacing-margin-mobile:  16px;
+  --spacing-margin-mobile: 16px;
   --spacing-margin-desktop: 40px;
-  --spacing-sidebar-width:  264px;
-  --spacing-container-max:  1440px;
-  --spacing-unit:           8px;
-  --spacing-gutter:         24px;
+  --spacing-sidebar-width: 264px;
+  --spacing-container-max: 1440px;
+  --spacing-unit: 8px;
+  --spacing-gutter: 24px;
 
   /* ── Border radius ──────────────────────────────────────────────── */
   --radius-DEFAULT: 0.25rem;
@@ -53,14 +40,16 @@
   --radius-xl: 0.75rem;
   --radius-full: 9999px;
 
-  --font-poppins: 'Poppins', system-ui, sans-serif;
-  --font-inter: 'Inter', system-ui, sans-serif;
+  --font-poppins: "Poppins", system-ui, sans-serif;
+  --font-inter: "Inter", system-ui, sans-serif;
 
-  --shadow-card: 0px 1px 3px rgba(11,11,11,0.05), 0px 1px 2px rgba(11,11,11,0.03);
+  --shadow-card:
+    0px 1px 3px rgba(11, 11, 11, 0.05), 0px 1px 2px rgba(11, 11, 11, 0.03);
   /* Documented in the design guide (used for modals/context menus) but
      never actually added as a token until Modal.jsx needed it — added
      with the guide's exact spec value, not guessed. */
-  --shadow-overlay: 0px 10px 15px rgba(11,11,11,0.08), 0px 4px 6px rgba(11,11,11,0.04);
+  --shadow-overlay:
+    0px 10px 15px rgba(11, 11, 11, 0.08), 0px 4px 6px rgba(11, 11, 11, 0.04);
 
   --text-page: 40px;
   --leading-page: 48px;
@@ -84,39 +73,15 @@
      action-bg  = brand-black in light mode (FIXED per spec)
      action-text = white (always legible on brand-black)
   ─────────────────────────────────────────────────────────────────── */
-  --color-action-bg:   #0B0B0B;  /* same as brand-black — FIXED */
-  --color-action-text: #FFFFFF;
-}
-
-/* ── Dark mode overrides ─────────────────────────────────────────────
-   Class-based: .dark on <html>.
-   brand-black and accent-neon are FIXED — no change from light mode.
-   Everything else flips to its dark-mode equivalent below.
-─────────────────────────────────────────────────────────────────── */
-.dark {
-  --color-brand-black:    #0B0B0B;        /* FIXED */
-  --color-accent-neon:    #E8F012;        /* FIXED */
-  --color-surface-white:  #1A1A1A;        /* card surface in dark */
-  --color-canvas-bg:      #111111;        /* page background in dark */
-  --color-text-heading:   #F9FAFB;        /* near-white headings */
-  --color-text-body:      #D1D5DB;        /* body copy */
-  --color-text-muted:     #9CA3AF;        /* muted / secondary */
-  --color-border-subtle:  #2D2D2D;        /* card borders */
-  --color-divider-line:   #1F1F1F;        /* subtle dividers */
-  --color-success:        #22C55E;        /* FIXED */
-  --color-warning:        #F59E0B;        /* FIXED */
-  --color-error:          #F87171;        /* softened in dark */
-  --color-info:           #60A5FA;        /* softened in dark */
-
-  /* ── Action tokens — dark mode ───────────────────────────────────── */
-  /*   Inverted from light mode: light fill on dark canvas = visible CTA  */
-  --color-action-bg:   #F3F4F6;  /* near-white fill — legible on #111111 bg */
-  --color-action-text: #0B0B0B;  /* brand-black text on light fill */
+  --color-action-bg: #0b0b0b; /* same as brand-black — FIXED */
+  --color-action-text: #ffffff;
 }
 
 /* ── Base layer ───────────────────────────────────────────────────── */
 @layer base {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
 
@@ -133,14 +98,15 @@
     margin: 0;
     padding: 0;
     line-height: 1.5;
-    transition: background-color 200ms ease-out, color 200ms ease-out;
+    transition:
+      background-color 200ms ease-out,
+      color 200ms ease-out;
   }
 
   :focus-visible {
     outline: 2px solid var(--color-brand-black);
     outline-offset: 2px;
   }
-
 }
 
 /* ── Utility layer ────────────────────────────────────────────────── */
@@ -163,12 +129,39 @@
    reads as alarming; this app handles review/decision workflows where a
    calmer error style fits better. */
 @keyframes slide-in {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @layer utilities {
   .animate-slide-in {
     animation: slide-in 150ms ease-out both;
+  }
+}
+
+/* ── Cookie banner entry animation ───────────────────────────────── */
+/* Floats up from below the viewport — a different direction than
+   slide-in above (that one's a top-down fade for inline validation
+   errors, wrong direction for a bottom-fixed banner). */
+@keyframes slide-up-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-slide-up-in {
+    animation: slide-up-in 250ms ease-out both;
   }
 }
