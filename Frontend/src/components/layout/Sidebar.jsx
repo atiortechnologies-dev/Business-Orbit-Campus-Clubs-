@@ -14,9 +14,6 @@ import { useAuth } from "@/context/AuthContext";
 // prop since each portal's link list is genuinely feature-specific.
 export default function Sidebar({
   navItems,
-  footerInitials,
-  footerName,
-  footerRole,
   children,
   isOpen = false,
   onClose = () => {},
@@ -197,32 +194,7 @@ export default function Sidebar({
           </span>
         </button>
 
-        {/* User card. TODO(backend): swap initials/name/role for the
-          authenticated user's real profile data once auth/session state
-          exists — the surrounding structure/classes are intentional and
-          shouldn't need to change, only these three values need to become
-          dynamic. Collapses to just the initials circle. */}
         <div className="px-4">
-          <div
-            className={`bg-white/5 rounded-xl border border-white/10 flex items-center gap-3 ${collapsed ? "lg:p-0 lg:justify-center lg:bg-transparent lg:border-none p-3" : "p-3"}`}
-          >
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center font-bold text-white text-xs select-none shrink-0">
-              {footerInitials}
-            </div>
-            <div
-              className={`flex flex-col min-w-0 ${collapsed ? "lg:hidden" : ""}`}
-            >
-              <span className="font-poppins font-semibold text-small text-white truncate">
-                {footerName}
-              </span>
-              <span className="font-inter text-caption text-white/60 truncate">
-                {footerRole}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="px-4 mt-2">
           <button
             type="button"
             onClick={handleLogout}

@@ -29,7 +29,7 @@ const NAV_ITEMS = [
   { icon: GraduationCap, label: "Mentors", href: "/mentors", real: true },
   { icon: Wallet, label: "Investors", href: "/investors", real: true },
   { icon: Building2, label: "Incubators", href: "/incubators", real: true },
-  { icon: Briefcase, label: "Freelancing", href: "/freelancing", real: false },
+  { icon: Briefcase, label: "Freelancing", href: "/freelancing", real: true },
   { icon: HelpCircle, label: "Help", href: "/support", real: true },
 ];
 
@@ -56,9 +56,6 @@ export default function DashboardShell({ pageId = "pg", children }) {
 
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="A"
-        footerName="Alex"
-        footerRole="Student"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -119,7 +116,7 @@ export default function DashboardShell({ pageId = "pg", children }) {
                 <Settings size={20} strokeWidth={2} />
               </Link>
               <Link
-                to="/settings"
+                to="/profile"
                 className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
               >
                 AC

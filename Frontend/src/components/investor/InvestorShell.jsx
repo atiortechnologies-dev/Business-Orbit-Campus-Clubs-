@@ -38,9 +38,6 @@ export default function InvestorShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="MW"
-        footerName="Marcus Webb"
-        footerRole="Principal Investor"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -94,7 +91,7 @@ export default function InvestorShell({ children }) {
                 <Settings size={20} strokeWidth={2} />
               </Link>
               <Link
-                to="/investor/settings"
+                to="/investor/profile"
                 className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
               >
                 MW

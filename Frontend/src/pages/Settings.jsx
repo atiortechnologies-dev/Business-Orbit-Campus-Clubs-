@@ -290,12 +290,22 @@ export default function SettingsPage() {
         <span className="text-text-heading font-semibold">Settings</span>
       </nav>
 
-      <h1 className="font-poppins font-semibold text-page text-text-heading mb-1">
-        Account Settings
-      </h1>
-      <p className="font-inter text-body text-text-body mb-8">
-        Manage your profile, education details, and account security.
-      </p>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <h1 className="font-poppins font-semibold text-page text-text-heading mb-1">
+            Account Settings
+          </h1>
+          <p className="font-inter text-body text-text-body">
+            Manage your profile, education details, and account security.
+          </p>
+        </div>
+        <Link
+          to="/profile"
+          className="inline-flex items-center gap-2 border border-border-subtle text-text-heading font-inter font-medium text-small px-4 py-2.5 rounded-md hover:bg-canvas-bg transition-colors shrink-0"
+        >
+          View Public Profile
+        </Link>
+      </div>
 
       {saveSuccess && (
         <div className="mb-6 flex items-center gap-2 rounded-lg border bg-success/10 border-success/30 text-success px-4 py-3 font-inter text-small">

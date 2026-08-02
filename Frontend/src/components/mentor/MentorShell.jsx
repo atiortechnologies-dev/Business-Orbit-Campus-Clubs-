@@ -33,9 +33,6 @@ export default function MentorShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="PA"
-        footerName="Priya Anand"
-        footerRole="Senior Mentor"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -86,11 +83,12 @@ export default function MentorShell({ children }) {
                   <Bell size={20} strokeWidth={2} />
                 </span>
               </ComingSoon>
-              <ComingSoon label="Settings" position="bottom" inline>
-                <span className="block p-2 rounded-full transition-colors hover:bg-canvas-bg">
-                  <Settings size={20} strokeWidth={2} />
-                </span>
-              </ComingSoon>
+              <Link
+                to="/mentor/settings"
+                className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted hover:text-text-heading"
+              >
+                <Settings size={20} strokeWidth={2} />
+              </Link>
               <Link
                 to="/mentor/profile"
                 className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"

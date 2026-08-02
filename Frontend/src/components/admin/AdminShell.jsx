@@ -49,7 +49,6 @@ const NAV_ITEMS = [
     real: true,
   },
   { icon: History, label: "Audit Log", href: "/admin/audit-log", real: true },
-  { icon: Settings, label: "Settings", href: "/admin/settings", real: true },
   {
     icon: ShieldCheck,
     label: "User Mgmt",
@@ -70,9 +69,6 @@ export default function AdminShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AR"
-        footerName="Alex Rivera"
-        footerRole="Super Admin"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}

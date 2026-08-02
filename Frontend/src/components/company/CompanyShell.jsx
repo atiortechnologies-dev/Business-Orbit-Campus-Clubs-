@@ -35,7 +35,6 @@ const NAV_ITEMS = [
     real: true,
   },
   { icon: Users, label: "Applicants", href: "/company/applicants", real: true },
-  { icon: Settings, label: "Settings", href: "#", real: false },
 ];
 
 // Same three-piece pattern as DashboardShell/IncubatorShell/AdminShell/
@@ -55,9 +54,6 @@ export default function CompanyShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AC"
-        footerName="Acme Corp"
-        footerRole="Premium Account"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -106,6 +102,12 @@ export default function CompanyShell({ children }) {
               </ComingSoon>
               <Link
                 to="/company/settings"
+                className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted hover:text-text-heading"
+              >
+                <Settings size={20} strokeWidth={2} />
+              </Link>
+              <Link
+                to="/company/profile"
                 className="w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-gray-700 to-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
               >
                 AC

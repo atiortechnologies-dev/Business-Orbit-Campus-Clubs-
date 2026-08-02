@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Building,
   Info,
@@ -220,16 +221,13 @@ export default function SettingsPage() {
                 </div>
               </div>
 
-              <ComingSoon
-                label="View Public Profile"
-                position="top"
-                inline={false}
+              <Link
+                to="/incubator/profile"
+                className="w-full flex items-center justify-center gap-2 py-2.5 border border-border-subtle text-text-heading font-poppins font-semibold text-small rounded-lg hover:bg-canvas-bg cursor-pointer transition-colors"
               >
-                <div className="w-full flex items-center justify-center gap-2 py-2.5 border border-border-subtle text-text-heading font-poppins font-semibold text-small rounded-lg hover:bg-canvas-bg cursor-pointer transition-colors">
-                  <ExternalLink size={16} strokeWidth={2} />
-                  View Public Profile
-                </div>
-              </ComingSoon>
+                <ExternalLink size={16} strokeWidth={2} />
+                View Public Profile
+              </Link>
             </div>
 
             <div className="mt-8 pt-6 border-t border-divider-line">

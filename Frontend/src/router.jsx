@@ -6,6 +6,7 @@ import { InvestorProvider } from "@/context/InvestorContext";
 import { MentorshipProvider } from "@/context/MentorshipContext";
 import { AdminDashboardProvider } from "@/context/AdminDashboardContext";
 import StageGuard from "@/components/journey/StageGuard";
+import IdeationAccessGate from "@/components/journey/IdeationAccessGate";
 
 const Login = lazy(() => import("@/pages/auth/Login"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
@@ -43,6 +44,7 @@ const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const BuildStartupJourney = lazy(() => import("@/pages/BuildStartupJourney"));
 const Notifications = lazy(() => import("@/pages/Notifications"));
 const StudentSettings = lazy(() => import("@/pages/Settings"));
+const StudentProfile = lazy(() => import("@/pages/Profile"));
 const _Incubator = lazy(() => import("@/pages/incubator/Incubator"));
 const _Applications = lazy(() => import("@/pages/incubator/Applications"));
 const _ApplicationReview = lazy(
@@ -50,6 +52,7 @@ const _ApplicationReview = lazy(
 );
 const _Messages = lazy(() => import("@/pages/incubator/Messages"));
 const _Settings = lazy(() => import("@/pages/incubator/Settings"));
+const _IncubatorOwnProfile = lazy(() => import("@/pages/incubator/Profile"));
 const _PrivacyPolicy = lazy(() => import("@/pages/legal/PrivacyPolicy"));
 const IdeationOverview = lazy(
   () => import("@/pages/journey/ideation/IdeationOverview"),
@@ -155,9 +158,7 @@ const IncubationConfirmed = lazy(
   () => import("@/pages/incubators/IncubationConfirmed"),
 );
 const MyIncubation = lazy(() => import("@/pages/incubators/MyIncubation"));
-const FreelancingOpportunities = lazy(
-  () => import("@/pages/freelancing/FreelancingOpportunities"),
-);
+const Freelancing = lazy(() => import("@/pages/freelancing/Freelancing"));
 const OpportunityDetail = lazy(
   () => import("@/pages/freelancing/OpportunityDetail"),
 );
@@ -218,11 +219,13 @@ const IncomingPitchDecks = lazy(
 );
 const PitchDeck = lazy(() => import("@/pages/investor/PitchDeck"));
 const InvestorSettings = lazy(() => import("@/pages/investor/Settings"));
+const InvestorProfile = lazy(() => import("@/pages/investor/Profile"));
 const MentorPortal = lazy(() => import("@/pages/mentor/Mentor"));
 const MentorRequests = lazy(() => import("@/pages/mentor/Requests"));
 const MentorChats = lazy(() => import("@/pages/mentor/Chats"));
 const MentorMeetings = lazy(() => import("@/pages/mentor/Meetings"));
 const MentorProfile = lazy(() => import("@/pages/mentor/Profile"));
+const MentorSettings = lazy(() => import("@/pages/mentor/Settings"));
 const CompanyDashboard = lazy(() => import("@/pages/company/Dashboard"));
 const CompanyMyOpportunities = lazy(
   () => import("@/pages/company/MyOpportunities"),
@@ -242,6 +245,7 @@ const PostOpportunityStep4 = lazy(
 const ApplicantsList = lazy(() => import("@/pages/company/ApplicantsList"));
 const ApplicantDetail = lazy(() => import("@/pages/company/ApplicantDetail"));
 const CompanySettings = lazy(() => import("@/pages/company/Settings"));
+const CompanyProfile = lazy(() => import("@/pages/company/Profile"));
 const MentorDirectory = lazy(() => import("@/pages/mentors/MentorDirectory"));
 const MentorProfileStudentView = lazy(
   () => import("@/pages/mentors/MentorProfile"),
@@ -362,30 +366,47 @@ export const router = createBrowserRouter([
     element: withSuspense(ApplicantDetail),
   },
   { path: "/company/settings", element: withSuspense(CompanySettings) },
+  { path: "/company/profile", element: withSuspense(CompanyProfile) },
   {
-    element: (
-      <MentorshipProvider>
-        <Outlet />
-      </MentorshipProvider>
-    ),
+    element: <IdeationAccessGate />,
     children: [
-      { path: "/mentors", element: withSuspense(MentorDirectory) },
       {
-        path: "/mentors/profile",
-        element: withSuspense(MentorProfileStudentView),
+        element: (
+          <MentorshipProvider>
+            <Outlet />
+          </MentorshipProvider>
+        ),
+        children: [
+          { path: "/mentors", element: withSuspense(MentorDirectory) },
+          {
+            path: "/mentors/profile",
+            element: withSuspense(MentorProfileStudentView),
+          },
+          {
+            path: "/mentors/request",
+            element: withSuspense(MentorshipRequest),
+          },
+          { path: "/mentors/chat", element: withSuspense(ChatConversation) },
+          { path: "/mentors/messages", element: withSuspense(ChatInbox) },
+        ],
       },
-      { path: "/mentors/request", element: withSuspense(MentorshipRequest) },
-      { path: "/mentors/chat", element: withSuspense(ChatConversation) },
-      { path: "/mentors/messages", element: withSuspense(ChatInbox) },
     ],
   },
-  { path: "/investors", element: withSuspense(InvestorDirectory) },
   {
-    path: "/investors/profile",
-    element: withSuspense(InvestorProfileStudentView),
+    element: <IdeationAccessGate />,
+    children: [
+      { path: "/investors", element: withSuspense(InvestorDirectory) },
+      {
+        path: "/investors/profile",
+        element: withSuspense(InvestorProfileStudentView),
+      },
+      { path: "/investors/send-pitch", element: withSuspense(SendPitchDeck) },
+      {
+        path: "/investors/chat",
+        element: withSuspense(InvestorConversation),
+      },
+    ],
   },
-  { path: "/investors/send-pitch", element: withSuspense(SendPitchDeck) },
-  { path: "/investors/chat", element: withSuspense(InvestorConversation) },
   { path: "/support", element: withSuspense(HelpCenter) },
   { path: "/support/tickets", element: withSuspense(SupportDashboard) },
   { path: "/support/raise-ticket", element: withSuspense(RaiseSupportTicket) },
@@ -399,6 +420,7 @@ export const router = createBrowserRouter([
   { path: "/dashboard", element: withSuspense(Dashboard) },
   { path: "/notifications", element: withSuspense(Notifications) },
   { path: "/settings", element: withSuspense(StudentSettings) },
+  { path: "/profile", element: withSuspense(StudentProfile) },
   {
     element: (
       <IncubationProvider>
@@ -572,7 +594,7 @@ export const router = createBrowserRouter([
   },
   { path: "/incubators/confirmed", element: withSuspense(IncubationConfirmed) },
   { path: "/incubators/tracker", element: withSuspense(MyIncubation) },
-  { path: "/freelancing", element: withSuspense(FreelancingOpportunities) },
+  { path: "/freelancing", element: withSuspense(Freelancing) },
   {
     path: "/freelancing/opportunity",
     element: withSuspense(OpportunityDetail),
@@ -664,6 +686,7 @@ export const router = createBrowserRouter([
         element: withSuspense(PitchDeck),
       },
       { path: "/investor/settings", element: withSuspense(InvestorSettings) },
+      { path: "/investor/profile", element: withSuspense(InvestorProfile) },
     ],
   },
   {
@@ -678,6 +701,7 @@ export const router = createBrowserRouter([
       { path: "/mentor/chats", element: withSuspense(MentorChats) },
       { path: "/mentor/meetings", element: withSuspense(MentorMeetings) },
       { path: "/mentor/profile", element: withSuspense(MentorProfile) },
+      { path: "/mentor/settings", element: withSuspense(MentorSettings) },
     ],
   },
 ]);

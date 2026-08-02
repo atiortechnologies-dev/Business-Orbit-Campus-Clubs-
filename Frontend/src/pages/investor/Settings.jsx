@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ChevronRight, AlertCircle } from "lucide-react";
+import { ChevronRight, AlertCircle, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
 import InvestorShell from "@/components/investor/InvestorShell";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -85,13 +86,22 @@ export default function InvestorSettingsPage() {
 
   return (
     <InvestorShell>
-      <div className="mb-8">
-        <h1 className="font-poppins font-bold text-section text-text-heading mb-1">
-          Investor Settings
-        </h1>
-        <p className="font-inter text-body text-text-muted">
-          Manage your account and investment profile.
-        </p>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <h1 className="font-poppins font-bold text-section text-text-heading mb-1">
+            Investor Settings
+          </h1>
+          <p className="font-inter text-body text-text-muted">
+            Manage your account and investment profile.
+          </p>
+        </div>
+        <Link
+          to="/investor/profile"
+          className="inline-flex items-center gap-2 border border-border-subtle text-text-heading font-inter font-medium text-small px-4 py-2.5 rounded-md hover:bg-canvas-bg transition-colors shrink-0"
+        >
+          <Eye size={16} strokeWidth={2} />
+          View Public Profile
+        </Link>
       </div>
 
       {errorMsg && (

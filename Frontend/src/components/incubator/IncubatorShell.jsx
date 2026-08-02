@@ -33,12 +33,6 @@ const NAV_ITEMS = [
   },
   { icon: Rocket, label: "Incubators", href: "#", real: false },
   { icon: FolderOpen, label: "Resources", href: "#", real: false },
-  {
-    icon: Settings,
-    label: "Settings",
-    href: "/incubator/settings",
-    real: true,
-  },
 ];
 
 export default function IncubatorShell({ children }) {
@@ -51,9 +45,6 @@ export default function IncubatorShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AU"
-        footerName="Admin User"
-        footerRole="Reviewer"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -144,6 +135,13 @@ export default function IncubatorShell({ children }) {
 
             <Link
               to="/incubator/settings"
+              className="p-2 rounded-full text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors"
+            >
+              <Settings size={20} strokeWidth={2} />
+            </Link>
+
+            <Link
+              to="/incubator/profile"
               className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
             >
               AU
