@@ -4,7 +4,6 @@ import {
   Hourglass,
   Rocket,
   Calendar,
-  ChevronRight,
 } from "lucide-react";
 import IncubatorShell from "@/components/incubator/IncubatorShell";
 import ComingSoon from "@/components/ui/ComingSoon";

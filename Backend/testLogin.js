@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const User = require("./Backend/models/User");
-const { comparePassword } = require("./Backend/utils/password");
 
 async function run() {
   await mongoose.connect("mongodb://localhost:27017/bocc");

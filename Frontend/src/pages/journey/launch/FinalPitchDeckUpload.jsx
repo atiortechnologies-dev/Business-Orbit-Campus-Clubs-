@@ -8,8 +8,6 @@ import {
   Video,
   History,
   CheckCircle2,
-  MoreVertical,
-  Film,
   PieChart,
   Trash,
   AlertCircle,

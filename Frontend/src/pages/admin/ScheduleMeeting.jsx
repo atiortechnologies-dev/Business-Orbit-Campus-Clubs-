@@ -2,15 +2,11 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ChevronRight,
-  Link2,
-  FileText,
-  DollarSign,
   AlertCircle,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getMeetingPrepareContext, scheduleMeeting } from "@/api/admin/adminMeetingApi";
 
@@ -36,7 +32,7 @@ export default function ScheduleMeetingPage() {
   const [reviewer, setReviewer] = useState(REVIEWERS[0]);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [duration, setDuration] = useState(DURATIONS[1]);
+  const [_duration, _setDuration] = useState(DURATIONS[1]);
   const [meetingLink, setMeetingLink] = useState("");
   const [agenda, setAgenda] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

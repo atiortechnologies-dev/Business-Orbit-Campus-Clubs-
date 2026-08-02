@@ -162,7 +162,7 @@ exports.getMentorshipRequestStatus = asyncHandler(async (req, res, _next) => {
  * @route   GET /api/student/mentors
  * @access  Private (Student)
  */
-exports.listMentors = asyncHandler(async (req, res, next) => {
+exports.listMentors = asyncHandler(async (req, res, _next) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const startIndex = (page - 1) * limit;

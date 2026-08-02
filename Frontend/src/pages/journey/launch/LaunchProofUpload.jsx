@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
-  Info,
   Upload,
   Camera,
   Film,
@@ -19,7 +18,6 @@ import {
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
-import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import {
   getInsights,

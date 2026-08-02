@@ -49,7 +49,7 @@ const getProgress = asyncHandler(async (req, res) => {
   }
 
   // Calculate generic progress based on stages approved
-  const stages = await StartupStage.find({ startup_id: startup._id }).sort({
+  const _stages = await StartupStage.find({ startup_id: startup._id }).sort({
     stage_number: 1,
   });
 

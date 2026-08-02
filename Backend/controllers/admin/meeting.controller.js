@@ -5,7 +5,6 @@
 
 const ReviewMeeting = require("../../models/ReviewMeeting");
 const Startup = require("../../models/Startup");
-const User = require("../../models/User");
 const StageSubmission = require("../../models/StageSubmission");
 
 exports.prepareMeetingContext = async (req, res) => {

@@ -116,7 +116,7 @@ const getSubmissionDetail = asyncHandler(async (req, res) => {
  */
 const submitReviewDecision = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { decision, feedback, improvement_suggestions } = req.validatedData || req.body;
+  const { decision, feedback: _feedback, improvement_suggestions: _improvement_suggestions } = req.validatedData || req.body;
 
   const submission = await StageSubmission.findById(id);
 

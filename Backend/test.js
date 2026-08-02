@@ -3,7 +3,6 @@ require("dotenv").config({ path: "./.env" });
 
 const User = require("./models/User");
 const Startup = require("./models/Startup");
-const AuditLog = require("./models/AuditLog");
 
 async function run() {
   await mongoose.connect(process.env.MONGODB_URI);

@@ -57,7 +57,7 @@ const getVerificationDetails = async (req, res) => {
 // 3. submitDecision
 const submitDecision = async (req, res) => {
   try {
-    const { decision, reason } = req.body;
+    const { decision, reason: _reason } = req.body;
 
     if (!["approve", "reject"].includes(decision)) {
       return res.status(400).json({ error: "Invalid decision. Must be 'approve' or 'reject'." });

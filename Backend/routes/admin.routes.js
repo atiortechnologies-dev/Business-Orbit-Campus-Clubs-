@@ -11,7 +11,6 @@ const {
   createFaq,
   updateFaq,
   deleteFaq,
-  getStatistics,
   getStatisticsAdmin,
   createStatistic,
   updateStatistic,

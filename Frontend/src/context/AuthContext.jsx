@@ -40,8 +40,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await getMe();
       const normalizedUser = normalizeUser(response);
-      setUser(normalizedUser ?? null);
+      if (normalizedUser) {
+        localStorage.setItem("isLoggedIn", "true");
+        setUser(normalizedUser);
+      } else {
+        localStorage.removeItem("isLoggedIn");
+        setUser(null);
+      }
     } catch {
+      localStorage.removeItem("isLoggedIn");
       setUser(null);
     } finally {
       setLoading(false);
@@ -57,6 +64,7 @@ export const AuthProvider = ({ children }) => {
       // Even if the request fails, clear local state so the UI reflects
       // a logged-out user; the cookies will simply expire on their own.
     } finally {
+      localStorage.removeItem("isLoggedIn");
       setUser(null);
     }
   }, []);

@@ -60,7 +60,6 @@ const app = express();
 
 const PORT = process.env.PORT || 4000;
 
-const maintenanceMode = require("./middlewares/maintenanceMode");
 const settingsRoutes = require("./routes/admin/settings.routes");
 const auditLogRoutes = require("./routes/admin/auditLog.routes");
 const { initCronJobs } = require("./cron/archiveLogs");

@@ -10,8 +10,6 @@ import {
   Smile,
   Image as ImageIcon,
   Send,
-  User,
-  Calendar,
   FileText,
   Milestone,
   ExternalLink,
