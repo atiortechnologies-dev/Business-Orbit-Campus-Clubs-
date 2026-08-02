@@ -1,3 +1,8 @@
+/**
+ * @file LaunchInsights.js
+ * @description Defines the Mongoose schema and model for capturing post-launch insights and social media metrics.
+ * @architecture Provides a data structure for storing qualitative and quantitative feedback regarding a startup's public launch event.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -97,4 +102,8 @@ const LaunchInsightsSchema = new mongoose.Schema(
 LaunchInsightsSchema.index({ startup_id: 1 });
 LaunchInsightsSchema.index({ student_id: 1 });
 
+/**
+ * @module LaunchInsights
+ * @description Exports the LaunchInsights Mongoose model.
+ */
 module.exports = mongoose.model("LaunchInsights", LaunchInsightsSchema);

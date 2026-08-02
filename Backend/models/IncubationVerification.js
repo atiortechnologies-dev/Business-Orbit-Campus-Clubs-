@@ -1,3 +1,8 @@
+/**
+ * @file IncubationVerification.js
+ * @description Defines the Mongoose schema and model for verifying a startup's incubation status.
+ * @architecture Integrates with the platform's verification workflow to manage and track documents and reviews related to startup incubation.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -125,6 +130,10 @@ IncubationVerificationSchema.index({ student_id: 1 });
 IncubationVerificationSchema.index({ verification_status: 1 });
 IncubationVerificationSchema.index({ startup_id: 1, verification_status: 1 });
 
+/**
+ * @module IncubationVerification
+ * @description Exports the IncubationVerification Mongoose model.
+ */
 module.exports = mongoose.model(
   "IncubationVerification",
   IncubationVerificationSchema,

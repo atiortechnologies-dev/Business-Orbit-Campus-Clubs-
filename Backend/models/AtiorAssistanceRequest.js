@@ -1,3 +1,8 @@
+/**
+ * @file AtiorAssistanceRequest.js
+ * @description Defines the Mongoose schema and model for tracking assistance requests directed to Atior.
+ * @architecture Integrates into the data access layer to persist requests from students and startups seeking external technical assistance.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -123,6 +128,10 @@ AtiorAssistanceRequestSchema.index({ student_id: 1 });
 AtiorAssistanceRequestSchema.index({ request_status: 1 });
 AtiorAssistanceRequestSchema.index({ startup_id: 1, request_status: 1 });
 
+/**
+ * @module AtiorAssistanceRequest
+ * @description Exports the AtiorAssistanceRequest Mongoose model.
+ */
 module.exports = mongoose.model(
   "AtiorAssistanceRequest",
   AtiorAssistanceRequestSchema,

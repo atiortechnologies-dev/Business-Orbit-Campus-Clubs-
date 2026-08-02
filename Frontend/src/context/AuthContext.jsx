@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fetch user from API
   const fetchUser = useCallback(async (options = {}) => {
     const { silent = false } = options;
 
@@ -52,6 +53,7 @@ export const AuthProvider = ({ children }) => {
     } catch {
       localStorage.removeItem("isLoggedIn");
       setUser(null);
+      return null;
     } finally {
       if (!silent) {
         setLoading(false);
@@ -94,4 +96,10 @@ export const AuthProvider = ({ children }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
+};

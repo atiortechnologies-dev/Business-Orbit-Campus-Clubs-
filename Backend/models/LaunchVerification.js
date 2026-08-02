@@ -1,3 +1,8 @@
+/**
+ * @file LaunchVerification.js
+ * @description Defines the Mongoose schema and model for tracking the administrative review and verification of a startup's launch.
+ * @architecture Integrates into the admin workflow as a persistent data record for managing review statuses, comments, and approvals for launches.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -57,4 +62,8 @@ const LaunchVerificationSchema = new mongoose.Schema(
 LaunchVerificationSchema.index({ startup_id: 1 });
 LaunchVerificationSchema.index({ status: 1 });
 
+/**
+ * @module LaunchVerification
+ * @description Exports the LaunchVerification Mongoose model.
+ */
 module.exports = mongoose.model("LaunchVerification", LaunchVerificationSchema);

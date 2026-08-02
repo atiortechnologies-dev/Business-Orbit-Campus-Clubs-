@@ -17,3 +17,27 @@ export const updateProfile = async (profileData) => {
   const res = await api.put("/student/profile-details", profileData);
   return res?.data || res;
 };
+
+// GET recent requests for dashboard widget
+export const getRecentRequests = async () => {
+  const res = await api.get("/requests/recent");
+  return res?.data || res;
+};
+
+// GET upcoming meetings for dashboard widget
+export const getUpcomingMeetings = async () => {
+  const res = await api.get("/meetings/upcoming");
+  return res?.data || res;
+};
+
+// GET recent chats for dashboard widget
+export const getRecentChats = async () => {
+  const res = await api.get("/chats/recent");
+  return res?.data || res;
+};
+
+// GET /activity-log
+export const getActivityLog = async (params) => {
+  const res = await api.get("/activity-log", { params });
+  return res?.data || res;
+};

@@ -1,3 +1,8 @@
+/**
+ * @file MVPReview.js
+ * @description Mongoose model for storing reviewer feedback and scores on a startup's MVP submission.
+ * @architecture Acts as the data schema for MVP reviews, linked to submissions and reviewers in the database layer.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -96,4 +101,8 @@ const MVPReviewSchema = new mongoose.Schema(
 
 MVPReviewSchema.index({ startup_id: 1 });
 
+/**
+ * @module MVPReview
+ * @description Exports the MVPReview Mongoose model.
+ */
 module.exports = mongoose.model("MVPReview", MVPReviewSchema);

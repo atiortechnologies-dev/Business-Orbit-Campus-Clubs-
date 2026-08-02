@@ -45,7 +45,7 @@ const pitchSubmissionSchema = new mongoose.Schema(
 // One active submission per startup-investor pair (excluding rejected/archived if needed, but for now unique index)
 pitchSubmissionSchema.index(
   { startup_id: 1, investor_id: 1 },
-  { unique: true }
+  { unique: true },
 );
 
 module.exports = mongoose.model("PitchSubmission", pitchSubmissionSchema);

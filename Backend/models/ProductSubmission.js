@@ -1,3 +1,8 @@
+/**
+ * @file ProductSubmission.js
+ * @description Mongoose model representing a startup's final product submission, including demo URLs, code repositories, and documentation.
+ * @architecture Serves as the core data entity for product graduation evaluations, linked to startups and reviewed by the evaluation system.
+ */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -83,4 +88,8 @@ ProductSubmissionSchema.index({ startup_id: 1 });
 ProductSubmissionSchema.index({ student_id: 1 });
 ProductSubmissionSchema.index({ submission_status: 1 });
 
+/**
+ * @module ProductSubmission
+ * @description Exports the ProductSubmission Mongoose model.
+ */
 module.exports = mongoose.model("ProductSubmission", ProductSubmissionSchema);
