@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const EmailVerification = require("../models/EmailVerification");
 const PasswordReset = require("../models/PasswordReset");
+const UserSession = require("../models/UserSession");
 
 const StudentProfile = require("../models/StudentProfile");
 const MentorProfile = require("../models/MentorProfile");
@@ -408,6 +409,23 @@ const login = asyncHandler(async (req, res) => {
   const refreshToken = generateRefreshToken(user);
   setAuthCookies(res, { accessToken, refreshToken });
 
+  if (user.role === "admin" || user.role === "super_admin") {
+    const crypto = require("crypto");
+    const refresh_token_hash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+    await UserSession.create({
+      user_id: user._id,
+      device_name: req.headers["user-agent"] || "Unknown Device",
+      os_browser: "Unknown OS/Browser", // In a real app we would parse user-agent
+      ip_address: req.ip || req.connection?.remoteAddress || "Unknown IP",
+      refresh_token_hash,
+      is_current: true,
+      last_active_at: new Date(),
+    });
+  }
+
   // 6. Determine target redirect URL dynamically (with Admin override)
   const redirectTo =
     (user.role === "admin" || user.role === "super_admin")
@@ -433,6 +451,7 @@ const login = asyncHandler(async (req, res) => {
     },
   });
 });
+
 /**
  * @desc    Request password reset
  * @route   POST /api/auth/forgot-password

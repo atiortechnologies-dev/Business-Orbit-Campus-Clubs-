@@ -11,12 +11,9 @@ import "./index.css";
 import { ThemeProvider } from "@/components/ui/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { router } from "@/router";
-import { AuthProvider } from "./context/AuthContext";
 
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <RouterProvider router={router} />
   </ThemeProvider>,
 );

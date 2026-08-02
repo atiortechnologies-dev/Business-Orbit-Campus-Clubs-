@@ -4,6 +4,7 @@ import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import Autocomplete from "@/components/ui/Autocomplete";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
 import { registerUser } from "@/api/auth/authApi";
 import { useAuth } from "@/context/AuthContext";
@@ -24,10 +25,11 @@ export default function RoleSignupForm({
   subtitle,
   icon,
   fields,
+  _onSubmit,
   isLoadingChapters = false,
+  globalError = null,
 }) {
   const navigate = useNavigate();
-  const { fetchUser } = useAuth();
 
   // Initialize values safely
   const [values, setValues] = useState(() =>
@@ -92,12 +94,24 @@ export default function RoleSignupForm({
       navigate(redirectTo);
     } catch (err) {
       setError(
-        err.message || "An unexpected error occurred. Please try again.",
+        err.response?.data?.message ||
+          err.message ||
+          "An unexpected error occurred. Please try again.",
       );
     } finally {
       setIsLoading(false);
     }
   };
+
+  const isPasswordValid = computeStrength(password) === 4;
+  const areFieldsFilled = fields.every(
+    (field) => values[field.name]?.trim() !== "",
+  );
+  const isFormValid =
+    areFieldsFilled &&
+    isPasswordValid &&
+    password === confirmPassword &&
+    agreed;
 
   return (
     <div className="flex-1 flex items-center justify-center px-4 py-12 bg-canvas-bg">
@@ -123,7 +137,24 @@ export default function RoleSignupForm({
                 key={field.name}
                 className={field.colSpan === 2 ? "sm:col-span-2" : ""}
               >
-                {field.type === "select" ? (
+                {field.type === "autocomplete" ? (
+                  <Autocomplete
+                    id={`${roleId}-${field.name}`}
+                    label={field.label}
+                    placeholder={
+                      field.placeholder || `Select ${field.label.toLowerCase()}`
+                    }
+                    value={values[field.name] || ""}
+                    onChange={updateField(field.name)}
+                    options={field.options || []}
+                    required={true}
+                    disabled={
+                      isLoading ||
+                      (field.name === "college" && isLoadingChapters)
+                    }
+                    isLoading={field.name === "college" && isLoadingChapters}
+                  />
+                ) : field.type === "select" ? (
                   <div className="flex flex-col gap-1">
                     <label
                       htmlFor={`${roleId}-${field.name}`}
@@ -140,7 +171,7 @@ export default function RoleSignupForm({
                         isLoading ||
                         (field.name === "college" && isLoadingChapters)
                       }
-                      className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-11 px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black disabled:opacity-50"
+                      className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-[44px] px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black disabled:opacity-50"
                     >
                       <option value="" disabled>
                         {field.name === "college" && isLoadingChapters
@@ -238,12 +269,12 @@ export default function RoleSignupForm({
             </span>
           </label>
 
-          {error && (
+          {(globalError || error) && (
             <p
               role="alert"
               className="font-inter text-small text-error bg-error/10 p-2 rounded-md"
             >
-              {error}
+              {globalError || error}
             </p>
           )}
 
@@ -251,7 +282,7 @@ export default function RoleSignupForm({
             type="submit"
             variant="primary"
             fullWidth
-            disabled={isLoading}
+            disabled={isLoading || !isFormValid}
           >
             {isLoading ? (
               <>

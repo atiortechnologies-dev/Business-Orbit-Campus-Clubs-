@@ -34,7 +34,6 @@ function validateField(name, value) {
 export default function LoginPage() {
   useDocumentTitle("Login — BOCC");
   const navigate = useNavigate();
-  const { fetchUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
