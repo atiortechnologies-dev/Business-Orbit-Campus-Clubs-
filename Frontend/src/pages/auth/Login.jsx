@@ -82,18 +82,10 @@ export default function LoginPage() {
           res?.redirect_to ||
           "/dashboard";
 
-        const accessToken =
-          res?.data?.data?.accessToken ||
-          res?.data?.accessToken ||
-          res?.accessToken;
+        // accessToken/refreshToken are now set as httpOnly cookies directly
+        // by the backend response — nothing to store client-side.
 
-        const refreshToken =
-          res?.data?.data?.refreshToken ||
-          res?.data?.refreshToken ||
-          res?.refreshToken;
-
-        if (accessToken) localStorage.setItem("accessToken", accessToken);
-        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+        await fetchUser({ silent: false });
 
         // Update the AuthContext state so ProtectedRoute recognizes the new user
         await fetchUser();

@@ -1,5 +1,11 @@
-import { getMe } from "@/api/auth/authApi";
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { getMe, logoutUser } from "@/api/auth/authApi";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 
 const AuthContext = createContext(null);
 
@@ -24,88 +30,46 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = useCallback(async (silent = false) => {
+  const fetchUser = useCallback(async (options = {}) => {
+    const { silent = false } = options;
+
+    if (!silent) {
+      setLoading(true);
+    }
+
     try {
-      if (!silent) {
-        setLoading(true);
-      }
       const response = await getMe();
-      setUser(normalizeUser(response));
-    } catch (_error) {
+      const normalizedUser = normalizeUser(response);
+      setUser(normalizedUser ?? null);
+    } catch {
       setUser(null);
-      return null;
     } finally {
       setLoading(false);
     }
-  }, []); // ✅ FIXED: No external dependencies
+  }, []);
 
-  // Handle storage changes across tabs
-  const handleStorageChange = useCallback(
-    (e) => {
-      // If tokens were cleared in another tab
-      if (
-        (e.key === "accessToken" || e.key === "refreshToken") &&
-        !e.newValue
-      ) {
-        setUser(null);
-        setLoading(false);
-      }
-
-      // If any auth-related storage changed, refetch user silently
-      if (
-        e.key === "accessToken" ||
-        e.key === "refreshToken" ||
-        e.key === null
-      ) {
-        // null key means storage was cleared
-        fetchUser({ silent: true }).catch(() => {
-          setUser(null);
-        });
-      }
-    },
-    [fetchUser],
-  );
-
-  // Initialize on mount
-  useEffect(() => {
-    // Check if user is already logged in
-    const token = localStorage.getItem("accessToken");
-
-    if (token) {
-      // Try to fetch user data, but allow rendering to proceed
-      fetchUser({ silent: true }).catch(() => {
-        setUser(null);
-        setLoading(false);
-      });
-    } else {
+  // Clears the httpOnly auth cookies on the backend (frontend JS can't read
+  // or delete them directly) and resets local user state.
+  const logout = useCallback(async () => {
+    try {
+      await logoutUser();
+    } catch {
+      // Even if the request fails, clear local state so the UI reflects
+      // a logged-out user; the cookies will simply expire on their own.
+    } finally {
       setUser(null);
-      setLoading(false);
     }
+  }, []);
 
-    // Listen for storage changes from other tabs
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, [fetchUser, handleStorageChange]); // ✅ FIXED: Proper dependencies
-
-  // Optional: Set up interval to refresh user every 10 minutes (keep-alive)
   useEffect(() => {
-    fetchUser();
+    fetchUser({ silent: true });
   }, [fetchUser]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading, fetchUser, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, setUser, loading, fetchUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);

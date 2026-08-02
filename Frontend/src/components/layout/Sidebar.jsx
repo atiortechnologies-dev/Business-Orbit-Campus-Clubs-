@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 import { ChevronsLeft, ChevronsRight, LogOut } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
@@ -24,12 +25,13 @@ export default function Sidebar({
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("refreshToken");
     window.dispatchEvent(new Event("auth:logout"));
+    await logout();
     navigate("/login", { replace: true });
   };
 
