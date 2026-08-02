@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Mail, RefreshCw, Loader2, AlertCircle } from "lucide-react";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { sendOtp, verifyOtp, getMe } from "@/api/auth/authApi";
+import { useAuth } from "@/context/AuthContext";
 
 const OTP_LENGTH = 6;
 const RESEND_TIMEOUT = 45;
@@ -10,6 +11,7 @@ const RESEND_TIMEOUT = 45;
 export default function VerifyEmailPage() {
   useDocumentTitle("Verify Your Email — BOCC");
   const navigate = useNavigate();
+  const { fetchUser } = useAuth();
 
   const [otp, setOtp] = useState(Array(OTP_LENGTH).fill(""));
   const [secondsLeft, setSecondsLeft] = useState(RESEND_TIMEOUT);
@@ -56,11 +58,7 @@ export default function VerifyEmailPage() {
         }
       } catch (err) {
         if (isMounted) {
-          setError(
-            err.response?.data?.message ||
-              err.message ||
-              "Failed to send verification code.",
-          );
+          setError(err.message || "Failed to send verification code.");
         }
       } finally {
         if (isMounted) {
@@ -140,11 +138,7 @@ export default function VerifyEmailPage() {
       setSuccessMsg("A new verification code has been sent!");
       setSecondsLeft(RESEND_TIMEOUT);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to resend OTP. Please try again.",
-      );
+      setError(err.message || "Failed to resend OTP. Please try again.");
     } finally {
       setIsSendingOtp(false);
     }
@@ -174,6 +168,8 @@ export default function VerifyEmailPage() {
         localStorage.setItem("refreshToken", payload.refreshToken);
       }
 
+      await fetchUser({ silent: false });
+
       // 3. Resolve destination URL safely with fallback
       const destination =
         payload?.redirect_to ||
@@ -183,11 +179,7 @@ export default function VerifyEmailPage() {
       // Trigger navigation
       navigate(destination, { replace: true });
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Invalid or expired verification code.",
-      );
+      setError(err.message || "Invalid or expired verification code.");
       setIsVerifying(false);
     }
   };
