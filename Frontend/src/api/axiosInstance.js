@@ -13,10 +13,6 @@ const api = axios.create({
 let isRefreshing = false;
 let failedQueue = [];
 
-// Add state for queuing requests during token refresh
-let isRefreshing = false;
-let failedQueue = [];
-
 const processQueue = (error, token = null) => {
   failedQueue.forEach((prom) => {
     if (error) {

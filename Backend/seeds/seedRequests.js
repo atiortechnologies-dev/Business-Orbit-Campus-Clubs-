@@ -16,19 +16,31 @@ const MentorRequest = require("../models/MentorRequest");
  */
 const seedRequests = async () => {
   try {
-    // 1. Connect to the database
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log("Connected to MongoDB...");
+    console.log("Connected to MongoDB... Cleaning up old seed data...");
 
-    // 2. Find a mentor
-    const mentor = await User.findOne({ role: "mentor" });
+    await Promise.all([
+      User.deleteMany({ email: { $in: ["alice@example.com", "bob@example.com"] } }),
+      StudentProfile.deleteMany({}),
+      Startup.deleteMany({}),
+      MentorRequest.deleteMany({})
+    ]);
+
+    // 2. Find or create a mentor
+    let mentor = await User.findOne({ role: "mentor" });
     if (!mentor) {
-      console.log(
-        "❌ No mentor found in the database. Please register a mentor first.",
-      );
-      process.exit(1);
+      console.log("No mentor found. Creating one...");
+      mentor = new User({
+        full_name: "Expert Mentor",
+        email: "mentor@example.com",
+        password_hash: "dummyhash",
+        role: "mentor",
+        account_status: "active",
+        email_verified: true,
+      });
+      await mentor.save();
     }
-    console.log(`Found Mentor: ${mentor.full_name} (${mentor.email})`);
+    console.log(`Using Mentor: ${mentor.full_name} (${mentor.email})`);
 
     // 3. Create mock Students
     const student1 = new User({
@@ -67,13 +79,15 @@ const seedRequests = async () => {
 
     // 5. Create mock Startups
     const startup1 = new Startup({
-      name: "CryptoLearn",
+      startup_name: "CryptoLearn",
+      student_id: student1._id,
       category: "EdTech",
       idea: "A gamified platform to learn Web3.",
       stage: "Idea",
     });
     const startup2 = new Startup({
-      name: "AgriSense",
+      startup_name: "AgriSense",
+      student_id: student2._id,
       category: "AgriTech",
       idea: "IoT sensors for soil health monitoring.",
       stage: "MVP",

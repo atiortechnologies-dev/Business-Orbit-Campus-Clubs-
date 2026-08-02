@@ -57,11 +57,13 @@ const protect = asyncHandler(async (req, res, next) => {
  * @desc    Middleware factory to enforce role-based access restrictions
  * @param   {string} role - The allowed user role (e.g., 'student', 'admin')
  */
-const requireRole = (role) => (req, res, next) => {
-  if (!req.user || req.user.role !== role) {
+const requireRole = (roleOrRoles) => (req, res, next) => {
+  const allowedRoles = Array.isArray(roleOrRoles) ? roleOrRoles : [roleOrRoles];
+
+  if (!req.user || !allowedRoles.includes(req.user.role)) {
     return res.status(403).json({
       success: false,
-      message: `This endpoint is only available to ${role} accounts`,
+      message: `This endpoint is only available to ${allowedRoles.join(", ")} accounts`,
     });
   }
   next();
