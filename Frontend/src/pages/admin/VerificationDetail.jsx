@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -11,6 +11,7 @@ import {
   Download,
   AlertCircle,
   Send,
+  Loader2,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import Badge from "@/components/ui/Badge";
@@ -19,48 +20,16 @@ import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import api from "@/api/axiosInstance";
 
-const DOCUMENTS = [
-  { name: "Professional_License_2024.pdf", size: "2.1 MB", flagged: false },
-  { name: "Government_ID_Front.jpg", size: "3.4 MB", flagged: false },
-  {
-    name: "Proof_of_Residency.pdf",
-    size: "1.2 MB",
-    flagged: true,
-    flagReason: "Expired or Illegible",
-  },
-];
-
-const CHECKLIST = [
-  { label: "Email Address Validated", done: true },
-  { label: "Sanctions List Scan", done: true },
-  { label: "Corporate Affiliation", done: false },
-  { label: "Physical Office Verification", done: false },
-];
-
-const TIMELINE = [
-  { label: "Application Received", time: "Oct 12, 2024 · 09:02 AM" },
-  { label: "Documents Screened", time: "Oct 13, 2024 · 11:40 AM" },
-  {
-    label: "Identity Flag Raised",
-    time: "Oct 14, 2024 · 03:15 PM",
-    variant: "error",
-  },
-  {
-    label: "Pending Manual Final Review",
-    time: "Currently active",
-    current: true,
-  },
-];
-
 export default function VerificationDetailPage() {
-  useDocumentTitle("User Profile: ID-88421 — BOCC Admin");
+  const { id } = useParams();
+  useDocumentTitle(`User Profile: ${id || "Loading"} — BOCC Admin`);
   const navigate = useNavigate();
-  const [notes, setNotes] = useState([
-    {
-      author: "Admin_Sarah_K",
-      text: "Contacted user regarding residency proof — awaiting response.",
-    },
-  ]);
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [userData, setUserData] = useState(null);
+
+  const [notes, setNotes] = useState([]);
   const [draft, setDraft] = useState("");
   const [requestInfoOpen, setRequestInfoOpen] = useState(false);
   const [requestInfoText, setRequestInfoText] = useState("");
@@ -68,15 +37,33 @@ export default function VerificationDetailPage() {
   const [noteErrorMsg, setNoteErrorMsg] = useState("");
   const [requestErrorMsg, setRequestErrorMsg] = useState("");
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await api.get(`/admin/users/verification/${id}`);
+        setUserData(res.data);
+        setNotes(res.data.notes || []);
+      } catch (err) {
+        console.error("Failed to fetch user verification details:", err);
+        setError(err?.response?.data?.message || err?.message || "Failed to load user details.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (id) fetchData();
+  }, [id]);
+
   async function handleAddNote(e) {
     e.preventDefault();
     if (!draft.trim()) return;
     try {
       setNoteErrorMsg("");
-      await api.post("/notes", { entityId: "ID-88421", text: draft.trim() });
+      await api.post(`/admin/users/verification/${id}/notes`, { text: draft.trim() });
       setNotes((prev) => [
         ...prev,
-        { author: "Alex Rivera", text: draft.trim() },
+        { author: "Admin", text: draft.trim() },
       ]);
       setDraft("");
     } catch (err) {
@@ -91,14 +78,13 @@ export default function VerificationDetailPage() {
     if (!requestInfoText.trim()) return;
     try {
       setRequestErrorMsg("");
-      await api.post("/verification/request-info", {
-        userId: "ID-88421",
+      await api.post(`/admin/users/verification/${id}/request-info`, {
         message: requestInfoText.trim(),
       });
       setNotes((prev) => [
         ...prev,
         {
-          author: "Alex Rivera",
+          author: "Admin",
           text: `Requested more info: "${requestInfoText.trim()}"`,
         },
       ]);
@@ -116,11 +102,52 @@ export default function VerificationDetailPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <AdminShell>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="animate-spin text-text-muted" size={32} />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminShell>
+        <div className="mb-6 p-4 rounded-lg border border-error/30 bg-error/15 text-error font-inter text-small flex items-center gap-2">
+          <AlertCircle size={16} className="shrink-0" />
+          <span>{error}</span>
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (!userData) return null;
+
+  const {
+    name = "Unknown User",
+    initials = "??",
+    role = "Unknown Role",
+    affiliation = "Unknown Affiliation",
+    region = "Unknown Region",
+    memberSince = "Unknown",
+    email = "N/A",
+    phone = "N/A",
+    location = "N/A",
+    docCompletion = "0%",
+    checksPassed = "0/0",
+    riskRating = "UNKNOWN",
+    documents = [],
+    checklist = [],
+    timeline = [],
+  } = userData;
+
   return (
     <AdminShell>
       {requestInfoSent && (
         <div className="mb-6 p-4 rounded-lg border border-success/30 bg-success/10 text-success font-inter text-small">
-          Info request sent to Alexander Vance.
+          Info request sent to {name}.
         </div>
       )}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -140,7 +167,7 @@ export default function VerificationDetailPage() {
           </button>
           <button
             type="button"
-            onClick={() => navigate("/admin/verification/decision")}
+            onClick={() => navigate(`/admin/verification/decision/${id}`)}
             className="px-4 py-2 bg-action-bg text-action-text rounded-md font-poppins font-semibold text-small hover:opacity-90 active:scale-[0.98] transition-all"
           >
             Verify User
@@ -153,17 +180,17 @@ export default function VerificationDetailPage() {
           <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card text-center">
             <div className="relative w-20 h-20 mx-auto mb-4">
               <div className="w-full h-full rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-text-heading text-2xl select-none">
-                AV
+                {initials}
               </div>
               <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-brand-black border-2 border-surface-white flex items-center justify-center">
                 <BadgeCheck size={16} strokeWidth={2} className="text-white" />
               </span>
             </div>
             <h2 className="font-poppins font-semibold text-card text-text-heading">
-              Alexander Vance
+              {name}
             </h2>
             <p className="font-inter text-small text-text-muted mb-3">
-              Senior Logistics Coordinator
+              {role}
             </p>
             <div className="flex justify-center gap-2 mb-6">
               <Badge variant="success">Active</Badge>
@@ -175,7 +202,7 @@ export default function VerificationDetailPage() {
                   Affiliation
                 </dt>
                 <dd className="font-inter font-medium text-small text-text-heading text-right">
-                  Global Dynamics Inc.
+                  {affiliation}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
@@ -183,7 +210,7 @@ export default function VerificationDetailPage() {
                   Region
                 </dt>
                 <dd className="font-inter font-medium text-small text-text-heading text-right">
-                  North America (EMEA)
+                  {region}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
@@ -191,7 +218,7 @@ export default function VerificationDetailPage() {
                   Member Since
                 </dt>
                 <dd className="font-inter font-medium text-small text-text-heading text-right">
-                  Oct 12, 2022
+                  {memberSince}
                 </dd>
               </div>
             </dl>
@@ -209,7 +236,7 @@ export default function VerificationDetailPage() {
                   className="text-text-muted shrink-0"
                 />
                 <span className="font-inter text-small text-text-body truncate">
-                  a.vance@globaldynamics.com
+                  {email}
                 </span>
               </div>
               <div className="flex items-center gap-3">
@@ -219,7 +246,7 @@ export default function VerificationDetailPage() {
                   className="text-text-muted shrink-0"
                 />
                 <span className="font-inter text-small text-text-body">
-                  +1 (206) 555-0142
+                  {phone}
                 </span>
               </div>
               <div className="flex items-center gap-3">
@@ -229,7 +256,7 @@ export default function VerificationDetailPage() {
                   className="text-text-muted shrink-0"
                 />
                 <span className="font-inter text-small text-text-body">
-                  Seattle, WA — HQ Sector 4
+                  {location}
                 </span>
               </div>
             </div>
@@ -243,7 +270,7 @@ export default function VerificationDetailPage() {
                 Doc Completion
               </p>
               <p className="font-poppins font-semibold text-card text-text-heading">
-                85%
+                {docCompletion}
               </p>
             </div>
             <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card">
@@ -251,7 +278,7 @@ export default function VerificationDetailPage() {
                 Checks Passed
               </p>
               <p className="font-poppins font-semibold text-card text-text-heading">
-                12/14
+                {checksPassed}
               </p>
             </div>
             <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card">
@@ -259,7 +286,7 @@ export default function VerificationDetailPage() {
                 Risk Rating
               </p>
               <p className="font-poppins font-semibold text-card text-success">
-                LOW
+                {riskRating}
               </p>
             </div>
           </div>
@@ -276,7 +303,7 @@ export default function VerificationDetailPage() {
               </ComingSoon>
             </div>
             <div className="divide-y divide-border-subtle">
-              {DOCUMENTS.map((doc) => (
+              {documents.map((doc) => (
                 <div key={doc.name} className="p-4 flex items-center gap-3">
                   <div
                     className={`w-10 h-10 rounded flex items-center justify-center shrink-0 ${doc.flagged ? "bg-error/10 text-error" : "bg-canvas-bg text-text-muted"}`}
@@ -321,6 +348,11 @@ export default function VerificationDetailPage() {
                   )}
                 </div>
               ))}
+              {documents.length === 0 && (
+                <div className="p-4 text-center font-inter text-small text-text-muted">
+                  No documents submitted.
+                </div>
+              )}
             </div>
           </section>
 
@@ -329,7 +361,7 @@ export default function VerificationDetailPage() {
               Verification Checklist
             </h3>
             <div className="space-y-3">
-              {CHECKLIST.map(({ label, done }) => (
+              {checklist.map(({ label, done }) => (
                 <label key={label} className="flex items-center gap-3">
                   <input
                     type="checkbox"
@@ -344,6 +376,11 @@ export default function VerificationDetailPage() {
                   </span>
                 </label>
               ))}
+              {checklist.length === 0 && (
+                <div className="font-inter text-small text-text-muted">
+                  No checklist items.
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -354,7 +391,7 @@ export default function VerificationDetailPage() {
               Audit Timeline
             </h3>
             <div className="space-y-4">
-              {TIMELINE.map(({ label, time, variant, current }) => (
+              {timeline.map(({ label, time, variant, current }) => (
                 <div key={label} className="flex items-start gap-3">
                   <div
                     className={`mt-1.5 w-2 h-2 rounded-full shrink-0 ${variant === "error" ? "bg-error" : current ? "bg-accent-neon" : "bg-text-muted"}`}
@@ -371,6 +408,11 @@ export default function VerificationDetailPage() {
                   </div>
                 </div>
               ))}
+              {timeline.length === 0 && (
+                <div className="font-inter text-small text-text-muted">
+                  No timeline events.
+                </div>
+              )}
             </div>
           </section>
 
@@ -378,7 +420,7 @@ export default function VerificationDetailPage() {
             <h3 className="font-poppins font-semibold text-body text-text-heading mb-4">
               Internal Command Notes
             </h3>
-            <div className="space-y-3 mb-4">
+            <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
               {notes.map((note, i) => (
                 <div key={i} className="p-3 bg-canvas-bg rounded-md">
                   <p className="font-inter font-semibold text-caption text-text-heading mb-0.5">
@@ -391,10 +433,10 @@ export default function VerificationDetailPage() {
               ))}
             </div>
             {noteErrorMsg && (
-              <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 mb-4">
-                <AlertCircle size={16} className="shrink-0" />
-                <span>{noteErrorMsg}</span>
-              </div>
+               <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 mb-4">
+                 <AlertCircle size={16} className="shrink-0" />
+                 <span>{noteErrorMsg}</span>
+               </div>
             )}
             <form onSubmit={handleAddNote} className="flex gap-2">
               <textarea
@@ -428,7 +470,7 @@ export default function VerificationDetailPage() {
           </div>
         )}
         <p className="font-inter text-small text-text-muted mb-3">
-          Sent to Alexander Vance by email and logged against this record.
+          Sent to {name} by email and logged against this record.
         </p>
         <textarea
           value={requestInfoText}

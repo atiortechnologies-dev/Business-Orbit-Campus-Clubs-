@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Leaf,
   CheckCircle,
@@ -29,14 +29,68 @@ const TIMELINE = [
 ];
 
 export default function ReviewOutcomePage() {
-  useDocumentTitle("Review Outcome: EcoLoop — BOCC Admin");
+  useDocumentTitle("Review Outcome — BOCC Admin");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const decision = searchParams.get("decision");
+
   const [published, setPublished] = useState(false);
   const [revisions, setRevisions] = useState([
     { text: "Clarify revenue model for Q4 campus rollout.", done: true },
     { text: "Submit Letters of Intent from 3 campus vendors.", done: false },
   ]);
   const [errorMsg, setErrorMsg] = useState("");
+
+  const [submission, setSubmission] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchDetail = async () => {
+      setLoading(true);
+      setFetchError("");
+      try {
+        const res = await api.get(`/admin/reviews/${id}`);
+        if (res.success) {
+          setSubmission(res.data);
+          if (res.data.revisions) {
+            setRevisions(res.data.revisions);
+          }
+        } else {
+          setFetchError(res.message || "Failed to fetch submission details");
+        }
+      } catch (err) {
+        setFetchError(err.message || "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDetail();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <AdminShell>
+        <div className="p-6">Loading outcome...</div>
+      </AdminShell>
+    );
+  }
+
+  if (fetchError || !submission) {
+    return (
+      <AdminShell>
+        <div className="p-6 text-error">
+          {fetchError || "Submission not found."}
+        </div>
+      </AdminShell>
+    );
+  }
+
+  const startupName = submission.startup_id?.startup_name || "Unknown Startup";
+  const idea = submission.startup_id?.idea || "N/A";
+  const timeline = submission.timeline || TIMELINE;
 
   function toggleRevision(index) {
     setRevisions((prev) =>
@@ -55,10 +109,10 @@ export default function ReviewOutcomePage() {
               </div>
               <div>
                 <h1 className="font-poppins font-semibold text-card text-text-heading">
-                  EcoLoop
+                  {startupName}
                 </h1>
                 <p className="font-inter text-small text-text-muted">
-                  Sustainable Logistics Infrastructure
+                  {idea}
                 </p>
               </div>
             </div>
@@ -120,7 +174,7 @@ export default function ReviewOutcomePage() {
           <p className="font-inter text-small text-text-muted pt-4 border-t border-divider-line">
             Approval unlocks the{" "}
             <strong className="text-text-heading">Traction Stage</strong>.
-            EcoLoop is now eligible for University Seed Funding Phase II.
+            {startupName} is now eligible for University Seed Funding Phase II.
           </p>
         </section>
       </div>
@@ -163,7 +217,7 @@ export default function ReviewOutcomePage() {
               </h3>
             </div>
             <div className="p-6 space-y-6">
-              {TIMELINE.map(({ label, time, current }) => (
+              {timeline.map(({ label, time, current }) => (
                 <div key={label} className="flex items-start gap-4">
                   {current ? (
                     <div className="w-7 h-7 rounded-full bg-brand-black text-white flex items-center justify-center shrink-0">
@@ -203,7 +257,7 @@ export default function ReviewOutcomePage() {
 
             {published ? (
               <div className="p-4 bg-success/10 border border-success/30 rounded-md flex items-center gap-2 text-success font-inter text-small mb-3">
-                <CheckCircle size={16} strokeWidth={2} /> Published — EcoLoop
+                <CheckCircle size={16} strokeWidth={2} /> Published — {startupName}
                 promoted to Traction.
               </div>
             ) : (
@@ -212,8 +266,8 @@ export default function ReviewOutcomePage() {
                 onClick={async () => {
                   try {
                     setErrorMsg("");
-                    await api.post("/applications/decision", {
-                      status: "published",
+                    await api.post(`/admin/reviews/${id}/decision`, {
+                      decision: decision === "approve" ? "approved" : decision === "reject" ? "rejected" : "changes",
                       revisions,
                     });
                     setPublished(true);

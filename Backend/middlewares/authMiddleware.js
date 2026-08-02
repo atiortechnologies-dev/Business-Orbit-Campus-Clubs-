@@ -43,6 +43,15 @@ const protect = asyncHandler(async (req, res, next) => {
     });
   }
 
+  // Check if token version is valid (guards against revoked sessions)
+  if (decoded.token_version !== user.token_version) {
+    console.log("401 Unauthorized: Token version mismatch in protect.");
+    return res.status(401).json({
+      success: false,
+      message: "Not authorized, session has been revoked",
+    });
+  }
+
   req.user = {
     _id: user._id,
     id: user._id.toString(),
@@ -52,6 +61,27 @@ const protect = asyncHandler(async (req, res, next) => {
     account_status: user.account_status,
     email_verified: user.email_verified,
   };
+
+  if (
+    req.originalUrl &&
+    !req.originalUrl.startsWith("/api/onboarding") &&
+    !req.originalUrl.startsWith("/api/auth") &&
+    !req.originalUrl.startsWith("/api/uploads")
+  ) {
+    if (user.account_status === "pending_verification") {
+      return res.status(403).json({
+        success: false,
+        message: "Please verify your email address to access this feature.",
+      });
+    }
+    if (user.account_status === "rejected") {
+      return res.status(403).json({
+        success: false,
+        message: "Your account application has been rejected.",
+      });
+    }
+  }
+
   next();
 });
 
@@ -105,6 +135,14 @@ const verifyRefreshTokenMiddleware = asyncHandler(async (req, res, next) => {
     });
   }
 
+  if (decoded.token_version !== user.token_version) {
+    console.log("401 Unauthorized: Token version mismatch in verifyRefreshTokenMiddleware.");
+    return res.status(401).json({
+      success: false,
+      message: "Refresh token has been revoked",
+    });
+  }
+
   req.user = {
     _id: user._id,
     id: user._id.toString(),
@@ -114,8 +152,36 @@ const verifyRefreshTokenMiddleware = asyncHandler(async (req, res, next) => {
   next();
 });
 
+/**
+ * @desc    Middleware to ensure the user has completed email verification and is active
+ */
+const requireVerified = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ success: false, message: "Not authenticated" });
+  }
+
+  // Block pending verification (unverified email) and rejected accounts.
+  // We allow "pending_approval" for admins to review them, and some read-only access.
+  if (req.user.account_status === "pending_verification") {
+    return res.status(403).json({
+      success: false,
+      message: "Please verify your email address to access this feature.",
+    });
+  }
+
+  if (req.user.account_status === "rejected") {
+    return res.status(403).json({
+      success: false,
+      message: "Your account application has been rejected.",
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   protect,
   requireRole,
+  requireVerified,
   verifyRefreshTokenMiddleware,
 };

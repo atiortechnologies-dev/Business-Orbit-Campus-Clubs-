@@ -5,7 +5,7 @@
  */
 
 const express = require("express");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 const {
   getMyProfile,
   createProfile,
@@ -24,7 +24,7 @@ const {
 const createProfileRouter = (role) => {
   const router = express.Router();
 
-  router.use(protect, requireRole(role));
+  router.use(protect, requireVerified, requireRole(role));
 
   // GET api/{role}/profile ( getProfile )
   router.get("/", getMyProfile);

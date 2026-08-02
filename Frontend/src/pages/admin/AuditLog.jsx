@@ -13,11 +13,8 @@ import DataTable from "@/components/ui/DataTable";
 import Badge from "@/components/ui/Badge";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { downloadCsv } from "@/utils/csv";
-import { useAdminDashboard } from "@/context/AdminDashboardContext";
+import api from "@/api/axiosInstance";
 
-const MODULES = ["All", "Security", "Clubs", "Auth", "System", "Content"];
-
-const USERS = ["All", "j_doe_admin", "s_miller_op", "a_kapoor_sys", "Unknown"];
 const STATUS_VARIANT = {
   Success: "success",
   Rejected: "error",
@@ -27,21 +24,61 @@ const STATUS_VARIANT = {
 export default function AuditLogPage() {
   useDocumentTitle("Audit Log — BOCC Admin");
 
-  const {
-    auditLogs,
-    pulse,
-    volumeTrend,
-    fetchAuditLogs,
-    isLoadingLogs,
-    error,
-  } = useAdminDashboard();
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [pulse, setPulse] = useState([]);
+  const [volumeTrend, setVolumeTrend] = useState([]);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(true);
+  const [error, setError] = useState("");
+
   const activeLogs = auditLogs || [];
   const activeTimeline = pulse || [];
   const activeTrend = volumeTrend || [];
 
+  const fetchAuditLogs = async () => {
+    try {
+      setIsLoadingLogs(true);
+      setError("");
+      
+      const [logsRes, trendRes] = await Promise.all([
+        api.get("/admin/audit-log"),
+        api.get("/admin/audit-log/volume-trend").catch(() => null)
+      ]);
+      
+      if (logsRes?.data?.data?.auditLogs) {
+        const formattedLogs = logsRes.data.data.auditLogs.map(l => ({
+          id: l._id,
+          timestamp: new Date(l.created_at).toLocaleString(),
+          user: l.actor_name || "Unknown",
+          initials: (l.actor_name || "?").substring(0, 2).toUpperCase(),
+          module: l.module || "Unknown",
+          action: l.action,
+          target: l.target_entity_name || "-",
+          status: l.status === "SUCCESS" ? "Success" : l.status === "FAILED" ? "Rejected" : "Pending",
+          ip: l.ip_address,
+          flagged: l.status === "FAILED",
+        }));
+        setAuditLogs(formattedLogs);
+        setPulse(formattedLogs.slice(0, 10).map(l => ({
+          time: l.timestamp,
+          text: `${l.user} performed ${l.action} on ${l.target}`,
+          flagged: l.flagged
+        })));
+      }
+      
+      if (trendRes?.data?.data?.trend) {
+        setVolumeTrend(trendRes.data.data.trend.map(t => t.count));
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Failed to fetch audit logs.");
+    } finally {
+      setIsLoadingLogs(false);
+    }
+  };
+
   useEffect(() => {
     fetchAuditLogs();
-  }, [fetchAuditLogs]);
+  }, []);
 
   const [moduleFilter, setModuleFilter] = useState("All");
   const [userFilter, setUserFilter] = useState("All");
@@ -49,14 +86,17 @@ export default function AuditLogPage() {
   const [dateTo, setDateTo] = useState("");
   const [dateFilterOpen, setDateFilterOpen] = useState(false);
 
+  const MODULES = ["All", ...new Set(activeLogs.map(l => l.module).filter(Boolean))];
+  const USERS = ["All", ...new Set(activeLogs.map(l => l.user).filter(Boolean))];
+
   const filteredLogs = useMemo(() => {
     const baseLogs = auditLogs || [];
     return baseLogs.filter(
       (l) =>
         (moduleFilter === "All" || l.module === moduleFilter) &&
         (userFilter === "All" || l.user === userFilter) &&
-        (!dateFrom || l.date >= dateFrom) &&
-        (!dateTo || l.date <= dateTo),
+        (!dateFrom || l.timestamp >= dateFrom) &&
+        (!dateTo || l.timestamp <= dateTo),
     );
   }, [auditLogs, moduleFilter, userFilter, dateFrom, dateTo]);
 

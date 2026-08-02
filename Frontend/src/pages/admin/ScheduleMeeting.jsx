@@ -8,9 +8,8 @@ import AdminShell from "@/components/admin/AdminShell";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { getMeetingPrepareContext, scheduleMeeting } from "@/api/admin/adminMeetingApi";
+import api from "@/api/axiosInstance";
 
-const REVIEWERS = ["Sarah Jenkins", "Markus Vane", "Elena Rodriguez"];
 const DURATIONS = ["30 minutes", "60 minutes", "90 minutes"];
 
 // Simple static Oct 2024 grid — purely decorative
@@ -29,7 +28,7 @@ export default function ScheduleMeetingPage() {
   const [loadingContext, setLoadingContext] = useState(true);
 
   // Form state
-  const [reviewer, setReviewer] = useState(REVIEWERS[0]);
+  const [reviewerId, setReviewerId] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [_duration, _setDuration] = useState(DURATIONS[1]);
@@ -49,8 +48,11 @@ export default function ScheduleMeetingPage() {
         return;
       }
       try {
-        const res = await getMeetingPrepareContext({ startup_id, submission_id });
+        const res = await api.get("/admin/meetings/prepare", { params: { startupId: startup_id, submissionId: submission_id } });
         setContextData(res.data.data);
+        if (res.data.data?.reviewers?.length > 0) {
+          setReviewerId(res.data.data.reviewers[0].id);
+        }
       } catch (err) {
         console.error("Failed to load context", err);
         setErrorMsg("Failed to load meeting context.");
@@ -73,16 +75,13 @@ export default function ScheduleMeetingPage() {
     setScheduled(false);
 
     try {
-      // Create an ISO 8601 UTC date string
-      const localDate = new Date(`${date}T${time}`);
-      const meeting_date = localDate.toISOString();
-
-      await scheduleMeeting({
-        startup_id: contextData.startup._id,
-        student_id: contextData.student._id,
-        stage_submission_id: submission_id || undefined,
-        meeting_date,
+      await api.post("/admin/meetings/schedule", {
+        startup_id: contextData.startup.id,
+        reviewer_id: reviewerId,
+        meeting_date: date,
+        meeting_time: time,
         agenda,
+        platform: "Google Meet",
         meeting_link: meetingLink,
       });
       
@@ -164,12 +163,12 @@ export default function ScheduleMeetingPage() {
                 </label>
                 <select
                   id="reviewer"
-                  value={reviewer}
-                  onChange={(e) => setReviewer(e.target.value)}
+                  value={reviewerId}
+                  onChange={(e) => setReviewerId(e.target.value)}
                   className="w-full min-h-[44px] rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
                 >
-                  {REVIEWERS.map((r) => (
-                    <option key={r}>{r}</option>
+                  {contextData?.reviewers?.map((r) => (
+                    <option key={r.id} value={r.id}>{r.name} ({r.role})</option>
                   ))}
                 </select>
               </div>

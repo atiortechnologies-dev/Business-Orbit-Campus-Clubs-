@@ -18,7 +18,7 @@ import Badge from "@/components/ui/Badge";
 import StatCard from "@/components/ui/StatCard";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { adminOpportunityApi } from "@/api/admin/adminOpportunityApi";
+import api from "@/api/axiosInstance";
 
 const STATUS_VARIANT = {
   PENDING: "warning",
@@ -72,7 +72,7 @@ export default function OpportunityApprovalQueuePage() {
       if (typeFilter) params.type = typeFilter;
       if (statusFilter) params.status = statusFilter;
       
-      const response = await adminOpportunityApi.getOpportunities(params);
+      const response = await api.get("/admin/opportunities", { params });
       if (response.data?.data) {
         setOpportunities(response.data.data.opportunities || []);
         setMetrics(response.data.data.metricCards || { pending: 0, approved: 0, rejected: 0, drafts: 0 });
@@ -99,11 +99,11 @@ export default function OpportunityApprovalQueuePage() {
   const handleAction = async (id, action) => {
     try {
       if (action === 'approve') {
-        await adminOpportunityApi.approve(id);
+        await api.post(`/admin/opportunities/${id}/approve`);
       } else if (action === 'reject') {
         const reason = window.prompt("Enter rejection reason:");
         if (!reason) return; // Cancelled
-        await adminOpportunityApi.reject(id, { reason });
+        await api.post(`/admin/opportunities/${id}/reject`, { reason });
       }
       // Refresh list after action
       fetchOpportunities();
@@ -117,7 +117,7 @@ export default function OpportunityApprovalQueuePage() {
     const confirm = window.confirm(`Are you sure you want to approve ${selectedIds.length} opportunities?`);
     if (!confirm) return;
     try {
-      await adminOpportunityApi.bulkApprove({ opportunityIds: selectedIds });
+      await api.post("/admin/opportunities/bulk-approve", { opportunityIds: selectedIds });
       setSelectedIds([]);
       fetchOpportunities();
     } catch (err) {

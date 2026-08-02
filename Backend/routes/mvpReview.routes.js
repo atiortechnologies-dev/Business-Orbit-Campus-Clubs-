@@ -15,9 +15,9 @@ const {
   requestMeetingReschedule,
 } = require("../controllers/validation.controller");
 const { getReviewFeedback } = require("../controllers/mvpReview.controller");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 
-router.use(protect, requireRole("student"));
+router.use(protect, requireVerified, requireRole("student"));
 
 router.get("/mvp/meeting", getReviewMeeting);
 router.post("/mvp/reschedule", requestMeetingReschedule);

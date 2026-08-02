@@ -11,11 +11,11 @@ const {
   getVolumeTrend,
   exportLogs,
 } = require("../../controllers/admin/auditLog.controller");
-const { protect, requireRole } = require("../../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../../middlewares/authMiddleware");
 
 const router = express.Router();
 
-router.use(protect);
+router.use(protect, requireVerified);
 router.use(requireRole(["admin", "super_admin"]));
 
 router.get("/", getAuditLogs);

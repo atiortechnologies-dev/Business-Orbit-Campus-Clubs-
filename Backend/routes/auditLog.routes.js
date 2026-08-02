@@ -10,12 +10,12 @@ const {
   getVolumeTrend,
   exportLogs,
 } = require("../controllers/auditLog.controller");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
 // Apply auth middleware to all routes
-router.use(protect);
+router.use(protect, requireVerified);
 
 // Routes accessible by ADMIN or SUPER_ADMIN
 router.get("/", requireRole(["ADMIN", "SUPER_ADMIN"]), getLogs);

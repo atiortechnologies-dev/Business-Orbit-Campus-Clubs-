@@ -3,8 +3,6 @@ import {
   Fingerprint,
   Upload,
   Laptop,
-  Smartphone,
-  Monitor,
   Download,
   Share2,
   DatabaseBackup,
@@ -15,53 +13,19 @@ import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { useAdminDashboard } from "@/context/AdminDashboardContext";
+import api from "@/api/axiosInstance";
 
 const TIMEZONE_OPTIONS = [
   "(GMT-05:00) Eastern Time (US & Canada)",
   "(GMT+00:00) UTC",
 ];
 
-const NOTIFICATION_EVENTS = [
-  "New User Registration",
-  "Startup Submission",
-  "Opportunity Submission",
-  "Support Ticket Created",
-  "Chapter Membership Change",
-  "Global Announcement Sent",
-  "Meeting Scheduled",
-  "Security Alerts",
-];
-
-const LOGIN_ACTIVITY = [
-  {
-    icon: Laptop,
-    device: "Chrome / macOS",
-    meta: "192.168.1.45 · 2 mins ago",
-    current: true,
-  },
-  {
-    icon: Smartphone,
-    device: "Safari / iPhone 13",
-    meta: "172.56.21.90 · 4 hours ago",
-  },
-  {
-    icon: Monitor,
-    device: "Firefox / Windows 11",
-    meta: "88.150.21.12 · Nov 21, 10:45 AM",
-  },
-];
-
 export default function AdminSettingsPage() {
   useDocumentTitle("Settings — BOCC Admin");
 
-  const {
-    settings,
-    updateProfile: submitProfile,
-    updatePlatformSettings,
-    updateNotifications,
-    _isLoadingSettings,
-  } = useAdminDashboard();
+  const [isLoading, setIsLoading] = useState(true);
+  const [settingsData, setSettingsData] = useState(null);
+  const [loginActivity, setLoginActivity] = useState([]);
 
   const [profile, setProfile] = useState({
     fullName: "",
@@ -94,25 +58,45 @@ export default function AdminSettingsPage() {
     "Security Alerts": true,
   });
 
-  useEffect(() => {
-    if (settings) {
-      setProfile((prev) => ({ ...prev, ...settings.profile }));
-      setPlatform((prev) => ({ ...prev, ...settings.platform }));
-      if (settings.notifications) {
-        setNotifyInApp(settings.notifications.inApp ?? true);
-        setNotifyEmail(settings.notifications.email ?? true);
-        if (settings.notifications.events) {
-          setEventToggles((prev) => ({
-            ...prev,
-            ...settings.notifications.events,
-          }));
-        }
-      }
-    }
-  }, [settings]);
-
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState(null);
+
+  const fetchSettings = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const [settingsRes, loginHistoryRes] = await Promise.all([
+        api.get("/admin/settings"),
+        api.get("/admin/settings/login-history").catch(() => null)
+      ]);
+
+      const data = settingsRes.data.data;
+      setSettingsData(data);
+      
+      if (data?.profile) setProfile(prev => ({ ...prev, ...data.profile }));
+      if (data?.platform) setPlatform(prev => ({ ...prev, ...data.platform }));
+      
+      if (data?.notifications) {
+        setNotifyInApp(data.notifications.inApp ?? true);
+        setNotifyEmail(data.notifications.email ?? true);
+        if (data.notifications.events) {
+          setEventToggles(prev => ({ ...prev, ...data.notifications.events }));
+        }
+      }
+
+      if (loginHistoryRes?.data?.data) {
+        setLoginActivity(loginHistoryRes.data.data);
+      }
+    } catch (_err) {
+      setError("Failed to load settings.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
 
   const updateProfile = (field) => (e) =>
     setProfile((prev) => ({ ...prev, [field]: e.target.value }));
@@ -125,9 +109,9 @@ export default function AdminSettingsPage() {
     setError(null);
     try {
       await Promise.all([
-        submitProfile(profile),
-        updatePlatformSettings(platform),
-        updateNotifications({
+        api.put("/admin/settings/profile", profile),
+        api.put("/admin/settings/platform", platform),
+        api.put("/admin/settings/notifications", {
           inApp: notifyInApp,
           email: notifyEmail,
           events: eventToggles,
@@ -141,17 +125,14 @@ export default function AdminSettingsPage() {
   };
 
   const handleCancel = () => {
-    if (settings) {
-      setProfile((prev) => ({ ...prev, ...settings.profile }));
-      setPlatform((prev) => ({ ...prev, ...settings.platform }));
-      if (settings.notifications) {
-        setNotifyInApp(settings.notifications.inApp ?? true);
-        setNotifyEmail(settings.notifications.email ?? true);
-        if (settings.notifications.events) {
-          setEventToggles((prev) => ({
-            ...prev,
-            ...settings.notifications.events,
-          }));
+    if (settingsData) {
+      if (settingsData.profile) setProfile(prev => ({ ...prev, ...settingsData.profile }));
+      if (settingsData.platform) setPlatform(prev => ({ ...prev, ...settingsData.platform }));
+      if (settingsData.notifications) {
+        setNotifyInApp(settingsData.notifications.inApp ?? true);
+        setNotifyEmail(settingsData.notifications.email ?? true);
+        if (settingsData.notifications.events) {
+          setEventToggles(prev => ({ ...prev, ...settingsData.notifications.events }));
         }
       }
     }
@@ -172,6 +153,9 @@ export default function AdminSettingsPage() {
         </p>
       </div>
 
+      {isLoading ? (
+        <div className="p-8 text-center text-text-muted">Loading settings...</div>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 space-y-6">
           <section className="bg-surface-white border border-border-subtle rounded-lg p-8 relative overflow-hidden">
@@ -401,7 +385,7 @@ export default function AdminSettingsPage() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
-              {NOTIFICATION_EVENTS.map((event) => (
+              {Object.keys(eventToggles).map((event) => (
                 <div
                   key={event}
                   className="flex items-center justify-between py-2 border-b border-divider-line last:border-0"
@@ -526,22 +510,24 @@ export default function AdminSettingsPage() {
               Recent Login Activity
             </h4>
             <div className="space-y-4">
-              {LOGIN_ACTIVITY.map(({ icon: Icon, device, meta, current }) => (
-                <div key={device} className="flex items-start gap-3">
-                  <Icon
+              {loginActivity.length === 0 ? (
+                <p className="font-inter text-small text-text-muted">No recent activity.</p>
+              ) : loginActivity.map((activity, idx) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <Laptop
                     size={18}
                     strokeWidth={2}
                     className="text-text-muted shrink-0 mt-0.5"
                   />
                   <div className="flex-1">
                     <p className="font-inter font-semibold text-small text-text-heading">
-                      {device}
+                      {activity.device || "Unknown Device"}
                     </p>
                     <p className="font-inter text-caption text-text-muted">
-                      {meta}
+                      {activity.ip_address} · {new Date(activity.created_at).toLocaleString()}
                     </p>
                   </div>
-                  {current && (
+                  {idx === 0 && (
                     <span className="text-[10px] uppercase bg-brand-black text-white px-1.5 py-0.5 rounded-full shrink-0">
                       Current
                     </span>
@@ -575,6 +561,7 @@ export default function AdminSettingsPage() {
           </section>
         </div>
       </div>
+      )}
 
       <div className="sticky bottom-0 bg-canvas-bg/95 backdrop-blur-sm border-t border-divider-line py-4 mt-8 flex items-center justify-end gap-4">
         {error && (

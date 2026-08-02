@@ -16,12 +16,12 @@ const {
   changePassword,
   downloadSystemLogs,
 } = require("../../controllers/admin/settings.controller");
-const { protect, requireRole } = require("../../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../../middlewares/authMiddleware");
 const s3ImageUpload = require("../../middlewares/s3Upload.middleware");
 
 const router = express.Router();
 
-router.use(protect);
+router.use(protect, requireVerified);
 
 router.get("/", requireRole(["admin", "super_admin"]), getSettings);
 router.put(

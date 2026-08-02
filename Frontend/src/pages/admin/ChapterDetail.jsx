@@ -23,7 +23,7 @@ import StatCard from "@/components/ui/StatCard";
 import ComingSoon from "@/components/ui/ComingSoon";
 import PlaceholderGraphic from "@/components/ui/PlaceholderGraphic";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { adminChapterDetailApi } from "@/api/admin/adminApi";
+import api from "@/api/axiosInstance";
 import Modal from "@/components/ui/Modal";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
@@ -49,39 +49,57 @@ const ACTIVITY = [
   },
 ];
 
-
-const TABS = ["Overview", "Students", "Startups", "Events"];
-
 export default function ChapterDetailPage() {
   useDocumentTitle("Chapter Detail — BOCC Admin");
   const { id } = useParams();
+  
+  const [tabs, setTabs] = useState(["Overview"]);
   const [activeTab, setActiveTab] = useState("Overview");
   
   const [chapterData, setChapterData] = useState(null);
   const [studentsData, setStudentsData] = useState([]);
   const [startupsData, setStartupsData] = useState([]);
   const [eventsData, setEventsData] = useState([]);
+  
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [leadUserId, setLeadUserId] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
+        setError(null);
         if (activeTab === "Overview" && !chapterData) {
-          const res = await adminChapterDetailApi.getOverview(id);
+          const res = await api.get(`/admin/chapters/${id}/overview`);
           setChapterData(res.data.data);
+          
+          const availableTabs = ["Overview"];
+          if (res.data.data?.metrics?.total_students > 0) availableTabs.push("Students");
+          else availableTabs.push("Students"); // Keeping it visible for now to match UI, but could be dynamic
+          if (res.data.data?.metrics?.active_startups > 0) availableTabs.push("Startups");
+          else availableTabs.push("Startups");
+          if (res.data.data?.metrics?.upcoming_events !== undefined) availableTabs.push("Events");
+          else availableTabs.push("Events");
+          
+          setTabs(["Overview", "Students", "Startups", "Events"]);
         } else if (activeTab === "Students" && studentsData.length === 0) {
-          const res = await adminChapterDetailApi.getStudents(id);
+          const res = await api.get(`/admin/chapters/${id}/students`);
           setStudentsData(res.data.data || []);
         } else if (activeTab === "Startups" && startupsData.length === 0) {
-          const res = await adminChapterDetailApi.getStartups(id);
+          const res = await api.get(`/admin/chapters/${id}/startups`);
           setStartupsData(res.data.data || []);
         } else if (activeTab === "Events" && eventsData.length === 0) {
-          const res = await adminChapterDetailApi.getEvents(id);
+          const res = await api.get(`/admin/chapters/${id}/events`);
           setEventsData(res.data.data || []);
         }
-      } catch (error) {
-        console.error("Failed to fetch data", error);
+      } catch (err) {
+        console.error("Failed to fetch data", err);
+        setError("Failed to load data.");
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -89,10 +107,10 @@ export default function ChapterDetailPage() {
 
   const handleAssignLead = async () => {
     try {
-      await adminChapterDetailApi.assignLead(id, { chapter_lead_id: leadUserId });
+      await api.put(`/admin/chapters/${id}/assign-lead`, { chapter_lead_id: leadUserId });
       setAssignModalOpen(false);
       setLeadUserId("");
-      const res = await adminChapterDetailApi.getOverview(id);
+      const res = await api.get(`/admin/chapters/${id}/overview`);
       setChapterData(res.data.data);
     } catch (error) {
       console.error("Failed to assign lead", error);
@@ -245,6 +263,15 @@ export default function ChapterDetailPage() {
         <span className="text-text-heading font-semibold">{chapter.chapter_name || "Unknown Chapter"}</span>
       </nav>
 
+      {error && (
+        <div className="mb-6 p-4 rounded-lg border border-error/30 bg-error/15 text-error font-inter text-small">
+          {error}
+        </div>
+      )}
+
+      {isLoading && !chapterData ? (
+        <div className="p-8 text-center text-text-muted">Loading chapter details...</div>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: chapter profile */}
         <div className="lg:col-span-3">
@@ -313,7 +340,7 @@ export default function ChapterDetailPage() {
         {/* Center: tabbed content */}
         <div className="lg:col-span-6 space-y-6">
           <div className="border-b border-divider-line flex gap-8">
-            {TABS.map((tab) => (
+            {tabs.map((tab) => (
               <button
                 key={tab}
                 type="button"
@@ -543,6 +570,7 @@ export default function ChapterDetailPage() {
           />
         </div>
       </div>
+      )}
       <Modal isOpen={assignModalOpen} onClose={() => setAssignModalOpen(false)} title="Assign Chapter Lead">
         <div className="space-y-4">
           <Input 

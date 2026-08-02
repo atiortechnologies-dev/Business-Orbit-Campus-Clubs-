@@ -16,7 +16,7 @@ import StatCard from "@/components/ui/StatCard";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { downloadCsv } from "@/utils/csv";
-import { getReviewQueue } from "@/api/admin/adminStartupReviewApi";
+import api from "@/api/axiosInstance";
 
 
 
@@ -28,16 +28,22 @@ export default function ReviewQueuePage() {
   const navigate = useNavigate();
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   useEffect(() => {
     const fetchQueue = async () => {
+      setLoading(true);
+      setErrorMsg("");
       try {
-        const res = await getReviewQueue();
-        if (res.data?.success) {
-          setSubmissions(res.data.data);
+        const res = await api.get("/admin/reviews");
+        if (res.success) {
+          setSubmissions(res.data);
+        } else {
+          setErrorMsg(res.message || "Failed to fetch review queue");
         }
       } catch (err) {
         console.error("Failed to fetch review queue", err);
+        setErrorMsg(err.message || "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -176,12 +182,18 @@ export default function ReviewQueuePage() {
         />
       </div>
 
-      <DataTable
-        columns={columns}
-        rows={submissions}
-        onRowClick={(row) => navigate(`/admin/reviews/detail?id=${row.id}`)}
-        emptyMessage={loading ? "Loading submissions..." : "No submissions in the queue."}
-      />
+      {errorMsg ? (
+        <div className="text-error bg-error/10 p-4 rounded-md mb-4 border border-error/20">
+          {errorMsg}
+        </div>
+      ) : (
+        <DataTable
+          columns={columns}
+          rows={submissions}
+          onRowClick={(row) => navigate(`/admin/reviews/detail?id=${row.id}`)}
+          emptyMessage={loading ? "Loading submissions..." : "No submissions in the queue."}
+        />
+      )}
       <div className="flex justify-between items-center mt-4">
         <span className="font-inter text-small text-text-muted">
           Showing 1-{submissions.length} of {submissions.length} submissions

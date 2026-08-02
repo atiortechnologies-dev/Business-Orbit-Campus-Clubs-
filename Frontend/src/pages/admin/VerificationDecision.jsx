@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ChevronRight,
   CheckCircle,
@@ -8,6 +8,7 @@ import {
   Send,
   CheckSquare,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import Badge from "@/components/ui/Badge";
@@ -16,47 +17,46 @@ import Button from "@/components/ui/Button";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import api from "@/api/axiosInstance";
 
-const CHECKLIST = [
-  "Identity Verification",
-  "Address Proof",
-  "Background Check",
-  "Email Domain",
-  "Phone Authenticity",
-  "KYC/AML Screen",
-];
-
-const REJECT_REASONS = [
-  "Fraudulent Identity",
-  "Unverifiable Details",
-  "Policy Violation",
-];
-const REQUEST_DOCS = [
-  "Updated Proof of Address",
-  "Professional License Certification",
-  "Tax Identification Document",
-];
-
 export default function VerificationDecisionPage() {
-  useDocumentTitle("User Review: #USR-88219 — BOCC Admin");
+  const { id } = useParams();
+  useDocumentTitle(`User Review: ${id || "Loading"} — BOCC Admin`);
   const _navigate = useNavigate();
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [userData, setUserData] = useState(null);
 
   const [openModal, setOpenModal] = useState(null); // 'approve' | 'reject' | 'request' | null
   const [decision, setDecision] = useState(null); // 'approved' | 'rejected' | null
-  const [rejectReason, setRejectReason] = useState(REJECT_REASONS[0]);
+  const [rejectReason, setRejectReason] = useState("");
   const [requestedDocs, setRequestedDocs] = useState([]);
   const [requestMessage, setRequestMessage] = useState("");
-  const [notes, setNotes] = useState([
-    {
-      author: "System Automator",
-      text: "Geolocation check completed automatically — cleared.",
-    },
-    {
-      author: "Admin Unit-04",
-      text: "Trust score recalculated after manual document review.",
-    },
-  ]);
+  const [notes, setNotes] = useState([]);
   const [draft, setDraft] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await api.get(`/admin/users/verification/${id}`);
+        setUserData(res.data);
+        setNotes(res.data.notes || []);
+        if (res.data.rejectReasons?.length > 0) {
+          setRejectReason(res.data.rejectReasons[0]);
+        } else {
+          setRejectReason("Fraudulent Identity"); // Fallback default
+        }
+      } catch (err) {
+        console.error("Failed to fetch user verification details:", err);
+        setError(err?.response?.data?.message || err?.message || "Failed to load user details.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    if (id) fetchData();
+  }, [id]);
 
   function handleAddNote(e) {
     e.preventDefault();
@@ -64,7 +64,7 @@ export default function VerificationDecisionPage() {
 
     setErrorMsg("");
     api
-      .post("/notes", { entityId: "USR-88219", text: draft.trim() })
+      .post(`/admin/users/verification/${id}/notes`, { text: draft.trim() })
       .then(() => {
         setNotes((prev) => [
           ...prev,
@@ -85,8 +85,7 @@ export default function VerificationDecisionPage() {
   async function confirmApprove() {
     try {
       setErrorMsg("");
-      await api.post("/verification/decision", {
-        userId: "USR-88219",
+      await api.post(`/admin/users/verification/${id}/decision`, {
         decision: "approved",
       });
       setDecision("approved");
@@ -102,8 +101,7 @@ export default function VerificationDecisionPage() {
   async function confirmReject() {
     try {
       setErrorMsg("");
-      await api.post("/verification/decision", {
-        userId: "USR-88219",
+      await api.post(`/admin/users/verification/${id}/decision`, {
         decision: "rejected",
         reason: rejectReason,
       });
@@ -120,8 +118,7 @@ export default function VerificationDecisionPage() {
   async function confirmRequestDocs() {
     try {
       setErrorMsg("");
-      await api.post("/verification/decision", {
-        userId: "USR-88219",
+      await api.post(`/admin/users/verification/${id}/decision`, {
         decision: "request_docs",
         docs: requestedDocs,
         message: requestMessage,
@@ -140,6 +137,43 @@ export default function VerificationDecisionPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <AdminShell>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="animate-spin text-text-muted" size={32} />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminShell>
+        <div className="mb-6 p-4 rounded-lg border border-error/30 bg-error/15 text-error font-inter text-small flex items-center gap-2">
+          <AlertCircle size={16} className="shrink-0" />
+          <span>{error}</span>
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (!userData) return null;
+
+  const {
+    name = "Unknown User",
+    initials = "??",
+    role = "Unknown Role",
+    email = "N/A",
+    userId = id,
+    appliedOn = "Unknown",
+    trustScore = "0/100",
+    riskFactors = [],
+    checklist = [],
+    rejectReasons = ["Fraudulent Identity", "Unverifiable Details", "Policy Violation"],
+    requestDocsList = ["Updated Proof of Address", "Professional License Certification", "Tax Identification Document"]
+  } = userData;
+
   return (
     <AdminShell>
       <nav className="mb-2 flex items-center gap-2 text-text-muted font-inter text-small">
@@ -151,7 +185,7 @@ export default function VerificationDecisionPage() {
         </Link>
         <ChevronRight size={14} strokeWidth={2} />
         <span className="text-text-heading font-semibold">
-          User Review: #USR-88219
+          User Review: #{userId}
         </span>
       </nav>
 
@@ -206,20 +240,20 @@ export default function VerificationDecisionPage() {
           <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-text-heading text-lg select-none shrink-0">
-                ES
+                {initials}
               </div>
               <div>
                 <h2 className="font-poppins font-semibold text-card text-text-heading">
-                  Elena Sokolov
+                  {name}
                 </h2>
                 <p className="font-inter text-small text-text-muted">
-                  Independent Contractor
+                  {role}
                 </p>
                 <p className="font-inter text-caption text-text-muted mt-1">
-                  User ID: 88219-EL · e.sokolov@provider.net
+                  User ID: {userId} · {email}
                 </p>
                 <p className="font-inter text-caption text-text-muted">
-                  Applied On: Oct 24, 2024
+                  Applied On: {appliedOn}
                 </p>
               </div>
             </div>
@@ -227,7 +261,7 @@ export default function VerificationDecisionPage() {
               <p className="font-inter text-caption text-text-muted uppercase mb-1">
                 Trust Score
               </p>
-              <Badge variant="success">98/100</Badge>
+              <Badge variant="success">{trustScore}</Badge>
             </div>
           </section>
 
@@ -236,32 +270,41 @@ export default function VerificationDecisionPage() {
               Risk Factors
             </h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Globe
-                  size={18}
-                  strokeWidth={2}
-                  className="text-text-muted shrink-0"
-                />
-                <span className="flex-1 font-inter text-small text-text-body">
-                  Geolocation mismatch (VPN detected)
-                </span>
-                <span className="flex items-center gap-1 text-success font-inter text-caption font-semibold">
-                  <CheckCircle size={14} strokeWidth={2} /> Cleared
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <History
-                  size={18}
-                  strokeWidth={2}
-                  className="text-text-muted shrink-0"
-                />
-                <span className="flex-1 font-inter text-small text-text-muted">
-                  Previous application history
-                </span>
-                <span className="font-inter text-caption text-text-muted">
-                  None
-                </span>
-              </div>
+              {riskFactors.length > 0 ? riskFactors.map((factor, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  {factor.icon === 'Globe' ? (
+                    <Globe
+                      size={18}
+                      strokeWidth={2}
+                      className="text-text-muted shrink-0"
+                    />
+                  ) : factor.icon === 'History' ? (
+                    <History
+                      size={18}
+                      strokeWidth={2}
+                      className="text-text-muted shrink-0"
+                    />
+                  ) : (
+                    <AlertCircle size={18} strokeWidth={2} className="text-text-muted shrink-0" />
+                  )}
+                  <span className="flex-1 font-inter text-small text-text-body">
+                    {factor.label}
+                  </span>
+                  {factor.cleared ? (
+                    <span className="flex items-center gap-1 text-success font-inter text-caption font-semibold">
+                      <CheckCircle size={14} strokeWidth={2} /> Cleared
+                    </span>
+                  ) : (
+                    <span className="font-inter text-caption text-text-muted">
+                      {factor.status || "Pending"}
+                    </span>
+                  )}
+                </div>
+              )) : (
+                 <div className="font-inter text-small text-text-muted">
+                    No risk factors identified.
+                 </div>
+              )}
             </div>
           </section>
 
@@ -270,21 +313,28 @@ export default function VerificationDecisionPage() {
               <h3 className="font-poppins font-semibold text-body text-text-heading">
                 Verification Checklist
               </h3>
-              <Badge variant="success">6/6 Completed</Badge>
+              <Badge variant="success">
+                {checklist.filter(c => c.done).length}/{checklist.length} Completed
+              </Badge>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {CHECKLIST.map((label) => (
-                <div key={label} className="flex items-center gap-2">
+              {checklist.map((item) => (
+                <div key={item.label} className="flex items-center gap-2">
                   <CheckSquare
                     size={18}
                     strokeWidth={2}
-                    className="text-success shrink-0"
+                    className={`${item.done ? "text-success" : "text-text-muted"} shrink-0`}
                   />
                   <span className="font-inter text-small text-text-body">
-                    {label}
+                    {item.label}
                   </span>
                 </div>
               ))}
+              {checklist.length === 0 && (
+                <div className="font-inter text-small text-text-muted">
+                  No checklist items available.
+                </div>
+              )}
             </div>
           </section>
         </div>
@@ -326,14 +376,13 @@ export default function VerificationDecisionPage() {
         </div>
       </div>
 
-      {/* ── Modals ─────────────────────────────────────────────────── */}
       <Modal
         isOpen={openModal === "approve"}
         onClose={() => setOpenModal(null)}
         title="Approve User Access?"
       >
         <p className="font-inter text-small text-text-body mb-6">
-          Elena Sokolov will gain full verified access to the platform. This
+          {name} will gain full verified access to the platform. This
           action is logged in the audit trail.
         </p>
         <div className="flex justify-end gap-2">
@@ -357,7 +406,7 @@ export default function VerificationDecisionPage() {
       >
         <fieldset className="space-y-2 mb-6">
           <legend className="sr-only">Rejection reason</legend>
-          {REJECT_REASONS.map((reason) => (
+          {rejectReasons.map((reason) => (
             <label
               key={reason}
               className="flex items-center gap-2 font-inter text-small text-text-body cursor-pointer"
@@ -397,7 +446,7 @@ export default function VerificationDecisionPage() {
         title="Request Additional Documents"
       >
         <div className="space-y-2 mb-4">
-          {REQUEST_DOCS.map((doc) => (
+          {requestDocsList.map((doc) => (
             <label
               key={doc}
               className="flex items-center gap-2 font-inter text-small text-text-body cursor-pointer"

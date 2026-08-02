@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { requireRole, protect } = require("../middlewares/authMiddleware");
+const { requireRole, protect, requireVerified } = require("../middlewares/authMiddleware");
 const tractionController = require("../controllers/traction.controller");
 const { validateRequest } = require("../middlewares/validateRequest");
 const {
@@ -13,7 +13,7 @@ const {
 } = require("../utils/validators");
 
 // All validation requires student role and authentication
-router.use(protect, requireRole("student"));
+router.use(protect, requireVerified, requireRole("student"));
 
 // SCREEN 1: INITIALIZATION
 

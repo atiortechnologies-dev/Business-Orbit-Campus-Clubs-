@@ -5,7 +5,7 @@
  */
 
 const express = require("express");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 const {
   getFaqsAdmin,
   createFaq,
@@ -39,7 +39,7 @@ const {
 const router = express.Router();
 
 // Apply JWT authentication and role-based access control
-router.use(protect);
+router.use(protect, requireVerified);
 router.use(requireRole(["admin", "super_admin"]));
 
 // FAQ Routes

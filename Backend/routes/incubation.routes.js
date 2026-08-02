@@ -1,6 +1,6 @@
 const express = require("express");
 const { validateRequest } = require("../middlewares/validateRequest");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 const router = express.Router();
 const incubationController = require("../controllers/incubation.controller");
 const {
@@ -8,7 +8,7 @@ const {
   updateIncubationSchema,
 } = require("../utils/validators");
 
-router.use(protect, requireRole("student"));
+router.use(protect, requireVerified, requireRole("student"));
 
 // SCREEN 1: INCUBATION VERIFICATION SUBMISSION
 router.post(

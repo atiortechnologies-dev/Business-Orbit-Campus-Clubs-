@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronRight, Lock, Send, FileText, AlertCircle } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import Badge from "@/components/ui/Badge";
@@ -28,15 +28,44 @@ const DECISIONS = [
 ];
 
 export default function ReviewWorkspacePage() {
-  useDocumentTitle("Evaluation Workspace: NeuralStream AI — BOCC Admin");
+  useDocumentTitle("Evaluation Workspace — BOCC Admin");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
 
-  const [checklist, setChecklist] = useState(INITIAL_CHECKLIST);
-  const [metrics, setMetrics] = useState(INITIAL_METRICS);
+  const [checklist, setChecklist] = useState([]);
+  const [metrics, setMetrics] = useState([]);
   const [decision, setDecision] = useState(null);
   const [strengths, setStrengths] = useState("");
   const [draftSaved, setDraftSaved] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  
+  const [submission, setSubmission] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchDetail = async () => {
+      setLoading(true);
+      setFetchError("");
+      try {
+        const res = await api.get(`/admin/reviews/${id}`);
+        if (res.success) {
+          setSubmission(res.data);
+          setChecklist(res.data.checklist || INITIAL_CHECKLIST);
+          setMetrics(res.data.metrics || INITIAL_METRICS);
+        } else {
+          setFetchError(res.message || "Failed to fetch submission details");
+        }
+      } catch (err) {
+        setFetchError(err.message || "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDetail();
+  }, [id]);
 
   const completedCount = checklist.filter((c) => c.done).length;
   const consensus = useMemo(
@@ -64,13 +93,14 @@ export default function ReviewWorkspacePage() {
   async function handleSaveDraft() {
     if (!canSaveDraft) return;
     try {
-      // In a real app we would use the specific submission ID from useParams()
-      await api.post("/applications/draft", {
-        checklist,
-        metrics,
-        strengths,
-        reviewStage: "seed",
-      });
+      if (id) {
+        await api.post(`/admin/reviews/${id}/draft`, {
+          checklist,
+          metrics,
+          strengths,
+          reviewStage: "seed",
+        });
+      }
       setDraftSaved(true);
       setErrorMsg("");
       setTimeout(() => setDraftSaved(false), 2000);
@@ -81,6 +111,26 @@ export default function ReviewWorkspacePage() {
       );
     }
   }
+
+  if (loading) {
+    return (
+      <AdminShell>
+        <div className="p-6">Loading workspace...</div>
+      </AdminShell>
+    );
+  }
+
+  if (fetchError || !submission) {
+    return (
+      <AdminShell>
+        <div className="p-6 text-error">
+          {fetchError || "Submission not found."}
+        </div>
+      </AdminShell>
+    );
+  }
+
+  const startupName = submission.startup_id?.startup_name || "Unknown Startup";
 
   return (
     <AdminShell>
@@ -95,7 +145,7 @@ export default function ReviewWorkspacePage() {
         <span>Active Queue</span>
         <ChevronRight size={14} strokeWidth={2} />
         <span className="text-text-heading font-semibold">
-          Evaluation Workspace: NeuralStream AI
+          Evaluation Workspace: {startupName}
         </span>
       </nav>
 
@@ -105,7 +155,7 @@ export default function ReviewWorkspacePage() {
             Evaluation Workspace
           </h1>
           <p className="font-inter text-body text-text-body mt-1">
-            Reviewing NeuralStream AI for Seed Stage Funding Approval.
+            Reviewing {startupName} for Stage Approval.
           </p>
         </div>
         <Badge variant="error">Priority Review</Badge>
@@ -294,7 +344,7 @@ export default function ReviewWorkspacePage() {
           <button
             type="button"
             disabled={!decision}
-            onClick={() => navigate("/admin/reviews/outcome")}
+            onClick={() => navigate(`/admin/reviews/outcome?id=${id}&decision=${decision}`)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-poppins font-semibold text-small transition-all ${
               decision
                 ? "bg-action-bg text-action-text hover:opacity-90 active:scale-[0.98]"

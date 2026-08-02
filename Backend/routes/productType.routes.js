@@ -6,10 +6,10 @@ const {
   selectProductType,
   getProductType,
 } = require("../controllers/productType.controller");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 const { validateRequest } = require("../middlewares/validateRequest");
 
-router.use(protect, requireRole("student"));
+router.use(protect, requireVerified, requireRole("student"));
 
 router.post(
   "/startup/product-type",

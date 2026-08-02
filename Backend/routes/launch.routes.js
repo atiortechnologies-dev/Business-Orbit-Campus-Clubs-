@@ -1,5 +1,5 @@
 const express = require("express");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 const router = express.Router();
 const launchController = require("../controllers/launch.controller");
 const { validateRequest } = require("../middlewares/validateRequest");
@@ -9,7 +9,7 @@ const {
   saveLaunchInsightsSchema,
 } = require("../utils/validators");
 
-router.use(protect, requireRole("student"));
+router.use(protect, requireVerified, requireRole("student"));
 
 // SCREEN 1: LAUNCH OVERVIEW
 

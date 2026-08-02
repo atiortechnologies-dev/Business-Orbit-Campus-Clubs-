@@ -13,15 +13,7 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { adminOpportunityApi } from "@/api/admin/adminOpportunityApi";
-
-const REQUIRED_SKILLS = ["PyTorch", "CUDA", "C++", "Triton"];
-const RESPONSIBILITIES = [
-  "Architect and maintain high-throughput data pipelines for real-time inference.",
-  "Collaborate with hardware teams to optimize kernel performance on custom silicon.",
-  "Implement model quantization and pruning techniques for LLMs.",
-  "Establish benchmarking protocols for latency and power consumption.",
-];
+import api from "@/api/axiosInstance";
 const CHANGE_REASONS = [
   "Missing compensation details",
   "Ambiguous eligibility criteria",
@@ -49,7 +41,7 @@ export default function OpportunityReviewPage() {
       setLoading(false);
       return;
     }
-    adminOpportunityApi.getOpportunityDetails(id)
+    api.get(`/admin/opportunities/${id}`)
       .then(res => {
         setOpportunity(res.data?.data?.opportunity || res.data?.data || res.data);
         setLoading(false);
@@ -66,15 +58,15 @@ export default function OpportunityReviewPage() {
       setErrorMsg("");
 
       if (openModal === "approve") {
-        await adminOpportunityApi.approve(id);
+        await api.post(`/admin/opportunities/${id}/approve`);
       } else if (openModal === "reject") {
         if (!rejectReason) {
           setErrorMsg("Reject reason is required.");
           return;
         }
-        await adminOpportunityApi.reject(id, { reason: rejectReason });
+        await api.post(`/admin/opportunities/${id}/reject`, { reason: rejectReason });
       } else if (openModal === "changes") {
-        await adminOpportunityApi.requestChanges(id, { reason: changeReason, reviewerNotes: notes });
+        await api.post(`/admin/opportunities/${id}/request-changes`, { reason: changeReason, reviewerNotes: notes });
       }
 
       setOpenModal(null);
@@ -194,11 +186,23 @@ export default function OpportunityReviewPage() {
                 <h4 className="font-poppins font-semibold text-body text-text-heading mb-2">
                   Responsibilities
                 </h4>
-                <ul className="list-disc pl-5 space-y-1.5 font-inter text-small text-text-body">
-                  {RESPONSIBILITIES.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
+                {Array.isArray(opportunity?.responsibilities) ? (
+                  <ul className="list-disc pl-5 space-y-1.5 font-inter text-small text-text-body">
+                    {opportunity.responsibilities.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : Array.isArray(opportunity?.requirements) ? (
+                  <ul className="list-disc pl-5 space-y-1.5 font-inter text-small text-text-body">
+                    {opportunity.requirements.map((item, idx) => (
+                      <li key={idx}>{item}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="font-inter text-small text-text-body">
+                    {opportunity?.responsibilities || opportunity?.requirements || "No responsibilities listed."}
+                  </p>
+                )}
               </section>
               <div className="grid grid-cols-2 gap-6 pt-6 border-t border-divider-line">
                 <div>
@@ -206,14 +210,17 @@ export default function OpportunityReviewPage() {
                     Required Skills
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {REQUIRED_SKILLS.map((skill) => (
+                    {(opportunity?.skills_required || opportunity?.skills || []).map((skill, idx) => (
                       <span
-                        key={skill}
+                        key={idx}
                         className="border border-border-subtle px-2 py-1 rounded font-inter text-caption text-text-body"
                       >
                         {skill}
                       </span>
                     ))}
+                    {!(opportunity?.skills_required?.length > 0 || opportunity?.skills?.length > 0) && (
+                      <span className="text-text-muted italic">No skills listed</span>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -221,7 +228,7 @@ export default function OpportunityReviewPage() {
                     Eligibility
                   </p>
                   <p className="font-inter text-small text-text-body">
-                    Masters/PhD in CS or Math, 5+ yrs exp.
+                    {opportunity?.eligibility || opportunity?.qualifications || "Not specified."}
                   </p>
                 </div>
               </div>
@@ -231,7 +238,7 @@ export default function OpportunityReviewPage() {
                     Duration
                   </p>
                   <p className="font-inter text-small text-text-heading">
-                    Permanent
+                    {opportunity?.duration || "Not specified"}
                   </p>
                 </div>
                 <div>
@@ -239,7 +246,7 @@ export default function OpportunityReviewPage() {
                     Compensation
                   </p>
                   <p className="font-inter text-small text-text-heading">
-                    $180k – $240k + Equity
+                    {opportunity?.salary_range || opportunity?.stipend || opportunity?.compensation || "Not specified"}
                   </p>
                 </div>
                 <div>
@@ -247,7 +254,7 @@ export default function OpportunityReviewPage() {
                     Deadline
                   </p>
                   <p className="font-inter font-semibold text-small text-text-heading">
-                    Oct 15, 2024
+                    {opportunity?.deadline ? new Date(opportunity.deadline).toLocaleDateString() : "Not specified"}
                   </p>
                 </div>
               </div>
@@ -338,13 +345,12 @@ export default function OpportunityReviewPage() {
                 onClick={() => {
                   if (notes.trim()) {
                     setErrorMsg("");
-                    adminOpportunityApi
-                      .addNote(id, { note: notes })
+                    api.post(`/admin/opportunities/${id}/notes`, { note: notes })
                       .then(() => {
                         setNoteSaved(true);
                         setNotes("");
                         setTimeout(() => setNoteSaved(false), 2000);
-                        adminOpportunityApi.getOpportunityDetails(id).then(res => {
+                        api.get(`/admin/opportunities/${id}`).then(res => {
                            setOpportunity(res.data?.data?.opportunity || res.data?.data || res.data);
                         });
                       })

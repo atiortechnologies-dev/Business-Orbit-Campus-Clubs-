@@ -80,6 +80,10 @@ const userSchema = new mongoose.Schema(
       type: Date,
       select: false,
     },
+    token_version: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" },

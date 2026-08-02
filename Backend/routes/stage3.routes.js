@@ -8,7 +8,7 @@ const {
   getMVPStageOverview,
   getMVPChecklist,
 } = require("../controllers/stage3Overview.controller");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 /**
  * @desc    Stage 3 MVP routing module
  * @route   /api/stage3
@@ -16,7 +16,7 @@ const { protect, requireRole } = require("../middlewares/authMiddleware");
  */
 const router = express.Router();
 
-router.use(protect, requireRole("student"));
+router.use(protect, requireVerified, requireRole("student"));
 
 router.get("/stages/mvp", getMVPStageOverview);
 router.get("/stages/mvp/checklist", getMVPChecklist);

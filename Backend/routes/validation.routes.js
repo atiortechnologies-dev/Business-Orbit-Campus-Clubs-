@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { protect, requireRole, requireVerified } = require("../middlewares/authMiddleware");
 const validationController = require("../controllers/validation.controller");
 const { validateRequest } = require("../middlewares/validateRequest");
 const {
@@ -14,7 +14,7 @@ const {
 } = require("../utils/validators");
 
 // All validation requires student role and authentication
-router.use(protect, requireRole("student"));
+router.use(protect, requireVerified, requireRole("student"));
 
 // ================= VALIDATION OVERVIEW =================
 router.get("/overview", validationController.getValidationOverview);

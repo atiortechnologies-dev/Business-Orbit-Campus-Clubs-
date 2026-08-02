@@ -8,6 +8,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const EmailVerification = require("../models/EmailVerification");
 const PasswordReset = require("../models/PasswordReset");
+const RefreshToken = require("../models/RefreshToken");
 
 const StudentProfile = require("../models/StudentProfile");
 const MentorProfile = require("../models/MentorProfile");
@@ -21,6 +22,7 @@ const {
   generateToken,
   verifyRefreshToken,
   generateRefreshToken,
+  decodeToken,
 } = require("../utils/token");
 const { setAuthCookies, clearAuthCookies } = require("../utils/cookies");
 const roleConfig = require("../utils/roleConfig");
@@ -28,6 +30,15 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const { checkEmailSchema } = require("../utils/validators");
 const { assignChapterToStudent } = require("../utils/chapterAssignment");
 const Chapter = require("../models/Chapter");
+
+const saveRefreshToken = async (userId, token) => {
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+  await new RefreshToken({
+    user_id: userId,
+    token,
+    expires_at: expiresAt,
+  }).save();
+};
 
 /**
  * @desc    Get all college name for selection
@@ -189,6 +200,8 @@ const register = asyncHandler(async (req, res) => {
   // can make authenticated requests where req.user.id is accessible via auth middleware.
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
+  
+  await saveRefreshToken(user._id, refreshToken);
 
   // Tokens now live in httpOnly cookies instead of the JSON body, so the
   // frontend never has to touch (or store) them in localStorage.
@@ -326,6 +339,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
   // Generate authentication token
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
+  await saveRefreshToken(user._id, refreshToken);
   setAuthCookies(res, { accessToken, refreshToken });
 
   const redirectTo =
@@ -406,6 +420,7 @@ const login = asyncHandler(async (req, res) => {
   // 5. Generate authentication tokens
   const accessToken = generateToken(user);
   const refreshToken = generateRefreshToken(user);
+  await saveRefreshToken(user._id, refreshToken);
   setAuthCookies(res, { accessToken, refreshToken });
 
   // 6. Determine target redirect URL dynamically (with Admin override)
@@ -518,8 +533,9 @@ const resetPassword = asyncHandler(async (req, res) => {
   // 2. Hash new password
   const password_hash = await hashPassword(new_password);
 
-  // 3. Update password in user model
+  // 3. Update password and increment token_version in user model
   user.password_hash = password_hash;
+  user.token_version = (user.token_version || 0) + 1;
   await user.save();
 
   // 4. Invalidate reset token
@@ -560,6 +576,23 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     });
   }
 
+  const storedToken = await RefreshToken.findOne({ token: refreshToken });
+  if (!storedToken) {
+    clearAuthCookies(res);
+    return res.status(401).json({ success: false, message: "Invalid refresh token" });
+  }
+
+  if (storedToken.revoked) {
+    // REUSE DETECTION!
+    await User.findByIdAndUpdate(decoded.id, { $inc: { token_version: 1 } });
+    clearAuthCookies(res);
+    return res.status(401).json({ success: false, message: "Session revoked due to compromise" });
+  }
+
+  // Revoke the current token
+  storedToken.revoked = true;
+  await storedToken.save();
+
   const user = await User.findById(decoded.id);
 
   if (!user) {
@@ -568,7 +601,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 
   const newAccessToken = generateToken(user);
-  setAuthCookies(res, { accessToken: newAccessToken });
+  const newRefreshToken = generateRefreshToken(user);
+  await saveRefreshToken(user._id, newRefreshToken);
+
+  setAuthCookies(res, { accessToken: newAccessToken, refreshToken: newRefreshToken });
 
   return res.status(200).json({
     success: true,
@@ -577,11 +613,29 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 /**
- * @desc    Log the current user out by clearing the auth cookies
+ * @desc    Log the current user out by clearing the auth cookies and invalidating sessions
  * @route   POST /api/auth/logout
  * @access  Public
  */
 const logout = asyncHandler(async (req, res) => {
+  const refreshToken = req.cookies?.refreshToken;
+  if (refreshToken) {
+    await RefreshToken.findOneAndUpdate({ token: refreshToken }, { revoked: true });
+  }
+
+  // If the user is authenticated, increment their token_version to invalidate all existing tokens
+  const token = req.cookies?.accessToken;
+  if (token) {
+    try {
+      const decoded = decodeToken(token); // Use decode instead of verify to get ID even if expired
+      if (decoded && decoded.id) {
+        await User.findByIdAndUpdate(decoded.id, { $inc: { token_version: 1 } });
+      }
+    } catch (err) {
+      // Ignore token decoding errors on logout
+    }
+  }
+
   clearAuthCookies(res);
 
   return res.status(200).json({

@@ -9,8 +9,8 @@
 
 const isProduction = process.env.NODE_ENV === "production";
 
-// 7 days by default, kept in sync with JWT_EXPIRES_IN's default.
-const ACCESS_TOKEN_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+// 15 minutes by default, kept in sync with JWT_EXPIRES_IN's default.
+const ACCESS_TOKEN_MAX_AGE_MS = 15 * 60 * 1000;
 // 30 days by default, kept in sync with JWT_REFRESH_EXPIRES_IN's default.
 const REFRESH_TOKEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -19,13 +19,12 @@ const REFRESH_TOKEN_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
  *       - httpOnly: JS on the frontend can never read/steal the token (fixes the old
  *         localStorage approach, which was readable by any script on the page).
  *       - secure: only sent over HTTPS in production; allowed over http in dev.
- *       - sameSite: "lax" is enough since frontend/backend are same-site in this setup
- *         and it still lets the cookie flow on top-level navigations/redirects.
+ *       - sameSite: "strict" completely blocks Cross-Site Request Forgery (CSRF).
  */
 const baseCookieOptions = {
   httpOnly: true,
   secure: isProduction,
-  sameSite: "lax",
+  sameSite: "strict",
   path: "/",
 };
 
