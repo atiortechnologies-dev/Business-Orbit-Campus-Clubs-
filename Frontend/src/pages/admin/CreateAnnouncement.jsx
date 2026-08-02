@@ -92,7 +92,8 @@ export default function CreateAnnouncementPage() {
     } catch (err) {
       console.error("Failed to create announcement:", err);
       setErrorMsg(
-        err?.message ||
+        err?.response?.data?.message ||
+          err?.message ||
           "Failed to create announcement. Please check all fields.",
       );
     } finally {

@@ -8,6 +8,7 @@ import {
   Edit,
   Zap,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import DataTable from "@/components/ui/DataTable";
@@ -45,10 +46,12 @@ export default function AnnouncementsDashboardPage() {
     drafts: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const fetchAnnouncementsData = useCallback(async () => {
     try {
       setLoading(true);
+      setErrorMsg("");
       const params = {};
       if (statusFilter !== "All Status") params.status = statusFilter;
       if (priorityFilter !== "All Priority") params.priority = priorityFilter;
@@ -61,6 +64,12 @@ export default function AnnouncementsDashboardPage() {
       if (res?.stats) setStats(res.stats);
     } catch (err) {
       console.error("Failed to load announcements:", err);
+      setAnnouncements([]);
+      setErrorMsg(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to load announcements. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -195,6 +204,13 @@ export default function AnnouncementsDashboardPage() {
           </Link>
         </div>
       </div>
+
+      {errorMsg && (
+        <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 mb-8">
+          <AlertCircle size={16} className="shrink-0" />
+          <span>{errorMsg}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card space-y-1">

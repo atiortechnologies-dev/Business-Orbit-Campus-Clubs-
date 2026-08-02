@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   Download,
   Zap,
@@ -8,9 +8,6 @@ import {
   XCircle,
   Calendar,
   ArrowRight,
-  Filter,
-  RotateCcw,
-  Loader2,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import DataTable from "@/components/ui/DataTable";
@@ -21,110 +18,78 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { downloadCsv } from "@/utils/csv";
 import { getReviewQueue } from "@/api/admin/adminStartupReviewApi";
 
-const STATUS_VARIANT = {
-  Pending: "info",
-  "Under Review": "warning",
-  Approved: "success",
-  Rejected: "error",
-};
 
-const STAGE_OPTIONS = ["All Stages", "Idea", "Validation", "MVP", "Traction"];
-const STATUS_OPTIONS = ["All Statuses", "Pending", "Under Review"];
+
+const PRIORITY_VARIANT = { High: "error", Medium: "warning", Low: "neutral" };
+const STATUS_VARIANT = { Pending: "info", "Under Review": "warning" };
 
 export default function ReviewQueuePage() {
   useDocumentTitle("Stage Approval Queue — BOCC Admin");
   const navigate = useNavigate();
-
-  const [loading, setLoading] = useState(true);
   const [submissions, setSubmissions] = useState([]);
-  const [stats, setStats] = useState({
-    pendingReviews: 0,
-    approvedToday: 0,
-    rejectedToday: 0,
-    meetingsPending: 0,
-  });
-
-  // Client-side Filters
-  const [stageFilter, setStageFilter] = useState("All Stages");
-  const [statusFilter, setStatusFilter] = useState("All Statuses");
-  const [chapterFilter, setChapterFilter] = useState("All Chapters");
-  const [dateFilter, setDateFilter] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchQueue = async () => {
       try {
-        setLoading(true);
         const res = await getReviewQueue();
-        const data = res?.data || res;
-        setSubmissions(data?.submissions || []);
-        if (data?.stats) {
-          setStats(data.stats);
+        if (res.data?.success) {
+          setSubmissions(res.data.data);
         }
-      } catch (error) {
-        console.error("Failed to load review queue:", error);
+      } catch (err) {
+        console.error("Failed to fetch review queue", err);
       } finally {
         setLoading(false);
       }
-    }
-    fetchData();
+    };
+    fetchQueue();
   }, []);
-
-  const chapterOptions = [
-    "All Chapters",
-    ...new Set(submissions.map((s) => s.chapter).filter(Boolean)),
-  ];
-
-  const visibleSubmissions = submissions.filter((s) => {
-    if (stageFilter !== "All Stages" && s.stage !== stageFilter) return false;
-    if (statusFilter !== "All Statuses" && s.status !== statusFilter)
-      return false;
-    if (chapterFilter !== "All Chapters" && s.chapter !== chapterFilter)
-      return false;
-    if (dateFilter && s.date !== dateFilter) return false;
-    return true;
-  });
-
-  function handleResetFilters() {
-    setStageFilter("All Stages");
-    setStatusFilter("All Statuses");
-    setChapterFilter("All Chapters");
-    setDateFilter("");
-  }
 
   const columns = [
     {
       key: "name",
-      label: "Startup Name",
-      width: "1.4fr",
+      label: "Startup",
+      width: "1.6fr",
       mobileLabel: false,
       render: (row) => (
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-xs select-none shrink-0">
-            {row.name.charAt(0).toUpperCase()}
+            {row.name.charAt(0)}
           </div>
-          <p className="font-poppins font-semibold text-small text-text-heading truncate">
-            {row.name}
-          </p>
+          <div className="min-w-0">
+            <p className="font-poppins font-semibold text-small text-text-heading truncate">
+              {row.name}
+            </p>
+            <p className="font-inter text-caption text-text-muted truncate">
+              {row.founder}
+            </p>
+          </div>
         </div>
       ),
     },
-    { key: "founder", label: "Founder", width: "1.1fr" },
-    { key: "chapter", label: "Chapter", width: "1.1fr" },
+    { key: "chapter", label: "Chapter", width: "1.2fr" },
     {
       key: "stage",
-      label: "Current Stage",
+      label: "Stage",
       width: "1fr",
       render: (row) => <Badge variant="brand">{row.stage}</Badge>,
     },
-    { key: "date", label: "Submission Date", width: "1.1fr" },
+    { key: "date", label: "Submitted", width: "1fr" },
+    { key: "reviewer", label: "Reviewer", width: "1.1fr" },
+    {
+      key: "priority",
+      label: "Priority",
+      width: "0.8fr",
+      render: (row) => (
+        <Badge variant={PRIORITY_VARIANT[row.priority]}>{row.priority}</Badge>
+      ),
+    },
     {
       key: "status",
       label: "Status",
       width: "1fr",
       render: (row) => (
-        <Badge variant={STATUS_VARIANT[row.status] || "neutral"}>
-          {row.status}
-        </Badge>
+        <Badge variant={STATUS_VARIANT[row.status]}>{row.status}</Badge>
       ),
     },
     {
@@ -153,120 +118,75 @@ export default function ReviewQueuePage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <ComingSoon label="Bulk Actions" position="bottom" inline>
+          <ComingSoon label="Bulk Action" position="bottom" inline>
             <span className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small">
-              <Zap size={14} strokeWidth={2} /> Bulk Actions
+              <Zap size={14} strokeWidth={2} /> Bulk Action
             </span>
           </ComingSoon>
           <button
             type="button"
             onClick={() =>
-              downloadCsv("review-queue", columns, visibleSubmissions)
+              downloadCsv(
+                "review-queue",
+                [
+                  { key: "name", label: "Startup" },
+                  { key: "founder", label: "Founder" },
+                  { key: "chapter", label: "Chapter" },
+                  { key: "stage", label: "Stage" },
+                  { key: "date", label: "Submitted" },
+                  { key: "reviewer", label: "Reviewer" },
+                  { key: "priority", label: "Priority" },
+                  { key: "status", label: "Status" },
+                ],
+                submissions,
+              )
             }
             className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small hover:bg-canvas-bg transition-colors"
           >
-            <Download size={14} strokeWidth={2} /> Export Report
+            <Download size={14} strokeWidth={2} /> Export CSV
           </button>
         </div>
       </div>
 
-      {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard
           label="Pending Reviews"
-          value={stats.pendingReviews.toString()}
+          value="42"
           icon={<Clock size={18} strokeWidth={2} />}
-          subtext="Awaiting admin action"
+          subtext="+12% from last week"
+          trendDirection="up"
         />
         <StatCard
           label="Approved Today"
-          value={stats.approvedToday.toString()}
+          value="18"
           icon={<CheckCircle size={18} strokeWidth={2} />}
-          subtext="Completed today"
+          subtext="Daily target: 25"
         />
         <StatCard
           label="Rejected Today"
-          value={stats.rejectedToday.toString()}
+          value="04"
           icon={<XCircle size={18} strokeWidth={2} />}
-          subtext="Revisions requested"
+          subtext="Within threshold"
         />
         <StatCard
           label="Meetings Pending"
-          value={stats.meetingsPending.toString()}
+          value="09"
           icon={<Calendar size={18} strokeWidth={2} />}
-          subtext="Scheduled calls"
+          subtext="Next: 14:00 PM"
         />
       </div>
 
-      {/* Filter Bar */}
-      <div className="bg-canvas-bg border border-border-subtle rounded-lg p-4 mb-6 flex flex-wrap items-center gap-3">
-        <span className="flex items-center gap-1.5 font-poppins font-semibold text-caption uppercase tracking-wider text-text-muted shrink-0">
-          <Filter size={14} strokeWidth={2} /> Filters
+      <DataTable
+        columns={columns}
+        rows={submissions}
+        onRowClick={(row) => navigate(`/admin/reviews/detail?id=${row.id}`)}
+        emptyMessage={loading ? "Loading submissions..." : "No submissions in the queue."}
+      />
+      <div className="flex justify-between items-center mt-4">
+        <span className="font-inter text-small text-text-muted">
+          Showing 1-{submissions.length} of {submissions.length} submissions
         </span>
-        <select
-          value={stageFilter}
-          onChange={(e) => setStageFilter(e.target.value)}
-          className="bg-surface-white border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
-        >
-          {STAGE_OPTIONS.map((opt) => (
-            <option key={opt}>{opt}</option>
-          ))}
-        </select>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-surface-white border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
-        >
-          {STATUS_OPTIONS.map((opt) => (
-            <option key={opt}>{opt}</option>
-          ))}
-        </select>
-        <select
-          value={chapterFilter}
-          onChange={(e) => setChapterFilter(e.target.value)}
-          className="bg-surface-white border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
-        >
-          {chapterOptions.map((opt) => (
-            <option key={opt}>{opt}</option>
-          ))}
-        </select>
-        <input
-          type="date"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-          className="bg-surface-white border border-border-subtle rounded-md text-text-body font-inter text-small py-2 px-2 focus:outline-none focus:ring-1 focus:ring-brand-black"
-        />
-        <button
-          type="button"
-          onClick={handleResetFilters}
-          className="ml-auto flex items-center gap-1.5 font-inter font-medium text-small text-text-muted hover:text-text-heading transition-colors"
-        >
-          <RotateCcw size={14} strokeWidth={2} /> Reset
-        </button>
       </div>
-
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 size={32} className="animate-spin text-text-muted" />
-        </div>
-      ) : (
-        <>
-          <DataTable
-            columns={columns}
-            rows={visibleSubmissions}
-            onRowClick={(row) =>
-              navigate(`/admin/reviews/ideation?id=${row.id}`)
-            }
-            emptyMessage="No submissions match the current filters."
-          />
-          <div className="flex justify-between items-center mt-4">
-            <span className="font-inter text-small text-text-muted">
-              Showing {visibleSubmissions.length} of {submissions.length}{" "}
-              submissions
-            </span>
-          </div>
-        </>
-      )}
     </AdminShell>
   );
 }

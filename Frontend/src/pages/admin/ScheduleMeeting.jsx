@@ -2,129 +2,102 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ChevronRight,
-  Link2,
-  FileText,
-  DollarSign,
-  Loader2,
-  AlertTriangle,
+  AlertCircle,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import {
-  getMeetingPrepareContext,
-  scheduleMeeting,
-} from "@/api/admin/adminMeetingApi";
+import { getMeetingPrepareContext, scheduleMeeting } from "@/api/admin/adminMeetingApi";
 
+const REVIEWERS = ["Sarah Jenkins", "Markus Vane", "Elena Rodriguez"];
 const DURATIONS = ["30 minutes", "60 minutes", "90 minutes"];
-const PLATFORMS = [
-  "Google Meet",
-  "Zoom",
-  "Microsoft Teams",
-  "In-Person — Room 402",
-];
 
+// Simple static Oct 2024 grid — purely decorative
 const CALENDAR_DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
-const CALENDAR_START_OFFSET = 2;
+const CALENDAR_START_OFFSET = 2; // Oct 1 2024 was a Tuesday
 
 export default function ScheduleMeetingPage() {
   useDocumentTitle("Schedule Review Meeting — BOCC Admin");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  
+  const startup_id = searchParams.get("startup_id");
+  const submission_id = searchParams.get("submission_id");
 
-  const submissionId =
-    searchParams.get("submissionId") || searchParams.get("id");
-  const startupIdParam = searchParams.get("startupId");
-
-  const [loading, setLoading] = useState(true);
   const [contextData, setContextData] = useState(null);
-  const [notApprovedError, setNotApprovedError] = useState("");
+  const [loadingContext, setLoadingContext] = useState(true);
 
-  // Form State
-  const [reviewerId, setReviewerId] = useState("");
-  const [date, setDate] = useState("2026-11-04");
-  const [time, setTime] = useState("14:00");
-  const [duration, setDuration] = useState(DURATIONS[1]);
-  const [platform, setPlatform] = useState(PLATFORMS[0]);
-  const [agenda, setAgenda] = useState(
-    "1. Review technical audit findings\n2. Discuss implementation timeline\n3. Confirm stage eligibility\n4. Q&A",
-  );
-
-  const [submitting, setSubmitting] = useState(false);
+  // Form state
+  const [reviewer, setReviewer] = useState(REVIEWERS[0]);
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [_duration, _setDuration] = useState(DURATIONS[1]);
+  const [meetingLink, setMeetingLink] = useState("");
+  const [agenda, setAgenda] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [scheduled, setScheduled] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const canSchedule = agenda.trim().length > 0 && date && time && meetingLink.trim().length > 0 && !isSubmitting;
 
   useEffect(() => {
-    async function loadContext() {
+    async function fetchContext() {
+      if (!startup_id && !submission_id) {
+        setLoadingContext(false);
+        setErrorMsg("No startup_id or submission_id provided in URL.");
+        return;
+      }
       try {
-        setLoading(true);
-        setNotApprovedError("");
-        const res = await getMeetingPrepareContext({
-          submissionId,
-          startupId: startupIdParam,
-        });
-        const data = res?.data || res;
-        setContextData(data);
-
-        if (data?.reviewers?.length > 0) {
-          setReviewerId(data.reviewers[0].id);
-        }
+        const res = await getMeetingPrepareContext({ startup_id, submission_id });
+        setContextData(res.data.data);
       } catch (err) {
-        console.error("Failed to load scheduling context:", err);
-        setNotApprovedError(
-          err?.response?.data?.message ||
-            "Meetings can only be scheduled for approved startup ideas.",
-        );
+        console.error("Failed to load context", err);
+        setErrorMsg("Failed to load meeting context.");
       } finally {
-        setLoading(false);
+        setLoadingContext(false);
       }
     }
+    fetchContext();
+  }, [startup_id, submission_id]);
 
-    loadContext();
-  }, [submissionId, startupIdParam]);
+  // Ensure future dates logic for standard date picker constraint
+  const today = new Date().toISOString().split("T")[0];
 
-  const canSchedule =
-    agenda.trim().length > 0 && !submitting && !notApprovedError;
-
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!canSchedule || !contextData?.startup?.id) return;
+    if (!canSchedule || !contextData) return;
+    
+    setIsSubmitting(true);
+    setErrorMsg("");
+    setScheduled(false);
 
     try {
-      setSubmitting(true);
+      // Create an ISO 8601 UTC date string
+      const localDate = new Date(`${date}T${time}`);
+      const meeting_date = localDate.toISOString();
+
       await scheduleMeeting({
-        startup_id: contextData.startup.id,
-        reviewer_id: reviewerId,
-        meeting_date: date,
-        meeting_time: time,
-        duration,
-        platform,
+        startup_id: contextData.startup._id,
+        student_id: contextData.student._id,
+        stage_submission_id: submission_id || undefined,
+        meeting_date,
         agenda,
+        meeting_link: meetingLink,
       });
-
+      
       setScheduled(true);
-      setTimeout(() => navigate("/admin/reviews"), 2000);
     } catch (err) {
-      console.error("Failed to schedule meeting:", err);
+      console.error("Failed to schedule meeting", err);
+      setErrorMsg(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to schedule meeting.",
+      );
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
-  };
-
-  if (loading) {
-    return (
-      <AdminShell>
-        <div className="flex justify-center py-20">
-          <Loader2 size={32} className="animate-spin text-text-muted" />
-        </div>
-      </AdminShell>
-    );
   }
-
-  const startup = contextData?.startup || {};
-  const reviewers = contextData?.reviewers || [];
-  const upcomingMeetings = contextData?.upcomingMeetings || [];
 
   return (
     <AdminShell>
@@ -142,279 +115,214 @@ export default function ScheduleMeetingPage() {
           Schedule Review Meeting
         </span>
       </nav>
-
-      <div className="mb-8">
-        <h1 className="font-poppins font-semibold text-page text-text-heading">
-          Schedule Review Meeting
-        </h1>
-        <p className="font-inter text-body text-text-body mt-1">
-          Configure session details and invite the founding team for a
-          performance review.
-        </p>
-      </div>
-
-      {notApprovedError && (
-        <div className="mb-6 p-4 rounded-lg border border-error/30 bg-error/10 text-error font-inter text-small flex items-center gap-3">
-          <AlertTriangle size={20} className="shrink-0" />
-          <div>
-            <p className="font-poppins font-semibold">Approval Required</p>
-            <p className="mt-0.5">{notApprovedError}</p>
-          </div>
-        </div>
-      )}
+      <h1 className="font-poppins font-semibold text-page text-text-heading mb-8">
+        Schedule Review Meeting
+      </h1>
 
       {scheduled && (
         <div className="mb-6 p-4 rounded-lg border border-success/30 bg-success/10 text-success font-inter text-small">
-          Invitation sent — {startup.name}'s review meeting is scheduled!
-          Redirecting...
+          Invitation sent — Meeting is on the calendar.
+        </div>
+      )}
+      {errorMsg && (
+        <div className="mb-6 p-4 rounded-lg border border-error/30 bg-error/15 text-error font-inter text-small flex items-center gap-2">
+          <AlertCircle size={16} className="shrink-0" />
+          <span>{errorMsg}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div className="lg:col-span-7 space-y-6">
-          <form
-            onSubmit={handleSubmit}
-            className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card space-y-4"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                id="startup-name"
-                label="Startup Name"
-                value={startup.name || "N/A"}
-                disabled
-              />
-              <Input
-                id="founder-name"
-                label="Primary Founder"
-                value={startup.founder || "N/A"}
-                disabled
-              />
-            </div>
+      {loadingContext ? (
+        <div className="p-4 text-text-muted">Loading meeting context...</div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-7 space-y-6">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card space-y-4"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  id="startup-name"
+                  label="Startup Name"
+                  value={contextData?.startup?.startup_name || "Unknown"}
+                  disabled
+                />
+                <Input
+                  id="founder-name"
+                  label="Primary Founder"
+                  value={contextData?.student?.name || "Unknown"}
+                  disabled
+                />
+              </div>
 
-            <div>
-              <label
-                htmlFor="reviewer"
-                className="text-caption font-medium text-text-heading font-inter block mb-1"
-              >
-                Reviewer
-              </label>
-              <select
-                id="reviewer"
-                value={reviewerId}
-                disabled={!!notApprovedError}
-                onChange={(e) => setReviewerId(e.target.value)}
-                className="w-full min-h-[44px] rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
-              >
-                {reviewers.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name} ({r.role})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                id="meeting-date"
-                label="Meeting Date"
-                type="date"
-                disabled={!!notApprovedError}
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-              />
-              <Input
-                id="meeting-time"
-                label="Meeting Time"
-                type="time"
-                disabled={!!notApprovedError}
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label
-                  htmlFor="duration"
+                  htmlFor="reviewer"
                   className="text-caption font-medium text-text-heading font-inter block mb-1"
                 >
-                  Duration
+                  Reviewer (You)
                 </label>
                 <select
-                  id="duration"
-                  value={duration}
-                  disabled={!!notApprovedError}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full min-h-[44px] rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
+                  id="reviewer"
+                  value={reviewer}
+                  onChange={(e) => setReviewer(e.target.value)}
+                  className="w-full min-h-[44px] rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
                 >
-                  {DURATIONS.map((d) => (
-                    <option key={d}>{d}</option>
+                  {REVIEWERS.map((r) => (
+                    <option key={r}>{r}</option>
                   ))}
                 </select>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  id="meeting-date"
+                  label="Meeting Date"
+                  type="date"
+                  value={date}
+                  min={today}
+                  onChange={(e) => setDate(e.target.value)}
+                  required
+                />
+                <Input
+                  id="meeting-time"
+                  label="Meeting Time"
+                  type="time"
+                  value={time}
+                  onChange={(e) => setTime(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4">
+                <Input
+                  id="meeting-link"
+                  label="Meeting Link (Google Meet / Zoom)"
+                  type="url"
+                  placeholder="https://meet.google.com/..."
+                  value={meetingLink}
+                  onChange={(e) => setMeetingLink(e.target.value)}
+                  required
+                />
+              </div>
+
               <div>
                 <label
-                  htmlFor="platform"
+                  htmlFor="agenda"
                   className="text-caption font-medium text-text-heading font-inter block mb-1"
                 >
-                  Platform
+                  Agenda
                 </label>
-                <div className="flex gap-2">
-                  <select
-                    id="platform"
-                    value={platform}
-                    disabled={!!notApprovedError}
-                    onChange={(e) => setPlatform(e.target.value)}
-                    className="flex-1 min-h-[44px] rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
-                  >
-                    {PLATFORMS.map((p) => (
-                      <option key={p}>{p}</option>
-                    ))}
-                  </select>
-                  <ComingSoon
-                    label="Generate Meeting Link"
-                    position="top"
-                    inline
-                  >
-                    <span className="min-h-[44px] px-3 flex items-center border border-border-subtle rounded-md text-text-muted">
-                      <Link2 size={16} strokeWidth={2} />
-                    </span>
-                  </ComingSoon>
-                </div>
+                <textarea
+                  id="agenda"
+                  value={agenda}
+                  onChange={(e) => setAgenda(e.target.value)}
+                  rows={5}
+                  required
+                  className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter p-3 resize-none focus:outline-none focus:ring-1 focus:ring-brand-black"
+                />
               </div>
-            </div>
 
-            <div>
-              <label
-                htmlFor="agenda"
-                className="text-caption font-medium text-text-heading font-inter block mb-1"
-              >
-                Agenda
-              </label>
-              <textarea
-                id="agenda"
-                value={agenda}
-                disabled={!!notApprovedError}
-                onChange={(e) => setAgenda(e.target.value)}
-                rows={5}
-                className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter p-3 resize-none focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/admin/reviews")}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary" disabled={!canSchedule}>
-                {submitting ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 size={16} className="animate-spin" /> Scheduling...
-                  </span>
-                ) : (
-                  "Schedule Meeting & Send Invitation"
-                )}
-              </Button>
-            </div>
-          </form>
-
-          <section className="bg-canvas-bg border border-border-subtle rounded-lg p-6">
-            <h3 className="font-poppins font-semibold text-body text-text-heading mb-2">
-              Review Protocol Reminder
-            </h3>
-            <p className="font-inter text-small text-text-muted mb-4">
-              Confirm the founder's deliverables are reviewed before finalizing
-              any meeting.
-            </p>
-            <div className="flex gap-2">
-              <ComingSoon label="View Protocol Docs" position="top" inline>
-                <span className="flex items-center gap-1.5 px-3 py-2 bg-surface-white border border-border-subtle rounded-md font-inter font-medium text-caption text-text-heading">
-                  <FileText size={14} strokeWidth={2} /> View Protocol Docs
-                </span>
-              </ComingSoon>
-              <ComingSoon label="Check Financials" position="top" inline>
-                <span className="flex items-center gap-1.5 px-3 py-2 bg-surface-white border border-border-subtle rounded-md font-inter font-medium text-caption text-text-heading">
-                  <DollarSign size={14} strokeWidth={2} /> Check Financials
-                </span>
-              </ComingSoon>
-            </div>
-          </section>
-        </div>
-
-        {/* Sidebar */}
-        <div className="lg:col-span-5 space-y-6">
-          <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-poppins font-semibold text-body text-text-heading">
-                Availability Calendar
-              </h3>
-              <span className="font-inter text-caption text-text-muted">
-                November 2026
-              </span>
-            </div>
-            <div className="grid grid-cols-7 gap-1 text-center mb-2">
-              {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                <span
-                  key={i}
-                  className="font-inter text-caption text-text-muted"
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/admin/reviews")}
                 >
-                  {d}
-                </span>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1">
-              {Array.from({ length: CALENDAR_START_OFFSET }).map((_, i) => (
-                <span key={`pad-${i}`} />
-              ))}
-              {CALENDAR_DAYS.map((day) => (
-                <div
-                  key={day}
-                  className="relative flex items-center justify-center"
-                >
-                  <span
-                    className={`w-8 h-8 flex items-center justify-center rounded-full font-inter text-small ${
-                      day === 4
-                        ? "bg-brand-black text-white font-semibold"
-                        : "text-text-body hover:bg-canvas-bg"
-                    }`}
-                  >
-                    {day}
-                  </span>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="primary" disabled={!canSchedule}>
+                  {isSubmitting ? "Scheduling..." : "Schedule Meeting & Send Invitation"}
+                </Button>
+              </div>
+            </form>
+          </div>
+
+          <div className="lg:col-span-5 space-y-6">
+            <section className="bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden">
+              <div className="px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
+                <h3 className="font-poppins font-semibold text-body text-text-heading">
+                  Context Summary
+                </h3>
+              </div>
+              <div className="p-4 space-y-4">
+                <div>
+                  <p className="font-inter font-semibold text-small text-text-heading">
+                    Current Stage: {contextData?.startup?.current_stage || "N/A"}
+                  </p>
+                  <p className="font-inter text-caption text-text-muted mt-1">
+                    Industry: {contextData?.startup?.industry || "N/A"}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden">
-            <div className="px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
-              <h3 className="font-poppins font-semibold text-body text-text-heading">
-                Upcoming Review Meetings
-              </h3>
-            </div>
-            <div className="divide-y divide-border-subtle">
-              {upcomingMeetings.length > 0 ? (
-                upcomingMeetings.map((m) => (
-                  <div key={m.id} className="p-4">
+                {contextData?.currentSubmission && (
+                  <div>
                     <p className="font-inter font-semibold text-small text-text-heading">
-                      {m.startup}
+                      Selected Submission
                     </p>
-                    <p className="font-inter text-caption text-text-muted">
-                      {m.date} at {m.time} · {m.reviewer}
+                    <p className="font-inter text-caption text-text-muted mt-1">
+                      {contextData.currentSubmission.title}
                     </p>
                   </div>
-                ))
-              ) : (
-                <div className="p-4 font-inter text-caption text-text-muted">
-                  No upcoming meetings scheduled.
-                </div>
-              )}
-            </div>
-          </section>
+                )}
+                {contextData?.historicalSubmissions?.length > 0 && (
+                  <div>
+                    <p className="font-inter font-semibold text-small text-text-heading mb-2">
+                      Recent Submissions
+                    </p>
+                    <div className="space-y-2">
+                      {contextData.historicalSubmissions.map(sub => (
+                        <div key={sub._id} className="text-caption text-text-muted bg-canvas-bg p-2 rounded">
+                          {sub.title} - {sub.status}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </section>
+            
+            <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
+              <h3 className="font-poppins font-semibold text-body text-text-heading mb-4">
+                October 2024
+              </h3>
+              <div className="grid grid-cols-7 gap-1 text-center mb-2">
+                {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+                  <span
+                    key={i}
+                    className="font-inter text-caption text-text-muted"
+                  >
+                    {d}
+                  </span>
+                ))}
+              </div>
+              <div className="grid grid-cols-7 gap-1">
+                {Array.from({ length: CALENDAR_START_OFFSET }).map((_, i) => (
+                  <span key={`pad-${i}`} />
+                ))}
+                {CALENDAR_DAYS.map((day) => (
+                  <div
+                    key={day}
+                    className="relative flex items-center justify-center"
+                  >
+                    <span
+                      className={`w-8 h-8 flex items-center justify-center rounded-full font-inter text-small ${
+                        day === 11
+                          ? "bg-brand-black text-white font-semibold"
+                          : "text-text-body hover:bg-canvas-bg"
+                      }`}
+                    >
+                      {day}
+                    </span>
+                    {day === 12 && (
+                      <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-accent-neon" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
-      </div>
+      )}
     </AdminShell>
   );
 }
