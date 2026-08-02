@@ -653,8 +653,8 @@ instead of `/settings`; the gear icon still goes to `/settings`.)_
 ### Incubator Marketplace — `src/pages/incubators/*.jsx`
 
 _(Student-facing — discovering and applying to incubation programs, not
-the Incubator role's own portal below. Fills the "Incubators" nav item
-`DashboardShell.jsx` had stubbed since the sidebar was built.)_
+the Incubator role's own portal below. Also gated by
+`IdeationAccessGate` — see Mentor Network below.)_
 
 - **Real:** `IncubatorApplicationForm.jsx`'s Startup Name/Problem
   Statement/Proposed Solution gate a real "Submit Application" button
@@ -697,17 +697,17 @@ shell" cases with only the copy differing.)_
 ### Mentor Network — `src/pages/mentors/*.jsx`
 
 **Access control — `components/journey/IdeationAccessGate.jsx` (new):**
-wraps `/mentors/*` (and `/investors/*`, below) in `router.jsx`. Until a
-student's Ideation stage status is `"approved"` or `"completed"` (the
-same two-value "cleared" check `BuildStartupJourney.jsx:235` already
-uses), visiting either section renders the shared
-`FeatureLockedNotice` inside `DashboardShell` explaining it unlocks after
-Ideation is approved, instead of the real directory — same fail-closed-
-on-API-error behavior as `StageGuard`. The Student sidebar's "Mentors" /
-"Investors" nav items themselves needed no change; they were already
-real links with no gating at all before this, which is the bug this
-fixes. "Incubators" is intentionally left ungated for now — only Mentors
-and Investors were in scope for this pass.
+wraps `/mentors/*`, `/investors/*` (below), and `/incubators/*` (the
+student-facing Incubator Marketplace, not the Incubator role's own
+portal) in `router.jsx`. Until a student's Ideation stage status is
+`"approved"` or `"completed"` (the same two-value "cleared" check
+`BuildStartupJourney.jsx:235` already uses), visiting any of the three
+renders the shared `FeatureLockedNotice` inside `DashboardShell`
+explaining it unlocks after Ideation is approved, instead of the real
+directory — same fail-closed-on-API-error behavior as `StageGuard`. The
+Student sidebar's "Mentors"/"Investors"/"Incubators" nav items
+themselves needed no change; they were already real links with no
+gating at all before this, which is the bug this fixes.
 
 - **Real:** `MentorshipRequest.jsx` gates Submit Request on Startup Name +
   Problem Statement (same `canSubmit` pattern as every gated form here);

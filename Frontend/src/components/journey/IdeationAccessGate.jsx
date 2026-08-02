@@ -13,12 +13,13 @@ function PageLoader() {
   );
 }
 
-// Gates the Mentor Network and Investor Network sections until the
-// student's Ideation stage is approved — unlike StageGuard (which
-// redirects locked stages back to the journey hub), this renders an
-// explanatory notice in place, inside the normal shell, so a student who
-// clicks "Mentors" from the sidebar sees *why* it's locked rather than
-// bouncing away. Checks specifically for "approved"/"completed" — the
+// Gates the Mentor Network, Investor Network, and Incubator Marketplace
+// sections until the student's Ideation stage is approved — unlike
+// StageGuard (which redirects locked stages back to the journey hub),
+// this renders an explanatory notice in place, inside the normal shell,
+// so a student who clicks "Mentors" from the sidebar sees *why* it's
+// locked rather than bouncing away. Checks specifically for
+// "approved"/"completed" — the
 // same two-value check BuildStartupJourney.jsx:235 uses to mean "this
 // stage has been cleared" (stricter than StageGuard's three-value check,
 // which also allows "active" — not the right condition for "has this
@@ -59,7 +60,7 @@ export default function IdeationAccessGate() {
         <FeatureLockedNotice
           icon={Users}
           heading="Unlocks after Ideation is approved"
-          message="You'll get access to Mentors and Investors once your Ideation stage is reviewed and approved. Keep working on your submission in the meantime."
+          message="You'll get access to Mentors, Investors, and Incubators once your Ideation stage is reviewed and approved. Keep working on your submission in the meantime."
         />
       </DashboardShell>
     );

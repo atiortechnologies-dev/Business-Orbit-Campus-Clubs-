@@ -586,14 +586,25 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  { path: "/incubators", element: withSuspense(DiscoverIncubators) },
-  { path: "/incubators/profile", element: withSuspense(IncubatorProfile) },
   {
-    path: "/incubators/apply",
-    element: withSuspense(IncubatorApplicationForm),
+    element: <IdeationAccessGate />,
+    children: [
+      { path: "/incubators", element: withSuspense(DiscoverIncubators) },
+      {
+        path: "/incubators/profile",
+        element: withSuspense(IncubatorProfile),
+      },
+      {
+        path: "/incubators/apply",
+        element: withSuspense(IncubatorApplicationForm),
+      },
+      {
+        path: "/incubators/confirmed",
+        element: withSuspense(IncubationConfirmed),
+      },
+      { path: "/incubators/tracker", element: withSuspense(MyIncubation) },
+    ],
   },
-  { path: "/incubators/confirmed", element: withSuspense(IncubationConfirmed) },
-  { path: "/incubators/tracker", element: withSuspense(MyIncubation) },
   { path: "/freelancing", element: withSuspense(Freelancing) },
   {
     path: "/freelancing/opportunity",
