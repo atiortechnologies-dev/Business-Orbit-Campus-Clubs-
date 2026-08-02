@@ -6,20 +6,20 @@
  */
 
 const request = require("supertest");
-const _mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const argon2 = require("argon2");
 const { app } = require("../server");
 
 // Models for Direct DB Queries
 const User = require("../models/User");
 const EmailVerification = require("../models/EmailVerification");
-const _StudentProfile = require("../models/StudentProfile");
+const StudentProfile = require("../models/StudentProfile");
 const Startup = require("../models/Startup");
 const MentorRequest = require("../models/MentorRequest");
 const MentorAssignment = require("../models/MentorAssignment");
 const ChatRoom = require("../models/ChatRoom");
 const Message = require("../models/Message");
-const _MentorMeeting = require("../models/MentorMeeting");
+const MentorMeeting = require("../models/MentorMeeting");
 const FAQ = require("../models/FAQ");
 const PartnerLogo = require("../models/PartnerLogo");
 const ContactEnquiry = require("../models/ContactEnquiry");
@@ -36,15 +36,15 @@ jest.mock("../utils/email", () => ({
 }));
 
 // Test State Variables
-let _studentJwt = "";
+let studentJwt = "";
 let mentorJwt = "";
 let otpCode = "";
 let studentId, mentorId, startupId, requestId, chatId;
-let _faqId, _partnerLogoId, _enquiryId;
+let faqId, partnerLogoId, enquiryId;
 
 const adminApiKey = "testadmin";
 process.env.ADMIN_API_KEY = adminApiKey;
-process.env.JWT_SECRET = "TEST_API_KEY_123";
+process.env.JWT_SECRET = "DUMMY_SECRET_FOR_TESTING_ONLY";
 
 beforeAll(async () => {
   // DB Connection is managed by tests/setup.js
@@ -92,7 +92,7 @@ describe("Full Lifecycle Integration Journey", () => {
       expect(res.status).toBe(200);
       expect(res.body.data.accessToken).toBeDefined();
 
-      _studentJwt = res.body.data.accessToken;
+      studentJwt = res.body.data.accessToken;
 
       const user = await User.findById(studentId);
       expect(user.account_status).toBe("active");
@@ -128,7 +128,7 @@ describe("Full Lifecycle Integration Journey", () => {
 
       const faq = await FAQ.findOne({ question: "How do I join a chapter?" });
       expect(faq).not.toBeNull();
-      _faqId = faq._id;
+      faqId = faq._id;
     });
 
     it("Test 3.2: Admin Create Partner Logo", async () => {
@@ -147,7 +147,7 @@ describe("Full Lifecycle Integration Journey", () => {
 
       const logo = await PartnerLogo.findOne({ name: "Tech Corp Inc." });
       expect(logo).not.toBeNull();
-      _partnerLogoId = logo._id;
+      partnerLogoId = logo._id;
     });
 
     it("Test 4.1: Public Fetch FAQs", async () => {
@@ -180,7 +180,7 @@ describe("Full Lifecycle Integration Journey", () => {
         email: "john@futuretech.com",
       });
       expect(enquiry).not.toBeNull();
-      _enquiryId = enquiry._id;
+      enquiryId = enquiry._id;
     });
   });
 

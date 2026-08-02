@@ -1,8 +1,3 @@
-/**
- * @file LaunchStage.js
- * @description Defines the Mongoose schema and model for tracking the overarching launch stage of a startup.
- * @architecture Provides a high-level state machine in the database to monitor the progression of a startup's launch journey.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -45,8 +40,4 @@ const LaunchStageSchema = new mongoose.Schema(
 LaunchStageSchema.index({ startup_id: 1 });
 LaunchStageSchema.index({ student_id: 1 });
 
-/**
- * @module LaunchStage
- * @description Exports the LaunchStage Mongoose model.
- */
 module.exports = mongoose.model("LaunchStage", LaunchStageSchema);

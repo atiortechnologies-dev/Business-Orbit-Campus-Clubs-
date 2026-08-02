@@ -1,19 +1,9 @@
-/**
- * @file stage3Overview.controller.js
- * @description Manages Stage 3 (MVP Development) overview and checklist.
- * @architecture Handles fetching Stage 3 status, checklist, and calculating progress for startups.
- */
 const asyncHandler = require("../middlewares/asyncHandler");
 const MVPChecklist = require("../models/MVPChecklist");
 const StartupStage = require("../models/StartupStage");
 const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // GET /api/student/stages/mvp
-/**
- * @desc    Get Stage 3 (MVP) overview
- * @route   GET /api/student/stages/mvp
- * @access  Private/Student
- */
 const getMVPStageOverview = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -105,11 +95,6 @@ const getMVPStageOverview = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/stages/mvp/checklist
-/**
- * @desc    Get Stage 3 (MVP) checklist
- * @route   GET /api/student/stages/mvp/checklist
- * @access  Private/Student
- */
 const getMVPChecklist = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

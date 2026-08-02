@@ -21,13 +21,10 @@ const savedOpportunitySchema = new mongoose.Schema(
       index: true,
     },
   },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
+  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } }
 );
 
 // 🛡️ Prevent a student from saving the same opportunity multiple times
-savedOpportunitySchema.index(
-  { student_id: 1, opportunity_id: 1 },
-  { unique: true },
-);
+savedOpportunitySchema.index({ student_id: 1, opportunity_id: 1 }, { unique: true });
 
 module.exports = mongoose.model("SavedOpportunity", savedOpportunitySchema);

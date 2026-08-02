@@ -1,123 +1,72 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  ChevronRight,
-  ArrowRight,
-  PlusCircle,
-  Info,
-  AlertCircle,
-  CheckCircle2,
-} from "lucide-react";
-import DashboardShell from "@/components/dashboard/DashboardShell";
-import StatCard from "@/components/ui/StatCard";
-import Input from "@/components/ui/Input";
-import ComingSoon from "@/components/ui/ComingSoon";
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import api from "@/api/axiosInstance";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ChevronRight, ArrowRight, PlusCircle, Info } from 'lucide-react';
+import DashboardShell from '@/components/dashboard/DashboardShell';
+import StatCard from '@/components/ui/StatCard';
+import Input from '@/components/ui/Input';
+import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const SUMMARY = [
-  {
-    label: "Total Users",
-    value: "1,248",
-    subtext: "+12% vs last week",
-    trendDirection: "up",
-  },
-  { label: "Active Users", value: "432", subtext: "34% Retention Rate" },
-  { label: "Weekly Growth", value: "8.4%", subtext: "Target: 10%" },
-  { label: "Interviews", value: "24", subtext: "Goal: 50 by EOM" },
+  { label: 'Total Users', value: '1,248', subtext: '+12% vs last week', trendDirection: 'up' },
+  { label: 'Active Users', value: '432', subtext: '34% Retention Rate' },
+  { label: 'Weekly Growth', value: '8.4%', subtext: 'Target: 10%' },
+  { label: 'Interviews', value: '24', subtext: 'Goal: 50 by EOM' },
 ];
 
 const UPDATES = [
   {
-    date: "24 Oct, 2023",
-    headline: "+120 New Users",
+    date: '24 Oct, 2023',
+    headline: '+120 New Users',
     note: '"Campaign on LinkedIn reached 5k impressions with 2% CTR."',
-    tags: ["LinkedIn", "Traction"],
+    tags: ['LinkedIn', 'Traction'],
     latest: true,
   },
   {
-    date: "18 Oct, 2023",
-    headline: "Growth Audit Completed",
-    note: "Identified bottleneck in onboarding funnel at step 3.",
+    date: '18 Oct, 2023',
+    headline: 'Growth Audit Completed',
+    note: 'Identified bottleneck in onboarding funnel at step 3.',
   },
   {
-    date: "12 Oct, 2023",
-    headline: "Baseline Established",
-    note: "Initial 50 users from closed beta recorded.",
+    date: '12 Oct, 2023',
+    headline: 'Baseline Established',
+    note: 'Initial 50 users from closed beta recorded.',
   },
 ];
 
-const CHANNELS = [
-  "Direct Search",
-  "Social Media",
-  "Referral",
-  "Paid Advertising",
-];
+const CHANNELS = ['Direct Search', 'Social Media', 'Referral', 'Paid Advertising'];
 
 export default function UserAcquisitionTrackerPage() {
-  useDocumentTitle("User Acquisition Tracker — BOCC");
+  useDocumentTitle('User Acquisition Tracker — BOCC');
 
   const [form, setForm] = useState({
-    users: "",
-    activeUsers: "",
-    audience: "",
+    users: '',
+    activeUsers: '',
+    audience: '',
     channel: CHANNELS[0],
-    metrics: "",
-    activities: "",
-    learnings: "",
+    metrics: '',
+    activities: '',
+    learnings: '',
   });
 
-  const update = (field) => (e) =>
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+  const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-  const [savingDraft, setSavingDraft] = useState(false);
-
-  const handleSaveDraft = async () => {
-    setErrorMsg("");
-    setSuccessMsg("");
-    setSavingDraft(true);
-    try {
-      await api.patch("/traction/user-acquisition/draft", form);
-      setSuccessMsg("Draft saved successfully.");
-      setTimeout(() => setSuccessMsg(""), 3000);
-    } catch (err) {
-      console.error("Failed to save draft:", err);
-      setErrorMsg(
-        err?.response?.data?.message || err?.message || "Failed to save draft.",
-      );
-    } finally {
-      setSavingDraft(false);
-    }
+  const handleSaveDraft = () => {
+    // TODO(backend): persist as a draft against the student's account.
   };
 
   return (
     <DashboardShell pageId="user-acquisition-tracker">
       <nav className="mb-2 flex items-center gap-2 text-text-muted font-inter font-normal text-small">
-        <Link
-          to="/dashboard"
-          className="hover:text-text-heading transition-colors"
-        >
-          Dashboard
-        </Link>
+        <Link to="/dashboard" className="hover:text-text-heading transition-colors">Dashboard</Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <Link
-          to="/build-startup/journey/traction"
-          className="hover:text-text-heading transition-colors"
-        >
-          Traction
-        </Link>
+        <Link to="/build-startup/journey/traction" className="hover:text-text-heading transition-colors">Traction</Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <span className="text-text-heading font-semibold">
-          User Acquisition Tracker
-        </span>
+        <span className="text-text-heading font-semibold">User Acquisition Tracker</span>
       </nav>
 
       <div className="mb-8">
-        <h1 className="font-poppins font-semibold text-page text-text-heading mb-1">
-          User Acquisition Tracker
-        </h1>
+        <h1 className="font-poppins font-semibold text-page text-text-heading mb-1">User Acquisition Tracker</h1>
         <p className="font-inter text-body text-text-body">
           Record your initial users, growth metrics, and product adoption.
         </p>
@@ -133,23 +82,7 @@ export default function UserAcquisitionTrackerPage() {
         {/* Main Form */}
         <div className="lg:col-span-2 space-y-6">
           <section className="bg-canvas-bg border border-border-subtle rounded-lg p-6">
-            <h3 className="font-poppins font-semibold text-body text-text-heading mb-5">
-              Traction Entry
-            </h3>
-
-            {errorMsg && (
-              <div className="mb-5 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
-                <AlertCircle size={16} className="shrink-0" />
-                <span>{errorMsg}</span>
-              </div>
-            )}
-
-            {successMsg && (
-              <div className="mb-5 p-3 bg-success/15 border border-success/30 text-success rounded-md text-small flex items-center gap-2">
-                <CheckCircle2 size={16} className="shrink-0" />
-                <span>{successMsg}</span>
-              </div>
-            )}
+            <h3 className="font-poppins font-semibold text-body text-text-heading mb-5">Traction Entry</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
               <Input
@@ -158,7 +91,7 @@ export default function UserAcquisitionTrackerPage() {
                 type="number"
                 placeholder="e.g. 500"
                 value={form.users}
-                onChange={update("users")}
+                onChange={update('users')}
               />
               <Input
                 id="activeUsers"
@@ -166,7 +99,7 @@ export default function UserAcquisitionTrackerPage() {
                 type="number"
                 placeholder="e.g. 150"
                 value={form.activeUsers}
-                onChange={update("activeUsers")}
+                onChange={update('activeUsers')}
               />
             </div>
 
@@ -175,27 +108,22 @@ export default function UserAcquisitionTrackerPage() {
               label="Target Audience"
               placeholder="e.g. Early-stage SaaS founders in EU"
               value={form.audience}
-              onChange={update("audience")}
+              onChange={update('audience')}
               className="mb-5"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
               <div className="flex flex-col gap-1">
-                <label
-                  htmlFor="channel"
-                  className="text-caption font-medium text-text-heading font-inter"
-                >
+                <label htmlFor="channel" className="text-caption font-medium text-text-heading font-inter">
                   Acquisition Channel
                 </label>
                 <select
                   id="channel"
                   value={form.channel}
-                  onChange={update("channel")}
+                  onChange={update('channel')}
                   className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-[44px] px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black transition-all"
                 >
-                  {CHANNELS.map((c) => (
-                    <option key={c}>{c}</option>
-                  ))}
+                  {CHANNELS.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </div>
               <Input
@@ -203,15 +131,12 @@ export default function UserAcquisitionTrackerPage() {
                 label="Growth Metrics Tracked"
                 placeholder="e.g. CAC, LTV, Churn"
                 value={form.metrics}
-                onChange={update("metrics")}
+                onChange={update('metrics')}
               />
             </div>
 
             <div className="flex flex-col gap-1 mb-5">
-              <label
-                htmlFor="activities"
-                className="text-caption font-medium text-text-heading font-inter"
-              >
+              <label htmlFor="activities" className="text-caption font-medium text-text-heading font-inter">
                 Marketing Activities
               </label>
               <textarea
@@ -219,16 +144,13 @@ export default function UserAcquisitionTrackerPage() {
                 rows={3}
                 placeholder="Describe recent campaigns or experiments..."
                 value={form.activities}
-                onChange={update("activities")}
+                onChange={update('activities')}
                 className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter p-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black transition-all"
               />
             </div>
 
             <div className="flex flex-col gap-1 mb-5">
-              <label
-                htmlFor="learnings"
-                className="text-caption font-medium text-text-heading font-inter"
-              >
+              <label htmlFor="learnings" className="text-caption font-medium text-text-heading font-inter">
                 Key Learnings
               </label>
               <textarea
@@ -236,7 +158,7 @@ export default function UserAcquisitionTrackerPage() {
                 rows={3}
                 placeholder="What did the data reveal this week?"
                 value={form.learnings}
-                onChange={update("learnings")}
+                onChange={update('learnings')}
                 className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter p-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black transition-all"
               />
             </div>
@@ -248,9 +170,7 @@ export default function UserAcquisitionTrackerPage() {
               <ComingSoon label="Upload Testimonials" position="top">
                 <div className="border-2 border-dashed border-border-subtle rounded-lg p-6 flex flex-col items-center justify-center text-text-muted hover:border-brand-black transition-colors w-full">
                   <PlusCircle size={28} strokeWidth={2} className="mb-2" />
-                  <p className="font-inter text-small">
-                    Click to upload or drag &amp; drop testimonial screenshots
-                  </p>
+                  <p className="font-inter text-small">Click to upload or drag &amp; drop testimonial screenshots</p>
                 </div>
               </ComingSoon>
             </div>
@@ -259,10 +179,9 @@ export default function UserAcquisitionTrackerPage() {
               <button
                 type="button"
                 onClick={handleSaveDraft}
-                disabled={savingDraft}
-                className="font-poppins font-semibold text-small text-text-heading hover:opacity-80 transition-opacity disabled:opacity-50"
+                className="font-poppins font-semibold text-small text-text-heading hover:opacity-80 transition-opacity"
               >
-                {savingDraft ? "Saving..." : "Save Progress"}
+                Save Progress
               </button>
 
               <Link
@@ -280,9 +199,7 @@ export default function UserAcquisitionTrackerPage() {
         <div className="space-y-6">
           <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card p-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-poppins font-semibold text-body text-text-heading">
-                Recent Updates
-              </h3>
+              <h3 className="font-poppins font-semibold text-body text-text-heading">Recent Updates</h3>
               <ComingSoon label="View All" position="bottom" inline>
                 <span className="flex items-center gap-1 font-inter text-caption text-text-muted">
                   View All <ChevronRight size={14} strokeWidth={2} />
@@ -293,30 +210,19 @@ export default function UserAcquisitionTrackerPage() {
               {UPDATES.map((item) => (
                 <div key={item.date} className="relative pl-8">
                   <div className="absolute left-0 top-1.5 w-[23px] h-[23px] bg-canvas-bg border border-border-subtle rounded-full z-10 flex items-center justify-center">
-                    <div
-                      className={`w-2 h-2 rounded-full ${item.latest ? "bg-brand-black" : "bg-border-subtle"}`}
-                    />
+                    <div className={`w-2 h-2 rounded-full ${item.latest ? 'bg-brand-black' : 'bg-border-subtle'}`} />
                   </div>
-                  <p
-                    className={`font-inter font-semibold text-caption ${item.latest ? "text-text-heading" : "text-text-muted"}`}
-                  >
+                  <p className={`font-inter font-semibold text-caption ${item.latest ? 'text-text-heading' : 'text-text-muted'}`}>
                     {item.date}
                   </p>
-                  <p
-                    className={`font-inter text-small mt-1 ${item.latest ? "font-semibold text-text-heading" : "text-text-body"}`}
-                  >
+                  <p className={`font-inter text-small mt-1 ${item.latest ? 'font-semibold text-text-heading' : 'text-text-body'}`}>
                     {item.headline}
                   </p>
-                  <p className="font-inter text-small text-text-muted mt-1 italic">
-                    {item.note}
-                  </p>
+                  <p className="font-inter text-small text-text-muted mt-1 italic">{item.note}</p>
                   {item.tags && (
                     <div className="mt-2 flex gap-2">
                       {item.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="bg-canvas-bg px-2 py-0.5 rounded text-[10px] text-text-muted font-inter"
-                        >
+                        <span key={tag} className="bg-canvas-bg px-2 py-0.5 rounded text-[10px] text-text-muted font-inter">
                           {tag}
                         </span>
                       ))}
@@ -331,13 +237,10 @@ export default function UserAcquisitionTrackerPage() {
             <div className="flex items-start gap-3">
               <Info size={18} strokeWidth={2} className="shrink-0 mt-0.5" />
               <div>
-                <p className="font-poppins font-semibold text-small mb-1">
-                  Growth Tip
-                </p>
+                <p className="font-poppins font-semibold text-small mb-1">Growth Tip</p>
                 <p className="font-inter text-small text-white/70">
-                  Consistent weekly tracking is key to noticing micro-trends
-                  before they become macro-problems. Aim for at least 3 customer
-                  interviews this week.
+                  Consistent weekly tracking is key to noticing micro-trends before they become
+                  macro-problems. Aim for at least 3 customer interviews this week.
                 </p>
               </div>
             </div>

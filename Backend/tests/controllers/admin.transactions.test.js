@@ -13,7 +13,7 @@ const adminRoutes = require("../../routes/admin.routes");
 // Setup Express App
 const app = express();
 app.use(express.json());
-process.env.ADMIN_API_KEY = "TEST_API_KEY_123";
+process.env.ADMIN_API_KEY = "DUMMY_SECRET_FOR_TESTING_ONLY";
 app.use("/api/admin", adminRoutes);
 
 describe("Admin Transactional User Deletion", () => {
@@ -88,7 +88,7 @@ describe("Admin Transactional User Deletion", () => {
   it("should securely delete user and all dependencies in a transaction", async () => {
     const res = await request(app)
       .delete(`/api/admin/users/${studentUser._id}`)
-      .set("x-api-key", "TEST_API_KEY_123");
+      .set("x-api-key", "test-secret-key");
 
     expect(res.statusCode).toEqual(200);
 
@@ -111,7 +111,7 @@ describe("Admin Transactional User Deletion", () => {
 
     const res = await request(app)
       .delete(`/api/admin/users/${studentUser._id}`)
-      .set("x-api-key", "TEST_API_KEY_123");
+      .set("x-api-key", "test-secret-key");
 
     expect(res.statusCode).toEqual(500); // Because next(error) will eventually return 500
 

@@ -87,11 +87,6 @@ export default function LoginPage() {
 
         await fetchUser({ silent: false });
 
-        // Update the AuthContext state so ProtectedRoute recognizes the new user
-        await fetchUser();
-
-        await fetchUser({ silent: false });
-
         console.log("NAVIGATING TO:", destination);
 
         // Force navigation

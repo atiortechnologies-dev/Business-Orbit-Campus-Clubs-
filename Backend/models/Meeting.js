@@ -1,7 +1,6 @@
 /**
  * @file Meeting.js
  * @description Mongoose schema for scheduling and tracking meetings between startups and reviewers.
- * @architecture Captures meeting link, date, and lifecycle status (scheduled, completed, etc.).
  */
 
 const mongoose = require("mongoose");
@@ -22,9 +21,17 @@ const MeetingSchema = mongoose.Schema(
       type: Date,
       required: true,
     },
-    meeting_link: {
+    duration: {
       type: String,
-      required: true,
+      default: "60 minutes",
+    },
+    platform: {
+      type: String,
+      default: "Google Meet",
+    },
+    agenda: {
+      type: String,
+      default: "",
     },
     status: {
       type: String,
@@ -35,7 +42,4 @@ const MeetingSchema = mongoose.Schema(
   { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
 );
 
-/**
- * @module Meeting
- */
 module.exports = mongoose.model("Meeting", MeetingSchema);

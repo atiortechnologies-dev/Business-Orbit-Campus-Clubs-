@@ -1,8 +1,3 @@
-/**
- * @file StartupProduct.js
- * @description Mongoose model for defining the core product offering (Digital or Physical) of a startup.
- * @architecture Serves as the base data schema for a startup's main product definition within the database.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -44,8 +39,4 @@ const StartupProductSchema = new mongoose.Schema(
 
 StartupProductSchema.index({ startup_id: 1 });
 
-/**
- * @module StartupProduct
- * @description Exports the StartupProduct Mongoose model.
- */
 module.exports = mongoose.model("StartupProduct", StartupProductSchema);

@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { X } from "lucide-react";
+import { useEffect } from 'react';
+import { X } from 'lucide-react';
 
 // Centered dialog (backdrop, Escape-to-close, click-backdrop-to-close) —
 // same mechanics as Sidebar.jsx's mobile drawer, generalized here since
@@ -9,21 +9,17 @@ export default function Modal({ isOpen, onClose, title, children }) {
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-black/50"
-        onClick={onClose}
-        aria-hidden="true"
-      />
+      <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"
@@ -31,11 +27,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
         className="relative bg-surface-white rounded-xl border border-border-subtle shadow-overlay w-full max-w-md p-6 animate-slide-in"
       >
         <div className="flex items-start justify-between gap-4 mb-4">
-          {title && (
-            <h3 className="font-poppins font-semibold text-card text-text-heading">
-              {title}
-            </h3>
-          )}
+          {title && <h3 className="font-poppins font-semibold text-card text-text-heading">{title}</h3>}
           <button
             type="button"
             onClick={onClose}

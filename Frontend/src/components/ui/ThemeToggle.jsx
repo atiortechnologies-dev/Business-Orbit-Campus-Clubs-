@@ -1,5 +1,5 @@
-import { Sun, Moon } from "lucide-react";
-import { useTheme } from "@/components/ui/ThemeProvider";
+import { Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/components/ui/ThemeProvider';
 
 // Light/dark toggle button, shared by every header (auth, dashboard,
 // incubator). Reads/writes theme via ThemeProvider's useTheme().
@@ -10,7 +10,7 @@ import { useTheme } from "@/components/ui/ThemeProvider";
 // itself is already set correctly pre-paint by index.html's inline script,
 // but this component's own icon choice isn't until after that effect runs)
 // — rendering Sun/Moon before then would flash the wrong icon for a frame.
-export default function ThemeToggle({ size = 20, className = "" }) {
+export default function ThemeToggle({ size = 20, className = '' }) {
   const { theme, toggleTheme, mounted } = useTheme();
 
   if (!mounted) {
@@ -21,12 +21,10 @@ export default function ThemeToggle({ size = 20, className = "" }) {
     <button
       type="button"
       onClick={toggleTheme}
-      aria-label={
-        theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
-      }
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
       className={`p-2 rounded-full text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors ${className}`}
     >
-      {theme === "dark" ? (
+      {theme === 'dark' ? (
         <Sun size={size} strokeWidth={2} />
       ) : (
         <Moon size={size} strokeWidth={2} />

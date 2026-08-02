@@ -14,9 +14,6 @@ const EmailVerification = require("../models/EmailVerification");
 const PasswordReset = require("../models/PasswordReset");
 const ActivityLog = require("../models/ActivityLog");
 const Notification = require("../models/Notification");
-const UserSession = require("../models/UserSession");
-const AdminNotificationSetting = require("../models/AdminNotificationSetting");
-const AuditLog = require("../models/AuditLog");
 
 const MentorRequest = require("../models/MentorRequest");
 const MentorAssignment = require("../models/MentorAssignment");
@@ -26,8 +23,6 @@ const MentorReview = require("../models/MentorReview");
 const ChatRoom = require("../models/ChatRoom");
 const Message = require("../models/Message");
 
-const Chapter = require("../models/Chapter");
-const EventRegistration = require("../models/EventRegistration");
 const ChapterChangeRequest = require("../models/ChapterChangeRequest");
 const Meeting = require("../models/Meeting");
 const MeetingNotes = require("../models/MeetingNotes");
@@ -146,14 +141,8 @@ const deleteStartupDependencies = async (startupId, session = null) => {
   );
   const pitchSubmissionIds = pitchSubmissions.map((p) => p._id);
   if (pitchSubmissionIds.length > 0) {
-    await PitchDocument.deleteMany(
-      { submission_id: { $in: pitchSubmissionIds } },
-      opts,
-    );
-    await PitchSubmission.deleteMany(
-      { _id: { $in: pitchSubmissionIds } },
-      opts,
-    );
+    await PitchDocument.deleteMany({ submission_id: { $in: pitchSubmissionIds } }, opts);
+    await PitchSubmission.deleteMany({ _id: { $in: pitchSubmissionIds } }, opts);
   }
 
   // 6. Delete Incubation Ecosystem Relations (by Startup)
@@ -211,7 +200,6 @@ const deleteStartupDependencies = async (startupId, session = null) => {
   await ValidationSurvey.deleteMany({ startup_id: startupId }, opts);
   await ValidationChecklistItem.deleteMany({ startup_id: startupId }, opts);
   await ValidationEvidence.deleteMany({ startup_id: startupId }, opts);
-  await IncubationVerification.deleteMany({ startup_id: startupId }, opts);
 
   // 8. Delete MVP & Traction Models
   await ProductSubmission.deleteMany({ startup_id: startupId }, opts);
@@ -265,14 +253,6 @@ const deleteUserDependencies = async (userId, session = null) => {
   await PasswordReset.deleteMany({ user_id: userId }, opts);
   await ActivityLog.deleteMany({ user_id: userId }, opts);
   await Notification.deleteMany({ recipient_id: userId }, opts);
-  await UserSession.deleteMany({ user_id: userId }, opts);
-  await AdminNotificationSetting.deleteMany({ user_id: userId }, opts);
-  await AuditLog.updateMany(
-    { actor_id: userId },
-    { $set: { actor_id: null } },
-    opts,
-  );
-  await AtiorAssistanceRequest.deleteMany({ user_id: userId }, opts);
 
   // 3. Delete Mentor Relations (as mentor or student)
   await MentorRequest.deleteMany(
@@ -311,14 +291,8 @@ const deleteUserDependencies = async (userId, session = null) => {
     opts,
   );
 
-  // 4. Delete Chapter Change Requests and Event Registrations
+  // 4. Delete Chapter Change Requests
   await ChapterChangeRequest.deleteMany({ student_id: userId }, opts);
-  await EventRegistration.deleteMany({ user_id: userId }, opts);
-  await Chapter.updateMany(
-    { chapter_lead_id: userId },
-    { $unset: { chapter_lead_id: "" } },
-    opts,
-  );
 
   // 5. Delete ChatRooms & Messages where user is participant
   const chatRooms = await ChatRoom.find(
@@ -350,14 +324,8 @@ const deleteUserDependencies = async (userId, session = null) => {
   );
   const pitchSubmissionIds = pitchSubmissions.map((p) => p._id);
   if (pitchSubmissionIds.length > 0) {
-    await PitchDocument.deleteMany(
-      { submission_id: { $in: pitchSubmissionIds } },
-      opts,
-    );
-    await PitchSubmission.deleteMany(
-      { _id: { $in: pitchSubmissionIds } },
-      opts,
-    );
+    await PitchDocument.deleteMany({ submission_id: { $in: pitchSubmissionIds } }, opts);
+    await PitchSubmission.deleteMany({ _id: { $in: pitchSubmissionIds } }, opts);
   }
 
   // 8. Delete Investor/Founder Chat Rooms
@@ -520,7 +488,6 @@ const deleteUserDependencies = async (userId, session = null) => {
     { $unset: { updated_by: "" } },
     opts,
   );
-  await IncubationVerification.deleteMany({ user_id: userId }, opts);
 };
 
 /**

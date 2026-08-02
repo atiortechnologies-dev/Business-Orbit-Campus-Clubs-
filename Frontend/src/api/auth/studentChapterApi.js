@@ -16,11 +16,3 @@ export const getMyChapter = () => {
 export const getChapterStats = (chapterId) => {
   return api.get(`/chapter/${chapterId}/stats`);
 };
-
-/**
- * Request to change chapter
- * Route: POST /api/request-chapter-change
- */
-export const requestChapterChange = (data) => {
-  return api.post("/request-chapter-change", data);
-};

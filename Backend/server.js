@@ -60,11 +60,6 @@ const app = express();
 
 const PORT = process.env.PORT || 4000;
 
-const maintenanceMode = require("./middlewares/maintenanceMode");
-const settingsRoutes = require("./routes/admin/settings.routes");
-const auditLogRoutes = require("./routes/admin/auditLog.routes");
-const { initCronJobs } = require("./cron/archiveLogs");
-
 // Middlewares
 app.use(configureCors());
 app.use(express.json());
@@ -133,8 +128,6 @@ app.use("/api/student", launchRoutes);
 app.use("/api/admin", adminDashboardRoutes);
 
 app.use("/api/public", publicRoutes);
-app.use("/api/admin/settings", settingsRoutes);
-app.use("/api/admin/audit-log", auditLogRoutes);
 app.use("/api/admin", adminRoutes);
 app.use(
   "/api/mentor",
@@ -215,8 +208,6 @@ if (require.main === module) {
     console.info(
       `Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`,
     );
-    // Initialize scheduled jobs
-    initCronJobs();
   });
 }
 

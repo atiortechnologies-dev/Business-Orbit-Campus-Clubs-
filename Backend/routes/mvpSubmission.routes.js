@@ -1,14 +1,4 @@
-/**
- * @file mvpSubmission.routes.js
- * @description Routes for MVP submission operations.
- * @architecture Provides endpoints for students to submit, view, and update their MVP details.
- */
 const express = require("express");
-/**
- * @desc    MVP Submission routing module
- * @route   /api/mvp-submission
- * @access  Private (Student)
- */
 const router = express.Router();
 
 const {

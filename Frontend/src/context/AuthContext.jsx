@@ -44,7 +44,6 @@ export const AuthProvider = ({ children }) => {
       const response = await getMe();
       const normalizedUser = normalizeUser(response);
       setUser(normalizedUser ?? null);
-      return normalizedUser ?? null;
     } catch (error) {
       setUser(null);
       return null;
@@ -53,47 +52,17 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     }
-  }, []); // ✅ FIXED: No external dependencies
+  }, []);
 
-  // Handle storage changes across tabs
-  const handleStorageChange = useCallback(
-    (e) => {
-      // If tokens were cleared in another tab
-      if (
-        (e.key === "accessToken" || e.key === "refreshToken") &&
-        !e.newValue
-      ) {
-        setUser(null);
-        setLoading(false);
-      }
-
-      // If any auth-related storage changed, refetch user silently
-      if (
-        e.key === "accessToken" ||
-        e.key === "refreshToken" ||
-        e.key === null
-      ) {
-        // null key means storage was cleared
-        fetchUser({ silent: true }).catch(() => {
-          setUser(null);
-        });
-      }
-    },
-    [fetchUser],
-  );
-
-  // Initialize on mount
-  useEffect(() => {
-    // Check if user is already logged in
-    const token = localStorage.getItem("accessToken");
-
-    if (token) {
-      // Try to fetch user data, but allow rendering to proceed
-      fetchUser({ silent: true }).catch(() => {
-        setUser(null);
-        setLoading(false);
-      });
-    } else {
+  // Clears the httpOnly auth cookies on the backend (frontend JS can't read
+  // or delete them directly) and resets local user state.
+  const logout = useCallback(async () => {
+    try {
+      await logoutUser();
+    } catch (error) {
+      // Even if the request fails, clear local state so the UI reflects
+      // a logged-out user; the cookies will simply expire on their own.
+    } finally {
       setUser(null);
       setLoading(false);
     }
@@ -108,29 +77,14 @@ export const AuthProvider = ({ children }) => {
 
   // Optional: Set up interval to refresh user every 10 minutes (keep-alive)
   useEffect(() => {
-    if (!user) return;
+    fetchUser({ silent: true });
+  }, []);
 
-    const interval = setInterval(
-      () => {
-        fetchUser({ silent: true }).catch(() => {
-          setUser(null);
-        });
-      },
-      10 * 60 * 1000,
-    ); // 10 minutes
-
-    return () => clearInterval(interval);
-  }, [user, fetchUser]);
-
-  const value = {
-    user,
-    setUser,
-    loading,
-    fetchUser,
-    isAuthenticated: !!user && !!localStorage.getItem("accessToken"),
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, setUser, loading, fetchUser, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {

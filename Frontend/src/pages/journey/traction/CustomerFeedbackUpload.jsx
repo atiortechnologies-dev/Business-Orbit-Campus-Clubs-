@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ChevronRight,
   UploadCloud,
@@ -11,147 +11,59 @@ import {
   Users,
   BarChart3,
   ClipboardCheck,
-  AlertCircle,
-} from "lucide-react";
-import DashboardShell from "@/components/dashboard/DashboardShell";
-import Input from "@/components/ui/Input";
-import ComingSoon from "@/components/ui/ComingSoon";
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import api from "@/api/axiosInstance";
+} from 'lucide-react';
+import DashboardShell from '@/components/dashboard/DashboardShell';
+import Input from '@/components/ui/Input';
+import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const CHECKLIST = [
-  { icon: FileText, label: "Survey Results" },
-  { icon: NotebookPen, label: "Interview Notes" },
-  { icon: ImageIcon, label: "User Screenshots" },
-  { icon: Video, label: "Recorded Sessions" },
+  { icon: FileText, label: 'Survey Results' },
+  { icon: NotebookPen, label: 'Interview Notes' },
+  { icon: ImageIcon, label: 'User Screenshots' },
+  { icon: Video, label: 'Recorded Sessions' },
 ];
 
 const REFLECTION_PROMPTS = [
-  {
-    id: "liked",
-    label: "What did users like?",
-    hint: "Reflect on the high points of the user experience.",
-  },
-  {
-    id: "challenges",
-    label: "What challenges did users face?",
-    hint: "Identify friction points and confusion.",
-  },
-  {
-    id: "improvements",
-    label: "What improvements will you make?",
-    hint: "Outline your immediate action plan.",
-  },
+  { id: 'liked', label: 'What did users like?', hint: 'Reflect on the high points of the user experience.' },
+  { id: 'challenges', label: 'What challenges did users face?', hint: 'Identify friction points and confusion.' },
+  { id: 'improvements', label: 'What improvements will you make?', hint: 'Outline your immediate action plan.' },
 ];
 
 const TEXTAREA_CLASS =
-  "w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter p-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black transition-all";
+  'w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter p-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black transition-all';
 
 export default function CustomerFeedbackUploadPage() {
-  useDocumentTitle("Customer Feedback — BOCC");
-  const [summary, setSummary] = useState({
-    total: "",
-    positive: "",
-    suggestions: "",
-    issues: "",
-  });
-  const [reflection, setReflection] = useState({
-    liked: "",
-    challenges: "",
-    improvements: "",
-  });
-  const [documents, setDocuments] = useState([]);
-  const [errorMsg, setErrorMsg] = useState("");
+  useDocumentTitle('Customer Feedback — BOCC');
 
-  useEffect(() => {
-    setErrorMsg("");
-    api
-      .get("/traction/submission")
-      .then((res) => {
-        const docs = res?.data?.data?.documents;
-        if (Array.isArray(docs)) {
-          setDocuments(
-            docs.map((doc) => ({
-              id: doc.file_id,
-              name: doc.file_name || "document",
-              type: doc.file_type || "Document",
-            })),
-          );
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch traction documents:", err);
-        setErrorMsg(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to fetch documents.",
-        );
-      });
-  }, []);
+  const [summary, setSummary] = useState({ total: '', positive: '', suggestions: '', issues: '' });
+  const [reflection, setReflection] = useState({ liked: '', challenges: '', improvements: '' });
 
-  const updateSummary = (field) => (e) =>
-    setSummary((prev) => ({ ...prev, [field]: e.target.value }));
-  const updateReflection = (field) => (e) =>
-    setReflection((prev) => ({ ...prev, [field]: e.target.value }));
-
-  const handleDeleteDocument = (docId) => {
-    setErrorMsg("");
-    api
-      .delete(`/traction/submission/document/${docId}`)
-      .then(() => {
-        setDocuments((prev) => prev.filter((d) => d.id !== docId));
-      })
-      .catch((err) => {
-        console.error("Failed to delete document:", err);
-        setErrorMsg(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to delete document.",
-        );
-      });
-  };
+  const updateSummary = (field) => (e) => setSummary((prev) => ({ ...prev, [field]: e.target.value }));
+  const updateReflection = (field) => (e) => setReflection((prev) => ({ ...prev, [field]: e.target.value }));
 
   return (
     <DashboardShell pageId="customer-feedback-upload">
       <nav className="mb-2 flex items-center gap-2 text-text-muted font-inter font-normal text-small">
-        <Link
-          to="/dashboard"
-          className="hover:text-text-heading transition-colors"
-        >
-          Dashboard
-        </Link>
+        <Link to="/dashboard" className="hover:text-text-heading transition-colors">Dashboard</Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <Link
-          to="/build-startup/journey/traction"
-          className="hover:text-text-heading transition-colors"
-        >
-          Traction
-        </Link>
+        <Link to="/build-startup/journey/traction" className="hover:text-text-heading transition-colors">Traction</Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <span className="text-text-heading font-semibold">
-          Customer Feedback
-        </span>
+        <span className="text-text-heading font-semibold">Customer Feedback</span>
       </nav>
 
       <div className="mb-10">
-        <h1 className="font-poppins font-semibold text-page text-text-heading mb-2">
-          Customer Feedback
-        </h1>
+        <h1 className="font-poppins font-semibold text-page text-text-heading mb-2">Customer Feedback</h1>
         <p className="font-inter text-body text-text-body max-w-2xl">
-          Upload evidence showing how real users interacted with your product
-          and what improvements they suggested.
+          Upload evidence showing how real users interacted with your product and what
+          improvements they suggested.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
         {/* Left column: upload + summary */}
         <div className="lg:col-span-8 space-y-6">
-          {errorMsg && (
-            <div className="p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
-              <AlertCircle size={16} className="shrink-0" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
 
           <section className="bg-surface-white border border-border-subtle rounded-lg p-8">
             <h3 className="font-inter font-semibold text-caption text-text-muted uppercase tracking-wider mb-6">
@@ -160,17 +72,11 @@ export default function CustomerFeedbackUploadPage() {
 
             <ComingSoon label="Upload Evidence" position="top">
               <div className="border-2 border-dashed border-border-subtle rounded-xl p-12 flex flex-col items-center justify-center text-center hover:border-brand-black transition-all duration-300 bg-canvas-bg w-full">
-                <UploadCloud
-                  size={40}
-                  strokeWidth={1.5}
-                  className="text-text-muted mb-4"
-                />
-                <h4 className="font-poppins font-semibold text-card text-text-heading mb-2">
-                  Drag &amp; Drop Files
-                </h4>
+                <UploadCloud size={40} strokeWidth={1.5} className="text-text-muted mb-4" />
+                <h4 className="font-poppins font-semibold text-card text-text-heading mb-2">Drag &amp; Drop Files</h4>
                 <p className="font-inter text-small text-text-muted mb-6 max-w-md">
-                  Support for Survey Results, Feedback Documents, Screenshots,
-                  Interview Notes, User Testing Reports, and Recorded Sessions.
+                  Support for Survey Results, Feedback Documents, Screenshots, Interview Notes,
+                  User Testing Reports, and Recorded Sessions.
                 </p>
                 <span className="inline-flex px-6 py-2 bg-brand-black text-white rounded-lg font-poppins font-semibold text-caption uppercase tracking-wider">
                   Select Files
@@ -178,51 +84,15 @@ export default function CustomerFeedbackUploadPage() {
               </div>
             </ComingSoon>
 
-            {documents.length > 0 && (
-              <div className="mt-6 space-y-3">
-                <h4 className="font-inter font-semibold text-caption text-text-heading uppercase tracking-wider mb-2">
-                  Uploaded Documents
-                </h4>
-                {documents.map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between p-3 border border-border-subtle rounded-lg bg-surface-white"
-                  >
-                    <div className="flex items-center gap-3">
-                      <FileText size={18} className="text-text-muted" />
-                      <span className="font-inter text-small text-text-body">
-                        {doc.name}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => handleDeleteDocument(doc.id)}
-                      className="text-error hover:opacity-80 transition-opacity font-inter text-small"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
             <div className="mt-8">
               <h4 className="font-inter font-semibold text-caption text-text-heading uppercase tracking-wider mb-4">
                 Required Documents Checklist
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 {CHECKLIST.map(({ icon: Icon, label }) => (
-                  <div
-                    key={label}
-                    className="flex items-center gap-3 p-3 border border-border-subtle rounded-lg bg-canvas-bg"
-                  >
-                    <Icon
-                      size={18}
-                      strokeWidth={2}
-                      className="text-text-muted"
-                    />
-                    <span className="font-inter text-small text-text-body">
-                      {label}
-                    </span>
+                  <div key={label} className="flex items-center gap-3 p-3 border border-border-subtle rounded-lg bg-canvas-bg">
+                    <Icon size={18} strokeWidth={2} className="text-text-muted" />
+                    <span className="font-inter text-small text-text-body">{label}</span>
                   </div>
                 ))}
               </div>
@@ -240,20 +110,17 @@ export default function CustomerFeedbackUploadPage() {
                 type="number"
                 placeholder="e.g. 24"
                 value={summary.total}
-                onChange={updateSummary("total")}
+                onChange={updateSummary('total')}
               />
               <Input
                 id="positiveFeedback"
                 label="Positive Feedback (%)"
                 placeholder="e.g. 75%"
                 value={summary.positive}
-                onChange={updateSummary("positive")}
+                onChange={updateSummary('positive')}
               />
               <div className="col-span-1 md:col-span-2 flex flex-col gap-1">
-                <label
-                  htmlFor="suggestions"
-                  className="text-caption font-medium text-text-heading font-inter"
-                >
+                <label htmlFor="suggestions" className="text-caption font-medium text-text-heading font-inter">
                   Improvement Suggestions
                 </label>
                 <textarea
@@ -261,15 +128,12 @@ export default function CustomerFeedbackUploadPage() {
                   rows={3}
                   placeholder="List key areas users want improved..."
                   value={summary.suggestions}
-                  onChange={updateSummary("suggestions")}
+                  onChange={updateSummary('suggestions')}
                   className={TEXTAREA_CLASS}
                 />
               </div>
               <div className="col-span-1 md:col-span-2 flex flex-col gap-1">
-                <label
-                  htmlFor="issues"
-                  className="text-caption font-medium text-text-heading font-inter"
-                >
+                <label htmlFor="issues" className="text-caption font-medium text-text-heading font-inter">
                   Critical Issues Identified
                 </label>
                 <textarea
@@ -277,7 +141,7 @@ export default function CustomerFeedbackUploadPage() {
                   rows={3}
                   placeholder="What are the absolute dealbreakers?"
                   value={summary.issues}
-                  onChange={updateSummary("issues")}
+                  onChange={updateSummary('issues')}
                   className={TEXTAREA_CLASS}
                 />
               </div>
@@ -287,6 +151,7 @@ export default function CustomerFeedbackUploadPage() {
 
         {/* Right column: reflection + actions */}
         <div className="lg:col-span-4 space-y-6">
+
           <section className="bg-surface-white border-2 border-brand-black rounded-lg p-8">
             <h3 className="font-inter font-semibold text-caption text-text-heading uppercase tracking-wider mb-6 flex items-center gap-2">
               <Brain size={16} strokeWidth={2} />
@@ -295,15 +160,10 @@ export default function CustomerFeedbackUploadPage() {
             <div className="space-y-6">
               {REFLECTION_PROMPTS.map(({ id, label, hint }) => (
                 <div key={id}>
-                  <label
-                    htmlFor={id}
-                    className="font-inter font-semibold text-small text-text-heading block mb-1"
-                  >
+                  <label htmlFor={id} className="font-inter font-semibold text-small text-text-heading block mb-1">
                     {label}
                   </label>
-                  <p className="font-inter text-caption text-text-muted mb-2">
-                    {hint}
-                  </p>
+                  <p className="font-inter text-caption text-text-muted mb-2">{hint}</p>
                   <textarea
                     id={id}
                     rows={4}
@@ -337,12 +197,10 @@ export default function CustomerFeedbackUploadPage() {
       <div className="mt-16 pt-10 border-t border-divider-line">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
           <div className="md:col-span-1">
-            <h5 className="font-poppins font-semibold text-card text-text-heading">
-              Validation Standards
-            </h5>
+            <h5 className="font-poppins font-semibold text-card text-text-heading">Validation Standards</h5>
             <p className="font-inter text-small text-text-muted mt-2">
-              All uploaded data is analyzed by the Student Ideation Committee to
-              ensure rigorous testing standards were met.
+              All uploaded data is analyzed by the Student Ideation Committee to ensure
+              rigorous testing standards were met.
             </p>
           </div>
           <div className="md:col-span-2">
@@ -351,18 +209,10 @@ export default function CustomerFeedbackUploadPage() {
                 <Users size={22} strokeWidth={2} className="text-brand-black" />
               </div>
               <div className="w-16 h-16 border-2 border-brand-black rounded-full flex items-center justify-center bg-surface-white">
-                <BarChart3
-                  size={22}
-                  strokeWidth={2}
-                  className="text-brand-black"
-                />
+                <BarChart3 size={22} strokeWidth={2} className="text-brand-black" />
               </div>
               <div className="w-16 h-16 border-2 border-brand-black rounded-full flex items-center justify-center bg-surface-white">
-                <ClipboardCheck
-                  size={22}
-                  strokeWidth={2}
-                  className="text-brand-black"
-                />
+                <ClipboardCheck size={22} strokeWidth={2} className="text-brand-black" />
               </div>
             </div>
           </div>

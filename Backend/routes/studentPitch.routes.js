@@ -10,7 +10,7 @@ const {
   submitPitch,
   getMyPitches,
   getPitchDetailsStudent,
-  withdrawPitch,
+  withdrawPitch
 } = require("../controllers/pitchSubmission.controller");
 
 // @route   POST /api/student/pitches

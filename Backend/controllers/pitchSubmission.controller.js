@@ -18,19 +18,10 @@ const Notification = require("../models/Notification"); // Optional based on exi
  * @route   POST /api/student/pitches
  */
 exports.submitPitch = asyncHandler(async (req, res) => {
-  const {
-    startup_id,
-    investor_id,
-    funding_requirement,
-    valuation,
-    startup_stage,
-    documents,
-  } = req.body;
+  const { startup_id, investor_id, funding_requirement, valuation, startup_stage, documents } = req.body;
 
   if (!startup_id || !investor_id || !funding_requirement || !startup_stage) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Missing required fields" });
+    return res.status(400).json({ success: false, message: "Missing required fields" });
   }
 
   const session = await mongoose.startSession();
@@ -38,54 +29,38 @@ exports.submitPitch = asyncHandler(async (req, res) => {
 
   try {
     // Check if a submission already exists
-    const existing = await PitchSubmission.findOne({
-      startup_id,
-      investor_id,
-    }).session(session);
+    const existing = await PitchSubmission.findOne({ startup_id, investor_id }).session(session);
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        message: "A pitch has already been submitted to this investor",
-      });
+      return res.status(400).json({ success: false, message: "A pitch has already been submitted to this investor" });
     }
 
-    const [submission] = await PitchSubmission.create(
-      [
-        {
-          startup_id,
-          investor_id,
-          funding_requirement,
-          valuation,
-          startup_stage,
-          status: "submitted",
-        },
-      ],
-      { session },
-    );
+    const [submission] = await PitchSubmission.create([{
+      startup_id,
+      investor_id,
+      funding_requirement,
+      valuation,
+      startup_stage,
+      status: "submitted"
+    }], { session });
 
     if (documents && Array.isArray(documents)) {
-      const docsToInsert = documents.map((doc) => ({
+      const docsToInsert = documents.map(doc => ({
         submission_id: submission._id,
         document_type: doc.document_type || "pitch_deck",
         file_name: doc.file_name,
-        file_url: doc.file_url,
+        file_url: doc.file_url
       }));
       await PitchDocument.insertMany(docsToInsert, { session });
     }
 
     if (Notification) {
-      await Notification.create(
-        [
-          {
-            recipient_id: investor_id,
-            title: "New Pitch Received",
-            message: "A startup has submitted a new pitch deck to you.",
-            type: "pitch_submission",
-            related_id: submission._id,
-          },
-        ],
-        { session },
-      );
+      await Notification.create([{
+        recipient_id: investor_id,
+        title: "New Pitch Received",
+        message: "A startup has submitted a new pitch deck to you.",
+        type: "pitch_submission",
+        related_id: submission._id
+      }], { session });
     }
 
     await session.commitTransaction();
@@ -104,18 +79,16 @@ exports.submitPitch = asyncHandler(async (req, res) => {
  */
 exports.getMyPitches = asyncHandler(async (req, res) => {
   const { startup_id } = req.query; // Assuming startup_id is passed as query, or we can fetch from User if 1:1
-
+  
   const query = startup_id ? { startup_id } : {};
   // Ideally, if a student can have multiple startups, filter by startup_id. If not, we might need to find startups by student first.
-
+  
   const submissions = await PitchSubmission.find(query)
     .populate("investor_id", "full_name email")
     .populate("startup_id", "startup_name category")
     .sort({ submitted_at: -1 });
 
-  res
-    .status(200)
-    .json({ success: true, count: submissions.length, data: submissions });
+  res.status(200).json({ success: true, count: submissions.length, data: submissions });
 });
 
 /**
@@ -130,9 +103,7 @@ exports.getPitchDetailsStudent = asyncHandler(async (req, res) => {
     .populate("startup_id", "startup_name category");
 
   if (!submission) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Pitch submission not found" });
+    return res.status(404).json({ success: false, message: "Pitch submission not found" });
   }
 
   const documents = await PitchDocument.find({ submission_id: pitchId });
@@ -149,16 +120,11 @@ exports.withdrawPitch = asyncHandler(async (req, res) => {
 
   const submission = await PitchSubmission.findById(pitchId);
   if (!submission) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Pitch submission not found" });
+    return res.status(404).json({ success: false, message: "Pitch submission not found" });
   }
 
   if (submission.status !== "draft" && submission.status !== "submitted") {
-    return res.status(400).json({
-      success: false,
-      message: "Cannot withdraw a pitch that is already under review",
-    });
+    return res.status(400).json({ success: false, message: "Cannot withdraw a pitch that is already under review" });
   }
 
   const session = await mongoose.startSession();
@@ -167,11 +133,9 @@ exports.withdrawPitch = asyncHandler(async (req, res) => {
   try {
     await PitchDocument.deleteMany({ submission_id: pitchId }, { session });
     await PitchSubmission.findByIdAndDelete(pitchId, { session });
-
+    
     await session.commitTransaction();
-    res
-      .status(200)
-      .json({ success: true, message: "Pitch withdrawn successfully" });
+    res.status(200).json({ success: true, message: "Pitch withdrawn successfully" });
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -195,9 +159,7 @@ exports.getReceivedPitches = asyncHandler(async (req, res) => {
     .populate("startup_id", "startup_name category stage")
     .sort({ submitted_at: -1 });
 
-  res
-    .status(200)
-    .json({ success: true, count: submissions.length, data: submissions });
+  res.status(200).json({ success: true, count: submissions.length, data: submissions });
 });
 
 /**
@@ -208,15 +170,11 @@ exports.getPitchDetailsInvestor = asyncHandler(async (req, res) => {
   const { pitchId } = req.params;
   const investorId = req.user._id;
 
-  const submission = await PitchSubmission.findOne({
-    _id: pitchId,
-    investor_id: investorId,
-  }).populate("startup_id", "startup_name category stage idea");
+  const submission = await PitchSubmission.findOne({ _id: pitchId, investor_id: investorId })
+    .populate("startup_id", "startup_name category stage idea");
 
   if (!submission) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Pitch submission not found" });
+    return res.status(404).json({ success: false, message: "Pitch submission not found" });
   }
 
   // Update status to viewed if it's currently submitted
@@ -247,13 +205,11 @@ exports.updatePitchStatus = asyncHandler(async (req, res) => {
   const submission = await PitchSubmission.findOneAndUpdate(
     { _id: pitchId, investor_id: investorId },
     { status },
-    { new: true },
+    { new: true }
   );
 
   if (!submission) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Pitch submission not found" });
+    return res.status(404).json({ success: false, message: "Pitch submission not found" });
   }
 
   // Optionally send notification back to startup
@@ -267,7 +223,7 @@ exports.updatePitchStatus = asyncHandler(async (req, res) => {
         title: "Pitch Status Updated",
         message: `Your pitch to an investor has been marked as ${status}.`,
         type: "pitch_update",
-        related_id: submission._id,
+        related_id: submission._id
       });
     }
   }
