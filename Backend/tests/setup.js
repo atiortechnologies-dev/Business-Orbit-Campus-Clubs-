@@ -16,7 +16,12 @@ beforeAll(async () => {
 
   // Automatically derive a test database name.
   if (uri.includes("mongodb+srv")) {
-    uri = uri.replace(/\/([^/?]+)(\?|$)/, "/$1_test$2");
+    const dbNameMatch = uri.match(/\/([^/?]+)(\?|$)/);
+    if (dbNameMatch) {
+      uri = uri.replace(/\/([^/?]+)(\?|$)/, "/$1_test$2");
+    } else {
+      uri = uri.replace(/\/?(\?|$)/, "/test_db$1");
+    }
   } else if (!uri.includes("test")) {
     const parts = uri.split("/");
     const dbName = parts.pop();
