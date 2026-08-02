@@ -9,11 +9,9 @@ const api = axios.create({
   },
 });
 
-// NOTE: Auth is now handled via httpOnly cookies (accessToken / refreshToken)
-// set by the backend on login/register/verify-otp. The browser attaches them
-// automatically on every request because of `withCredentials: true` above,
-// so there's no request interceptor reading/attaching a token anymore —
-// and, importantly, no way for frontend JS to read or tamper with them.
+// Track if we're already refreshing to prevent multiple simultaneous refreshes
+let isRefreshing = false;
+let failedQueue = [];
 
 // Add state for queuing requests during token refresh
 let isRefreshing = false;
@@ -32,10 +30,10 @@ const processQueue = (error, token = null) => {
 
 // Single Unified Response Interceptor
 api.interceptors.response.use(
-  // Success Case: Directly return response.data for all API calls
+  // Success Case
   (response) => response.data,
 
-  // Error Case: Handle 401 Refresh & Formatted Errors
+  // Error Case
   async (error) => {
     const originalRequest = error.config;
 
@@ -109,14 +107,26 @@ api.interceptors.response.use(
     // Handle 403 Forbidden
     if (error.response?.status === 403) {
       console.error("Access Forbidden: Invalid Role permissions");
+      if (window.location.pathname !== "/unauthorized") {
+        window.location.href = "/unauthorized";
+      }
     }
 
-    // Formatted Error Object (preserves error.response and error.data for components)
+    // Handle network errors
+    if (!error.response) {
+      console.error("Network error:", error.message);
+      return Promise.reject(
+        new Error("Network error. Please check your connection."),
+      );
+    }
+
+    // Format error object
     const customError = new Error(
       error.response?.data?.message || error.message || "Something went wrong",
     );
     customError.response = error.response;
     customError.data = error.response?.data;
+    customError.status = error.response?.status;
 
     return Promise.reject(customError);
   },

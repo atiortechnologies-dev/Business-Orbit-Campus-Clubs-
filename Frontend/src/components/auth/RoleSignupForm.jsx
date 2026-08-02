@@ -87,6 +87,8 @@ export default function RoleSignupForm({
 
       await fetchUser({ silent: false });
 
+      await fetchUser({ silent: false });
+
       // Safe navigation using response payload
       const redirectTo = res.data?.redirect_to || "/email-verification";
       navigate(redirectTo);

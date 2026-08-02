@@ -1,10 +1,11 @@
-import { getMe, logoutUser } from "@/api/auth/authApi";
+import { getMe } from "@/api/auth/authApi";
 import {
   createContext,
   useContext,
   useEffect,
   useState,
   useCallback,
+  useRef,
 } from "react";
 
 const AuthContext = createContext(null);
@@ -29,7 +30,9 @@ const normalizeUser = (response) => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const tokenRefreshPromiseRef = useRef(null); // Prevent concurrent refreshes
 
+  // Fetch user from API
   const fetchUser = useCallback(async (options = {}) => {
     const { silent = false } = options;
 
@@ -43,17 +46,65 @@ export const AuthProvider = ({ children }) => {
       if (normalizedUser) {
         localStorage.setItem("isLoggedIn", "true");
         setUser(normalizedUser);
+        return normalizedUser;
       } else {
         localStorage.removeItem("isLoggedIn");
         setUser(null);
+        return null;
       }
     } catch {
       localStorage.removeItem("isLoggedIn");
       setUser(null);
+      return null;
     } finally {
+      if (!silent) {
+        setLoading(false);
+      }
+    }
+  }, []); // ✅ FIXED: No external dependencies
+
+  // Handle storage changes across tabs
+  const handleStorageChange = useCallback(
+    (e) => {
+      // If tokens were cleared in another tab
+      if (
+        (e.key === "accessToken" || e.key === "refreshToken") &&
+        !e.newValue
+      ) {
+        setUser(null);
+        setLoading(false);
+      }
+
+      // If any auth-related storage changed, refetch user silently
+      if (
+        e.key === "accessToken" ||
+        e.key === "refreshToken" ||
+        e.key === null
+      ) {
+        // null key means storage was cleared
+        fetchUser({ silent: true }).catch(() => {
+          setUser(null);
+        });
+      }
+    },
+    [fetchUser],
+  );
+
+  // Initialize on mount
+  useEffect(() => {
+    // Check if user is already logged in
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      // Try to fetch user data, but allow rendering to proceed
+      fetchUser({ silent: true }).catch(() => {
+        setUser(null);
+        setLoading(false);
+      });
+    } else {
+      setUser(null);
       setLoading(false);
     }
-  }, []);
 
   // Clears the httpOnly auth cookies on the backend (frontend JS can't read
   // or delete them directly) and resets local user state.
@@ -69,15 +120,42 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => {
-    fetchUser({ silent: true });
-  }, [fetchUser]);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [fetchUser, handleStorageChange]); // ✅ FIXED: Proper dependencies
 
-  return (
-    <AuthContext.Provider value={{ user, setUser, loading, fetchUser, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  // Optional: Set up interval to refresh user every 10 minutes (keep-alive)
+  useEffect(() => {
+    if (!user) return;
+
+    const interval = setInterval(
+      () => {
+        fetchUser({ silent: true }).catch(() => {
+          setUser(null);
+        });
+      },
+      10 * 60 * 1000,
+    ); // 10 minutes
+
+    return () => clearInterval(interval);
+  }, [user, fetchUser]);
+
+  const value = {
+    user,
+    setUser,
+    loading,
+    fetchUser,
+    isAuthenticated: !!user && !!localStorage.getItem("accessToken"),
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
+};
