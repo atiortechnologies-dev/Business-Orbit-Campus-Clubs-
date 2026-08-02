@@ -145,11 +145,13 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 
 **Shared:**
 
-- `components/layout/Sidebar.jsx` — every portal's sidebar footer shows a
-  hardcoded name/initials/role; needs real authenticated-user data once
-  a session exists, one place for all six portal shells. The "Log Out"
-  row below it, however, is fully real — calls `useAuth().logout()` then
-  navigates to `/login`, same one-place-for-all-six-shells fix.
+- `components/layout/Sidebar.jsx` — the hardcoded name/initials/role
+  footer card mentioned in earlier revisions of this doc has been removed
+  entirely (it visually read as a clickable profile button but wasn't
+  one — real profile access now lives at the header avatar on every
+  shell instead). The "Log Out" row is fully real — calls
+  `useAuth().logout()` then navigates to `/login`, one place for all six
+  portal shells.
 
 **Known frontend gap — dead "Save Draft" controls (not a backend TODO):**
 Found during a pass auditing every save/submit button for false-success
@@ -386,8 +388,11 @@ shared logic in `src/components/auth/RoleSignupForm.jsx`
   is tied to a real logged-in user; there's no per-user state anywhere yet.
 - **Real:** "Start Your Journey" / "Begin" → real navigation to
   `/build-startup/journey`. "View All" → real navigation to `/notifications`.
-  "Profile" quick action → real navigation to `/settings`. Header Settings
-  icon and avatar (in `DashboardShell`) → real navigation to `/settings`.
+  The Quick Actions card labeled "Settings" (was mislabeled "Profile"
+  before this pass — its own copy already said "Manage your account" /
+  "Edit →", which is Settings behavior, not a public-profile view) →
+  `/settings`. Header Settings icon (in `DashboardShell`) → `/settings`;
+  header avatar → the new `/profile` (see below), not `/settings`.
   The hero's illustration placeholder is now a custom inline SVG ("idea
   spark" motif — radiating rays around a central hub, fitting the
   student's current Ideation stage), same geometric line-art language as
@@ -611,7 +616,23 @@ progress.
 - **Stub:** Save Changes persists nothing — reload and every edit is gone.
   Change Password's `// TODO(backend)` is at `handlePasswordSubmit` in
   `Settings.jsx`; Delete Account's is at `handleDeleteConfirm`.
-- No more "Coming Soon" items on this page.
+- No more "Coming Soon" items on this page. Header now includes a "View
+  Public Profile" link to the new `/profile` below.
+
+### `/profile` — `src/pages/Profile.jsx`
+
+_(New — read-only "what mentors/investors/incubators see" view, same
+split every other portal got this pass. Header avatar now points here
+instead of `/settings`; the gear icon still goes to `/settings`.)_
+
+- **Real:** fetches via the existing `getStudentProfile()`
+  (`src/api/dashboardApi.js`, same call `Settings.jsx` already makes) and
+  renders Name, College, Branch/Degree, Graduation Year, LinkedIn/
+  Portfolio links, and Skills read-only, plus an "Edit Settings" link
+  back to `/settings`. Email/phone are intentionally left off — account
+  details, not part of the public profile.
+- **Stub:** none — this is a real fetch of the same data Settings.jsx
+  already loads, just rendered without inputs.
 
 ### `/legal/privacy-policy` — `src/pages/legal/PrivacyPolicy.jsx`
 
@@ -650,33 +671,43 @@ the Incubator role's own portal below. Fills the "Incubators" nav item
 - **Coming Soon:** resume/document uploads, Save Draft, Withdraw, Open
   Conversation, Download Documents.
 
-### Freelancing — `src/pages/freelancing/*.jsx`
+### `/freelancing` — `src/pages/freelancing/Freelancing.jsx`
 
-_(Independent sample data from Admin's/Company's Opportunity screens —
-same no-cross-portal-wiring precedent as every other role pair in this
-app.)_
+_(New — the Student sidebar's "Freelancing" nav item is real again
+(`DashboardShell.jsx`'s `NAV_ITEMS`), but `/freelancing` itself now
+renders a full-page "coming soon" notice via the shared
+`components/ui/FeatureLockedNotice.jsx`, inside the normal `DashboardShell`
+— sidebar/header/footer stay intact, unlike the old disabled-tooltip
+`ComingSoon` treatment. `FeatureLockedNotice` is also reused by
+`IdeationAccessGate` below, since both are "full-page notice inside a
+shell" cases with only the copy differing.)_
 
-- **Coming Soon:** the Student sidebar's "Freelancing" nav item itself
-  (`DashboardShell.jsx`'s `NAV_ITEMS`) — flipped from a real link back to
-  `ComingSoon`, since freelancing is an upcoming feature. The screens
-  below are untouched and fully reachable by direct URL; only the nav
-  entry point is gated.
-
-- **Real:** `FreelancingApplicationForm.jsx` gates Submit on a written
-  Cover Letter and navigates to `ApplyConfirmation.jsx` on success.
-  `MyApplications.jsx`'s Active/Interviews/Rejected/Archived tabs are
-  genuine client-side filters over real application state (not hardcoded
-  counts) — each tab's number reflects what's actually in that category.
-- **Stub:** `FreelancingOpportunities.jsx`'s filters and 3 listed
-  opportunities are hardcoded. `// TODO(backend)` at
-  `FreelancingApplicationForm.jsx`'s `handleSubmit`:
-  `POST /api/opportunities/:id/applications`.
-- **Coming Soon:** resume upload, Save, Save Draft, Open Chat, Withdraw
-  Application.
+- **Real:** the notice itself and its navigation — nothing to stub, it's
+  an honest "not built yet" page, not a fake feature.
+- **Orphaned (pre-existing sub-flow, left as-is):**
+  `FreelancingOpportunities.jsx` (the old `/freelancing` landing),
+  `OpportunityDetail.jsx`, `FreelancingApplicationForm.jsx`,
+  `ApplyConfirmation.jsx`, `MyApplications.jsx` are all still real, built
+  screens with their own routes (`/freelancing/opportunity`,
+  `/freelancing/apply`, `/freelancing/applied`,
+  `/freelancing/applications`) — just no longer linked into from
+  `/freelancing` itself, so unreachable by nav now. Not deleted; this
+  batch didn't touch their content, only where `/freelancing` points.
 
 ### Mentor Network — `src/pages/mentors/*.jsx`
 
-_(Fills the "Mentors" nav stub.)_
+**Access control — `components/journey/IdeationAccessGate.jsx` (new):**
+wraps `/mentors/*` (and `/investors/*`, below) in `router.jsx`. Until a
+student's Ideation stage status is `"approved"` or `"completed"` (the
+same two-value "cleared" check `BuildStartupJourney.jsx:235` already
+uses), visiting either section renders the shared
+`FeatureLockedNotice` inside `DashboardShell` explaining it unlocks after
+Ideation is approved, instead of the real directory — same fail-closed-
+on-API-error behavior as `StageGuard`. The Student sidebar's "Mentors" /
+"Investors" nav items themselves needed no change; they were already
+real links with no gating at all before this, which is the bug this
+fixes. "Incubators" is intentionally left ungated for now — only Mentors
+and Investors were in scope for this pass.
 
 - **Real:** `MentorshipRequest.jsx` gates Submit Request on Startup Name +
   Problem Statement (same `canSubmit` pattern as every gated form here);
@@ -695,7 +726,7 @@ _(Fills the "Mentors" nav stub.)_
 
 ### Investor Network — `src/pages/investors/*.jsx`
 
-_(Fills the "Investors" nav stub.)_
+_(Also gated by `IdeationAccessGate` — see Mentor Network above.)_
 
 - **Real:** `SendPitchDeck.jsx` gates Send Pitch Deck on Startup Name +
   Elevator Pitch; submitting navigates into `InvestorConversation.jsx` —
@@ -841,8 +872,32 @@ _(Fills the last `real: false` stub in the Student sidebar — "Help".)_
   nothing — reload and every edit is gone. Update Password's
   `// TODO(backend)` is at `handlePasswordSubmit`; Deactivate Account's is
   at `handleDeactivateConfirm`.
-- **Coming Soon:** View Public Profile (no public profile page exists yet),
-  Download Data Audit (a real file that was never generated anywhere).
+- **Coming Soon:** Download Data Audit (a real file that was never
+  generated anywhere). "View Public Profile" is no longer Coming Soon —
+  wired to the new `/incubator/profile` below.
+
+### `/incubator/profile` — `src/pages/incubator/Profile.jsx`
+
+_(New. Settings.jsx above is local-state-only — no `getMyProfile` wiring,
+a pre-existing stub, not something this pass adds — so this reads the
+same seeded shape rather than inventing a real fetch this page doesn't
+have either. `// TODO(backend)`: once `GET /incubator/profile` exists,
+wire both to it. `IncubatorShell` header had no gear icon before this
+pass — one was added, pointing at Settings; the avatar now points here
+instead of Settings.
+
+**Flag:** the whole Incubator portal remains unreachable from live
+navigation — a pre-existing bug from before this pass (no `/incubator`
+route is registered at all, only the `/incubators/*` student-facing
+marketplace exists; see `router.jsx`'s `_Incubator`, `_Applications`,
+etc. lazy imports, none of which are wired to a route). This page's lazy
+import follows the same `_` naming so it's not mistaken for reachable
+code. Not fixed here — out of scope, flagged previously and again now.)_
+
+- **Real:** renders incubator name, rep name, website, address, about
+  text, target stages, max startups, and industries read-only, plus an
+  "Edit Settings" link back to `/incubator/settings`.
+- **Stub:** same hardcoded seed values Settings.jsx starts with.
 
 ---
 
@@ -984,9 +1039,12 @@ itself was built from included this same nav, just never fully wired up):
 Dashboard, **Announcements**, Users (relabeled from "User Verification" —
 same route, `/admin/verification`), Startups (relabeled from "Startup
 Reviews" — same route, `/admin/reviews`), **Opportunities**, **Chapters**,
-Audit Log, **Settings**. The dead `Analytics` stub (linked to `#`, no
-page behind it) is gone. The header's gear icon now links to
-`/admin/settings` for real instead of showing a `ComingSoon` tooltip.
+Audit Log, ~~Settings~~. The dead `Analytics` stub (linked to `#`, no
+page behind it) is gone. The header's gear icon links to `/admin/settings`
+for real. The sidebar's own "Settings" entry was removed in a later
+pass — Settings is reachable via the header gear only now, matching
+every other portal (the sidebar item was inconsistent: real here, fake
+on Company, real on Incubator, absent everywhere else).
 
 ### `/admin/announcements` — `AnnouncementsDashboard.jsx`
 
@@ -1117,6 +1175,10 @@ reviewerNotes }`, then notify the posting company of the outcome. The
   deliberately not reusing Student/Incubator `Settings.jsx`'s Personal
   Info/Education/Skills layout, since the two screens answer different
   questions for different audiences.
+- Unlike every other role, Admin has no separate read-only "Profile"
+  page — admins aren't shown to other users the way a Mentor/Investor/
+  Company/Student/Incubator profile would be, so the header gear and
+  avatar both stay pointed at this one page.
 
 ---
 
@@ -1184,6 +1246,24 @@ larger `Settings.jsx`.)_
 - **Coming Soon:** Change Password, Notification Settings, Privacy &
   Security, Deactivate Account — same account-settings stub pattern as
   every other portal's settings screen.
+- Header now includes a "View Public Profile" link to `/investor/profile`
+  below — the gear icon still points here.
+
+### `/investor/profile` — `src/pages/investor/Profile.jsx`
+
+_(New — read-only "what students/startups see" view; `InvestorShell`'s
+header avatar now points here instead of `/investor/settings` (gear
+stays on Settings).)_
+
+- **Real:** fetches via the same `getMyProfile("investor")` Settings.jsx
+  uses, renders Full Name, Organization/Fund, Investment Stage, and
+  Industry Focus read-only, plus a `ComingSoon`-wrapped "Start
+  Conversation" CTA (no messaging system exists yet, same as every other
+  contact-a-user CTA in this app) and an "Edit Settings" link back.
+  Email/phone intentionally left off, same reasoning as Company/Student's
+  new Profile pages.
+- **Stub:** none — real fetch of the same data Settings.jsx already
+  loads.
 
 ---
 
@@ -1243,23 +1323,48 @@ one of which collided with this app's real Admin persona, "Alex Rivera.")_
   Follow-up" — all genuinely blocked on calendar/video-call infra or
   cross-linking that doesn't exist yet.
 
-### `/mentor/profile` — `src/pages/mentor/Profile.jsx`
+### `/mentor/settings` — `src/pages/mentor/Settings.jsx`
+
+_(New route — this file is what `Profile.jsx` used to be before this
+pass split it in two: this is the editable half, `Profile.jsx` below is
+now the read-only "what students see" half. Same header gear/avatar
+split every other portal now has, and the same reason it needed fixing:
+both icons pointed at the same page before.)_
 
 - **Real:** every field is a controlled input, Areas of Expertise chip
   add/remove (Enter to add, click × to remove — same pattern as Student
   Settings' Skills chips), Ideal Startup Stages checkboxes, Meeting
   Preference select, Change Photo is a real file picker with instant local
   preview (`URL.createObjectURL`, never uploaded), Save Changes shows a
-  real transient confirmation (2s auto-dismiss).
+  real transient confirmation (2s auto-dismiss), "View Public Profile"
+  link → `/mentor/profile`.
 - **Stub:** Save Changes persists nothing — reload and every edit is gone;
-  `// TODO(backend)` is at `handleSaveChanges`. Profile Completion (88%) is
-  a hardcoded constant, not derived from which fields are actually filled.
-- **Coming Soon:** "Preview Public Profile," all 4 Account Settings rows
-  (Change Password, Notification Settings, Privacy & Security, Deactivate
-  Account) — genuinely blocked on auth/account infra that doesn't exist
-  yet, unlike Student Settings' equivalent flows which have a real backing
-  `Modal` (there's no reason to duplicate that work here without a shared
+  `// TODO(backend)` is at `handleSaveChanges`.
+- **Coming Soon:** all 4 Account Settings rows (Change Password,
+  Notification Settings, Privacy & Security, Deactivate Account) —
+  genuinely blocked on auth/account infra that doesn't exist yet, unlike
+  Student Settings' equivalent flows which have a real backing `Modal`
+  (there's no reason to duplicate that work here without a shared
   account-settings component to reuse first).
+
+### `/mentor/profile` — `src/pages/mentor/Profile.jsx`
+
+_(New — previously this route was the edit form (now moved to
+`/mentor/settings` above); this is the read-only "what students and the
+BOCC community see" view. No live shared state with Settings yet — both
+independently seed the same starting values, matching this codebase's
+existing "static snapshot" stub convention rather than inventing a
+shared fetch neither page had before. `// TODO(backend)`: once `GET
+/mentor/profile` exists, wire both pages to it instead.)_
+
+- **Real:** renders the identity card (avatar, name, role, company/
+  industry badges, years experience, verified badge, expertise
+  highlights) and Mentorship Preferences (ideal stages, preferred
+  industries, availability, meeting preference) read-only, plus an "Edit
+  Settings" link back to `/mentor/settings`.
+- **Stub:** all shown values are the same hardcoded seed Settings.jsx
+  starts with — editing one doesn't update the other until a real fetch
+  exists.
 
 ---
 
@@ -1364,15 +1469,34 @@ every portal. Modeled on `pages/mentor/Profile.jsx`'s shape.)_
   record exists.
 - **Coming Soon:** Change Password, Notification Settings, Privacy &
   Security, Deactivate Account.
+- Header now includes a "View Public Profile" link to `/company/profile`
+  below.
+
+### `/company/profile` — `src/pages/company/Profile.jsx`
+
+_(New — read-only "what applicants see" view. Headlines with the company
+name, not the account holder's name, since applicants are evaluating the
+company. `CompanyShell` had no header gear icon before this pass — one
+was added, pointing at Settings; the avatar now points here instead.)_
+
+- **Real:** fetches via the same `getMyProfile("company")` Settings.jsx
+  uses, renders Company Name, Industry, Size, and a clickable Website
+  link read-only, plus an "Edit Settings" link back. Email/phone/full
+  name intentionally left off — account details, not the public profile.
+- **Stub:** none — real fetch of the same data Settings.jsx already
+  loads.
 
 ### Shell — `components/company/CompanyShell.jsx`
 
 Sidebar nav: Dashboard, My Opportunities, Post Opportunity, and
-Applicants are all real. The sidebar's old `real: false` "Profile" entry
-has been removed (dedup pass — one profile entry point per portal, not
-two); the header avatar is now a real link to `/company/settings` above.
-Header search and notifications remain `ComingSoon`, matching every other
-portal shell's header.
+Applicants are all real. The sidebar's `real: false` "Profile" entry and
+(later) the fake `real: false` "Settings" entry have both been removed
+(dedup pass — one profile entry point per portal, not two, and Settings
+belongs at the header gear, not duplicated in the sidebar). Header now
+has both a gear icon → `/company/settings` and an avatar → `/company/profile`
+(previously only the avatar existed, pointing at Settings — same fix
+every other shell got this pass). Header search and notifications remain
+`ComingSoon`, matching every other portal shell's header.
 
 ---
 
