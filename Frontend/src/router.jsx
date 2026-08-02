@@ -1,10 +1,10 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
-import { IncubationProvider } from "@/context/IncubationContext";
-import { InvestorProvider } from "@/context/InvestorContext";
-import { MentorshipProvider } from "@/context/MentorshipContext";
-import { AdminDashboardProvider } from "@/context/AdminDashboardContext";
+// import { IncubationProvider } from "@/context/IncubationContext";
+// import { InvestorProvider } from "@/context/InvestorContext";
+// import { MentorshipProvider } from "@/context/MentorshipContext";
+// import { AdminDashboardProvider } from "@/context/AdminDashboardContext";
 import PrivacyPolicyPage from "./pages/legal/PrivacyPolicy";
 import Unauthorized from "./pages/Unauthorized";
 import StageGuard from "./components/journey/StageGuard";
@@ -383,11 +383,11 @@ export const router = createBrowserRouter([
     element: withSuspense(ApplicantDetail),
   },
   {
-    element: (
-      <MentorshipProvider>
-        <Outlet />
-      </MentorshipProvider>
-    ),
+    // element: (
+    //   <MentorshipProvider>
+    //     <Outlet />
+    //   </MentorshipProvider>
+    // ),
     children: [
       { path: "/mentors", element: withSuspense(MentorDirectory) },
       {
@@ -420,11 +420,11 @@ export const router = createBrowserRouter([
   { path: "/notifications", element: withSuspense(Notifications) },
   { path: "/settings", element: withSuspense(StudentSettings) },
   {
-    element: (
-      <IncubationProvider>
-        <Outlet />
-      </IncubationProvider>
-    ),
+    // element: (
+    //   <IncubationProvider>
+    //     <Outlet />
+    //   </IncubationProvider>
+    // ),
     children: [
       {
         path: "/build-startup/journey",
@@ -604,11 +604,11 @@ export const router = createBrowserRouter([
   { path: "/freelancing/applied", element: withSuspense(ApplyConfirmation) },
   { path: "/freelancing/applications", element: withSuspense(MyApplications) },
   {
-    element: (
-      <AdminDashboardProvider>
-        <Outlet />
-      </AdminDashboardProvider>
-    ),
+    // element: (
+    //   <AdminDashboardProvider>
+    //     <Outlet />
+    //   </AdminDashboardProvider>
+    // ),
     children: [
       { path: "/admin", element: withSuspense(AdminDashboard) },
       { path: "/admin/verification", element: withSuspense(VerificationQueue) },
@@ -668,11 +668,11 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    element: (
-      <InvestorProvider>
-        <Outlet />
-      </InvestorProvider>
-    ),
+    // element: (
+    //   <InvestorProvider>
+    //     <Outlet />
+    //   </InvestorProvider>
+    // ),
     children: [
       { path: "/investor", element: withSuspense(InvestorPortal) },
       {
@@ -686,11 +686,11 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    element: (
-      <MentorshipProvider>
-        <Outlet />
-      </MentorshipProvider>
-    ),
+    // element: (
+    //   <MentorshipProvider>
+    //     <Outlet />
+    //   </MentorshipProvider>
+    // ),
     children: [
       { path: "/mentor", element: withSuspense(MentorPortal) },
       { path: "/mentor/requests", element: withSuspense(MentorRequests) },
