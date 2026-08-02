@@ -1,8 +1,3 @@
-/**
- * @file LaunchPitchDocument.js
- * @description Defines the Mongoose schema and model for storing pitch documents associated with a startup's launch.
- * @architecture Serves as a data layer model for organizing and retaining various launch-related documents like pitch decks and company profiles.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -54,10 +49,6 @@ const LaunchPitchDocumentSchema = new mongoose.Schema(
 LaunchPitchDocumentSchema.index({ startup_id: 1 });
 LaunchPitchDocumentSchema.index({ document_type: 1 });
 
-/**
- * @module LaunchPitchDocument
- * @description Exports the LaunchPitchDocument Mongoose model.
- */
 module.exports = mongoose.model(
   "LaunchPitchDocument",
   LaunchPitchDocumentSchema,

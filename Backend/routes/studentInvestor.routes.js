@@ -11,7 +11,7 @@ const {
   searchInvestors,
   filterInvestors,
   getInvestorById,
-  getInvestorPortfolio,
+  getInvestorPortfolio
 } = require("../controllers/studentInvestor.controller");
 
 // @route   GET /api/student/investors

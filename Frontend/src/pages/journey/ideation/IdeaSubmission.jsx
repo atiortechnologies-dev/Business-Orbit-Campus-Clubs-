@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
-  UploadCloud,
   ChevronRight,
   Loader2,
   AlertCircle,
   CheckCircle2,
+  Clock,
+  ExternalLink,
+  Link2,
+  MessageSquareWarning,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -73,14 +76,17 @@ export default function IdeaSubmissionPage() {
     targetAudience: "",
     valueProposition: "",
     competitors: "",
-    document: null,
+    attachmentUrl: "",
   });
 
+  const [submissionDetails, setSubmissionDetails] = useState(null);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [requestChangesText, setRequestChangesText] = useState("");
 
   useEffect(() => {
     async function loadStatus() {
@@ -89,56 +95,68 @@ export default function IdeaSubmissionPage() {
         const res = await getSubmissionStatus();
         const data = res?.data || res;
 
-        if (data?.draft || data?.submission) {
-          const draft = data.draft || data.submission;
+        // Extract the submission object
+        const sub = data?.submission;
+
+        if (sub) {
+          setSubmissionDetails(sub);
+
+          // Fill all form fields from backend response
           setFormData({
-            startupName: draft.title || draft.startup_name || "",
-            problemStatement:
-              draft.problem_statement || draft.description || "",
-            solution: draft.solution || "",
-            targetAudience: draft.target_audience || "",
-            valueProposition: draft.value_proposition || "",
-            competitors: draft.competitors || "",
-            document: null,
+            startupName: sub.title || "",
+            problemStatement: sub.description || "",
+            solution: sub.solution || "",
+            targetAudience: sub.target_audience || "",
+            valueProposition: sub.value_proposition || "",
+            competitors: sub.competitors || "",
+            attachmentUrl: sub.attachment_url || "",
           });
+
+          // Lock form ONLY if undergoing review or approved
+          if (
+            ["pending_review", "submitted", "approved"].includes(sub.status)
+          ) {
+            setIsReadOnly(true);
+          } else {
+            // Unlock form for editing if in 'draft' or requested changes state
+            setIsReadOnly(false);
+          }
+
+          // Capture revision request notes from admin
+          if (sub.request_changes || sub.requestChanges) {
+            setRequestChangesText(sub.request_changes || sub.requestChanges);
+          }
         }
       } catch (err) {
-        console.error("Failed to load submission status:", err);
-        setErrorMsg(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to load submission status.",
-        );
+        console.log("No previous submission found or stage inactive.");
       } finally {
         setLoading(false);
       }
     }
+
     loadStatus();
   }, []);
 
   const handleChange = (e) => {
+    if (isReadOnly) return;
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
-    setFormData((prev) => ({ ...prev, document: e.target.files[0] ?? null }));
-  };
-
   const mapPayload = () => ({
-    // Backend schema validator required fields:
     title: formData.startupName.trim(),
     description: formData.problemStatement.trim(),
-    // Extended fields:
     startup_name: formData.startupName.trim(),
     problem_statement: formData.problemStatement.trim(),
     solution: formData.solution.trim(),
     target_audience: formData.targetAudience.trim(),
     value_proposition: formData.valueProposition.trim(),
     competitors: formData.competitors.trim(),
+    attachment_url: formData.attachmentUrl.trim(),
   });
 
   const canSubmit =
+    !isReadOnly &&
     formData.startupName.trim().length > 0 &&
     formData.problemStatement.trim().length > 0 &&
     formData.solution.trim().length > 0 &&
@@ -155,9 +173,7 @@ export default function IdeaSubmissionPage() {
       setSuccessMsg("Draft saved successfully.");
       setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message || err?.message || "Failed to save draft.",
-      );
+      setErrorMsg(err?.message || "Failed to save draft.");
     } finally {
       setSavingDraft(false);
     }
@@ -177,9 +193,7 @@ export default function IdeaSubmissionPage() {
         replace: true,
       });
     } catch (err) {
-      setErrorMsg(
-        err.response?.data?.message || err?.message || "Failed to submit idea.",
-      );
+      setErrorMsg(err?.message || "Failed to submit idea.");
     } finally {
       setSubmitting(false);
     }
@@ -202,16 +216,55 @@ export default function IdeaSubmissionPage() {
           Ideation
         </Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <span className="text-text-heading font-semibold">Submit Idea</span>
+        <span className="text-text-heading font-semibold">
+          {isReadOnly ? "Submission View" : "Submit Idea"}
+        </span>
       </nav>
 
       <h1 className="font-poppins font-semibold text-page text-text-heading mb-1">
-        Submit Your Idea
+        {isReadOnly ? "Your Idea Submission" : "Submit Your Idea"}
       </h1>
       <p className="font-inter text-body text-text-body mb-8 max-w-2xl">
-        Complete the following sections to detail your startup's core
-        proposition. This data will be used for your Stage 1 review.
+        {isReadOnly
+          ? "You have already submitted an idea for this stage. View your submitted details below."
+          : "Complete the following sections to detail your startup's core proposition. This data will be used for your Stage 1 review."}
       </p>
+
+      {/* Banner for Admin Revision Request */}
+      {requestChangesText && (
+        <div className="max-w-3xl mb-6 p-4 bg-warning/10 border border-warning/30 text-warning rounded-lg flex items-start gap-3">
+          <MessageSquareWarning size={20} className="shrink-0 mt-0.5" />
+          <div>
+            <p className="font-poppins font-semibold text-small">
+              Action Required: Changes Requested by Reviewer
+            </p>
+            <p className="font-inter text-small text-text-body mt-1 leading-relaxed bg-surface-white/60 p-3 rounded border border-warning/20">
+              "{requestChangesText}"
+            </p>
+            <p className="font-inter text-caption text-text-muted mt-2">
+              Please revise the form fields below based on the reviewer's
+              feedback and resubmit your idea.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Lock Banner for locked statuses */}
+      {isReadOnly && (
+        <div className="max-w-3xl mb-6 p-4 bg-warning/10 border border-warning/30 text-warning rounded-lg flex items-center gap-3">
+          <Clock size={20} className="shrink-0" />
+          <div>
+            <p className="font-poppins font-semibold text-small">
+              Status:{" "}
+              {submissionDetails?.status?.replace("_", " ").toUpperCase()}
+            </p>
+            <p className="font-inter text-caption text-text-body mt-0.5">
+              Your submission is currently locked and undergoing review by the
+              BOCC team.
+            </p>
+          </div>
+        </div>
+      )}
 
       {errorMsg && (
         <div className="max-w-3xl mb-6 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
@@ -236,7 +289,7 @@ export default function IdeaSubmissionPage() {
           onSubmit={handleSubmit}
           className="max-w-3xl bg-surface-white border border-border-subtle rounded-lg shadow-card p-6 space-y-6"
         >
-          {FIELDS.map(({ name, label, type, placeholder, hint, rows }) => (
+          {FIELDS.map(({ name, label, type, rows }) => (
             <div key={name} className="space-y-1.5">
               <label
                 htmlFor={name}
@@ -249,78 +302,109 @@ export default function IdeaSubmissionPage() {
                   id={name}
                   name={name}
                   rows={rows}
+                  disabled={isReadOnly}
                   value={formData[name]}
                   onChange={handleChange}
-                  placeholder={placeholder}
-                  className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black resize-none"
+                  className={`w-full border rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none resize-none ${
+                    isReadOnly
+                      ? "bg-canvas-bg/50 border-border-subtle cursor-not-allowed opacity-90"
+                      : "bg-canvas-bg border-border-subtle focus:ring-1 focus:ring-brand-black"
+                  }`}
                 />
               ) : (
                 <input
                   id={name}
                   name={name}
                   type="text"
+                  disabled={isReadOnly}
                   value={formData[name]}
                   onChange={handleChange}
-                  placeholder={placeholder}
-                  className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                  className={`w-full border rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none ${
+                    isReadOnly
+                      ? "bg-canvas-bg/50 border-border-subtle cursor-not-allowed opacity-90"
+                      : "bg-canvas-bg border-border-subtle focus:ring-1 focus:ring-brand-black"
+                  }`}
                 />
-              )}
-              {hint && (
-                <p className="font-inter text-caption text-text-muted">
-                  {hint}
-                </p>
               )}
             </div>
           ))}
 
           <div className="space-y-1.5">
-            <label className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider block">
-              Supporting Documents
+            <label
+              htmlFor="attachmentUrl"
+              className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider block"
+            >
+              Supporting Document / Pitch Deck Link
             </label>
-            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-border-subtle rounded-lg py-8 cursor-pointer hover:border-text-muted transition-colors">
-              <UploadCloud
-                size={28}
-                strokeWidth={1.5}
-                className="text-text-muted"
-              />
-              <p className="font-inter text-small text-text-body">
-                Click to upload or drag and drop
-              </p>
-              <p className="font-inter text-caption text-text-muted">
-                PDF, PNG, JPG (Max 10MB)
-              </p>
+            <div className="relative">
               <input
-                type="file"
-                accept=".pdf,.png,.jpg,.jpeg"
-                onChange={handleFileChange}
-                className="hidden"
+                id="attachmentUrl"
+                name="attachmentUrl"
+                type="url"
+                disabled={isReadOnly}
+                value={formData.attachmentUrl}
+                onChange={handleChange}
+                placeholder="https://drive.google.com/..., Notion, Figma, or Dropbox link"
+                className={`w-full border rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none ${
+                  isReadOnly
+                    ? "bg-canvas-bg/50 border-border-subtle cursor-not-allowed opacity-90"
+                    : "bg-canvas-bg border-border-subtle focus:ring-1 focus:ring-brand-black"
+                }`}
               />
-            </label>
-            {formData.document && (
-              <p className="font-inter text-small text-text-body">
-                Selected: {formData.document.name}
-              </p>
+            </div>
+            <p className="font-inter text-caption text-text-muted">
+              Paste a shareable link to your pitch deck or supporting files
+              (Google Drive, Notion, Figma, etc.).
+            </p>
+
+            {/* Clickable link preview when in read-only mode */}
+            {isReadOnly && formData.attachmentUrl && (
+              <div className="pt-2">
+                <a
+                  href={formData.attachmentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-canvas-bg border border-border-subtle rounded-md text-small font-semibold text-text-heading hover:bg-surface-white transition-colors"
+                >
+                  <Link2 size={16} />
+                  <span>Open Submitted Link</span>
+                  <ExternalLink size={14} className="text-text-muted" />
+                </a>
+              </div>
             )}
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-divider-line">
-            <button
-              type="button"
-              onClick={handleSaveDraft}
-              disabled={savingDraft || submitting}
-              className="font-poppins font-semibold text-small text-text-heading hover:opacity-80 transition-opacity inline-flex items-center gap-2 disabled:opacity-50"
-            >
-              {savingDraft && <Loader2 size={14} className="animate-spin" />}
-              Save Draft
-            </button>
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
-            >
-              {submitting && <Loader2 size={16} className="animate-spin" />}
-              Submit Idea
-            </button>
+            {isReadOnly ? (
+              <Link
+                to="/build-startup/journey/ideation"
+                className="bg-brand-black text-white px-6 py-2.5 rounded-md font-poppins font-semibold text-small hover:opacity-90 transition-opacity"
+              >
+                Back to Stage Overview
+              </Link>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleSaveDraft}
+                  disabled={savingDraft || submitting}
+                  className="font-poppins font-semibold text-small text-text-heading hover:opacity-80 transition-opacity inline-flex items-center gap-2 disabled:opacity-50"
+                >
+                  {savingDraft && (
+                    <Loader2 size={14} className="animate-spin" />
+                  )}
+                  Save Draft
+                </button>
+                <button
+                  type="submit"
+                  disabled={!canSubmit}
+                  className="bg-action-bg text-action-text px-6 py-2.5 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                >
+                  {submitting && <Loader2 size={16} className="animate-spin" />}
+                  Submit Idea
+                </button>
+              </>
+            )}
           </div>
         </form>
       )}

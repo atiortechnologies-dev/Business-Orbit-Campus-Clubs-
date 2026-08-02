@@ -6,7 +6,7 @@ const ActivityLog = require("../../models/ActivityLog");
 const { generateToken } = require("../../utils/token");
 
 describe("Activity Log Controller", () => {
-  let student1Jwt, _student2Jwt;
+  let student1Jwt, student2Jwt;
   let student1Id, student2Id;
 
   beforeEach(async () => {
@@ -33,7 +33,7 @@ describe("Activity Log Controller", () => {
       email_verified: true,
     });
     student2Id = student2._id;
-    _student2Jwt = generateToken(student2Id, "student", "student2@example.com");
+    student2Jwt = generateToken(student2Id, "student", "student2@example.com");
   });
 
   describe("GET /api/student/activity-log", () => {
@@ -51,24 +51,9 @@ describe("Activity Log Controller", () => {
     it("should return activity logs for the user with pagination", async () => {
       const fakeEntityId = new mongoose.Types.ObjectId();
       await ActivityLog.create([
-        {
-          user_id: student1Id,
-          action: "ACTION_1",
-          entity_type: "Test",
-          entity_id: fakeEntityId,
-        },
-        {
-          user_id: student1Id,
-          action: "ACTION_2",
-          entity_type: "Test",
-          entity_id: fakeEntityId,
-        },
-        {
-          user_id: student2Id,
-          action: "ACTION_3",
-          entity_type: "Test",
-          entity_id: fakeEntityId,
-        },
+        { user_id: student1Id, action: "ACTION_1", entity_type: "Test", entity_id: fakeEntityId },
+        { user_id: student1Id, action: "ACTION_2", entity_type: "Test", entity_id: fakeEntityId },
+        { user_id: student2Id, action: "ACTION_3", entity_type: "Test", entity_id: fakeEntityId },
       ]);
 
       const res = await request(app)

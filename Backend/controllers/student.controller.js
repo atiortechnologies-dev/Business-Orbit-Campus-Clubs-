@@ -95,7 +95,7 @@ exports.requestMentor = asyncHandler(async (req, res, next) => {
       { session },
     );
 
-    await Notification.create(
+    const [notification] = await Notification.create(
       [
         {
           recipient_id: mentorId,
@@ -140,7 +140,7 @@ exports.requestMentor = asyncHandler(async (req, res, next) => {
  * @route   GET /api/student/mentorship/request-status
  * @access  Private (Student)
  */
-exports.getMentorshipRequestStatus = asyncHandler(async (req, res, _next) => {
+exports.getMentorshipRequestStatus = asyncHandler(async (req, res, next) => {
   const studentId = req.user._id;
 
   const requests = await MentorRequest.find({ student_id: studentId })
@@ -204,7 +204,7 @@ exports.listMentors = asyncHandler(async (req, res, _next) => {
  * @route   POST /api/student/mentors/filter
  * @access  Private (Student)
  */
-exports.searchMentors = asyncHandler(async (req, res, _next) => {
+exports.searchMentors = asyncHandler(async (req, res, next) => {
   const { expertise, industry, availability, sort } = req.body;
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -262,7 +262,7 @@ exports.searchMentors = asyncHandler(async (req, res, _next) => {
  * @route   GET /api/student/mentors/:id
  * @access  Private (Student)
  */
-exports.getMentorProfileStudentView = asyncHandler(async (req, res, _next) => {
+exports.getMentorProfileStudentView = asyncHandler(async (req, res, next) => {
   const mentorId = req.params.id;
 
   // mentorId could be User._id
@@ -272,10 +272,12 @@ exports.getMentorProfileStudentView = asyncHandler(async (req, res, _next) => {
   }).populate("user_id", "full_name email");
 
   if (!profile || !profile.user_id) {
-    return res.status(404).json({
-      success: false,
-      message: "Mentor not found or profile incomplete.",
-    });
+    return res
+      .status(404)
+      .json({
+        success: false,
+        message: "Mentor not found or profile incomplete.",
+      });
   }
 
   res.status(200).json({
@@ -289,7 +291,7 @@ exports.getMentorProfileStudentView = asyncHandler(async (req, res, _next) => {
  * @route   GET /api/student/mentors/:id/reviews
  * @access  Private (Student)
  */
-exports.getMentorReviews = asyncHandler(async (req, res, _next) => {
+exports.getMentorReviews = asyncHandler(async (req, res, next) => {
   const mentorId = req.params.id;
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
@@ -390,7 +392,7 @@ exports.submitMentorReview = asyncHandler(async (req, res, next) => {
  * @route   GET /api/student/mentors/:id/availability
  * @access  Private (Student)
  */
-exports.getMentorAvailability = asyncHandler(async (req, res, _next) => {
+exports.getMentorAvailability = asyncHandler(async (req, res, next) => {
   const mentorId = req.params.id;
 
   const profile = await MentorProfile.findOne({ user_id: mentorId }).select(

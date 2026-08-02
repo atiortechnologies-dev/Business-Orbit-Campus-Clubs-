@@ -44,7 +44,3 @@ export const getMe = () => {
 export const getAllChapters = () => {
   return api.get("/auth/get-all-chapter");
 };
-
-export const getAuthRedirects = () => {
-  return api.get("/public/auth-redirects");
-};

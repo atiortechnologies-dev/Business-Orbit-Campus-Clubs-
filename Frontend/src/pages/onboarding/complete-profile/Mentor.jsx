@@ -9,6 +9,7 @@ import SelectField from "@/components/onboarding/SelectField";
 import Input from "@/components/ui/Input";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { skipProfile, createProfile } from "@/api/auth/profileApi";
+import { uploadToCloudinary } from "@/api/uploadApi";
 
 const EXPERIENCE_RANGES = ["0-2 years", "3-5 years", "6-10 years", "10+ years"];
 const INDUSTRIES = [
@@ -33,6 +34,7 @@ export default function CompleteProfileMentor() {
   useDocumentTitle("Complete Your Profile — BOCC");
   const navigate = useNavigate();
 
+  const [selectedFile, setSelectedFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [company, setCompany] = useState("");
   const [designation, setDesignation] = useState("");
@@ -52,7 +54,10 @@ export default function CompleteProfileMentor() {
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
-    if (file) setPhotoPreview(URL.createObjectURL(file));
+    if (file) {
+      setSelectedFile(file);
+      setPhotoPreview(URL.createObjectURL(file)); // Show local instant preview
+    }
   };
 
   const toggleIndustry = (industry) =>
@@ -66,20 +71,34 @@ export default function CompleteProfileMentor() {
     setError("");
     setIsSubmitting(true);
 
-    // Format request body to match commonProfileFields + mentorCompleteFields Zod schema
-    const formData = {
-      bio: bio.trim(),
-      skills, // z.array(z.string())
-      linkedin_url: linkedin.trim(),
-      portfolio_url: portfolio.trim(),
-      profile_photo: "",
-      // Role-specific fields matching mentorCompleteFields
-      mentoring_domains: industries,
-      preferred_startup_stages: [],
-      availability: availability || "",
-    };
-
     try {
+      let photoUrl = "";
+
+      // 1. Upload photo via signed Cloudinary request if chosen
+      if (selectedFile) {
+        photoUrl = await uploadToCloudinary(selectedFile, "mentor_profiles");
+      }
+
+      // 2. Format request payload matching schema
+      const formData = {
+        company: company.trim(),
+        designation: designation.trim(),
+        years_of_experience: experience,
+        bio: bio.trim(),
+        skills, // z.array(z.string())
+        linkedin_url: linkedin.trim(),
+        portfolio_url: portfolio.trim(),
+        profile_photo: photoUrl,
+        attachment_url: photoUrl,
+        // Mentor-specific fields
+        mentoring_domains: industries,
+        mentoring_mode: mentoringMode,
+        languages_spoken: languages.trim(),
+        preferred_startup_stages: [],
+        availability: availability || "",
+      };
+
+      // 3. Persist profile via MongoDB backend
       const res = await createProfile(ROLE, formData);
       setSaved(true);
 
@@ -90,12 +109,8 @@ export default function CompleteProfileMentor() {
         navigate(destination, { replace: true });
       }, 800);
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to save profile. Please try again.",
-      );
-      setIsSubmitting(false); // Enable buttons only on failure
+      setError(err.message || "Failed to save profile. Please try again.");
+      setIsSubmitting(false);
     }
   };
 
@@ -110,11 +125,7 @@ export default function CompleteProfileMentor() {
 
       navigate(destination, { replace: true });
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to skip profile completion.",
-      );
+      setError(err.message || "Failed to skip profile completion.");
       setIsSubmitting(false);
     }
   };

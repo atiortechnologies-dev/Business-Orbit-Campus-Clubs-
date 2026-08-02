@@ -17,14 +17,6 @@ import DashboardShell from "@/components/dashboard/DashboardShell";
 import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getStudentProfile, updateProfile } from "@/api/dashboardApi";
-import * as studentChapterApi from "@/api/auth/studentChapterApi";
-import {
-  deleteMyAccount,
-  updateNotificationPreferences,
-  uploadProfilePhoto,
-  changePassword,
-} from "@/api/auth/profileApi";
-import api from "@/api/axiosInstance";
 
 export default function SettingsPage() {
   useDocumentTitle("Settings — BOCC");
@@ -46,14 +38,6 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
-  const [userId, setUserId] = useState(null);
-  const [notificationPrefs, setNotificationPrefs] = useState({
-    email: true,
-    inApp: true,
-  });
-  const [visibility, setVisibility] = useState("public");
-  const [prefsSaving, setPrefsSaving] = useState(false);
 
   const [photoUrl, setPhotoUrl] = useState(null);
   const [passwordOpen, setPasswordOpen] = useState(false);
@@ -79,14 +63,6 @@ export default function SettingsPage() {
         const userObj = data?.user || {};
         const profileObj = data?.profile || {};
 
-        setUserId(userObj?._id || userObj?.id || null);
-        if (profileObj?.notification_preferences) {
-          setNotificationPrefs({
-            email: profileObj.notification_preferences.email ?? true,
-            inApp: profileObj.notification_preferences.inApp ?? true,
-          });
-        }
-
         setForm({
           fullName: userObj?.full_name || "",
           email: userObj?.email || "",
@@ -104,11 +80,6 @@ export default function SettingsPage() {
         }
       } catch (err) {
         console.error("Failed to load student profile details:", err);
-        setErrorMsg(
-          err?.response?.data?.message ||
-            err?.message ||
-            "Failed to load profile data. Please refresh the page.",
-        );
       } finally {
         setLoading(false);
       }
@@ -116,17 +87,10 @@ export default function SettingsPage() {
     loadData();
   }, []);
 
-  const handlePhotoChange = async (e) => {
+  const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setPhotoUrl(URL.createObjectURL(file));
-    try {
-      const formData = new FormData();
-      formData.append("photo", file);
-      await uploadProfilePhoto("student", formData);
-    } catch (err) {
-      console.error("Failed to upload photo:", err);
-    }
   };
 
   const handlePasswordField = (e) => {
@@ -134,7 +98,7 @@ export default function SettingsPage() {
     setPasswordForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePasswordSubmit = async () => {
+  const handlePasswordSubmit = () => {
     if (passwordForm.next.length < 8) {
       setPasswordError("New password must be at least 8 characters.");
       return;
@@ -143,83 +107,19 @@ export default function SettingsPage() {
       setPasswordError("New password and confirmation do not match.");
       return;
     }
-    try {
-      setPasswordError("");
-      await changePassword("student", {
-        current_password: passwordForm.current,
-        new_password: passwordForm.next,
-      });
-      setPasswordSuccess(true);
-      setPasswordForm({ current: "", next: "", confirm: "" });
-      setTimeout(() => {
-        setPasswordSuccess(false);
-        setPasswordOpen(false);
-      }, 1500);
-    } catch (err) {
-      setPasswordError(
-        err.response?.data?.message || "Failed to change password.",
-      );
-    }
+    setPasswordError("");
+    setPasswordSuccess(true);
+    setPasswordForm({ current: "", next: "", confirm: "" });
+    setTimeout(() => {
+      setPasswordSuccess(false);
+      setPasswordOpen(false);
+    }, 1500);
   };
 
-  const handleDeleteConfirm = async () => {
-    if (!userId) {
-      setErrorMsg("Unable to determine user ID.");
-      return;
-    }
-    try {
-      await deleteMyAccount(userId);
-      setDeleteOpen(false);
-      setDeleteConfirmText("");
-      setDeleteRequested(true);
-      // Optional: redirect or logout could happen here
-      setTimeout(() => {
-        window.location.href = "/login";
-      }, 2000);
-    } catch (err) {
-      console.error(err);
-      setErrorMsg(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to delete account. Please try again later.",
-      );
-    }
-  };
-
-  const handleTogglePref = async (key) => {
-    const newPrefs = { ...notificationPrefs, [key]: !notificationPrefs[key] };
-    setNotificationPrefs(newPrefs);
-    try {
-      setPrefsSaving(true);
-      await updateNotificationPreferences("student", newPrefs);
-    } catch (err) {
-      console.error(err);
-      // Revert on failure
-      setNotificationPrefs({ ...notificationPrefs });
-      setErrorMsg(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to update notification preferences.",
-      );
-    } finally {
-      setPrefsSaving(false);
-    }
-  };
-
-  const handleToggleVisibility = async () => {
-    const newVis = visibility === "public" ? "private" : "public";
-    setVisibility(newVis);
-    try {
-      await api.patch("/profile/visibility", { visibility: newVis });
-    } catch (err) {
-      console.error(err);
-      setVisibility(visibility); // Revert on failure
-      setErrorMsg(
-        err.response?.data?.message ||
-          err.message ||
-          "Failed to update visibility.",
-      );
-    }
+  const handleDeleteConfirm = () => {
+    setDeleteOpen(false);
+    setDeleteConfirmText("");
+    setDeleteRequested(true);
   };
 
   const handleChange = (e) => {
@@ -346,28 +246,6 @@ export default function SettingsPage() {
               <p className="font-inter text-small text-text-muted">
                 {form.college || "College"} · {form.branch || "Branch"}
               </p>
-              <button
-                type="button"
-                onClick={async () => {
-                  try {
-                    setErrorMsg("");
-                    await studentChapterApi.requestChapterChange({
-                      reason: "Requested from settings",
-                    });
-                    setSaveSuccess(true);
-                    setTimeout(() => setSaveSuccess(false), 3000);
-                  } catch (err) {
-                    setErrorMsg(
-                      err.response?.data?.message ||
-                        err.message ||
-                        "Error requesting chapter change",
-                    );
-                  }
-                }}
-                className="mt-2 text-small text-brand-black underline hover:text-text-muted transition-colors"
-              >
-                Request Chapter Change
-              </button>
               <Link
                 to="/build-startup/journey"
                 className="mt-4 w-full border border-border-subtle text-text-heading py-2 rounded-md hover:bg-canvas-bg transition-colors font-poppins font-semibold text-small"
@@ -637,23 +515,6 @@ export default function SettingsPage() {
                     Not Enabled
                   </span>
                 </div>
-                <div className="flex items-center justify-between border border-border-subtle rounded-lg p-4">
-                  <span className="flex items-center gap-2.5 font-inter text-small text-text-body">
-                    <ShieldCheck
-                      size={16}
-                      strokeWidth={2}
-                      className="text-text-muted"
-                    />{" "}
-                    Profile Visibility
-                  </span>
-                  <button
-                    type="button"
-                    onClick={handleToggleVisibility}
-                    className="font-poppins font-semibold text-caption text-brand-black underline"
-                  >
-                    {visibility === "public" ? "Public" : "Private"}
-                  </button>
-                </div>
                 {deleteRequested ? (
                   <div className="flex items-center gap-2.5 border border-warning/30 bg-warning/10 rounded-lg p-4 font-inter text-small text-warning">
                     <AlertTriangle size={16} strokeWidth={2} /> Deletion
@@ -670,58 +531,6 @@ export default function SettingsPage() {
                     </span>
                   </button>
                 )}
-              </div>
-            </div>
-
-            <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-poppins font-semibold text-body text-text-heading">
-                  Notification Preferences
-                </h3>
-                {prefsSaving && (
-                  <Loader2 size={16} className="animate-spin text-text-muted" />
-                )}
-              </div>
-              <div className="space-y-4">
-                <label className="flex items-center justify-between cursor-pointer group">
-                  <div>
-                    <p className="font-inter font-semibold text-small text-text-heading group-hover:text-brand-black transition-colors">
-                      Email Alerts
-                    </p>
-                    <p className="font-inter text-caption text-text-muted">
-                      Receive updates, meeting reminders, and reports via email.
-                    </p>
-                  </div>
-                  <div
-                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-black focus-visible:ring-offset-2 ${notificationPrefs.email ? "bg-brand-black" : "bg-gray-200"}`}
-                    onClick={() => handleTogglePref("email")}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notificationPrefs.email ? "translate-x-2" : "-translate-x-2"}`}
-                    />
-                  </div>
-                </label>
-                <div className="h-px bg-border-subtle w-full" />
-                <label className="flex items-center justify-between cursor-pointer group">
-                  <div>
-                    <p className="font-inter font-semibold text-small text-text-heading group-hover:text-brand-black transition-colors">
-                      In-App Notifications
-                    </p>
-                    <p className="font-inter text-caption text-text-muted">
-                      Get alerts directly within the BOCC platform dashboard.
-                    </p>
-                  </div>
-                  <div
-                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-black focus-visible:ring-offset-2 ${notificationPrefs.inApp ? "bg-brand-black" : "bg-gray-200"}`}
-                    onClick={() => handleTogglePref("inApp")}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${notificationPrefs.inApp ? "translate-x-2" : "-translate-x-2"}`}
-                    />
-                  </div>
-                </label>
               </div>
             </div>
 

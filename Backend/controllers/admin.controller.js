@@ -5,7 +5,7 @@
  */
 
 const mongoose = require("mongoose");
-const _cascadeService = require("../services/cascadeService");
+const cascadeService = require("../services/cascadeService");
 const FAQ = require("../models/FAQ");
 const User = require("../models/User");
 const ChapterChangeRequest = require("../models/ChapterChangeRequest");
@@ -79,64 +79,17 @@ const deleteResource = (Model) => async (req, res, next) => {
   }
 };
 
-const getResourceList = (Model, populateOptions = []) => async (req, res, next) => {
-  try {
-    const query = {};
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 50;
-    const startIndex = (page - 1) * limit;
-
-    const total = await Model.countDocuments(query);
-    let queryObj = Model.find(query).sort({ created_at: -1 }).skip(startIndex).limit(limit);
-
-    if (populateOptions.length > 0) {
-      populateOptions.forEach((pop) => {
-        queryObj = queryObj.populate(pop);
-      });
-    }
-
-    const data = await queryObj;
-
-    res.status(200).json({
-      success: true,
-      count: data.length,
-      pagination: {
-        total,
-        page,
-        limit,
-      },
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 // FAQ CRUD
-exports.getFaqsAdmin = getResourceList(FAQ);
 exports.createFaq = createResource(FAQ, createFaqSchema);
 exports.updateFaq = updateResource(FAQ, updateFaqSchema);
 exports.deleteFaq = deleteResource(FAQ);
 
 // Statistics CRUD
-exports.getStatistics = async (req, res, next) => {
-  try {
-    const stats = await Statistic.find({}).sort({ created_at: -1 });
-    return res.status(200).json({
-      success: true,
-      data: stats
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-exports.getStatisticsAdmin = getResourceList(Statistic);
 exports.createStatistic = createResource(Statistic, createStatisticSchema);
 exports.updateStatistic = updateResource(Statistic, updateStatisticSchema);
 exports.deleteStatistic = deleteResource(Statistic);
 
 // PartnerLogo CRUD
-exports.getPartnerLogosAdmin = getResourceList(PartnerLogo);
 exports.createPartnerLogo = createResource(
   PartnerLogo,
   createPartnerLogoSchema,
@@ -148,7 +101,6 @@ exports.updatePartnerLogo = updateResource(
 exports.deletePartnerLogo = deleteResource(PartnerLogo);
 
 // SuccessStory CRUD
-exports.getSuccessStoriesAdmin = getResourceList(SuccessStory);
 exports.createSuccessStory = createResource(
   SuccessStory,
   createSuccessStorySchema,
@@ -160,7 +112,6 @@ exports.updateSuccessStory = updateResource(
 exports.deleteSuccessStory = deleteResource(SuccessStory);
 
 // FeaturedStartup CRUD
-exports.getFeaturedStartupsAdmin = getResourceList(FeaturedStartup);
 exports.createFeaturedStartup = createResource(
   FeaturedStartup,
   createFeaturedStartupSchema,
@@ -170,47 +121,6 @@ exports.updateFeaturedStartup = updateResource(
   updateFeaturedStartupSchema,
 );
 exports.deleteFeaturedStartup = deleteResource(FeaturedStartup);
-
-/**
- * @route   GET /api/admin/users
- * @desc    Get a list of users
- * @access  Private (Admin)
- */
-exports.getUsers = async (req, res, next) => {
-  try {
-    const query = {};
-    if (req.query.role) {
-      query.role = req.query.role;
-    }
-    if (req.query.account_status) {
-      query.account_status = { $in: req.query.account_status.split(",") };
-    }
-
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 50;
-    const startIndex = (page - 1) * limit;
-
-    const total = await User.countDocuments(query);
-    const users = await User.find(query)
-      .select("-password")
-      .sort({ created_at: -1 })
-      .skip(startIndex)
-      .limit(limit);
-
-    res.status(200).json({
-      success: true,
-      count: users.length,
-      pagination: {
-        total,
-        page,
-        limit,
-      },
-      data: users,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 /**
  * @route   DELETE /api/admin/users/:id
@@ -258,27 +168,15 @@ exports.listChapterChangeRequests = async (req, res, next) => {
       query.status = req.query.status;
     }
 
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 10;
-    const startIndex = (page - 1) * limit;
-
-    const total = await ChapterChangeRequest.countDocuments(query);
     const requests = await ChapterChangeRequest.find(query)
       .populate("student_id", "full_name email")
       .populate("current_chapter_id", "chapter_name college_name")
       .populate("requested_chapter_id", "chapter_name college_name")
-      .sort({ created_at: -1 })
-      .skip(startIndex)
-      .limit(limit);
+      .sort({ created_at: -1 });
 
     res.status(200).json({
       success: true,
       count: requests.length,
-      pagination: {
-        total,
-        page,
-        limit,
-      },
       data: requests,
     });
   } catch (error) {
@@ -365,65 +263,6 @@ exports.approveChapterChangeRequest = async (req, res, next) => {
     session.endSession();
   }
 };
-
-/**
- * @route   POST /api/admin/chapter-change-requests/bulk-approve
- * @desc    Bulk approve chapter change requests
- * @access  Private (Admin)
- */
-exports.bulkApproveChapterChangeRequests = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
-  try {
-    const { requestIds } = req.body;
-    
-    if (!Array.isArray(requestIds) || requestIds.length === 0) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({ success: false, message: "Invalid or empty requestIds array" });
-    }
-
-    const requests = await ChapterChangeRequest.find({
-      _id: { $in: requestIds },
-      status: "pending"
-    }).session(session);
-
-    if (requests.length === 0) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({ success: false, message: "No pending requests found for the given IDs" });
-    }
-
-    const approvedRequests = [];
-
-    for (const request of requests) {
-      request.status = "approved";
-      await request.save({ session });
-
-      await StudentProfile.findOneAndUpdate(
-        { user_id: request.student_id },
-        { chapter_id: request.requested_chapter_id },
-        { session }
-      );
-
-      approvedRequests.push(request._id);
-    }
-
-    await session.commitTransaction();
-    res.status(200).json({
-      success: true,
-      message: `${approvedRequests.length} chapter change requests approved`,
-      data: approvedRequests,
-    });
-  } catch (error) {
-    await session.abortTransaction();
-    next(error);
-  } finally {
-    session.endSession();
-  }
-};
-
 
 /**
  * @route   PUT /api/admin/chapter-change-requests/:id/reject

@@ -1,40 +1,52 @@
-/**
- * @file adminDashboard.routes.js
- * @description Routes for administrative dashboard operations.
- * @architecture Registers Express routes for admin features and delegates to adminDashboard controllers.
- */
 const express = require("express");
-/**
- * @desc    Admin dashboard routing module
- * @route   /api/admin
- * @access  Private (Admin)
- */
 const router = express.Router();
 const { protect, requireRole } = require("../middlewares/authMiddleware");
 const { validateRequest } = require("../middlewares/validateRequest");
-const {
-  createAnnouncement,
-  getAnnouncements,
-  getOverview,
-  getUpdates,
-  dismissAction,
-} = require("../controllers/adminDashboard.controller");
+const adminDashboardController = require("../controllers/adminDashboard.controller");
 const { createAnnouncementSchema } = require("../utils/validators");
 
-router.use(protect, requireRole(["admin", "super_admin"]));
-
-// --- Dashboard ---
-router.get("/overview", getOverview);
-router.get("/updates", getUpdates);
-router.patch("/actions", dismissAction);
+router.use(protect, requireRole("admin"));
 
 // --- Announcement Screen ---
 
-router.get("/announcements", getAnnouncements);
+router.get("/announcements", adminDashboardController.getAnnouncements);
 router.post(
   "/announcements",
   validateRequest(createAnnouncementSchema),
-  createAnnouncement,
+  adminDashboardController.createAnnouncement,
 );
+
+// --- users verification ---
+
+router.get(
+  "/users/verification",
+  adminDashboardController.getVerificationUsers,
+);
+router.get(
+  "/users/verification/:id",
+  adminDashboardController.getUserVerificationDetail,
+);
+router.post(
+  "/users/verification/:id/decision",
+  adminDashboardController.handleVerificationDecision,
+);
+
+// --- startup verification ---
+
+router.get("/reviews", adminDashboardController.getReviewQueue);
+router.get(
+  "/reviews/:submissionId",
+  adminDashboardController.getSubmissionDetail,
+);
+router.post(
+  "/reviews/:submissionId/decision",
+  adminDashboardController.handleSubmissionDecision,
+);
+
+router.get(
+  "/meetings/prepare",
+  adminDashboardController.getMeetingPrepareContext,
+);
+router.post("/meetings/schedule", adminDashboardController.scheduleMeeting);
 
 module.exports = router;

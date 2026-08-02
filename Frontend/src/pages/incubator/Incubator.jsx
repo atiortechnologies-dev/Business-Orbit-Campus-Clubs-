@@ -1,78 +1,79 @@
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import {
   TrendingUp,
   Hourglass,
   Rocket,
   Calendar,
-} from "lucide-react";
-import IncubatorShell from "@/components/incubator/IncubatorShell";
-import ComingSoon from "@/components/ui/ComingSoon";
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+  ChevronRight,
+} from 'lucide-react';
+import IncubatorShell from '@/components/incubator/IncubatorShell';
+import ComingSoon from '@/components/ui/ComingSoon';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const STATS = [
   {
-    label: "New Applications",
-    value: "12",
+    label: 'New Applications',
+    value: '12',
     icon: TrendingUp,
-    subtext: "+2 this week",
+    subtext: '+2 this week',
   },
   {
-    label: "Under Review",
-    value: "8",
+    label: 'Under Review',
+    value: '8',
     icon: Hourglass,
-    subtext: "4 awaiting feedback",
+    subtext: '4 awaiting feedback',
   },
   {
-    label: "Incubated Startups",
-    value: "24",
+    label: 'Incubated Startups',
+    value: '24',
     icon: Rocket,
-    subtext: "Across 4 cohorts",
+    subtext: 'Across 4 cohorts',
   },
   {
-    label: "Upcoming Meetings",
-    value: "3",
+    label: 'Upcoming Meetings',
+    value: '3',
     icon: Calendar,
-    subtext: "Next: Tomorrow 10 AM",
+    subtext: 'Next: Tomorrow 10 AM',
   },
 ];
 
 const RECENT_ACTIVITY = [
   {
-    name: "QuantumFlow AI",
-    meta: "SaaS • Pre-Seed",
-    status: "Pitch Deck Shared",
-    time: "2h ago",
+    name: 'QuantumFlow AI',
+    meta: 'SaaS • Pre-Seed',
+    status: 'Pitch Deck Shared',
+    time: '2h ago',
   },
   {
-    name: "GreenRoot Logistics",
-    meta: "AgriTech • Series A",
-    status: "In Review",
-    time: "5h ago",
+    name: 'GreenRoot Logistics',
+    meta: 'AgriTech • Series A',
+    status: 'In Review',
+    time: '5h ago',
   },
   {
-    name: "Nexus Health",
-    meta: "HealthTech • Seed",
-    status: "New Submission",
-    time: "Yesterday",
+    name: 'Nexus Health',
+    meta: 'HealthTech • Seed',
+    status: 'New Submission',
+    time: 'Yesterday',
   },
   {
-    name: "Aura Fintech",
-    meta: "FinTech • Pre-Seed",
-    status: "Pending Mentor Assignment",
-    time: "2 days ago",
+    name: 'Aura Fintech',
+    meta: 'FinTech • Pre-Seed',
+    status: 'Pending Mentor Assignment',
+    time: '2 days ago',
   },
 ];
 
-const PENDING_REVIEWS = ["CloudScale", "BioSynth", "UrbanIQ"];
+const PENDING_REVIEWS = ['CloudScale', 'BioSynth', 'UrbanIQ'];
 
 const RECENTLY_INCUBATED = [
-  { name: "SolarPulse", date: "Joined Oct 2023" },
-  { name: "HydroNode", date: "Joined Sep 2023" },
-  { name: "VocalSync", date: "Joined Aug 2023" },
+  { name: 'SolarPulse', date: 'Joined Oct 2023' },
+  { name: 'HydroNode', date: 'Joined Sep 2023' },
+  { name: 'VocalSync', date: 'Joined Aug 2023' },
 ];
 
 export default function IncubatorDashboard() {
-  useDocumentTitle("Incubator Dashboard — BOCC");
+  useDocumentTitle('Incubator Dashboard — BOCC');
   return (
     <IncubatorShell>
       <section className="mb-8">
@@ -106,10 +107,7 @@ export default function IncubatorDashboard() {
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {STATS.map(({ label, value, icon: Icon, subtext }) => (
-          <div
-            key={label}
-            className="bg-surface-white border border-border-subtle p-6 rounded-xl shadow-card transition-colors duration-150 ease-linear"
-          >
+          <div key={label} className="bg-surface-white border border-border-subtle p-6 rounded-xl shadow-card transition-colors duration-150 ease-linear">
             <p className="text-text-muted font-poppins font-semibold text-caption uppercase tracking-wider mb-2">
               {label}
             </p>
@@ -151,7 +149,9 @@ export default function IncubatorDashboard() {
                     <p className="font-poppins font-semibold text-small text-text-heading">
                       {name}
                     </p>
-                    <p className="text-text-muted font-inter text-xs">{meta}</p>
+                    <p className="text-text-muted font-inter text-xs">
+                      {meta}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-8">
@@ -214,10 +214,7 @@ export default function IncubatorDashboard() {
             </div>
             <ul className="divide-y divide-border-subtle">
               {RECENTLY_INCUBATED.map(({ name, date }) => (
-                <li
-                  key={name}
-                  className="p-4 flex items-center gap-3 hover:bg-canvas-bg/20 transition-colors"
-                >
+                <li key={name} className="p-4 flex items-center gap-3 hover:bg-canvas-bg/20 transition-colors">
                   <div className="w-6 h-6 rounded bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-[10px] select-none">
                     {name.charAt(0)}
                   </div>
@@ -225,7 +222,9 @@ export default function IncubatorDashboard() {
                     <p className="font-poppins font-semibold text-small text-text-heading">
                       {name}
                     </p>
-                    <p className="text-text-muted font-inter text-xs">{date}</p>
+                    <p className="text-text-muted font-inter text-xs">
+                      {date}
+                    </p>
                   </div>
                 </li>
               ))}

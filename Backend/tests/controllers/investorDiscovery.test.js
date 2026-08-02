@@ -9,7 +9,7 @@ const StartupPitch = require("../../models/StartupPitch");
 const InvestorWatchlist = require("../../models/InvestorWatchlist");
 const PitchView = require("../../models/PitchView");
 const Startup = require("../../models/Startup");
-const _User = require("../../models/User");
+const User = require("../../models/User");
 
 describe("Investor Discovery Controller", () => {
   let investorId, founderId, startup, pitch;
@@ -256,10 +256,7 @@ describe("Investor Discovery Controller", () => {
         related_id: item._id,
       });
 
-      const req = {
-        params: { startupId: startup._id },
-        user: { _id: investorId },
-      };
+      const req = { params: { startupId: startup._id }, user: { _id: investorId } };
       const res = mockResponse();
 
       await investorDiscoveryController.removeFromWatchlist(req, res, mockNext);
@@ -312,11 +309,7 @@ describe("Investor Discovery Controller", () => {
   describe("startConversation", () => {
     it("should create or return chatroom", async () => {
       const req = {
-        body: {
-          founder_id: founderId,
-          startup_id: startup._id,
-          message: "Hello",
-        },
+        body: { founder_id: founderId, startup_id: startup._id, message: "Hello" },
         user: { _id: investorId },
       };
       const res = mockResponse();

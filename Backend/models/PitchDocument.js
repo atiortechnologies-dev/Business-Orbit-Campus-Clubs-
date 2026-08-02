@@ -27,7 +27,7 @@ const pitchDocumentSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: { createdAt: "uploaded_at", updatedAt: "updated_at" } },
+  { timestamps: { createdAt: "uploaded_at", updatedAt: "updated_at" } }
 );
 
 module.exports = mongoose.model("PitchDocument", pitchDocumentSchema);

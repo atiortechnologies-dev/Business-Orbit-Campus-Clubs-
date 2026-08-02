@@ -1,8 +1,3 @@
-/**
- * @file launch.controller.js
- * @description Controller for managing startup launch and graduation processes.
- * @architecture Handles launch stages, draft submissions, pitch decks, insights, verification, and graduation milestones, interacting with various Launch models.
- */
 const asyncHandler = require("../middlewares/asyncHandler");
 const LaunchEvidenceFile = require("../models/LaunchEvidenceFile");
 const LaunchInsights = require("../models/LaunchInsights");
@@ -16,11 +11,6 @@ const { getOrCreateStartup } = require("../utils/startupJourney");
 
 // ========= SCREEN 1: LAUNCH OVERVIEW =========
 
-/**
- * @desc    Get launch stage overview
- * @route   GET /api/student/launch/overview
- * @access  Private/Student
- */
 const getLaunchOverview = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -62,11 +52,6 @@ const getLaunchOverview = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get launch checklist status
- * @route   GET /api/student/launch/checklist
- * @access  Private/Student
- */
 const getLaunchChecklist = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -101,11 +86,6 @@ const getLaunchChecklist = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Start the launch stage
- * @route   POST /api/student/launch/start
- * @access  Private/Student
- */
 const startLaunchStage = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -129,11 +109,6 @@ const startLaunchStage = asyncHandler(async (req, res) => {
 
 // ========= SCREEN 2: LAUNCH SUBMISSION =========
 
-/**
- * @desc    Save launch submission draft
- * @route   POST /api/student/launch/draft
- * @access  Private/Student
- */
 const saveLaunchDraft = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const draftData = req.validatedData;
@@ -161,11 +136,6 @@ const saveLaunchDraft = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get launch submission details
- * @route   GET /api/student/launch/submission
- * @access  Private/Student
- */
 const getLaunchSubmission = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -183,11 +153,6 @@ const getLaunchSubmission = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: submission });
 });
 
-/**
- * @desc    Update launch submission draft
- * @route   PUT /api/student/launch/submission
- * @access  Private/Student
- */
 const updateLaunchSubmission = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const updateData = req.validatedData;
@@ -208,11 +173,6 @@ const updateLaunchSubmission = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "Updated", data: submission });
 });
 
-/**
- * @desc    Submit final launch details
- * @route   POST /api/student/launch/submit
- * @access  Private/Student
- */
 const submitLaunchDetails = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const submitData = req.validatedData;
@@ -237,11 +197,6 @@ const submitLaunchDetails = asyncHandler(async (req, res) => {
 
 // ========= SCREEN 3: PITCH DECK UPLOAD =========
 
-/**
- * @desc    Get uploaded pitch decks
- * @route   GET /api/student/launch/pitch-deck
- * @access  Private/Student
- */
 const getPitchDeck = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -253,11 +208,6 @@ const getPitchDeck = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: documents });
 });
 
-/**
- * @desc    Upload a pitch deck document
- * @route   POST /api/student/launch/pitch-deck
- * @access  Private/Student
- */
 const uploadPitchDeck = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { document_type } = req.body;
@@ -284,11 +234,6 @@ const uploadPitchDeck = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Delete a pitch document
- * @route   DELETE /api/student/launch/pitch-deck/:documentId
- * @access  Private/Student
- */
 const deletePitchDocument = asyncHandler(async (req, res) => {
   const { documentId } = req.params;
   const { id: userId } = req.user;
@@ -301,11 +246,6 @@ const deletePitchDocument = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "Document deleted" });
 });
 
-/**
- * @desc    Submit all pitch deck documents
- * @route   POST /api/student/launch/pitch-deck/submit
- * @access  Private/Student
- */
 const submitPitchDeck = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -320,11 +260,6 @@ const submitPitchDeck = asyncHandler(async (req, res) => {
 
 // ========= SCREEN 4: LAUNCH INSIGHTS =========
 
-/**
- * @desc    Get launch insights
- * @route   GET /api/student/launch/insights
- * @access  Private/Student
- */
 const getLaunchInsights = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -342,11 +277,6 @@ const getLaunchInsights = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: insights });
 });
 
-/**
- * @desc    Save launch insights draft
- * @route   POST /api/student/launch/insights/draft
- * @access  Private/Student
- */
 const saveLaunchInsights = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const insightsData = req.validatedData;
@@ -372,11 +302,6 @@ const saveLaunchInsights = asyncHandler(async (req, res) => {
     .json({ success: true, message: "Insights saved", data: insights });
 });
 
-/**
- * @desc    Upload launch evidence
- * @route   POST /api/student/launch/evidence
- * @access  Private/Student
- */
 const uploadLaunchEvidence = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { evidence_type, file_url } = req.body;
@@ -398,11 +323,6 @@ const uploadLaunchEvidence = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Delete launch evidence
- * @route   DELETE /api/student/launch/evidence/:fileId
- * @access  Private/Student
- */
 const deleteLaunchEvidence = asyncHandler(async (req, res) => {
   const { fileId } = req.params;
   const { id: userId } = req.user;
@@ -415,11 +335,6 @@ const deleteLaunchEvidence = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, message: "Evidence deleted" });
 });
 
-/**
- * @desc    Submit launch insights
- * @route   POST /api/student/launch/insights/submit
- * @access  Private/Student
- */
 const submitLaunchInsights = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -445,11 +360,6 @@ const submitLaunchInsights = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get launch evidence files
- * @route   GET /api/student/launch/evidence
- * @access  Private/Student
- */
 const getLaunchEvidence = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -463,11 +373,6 @@ const getLaunchEvidence = asyncHandler(async (req, res) => {
 
 // ========= SCREEN 5: LAUNCH VERIFICATION =========
 
-/**
- * @desc    Get launch verification details
- * @route   GET /api/student/launch/verification
- * @access  Private/Student
- */
 const getLaunchVerification = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -487,11 +392,6 @@ const getLaunchVerification = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: verification });
 });
 
-/**
- * @desc    Get launch verification status
- * @route   GET /api/student/launch/verification/status
- * @access  Private/Student
- */
 const getVerificationStatus = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -510,11 +410,6 @@ const getVerificationStatus = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get launch verification files
- * @route   GET /api/student/launch/verification/files
- * @access  Private/Student
- */
 const getVerificationFiles = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -537,11 +432,6 @@ const getVerificationFiles = asyncHandler(async (req, res) => {
 
 // ========= SCREEN 6: JOURNEY COMPLETED =========
 
-/**
- * @desc    Get startup journey completion status
- * @route   GET /api/student/launch/journey
- * @access  Private/Student
- */
 const getJourneyCompletion = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -559,11 +449,6 @@ const getJourneyCompletion = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: graduation });
 });
 
-/**
- * @desc    Get graduation certificate
- * @route   GET /api/student/launch/certificate
- * @access  Private/Student
- */
 const getGraduationCertificate = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -584,11 +469,6 @@ const getGraduationCertificate = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Join alumni network
- * @route   POST /api/student/launch/alumni
- * @access  Private/Student
- */
 const joinAlumniNetwork = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -606,11 +486,6 @@ const joinAlumniNetwork = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Apply for mentor status
- * @route   POST /api/student/launch/mentor
- * @access  Private/Student
- */
 const applyForMentor = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -628,11 +503,6 @@ const applyForMentor = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Apply for showcase
- * @route   POST /api/student/launch/showcase
- * @access  Private/Student
- */
 const applyForShowcase = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -650,11 +520,6 @@ const applyForShowcase = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get journey statistics
- * @route   GET /api/student/launch/statistics
- * @access  Private/Student
- */
 const getJourneyStatistics = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);

@@ -6,46 +6,30 @@
 
 const request = require("supertest");
 const express = require("express");
-
-jest.mock("../middlewares/authMiddleware", () => ({
-  protect: (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader === "Bearer valid-token") {
-      req.user = { id: "admin1", role: "admin" };
-      return next();
-    }
-    return res.status(401).json({ success: false, message: "Not authorized" });
-  },
-  requireRole: (roles) => (req, res, next) => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({ success: false, message: "Forbidden" });
-    }
-    next();
-  }
-}));
-
 const adminRoutes = require("../routes/admin.routes");
 require("./setup");
 const FAQ = require("../models/FAQ");
 
 const app = express();
 app.use(express.json());
+// Mock environment variable for the test
+process.env.ADMIN_API_KEY = "DUMMY_SECRET_FOR_TESTING_ONLY";
 app.use("/api/admin", adminRoutes);
 
 describe("Admin API Routes - Phase 1 (FAQs)", () => {
-  
+  const validApiKey = "test-secret-key";
 
-  describe("Middleware (authMiddleware)", () => {
-    it("should return 401 if no token provided", async () => {
+  describe("Middleware (adminAuth)", () => {
+    it("should return 401 if no API key provided", async () => {
       const res = await request(app).post("/api/admin/faqs").send({});
       expect(res.statusCode).toEqual(401);
       expect(res.body.success).toBe(false);
     });
 
-    it("should return 401 if token is invalid", async () => {
+    it("should return 401 if API key is invalid", async () => {
       const res = await request(app)
         .post("/api/admin/faqs")
-        .set("Authorization", "Bearer wrong-token")
+        .set("x-api-key", "wrong-key")
         .send({});
       expect(res.statusCode).toEqual(401);
     });
@@ -56,7 +40,7 @@ describe("Admin API Routes - Phase 1 (FAQs)", () => {
       const payload = { question: "Test Q?", pageType: "Student" };
       const res = await request(app)
         .post("/api/admin/faqs")
-        .set("Authorization", "Bearer valid-token")
+        .set("x-api-key", validApiKey)
         .send(payload);
 
       expect(res.statusCode).toEqual(400);
@@ -71,7 +55,7 @@ describe("Admin API Routes - Phase 1 (FAQs)", () => {
       };
       const res = await request(app)
         .post("/api/admin/faqs")
-        .set("Authorization", "Bearer valid-token")
+        .set("x-api-key", validApiKey)
         .send(payload);
 
       expect(res.statusCode).toEqual(201);
@@ -93,7 +77,7 @@ describe("Admin API Routes - Phase 1 (FAQs)", () => {
     it("should update an existing FAQ", async () => {
       const res = await request(app)
         .put(`/api/admin/faqs/${testFaq._id}`)
-        .set("Authorization", "Bearer valid-token")
+        .set("x-api-key", validApiKey)
         .send({ answer: "Updated A!" });
 
       expect(res.statusCode).toEqual(200);
@@ -115,7 +99,7 @@ describe("Admin API Routes - Phase 1 (FAQs)", () => {
     it("should delete an FAQ", async () => {
       const res = await request(app)
         .delete(`/api/admin/faqs/${testFaq._id}`)
-        .set("Authorization", "Bearer valid-token");
+        .set("x-api-key", validApiKey);
 
       expect(res.statusCode).toEqual(200);
 
@@ -129,7 +113,7 @@ describe("Admin API Routes - Phase 1 (FAQs)", () => {
 const PartnerLogo = require("../models/PartnerLogo");
 
 describe("Admin API Routes - Phase 2 (PartnerLogos via Generic CRUD)", () => {
-  
+  const validApiKey = "test-secret-key";
 
   describe("POST /api/admin/partner-logos", () => {
     it("should successfully create a PartnerLogo", async () => {
@@ -140,7 +124,7 @@ describe("Admin API Routes - Phase 2 (PartnerLogos via Generic CRUD)", () => {
       };
       const res = await request(app)
         .post("/api/admin/partner-logos")
-        .set("Authorization", "Bearer valid-token")
+        .set("x-api-key", validApiKey)
         .send(payload);
 
       expect(res.statusCode).toEqual(201);
@@ -162,7 +146,7 @@ describe("Admin API Routes - Phase 2 (PartnerLogos via Generic CRUD)", () => {
     it("should update an existing PartnerLogo", async () => {
       const res = await request(app)
         .put(`/api/admin/partner-logos/${testLogo._id}`)
-        .set("Authorization", "Bearer valid-token")
+        .set("x-api-key", validApiKey)
         .send({ name: "New Corp" });
 
       expect(res.statusCode).toEqual(200);
@@ -184,7 +168,7 @@ describe("Admin API Routes - Phase 2 (PartnerLogos via Generic CRUD)", () => {
     it("should delete a PartnerLogo", async () => {
       const res = await request(app)
         .delete(`/api/admin/partner-logos/${testLogo._id}`)
-        .set("Authorization", "Bearer valid-token");
+        .set("x-api-key", validApiKey);
 
       expect(res.statusCode).toEqual(200);
 

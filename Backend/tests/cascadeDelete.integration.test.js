@@ -1,5 +1,5 @@
-const _request = require("supertest");
-const { _app, server } = require("../server");
+const request = require("supertest");
+const { app, server } = require("../server");
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const Startup = require("../models/Startup");

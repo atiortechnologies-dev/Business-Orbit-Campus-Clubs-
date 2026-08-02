@@ -1,8 +1,3 @@
-/**
- * @file ReviewMeeting.js
- * @description Mongoose model for managing general stage review meetings between students and reviewers.
- * @architecture Tracks scheduling, agendas, and statuses for review meetings across various program stages in the database.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -72,8 +67,4 @@ ReviewMeetingSchema.index({ student_id: 1 });
 ReviewMeetingSchema.index({ reviewer_id: 1 });
 ReviewMeetingSchema.index({ meeting_date: 1 });
 
-/**
- * @module ReviewMeeting
- * @description Exports the ReviewMeeting Mongoose model.
- */
 module.exports = mongoose.model("ReviewMeeting", ReviewMeetingSchema);

@@ -1,8 +1,3 @@
-/**
- * @file LaunchSubmission.js
- * @description Defines the Mongoose schema and model for startup launch application submissions.
- * @architecture Captures and stores comprehensive general, product, and social information required for evaluating a startup launch.
- */
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -101,8 +96,4 @@ const LaunchSubmissionSchema = new mongoose.Schema(
 LaunchSubmissionSchema.index({ startup_id: 1 });
 LaunchSubmissionSchema.index({ student_id: 1 });
 
-/**
- * @module LaunchSubmission
- * @description Exports the LaunchSubmission Mongoose model.
- */
 module.exports = mongoose.model("LaunchSubmission", LaunchSubmissionSchema);

@@ -1,21 +1,9 @@
-import { Globe2, Layers3, BarChart3 } from "lucide-react";
+import { Globe2, Layers3, BarChart3 } from 'lucide-react';
 
 const CARDS = [
-  {
-    icon: Globe2,
-    title: "Global Startup Network",
-    desc: "Connect your incubator with universities, founders, mentors, investors, and innovation partners worldwide.",
-  },
-  {
-    icon: Layers3,
-    title: "Standardized Incubation Framework",
-    desc: "Leverage BOCC's structured startup journey, evaluation process, and milestone-driven incubation model.",
-  },
-  {
-    icon: BarChart3,
-    title: "Institutional Analytics",
-    desc: "Track startup progress, mentor engagement, funding readiness, and ecosystem performance with real-time dashboards.",
-  },
+  { icon: Globe2, title: 'Global Startup Network', desc: 'Connect your incubator with universities, founders, mentors, investors, and innovation partners worldwide.' },
+  { icon: Layers3, title: 'Standardized Incubation Framework', desc: "Leverage BOCC's structured startup journey, evaluation process, and milestone-driven incubation model." },
+  { icon: BarChart3, title: 'Institutional Analytics', desc: 'Track startup progress, mentor engagement, funding readiness, and ecosystem performance with real-time dashboards.' },
 ];
 
 export default function ValueProps() {
@@ -37,19 +25,12 @@ export default function ValueProps() {
 
         <div className="grid md:grid-cols-3 gap-6">
           {CARDS.map(({ icon: Icon, title, desc }, i) => (
-            <div
-              key={title}
-              className="group relative bg-canvas-bg border border-border-subtle rounded-lg p-8 hover:border-accent-neon hover:shadow-card hover:-translate-y-1 transition-all duration-300"
-            >
+            <div key={title} className="group relative bg-canvas-bg border border-border-subtle rounded-lg p-8 hover:border-accent-neon hover:shadow-card hover:-translate-y-1 transition-all duration-300">
               <div className="w-12 h-12 rounded-md bg-surface-white border border-border-subtle flex items-center justify-center mb-5 group-hover:bg-accent-neon transition-colors duration-300">
                 <Icon size={24} strokeWidth={2} className="text-text-heading" />
               </div>
-              <h3 className="font-poppins font-semibold text-card text-text-heading mb-2">
-                {title}
-              </h3>
-              <p className="font-inter text-small text-text-muted leading-relaxed">
-                {desc}
-              </p>
+              <h3 className="font-poppins font-semibold text-card text-text-heading mb-2">{title}</h3>
+              <p className="font-inter text-small text-text-muted leading-relaxed">{desc}</p>
               <div className="absolute top-8 right-8 font-poppins font-bold text-5xl text-text-heading/[0.04] group-hover:text-accent-neon/20 transition-colors">
                 0{i + 1}
               </div>

@@ -43,15 +43,17 @@ const getProgress = asyncHandler(async (req, res) => {
     }).sort({ createdAt: -1 });
 
     if (latestSubmission) {
-      submissionStatus = latestSubmission.submission_status;
-      reviewStatus = latestSubmission.review_status;
+      submissionStatus = latestSubmission.status; // draft | pending_review | approved | rejected
+      reviewStatus =
+        latestSubmission.status === "approved"
+          ? "approved"
+          : latestSubmission.status === "rejected"
+            ? "rejected"
+            : latestSubmission.status === "pending_review"
+              ? "under_review"
+              : "not_reviewed";
     }
   }
-
-  // Calculate generic progress based on stages approved
-  const _stages = await StartupStage.find({ startup_id: startup._id }).sort({
-    stage_number: 1,
-  });
 
   return res.status(200).json({
     success: true,
@@ -105,7 +107,7 @@ const getStages = asyncHandler(async (req, res) => {
     success: true,
     data: {
       startupName: startup.startup_name,
-      overallProgress: startup.progress_percentage,
+      overallProgress: startup.progress_percentage || 0,
       stages,
     },
   });

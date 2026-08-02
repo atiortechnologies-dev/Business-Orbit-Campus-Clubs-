@@ -1,12 +1,7 @@
 // Purely presentational — receives `selected` as a prop; the parent
 // (RoleSelectionPage) owns the selection state via native radio inputs, so
 // this renders no role="button"/aria-pressed/tabIndex of its own.
-export default function RoleCard({
-  title,
-  description,
-  icon,
-  selected = false,
-}) {
+export default function RoleCard({ title, description, icon, selected = false }) {
   return (
     <div className="relative">
       {/* accent-neon is reserved for exactly this kind of selection signal —
@@ -22,12 +17,12 @@ export default function RoleCard({
 
       <div
         className={[
-          "flex flex-col items-center gap-3 p-5 rounded border text-center w-full",
-          "transition-all duration-150 ease-linear",
+          'flex flex-col items-center gap-3 p-5 rounded border text-center w-full',
+          'transition-all duration-150 ease-linear',
           selected
-            ? "border-brand-black border-2 bg-surface-white"
-            : "border-border-subtle bg-surface-white hover:border-text-muted",
-        ].join(" ")}
+            ? 'border-brand-black border-2 bg-surface-white'
+            : 'border-border-subtle bg-surface-white hover:border-text-muted',
+        ].join(' ')}
       >
         <div
           className="w-12 h-12 rounded-full bg-canvas-bg flex items-center justify-center text-text-body transition-colors duration-150"
@@ -36,12 +31,8 @@ export default function RoleCard({
           {icon}
         </div>
 
-        <span className="font-semibold text-small text-text-heading font-inter">
-          {title}
-        </span>
-        <span className="text-caption text-text-muted font-inter">
-          {description}
-        </span>
+        <span className="font-semibold text-small text-text-heading font-inter">{title}</span>
+        <span className="text-caption text-text-muted font-inter">{description}</span>
       </div>
     </div>
   );

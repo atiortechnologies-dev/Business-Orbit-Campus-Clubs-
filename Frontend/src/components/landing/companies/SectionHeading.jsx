@@ -1,16 +1,8 @@
-export default function SectionHeading({
-  eyebrow,
-  title,
-  subtitle,
-  align = "center",
-}) {
-  const alignment =
-    align === "center" ? "items-center text-center" : "items-start text-left";
+export default function SectionHeading({ eyebrow, title, subtitle, align = 'center' }) {
+  const alignment = align === 'center' ? 'items-center text-center' : 'items-start text-left';
 
   return (
-    <div
-      className={`flex flex-col ${alignment} max-w-2xl ${align === "center" ? "mx-auto" : ""}`}
-    >
+    <div className={`flex flex-col ${alignment} max-w-2xl ${align === 'center' ? 'mx-auto' : ''}`}>
       {eyebrow && (
         <span className="inline-flex items-center gap-2 font-inter text-caption font-medium uppercase tracking-[0.18em] text-text-muted">
           <span className="h-1.5 w-1.5 rounded-full bg-accent-neon" />

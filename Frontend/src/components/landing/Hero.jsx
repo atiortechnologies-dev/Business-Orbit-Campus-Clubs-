@@ -1,12 +1,12 @@
-import { Link } from "react-router-dom";
-import { Rocket, Lightbulb, Users, TrendingUp } from "lucide-react";
-import Logo from "@/components/ui/Logo";
+import { Link } from 'react-router-dom';
+import { Rocket, Lightbulb, Users, TrendingUp } from 'lucide-react';
+import Logo from '@/components/ui/Logo';
 
 const STATS = [
-  { value: "500+", label: "Startups" },
-  { value: "50+", label: "Campuses" },
-  { value: "200+", label: "Mentors" },
-  { value: "80+", label: "Investors" },
+  { value: '500+', label: 'Startups' },
+  { value: '50+', label: 'Campuses' },
+  { value: '200+', label: 'Mentors' },
+  { value: '80+', label: 'Investors' },
 ];
 
 // Same orbit motif as Login's illustration (a central hub with campus
@@ -32,8 +32,8 @@ export default function Hero() {
           </h1>
 
           <p className="mt-6 font-inter text-body text-text-body max-w-lg leading-relaxed">
-            Empowering the next generation of campus entrepreneurs with a
-            curated platform of mentors, resources and industry partners.
+            Empowering the next generation of campus entrepreneurs with a curated
+            platform of mentors, resources and industry partners.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -53,16 +53,9 @@ export default function Hero() {
 
           <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3">
             {STATS.map((s) => (
-              <div
-                key={s.label}
-                className="bg-surface-white rounded-lg px-4 py-3 border border-border-subtle"
-              >
-                <div className="font-poppins font-bold text-card text-text-heading">
-                  {s.value}
-                </div>
-                <div className="font-inter text-caption text-text-muted mt-1">
-                  {s.label}
-                </div>
+              <div key={s.label} className="bg-surface-white rounded-lg px-4 py-3 border border-border-subtle">
+                <div className="font-poppins font-bold text-card text-text-heading">{s.value}</div>
+                <div className="font-inter text-caption text-text-muted mt-1">{s.label}</div>
               </div>
             ))}
           </div>
@@ -86,11 +79,7 @@ export default function Hero() {
               <div
                 key={angle}
                 className="absolute w-12 h-12 bg-surface-white rounded-full border border-border-subtle flex items-center justify-center shadow-card"
-                style={{
-                  left: `${x}%`,
-                  top: `${y}%`,
-                  transform: "translate(-50%,-50%)",
-                }}
+                style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%,-50%)' }}
               >
                 <Icon size={18} strokeWidth={2} className="text-text-body" />
               </div>

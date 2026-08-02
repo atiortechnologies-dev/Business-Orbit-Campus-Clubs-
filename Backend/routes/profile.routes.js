@@ -37,10 +37,10 @@ const createProfileRouter = (role) => {
 
   // POST api/{role}/profile/upload-photo
   router.post("/upload-photo", uploadPhoto);
-
+  
   // PUT api/{role}/profile/change-password
   router.put("/change-password", changePassword);
-
+  
   // PUT api/{role}/profile/notification-preferences
   router.put("/notification-preferences", updateNotificationPreferences);
 

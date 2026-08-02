@@ -1,8 +1,3 @@
-/**
- * @file validation.controller.js
- * @description Manages Stage 2 (Validation) of the startup journey.
- * @architecture Handles validation overview, surveys, evidence uploads, reports, review meetings, and results.
- */
 const asyncHandler = require("../middlewares/asyncHandler");
 const MeetingFeedback = require("../models/MeetingFeedback");
 const ReviewMeeting = require("../models/ReviewMeeting");
@@ -23,11 +18,6 @@ const {
 
 // ================= VALIDATION OVERVIEW =================
 
-/**
- * @desc    Get validation stage overview
- * @route   GET /api/student/validation/overview
- * @access  Private/Student
- */
 const getValidationOverview = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -101,11 +91,6 @@ const getValidationOverview = asyncHandler(async (req, res) => {
 
 // ================= VALIDATION STATUS & METRICS =================
 
-/**
- * @desc    Get validation status and metrics
- * @route   GET /api/student/validation/status
- * @access  Private/Student
- */
 const getValidationStatus = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -128,11 +113,6 @@ const getValidationStatus = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Get validation checklist
- * @route   GET /api/student/validation/checklist
- * @access  Private/Student
- */
 const getValidationChecklist = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -160,11 +140,6 @@ const getValidationChecklist = asyncHandler(async (req, res) => {
 
 // ================= SURVEY MANAGEMENT =================
 
-/**
- * @desc    List validation surveys
- * @route   GET /api/student/validation/surveys
- * @access  Private/Student
- */
 const listSurveys = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const startup = await getOrCreateStartup(userId, `${userId}'s Startup`);
@@ -179,11 +154,6 @@ const listSurveys = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc    Create a validation survey
- * @route   POST /api/student/validation/surveys
- * @access  Private/Student
- */
 const createSurvey = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { survey_title, responses_count, interviews_count, findings } =
@@ -216,11 +186,6 @@ const createSurvey = asyncHandler(async (req, res) => {
 });
 
 // PUT /api/student/validation/surveys/:id
-/**
- * @desc    Update a validation survey
- * @route   PUT /api/student/validation/surveys/:id
- * @access  Private/Student
- */
 const updateSurvey = asyncHandler(async (req, res) => {
   const { id: surveyId } = req.params;
   const { id: userId } = req.user;
@@ -254,11 +219,6 @@ const updateSurvey = asyncHandler(async (req, res) => {
 });
 
 // DELETE /api/student/validation/surveys/:id
-/**
- * @desc    Delete a validation survey
- * @route   DELETE /api/student/validation/surveys/:id
- * @access  Private/Student
- */
 const deleteSurvey = asyncHandler(async (req, res) => {
   const { id: surveyId } = req.params;
   const { id: userId } = req.user;
@@ -290,11 +250,6 @@ const deleteSurvey = asyncHandler(async (req, res) => {
 // ================= EVIDENCE UPLOAD =================
 
 // POST /api/student/validation/evidence
-/**
- * @desc    Upload validation evidence
- * @route   POST /api/student/validation/evidence
- * @access  Private/Student
- */
 const uploadEvidence = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { file_name, file_url, file_type, file_size } = req.validatedData;
@@ -338,11 +293,6 @@ const uploadEvidence = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/validation/evidence
-/**
- * @desc    List validation evidence
- * @route   GET /api/student/validation/evidence
- * @access  Private/Student
- */
 const listEvidence = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -363,11 +313,6 @@ const listEvidence = asyncHandler(async (req, res) => {
 });
 
 // DELETE /api/student/validation/evidence/:evidenceId
-/**
- * @desc    Delete validation evidence
- * @route   DELETE /api/student/validation/evidence/:evidenceId
- * @access  Private/Student
- */
 const deleteEvidence = asyncHandler(async (req, res) => {
   const { evidenceId } = req.params;
   const { id: userId } = req.user;
@@ -399,11 +344,6 @@ const deleteEvidence = asyncHandler(async (req, res) => {
 // ================= VALIDATION REPORT =================
 
 // GET /api/student/validation/report
-/**
- * @desc    Get validation report
- * @route   GET /api/student/validation/report
- * @access  Private/Student
- */
 const getValidationReport = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -430,11 +370,6 @@ const getValidationReport = asyncHandler(async (req, res) => {
 });
 
 // PUT /api/student/validation/report
-/**
- * @desc    Update validation report
- * @route   PUT /api/student/validation/report
- * @access  Private/Student
- */
 const updateValidationReport = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const updateData = req.validatedData;
@@ -464,11 +399,6 @@ const updateValidationReport = asyncHandler(async (req, res) => {
 });
 
 // POST /api/student/validation/report/submit
-/**
- * @desc    Submit validation report
- * @route   POST /api/student/validation/report/submit
- * @access  Private/Student
- */
 const submitValidationReport = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const {
@@ -572,11 +502,6 @@ const submitValidationReport = asyncHandler(async (req, res) => {
 // ================= REVIEW MEETING =================
 
 // GET /api/student/validation/meeting
-/**
- * @desc    Get validation review meeting
- * @route   GET /api/student/validation/meeting
- * @access  Private/Student
- */
 const getReviewMeeting = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -626,11 +551,6 @@ const getReviewMeeting = asyncHandler(async (req, res) => {
 });
 
 // POST /api/student/validation/meeting/reschedule
-/**
- * @desc    Request meeting reschedule
- * @route   POST /api/student/validation/meeting/reschedule
- * @access  Private/Student
- */
 const requestMeetingReschedule = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { reschedule_reason } = req.validatedData;
@@ -674,11 +594,6 @@ const requestMeetingReschedule = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/validation/meeting/feedback
-/**
- * @desc    Get meeting feedback
- * @route   GET /api/student/validation/meeting/feedback
- * @access  Private/Student
- */
 const getMeetingFeedback = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -724,11 +639,6 @@ const getMeetingFeedback = asyncHandler(async (req, res) => {
 // ================= VALIDATION RESULT SCREEN =================
 
 // GET /api/student/validation/result
-/**
- * @desc    Get validation result
- * @route   GET /api/student/validation/result
- * @access  Private/Student
- */
 const getValidationResult = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
