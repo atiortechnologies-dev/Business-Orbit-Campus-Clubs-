@@ -16,6 +16,22 @@ lists the exact file/function to replace.
 
 ---
 
+## Global — Cookie Consent Banner — `src/components/ui/CookieBanner.jsx`
+
+Mounted once in `src/main.jsx` as a sibling of `<RouterProvider>`, so it
+shows on every route regardless of login state (there's no shared root
+layout in the router — dashboard routes compose their own Shells
+directly, so `main.jsx` is the only true whole-app wrapper).
+
+- **Real:** reads/writes a `localStorage` key (`bocc_cookie_consent`) on
+  mount and on each button click — this is the correct real
+  implementation, not a stub standing in for one, since no consent-
+  logging endpoint exists anywhere in this app yet.
+- **Stub:** none — `// TODO(backend)` in the file just notes where a
+  `POST` would go if a consent-logging endpoint is ever added.
+
+---
+
 ## API Surface (quick reference for backend integration)
 
 Every screen-by-screen section below has its own `TODO(backend)` markers
@@ -131,7 +147,9 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 
 - `components/layout/Sidebar.jsx` — every portal's sidebar footer shows a
   hardcoded name/initials/role; needs real authenticated-user data once
-  a session exists, one place for all six portal shells.
+  a session exists, one place for all six portal shells. The "Log Out"
+  row below it, however, is fully real — calls `useAuth().logout()` then
+  navigates to `/login`, same one-place-for-all-six-shells fix.
 
 **Known frontend gap — dead "Save Draft" controls (not a backend TODO):**
 Found during a pass auditing every save/submit button for false-success
@@ -407,6 +425,16 @@ shared logic in `src/components/auth/RoleSignupForm.jsx`
   placeholder is now a custom inline SVG — a "5-stage ascending path" motif
   (waypoints rising to a flag) matching the STAGES list below it.
 
+**Access control — `components/journey/StageGuard.jsx` (new):** wraps the
+Validation/MVP/Traction/Launch route groups in `router.jsx` (Ideation and
+this hub page stay ungated). On mount, calls the existing real
+`getStartupStages()` (`src/api/startup/startupApi.js`) and checks the
+target stage's `status`; anything other than `active`/`approved`/
+`completed` (including an API error) redirects back to this hub rather
+than rendering the page — fails closed by design, not just on the happy
+path. Frontend-only route gating; does not touch or replace
+`ProtectedRoute.jsx`, which still isn't wired into `router.jsx` anywhere.
+
 ### Startup Journey — Ideation Stage — `src/pages/journey/ideation/*.jsx`
 
 Six screens: `IdeationOverview` → `IdeaSubmission` → `SubmissionConfirmation`,
@@ -624,9 +652,15 @@ the Incubator role's own portal below. Fills the "Incubators" nav item
 
 ### Freelancing — `src/pages/freelancing/*.jsx`
 
-_(Fills the "Freelancing" nav item's stub. Independent sample data from
-Admin's/Company's Opportunity screens — same no-cross-portal-wiring
-precedent as every other role pair in this app.)_
+_(Independent sample data from Admin's/Company's Opportunity screens —
+same no-cross-portal-wiring precedent as every other role pair in this
+app.)_
+
+- **Coming Soon:** the Student sidebar's "Freelancing" nav item itself
+  (`DashboardShell.jsx`'s `NAV_ITEMS`) — flipped from a real link back to
+  `ComingSoon`, since freelancing is an upcoming feature. The screens
+  below are untouched and fully reachable by direct URL; only the nav
+  entry point is gated.
 
 - **Real:** `FreelancingApplicationForm.jsx` gates Submit on a written
   Cover Letter and navigates to `ApplyConfirmation.jsx` on success.
@@ -1129,6 +1163,28 @@ notes. Only one seeded pitch deck and one seeded submission set exist, same
 - **Coming Soon:** "Start Conversation," "Request Pitch Meeting" — both
   need a messaging/scheduling system that doesn't exist yet.
 
+### `/investor/settings` — `src/pages/investor/Settings.jsx`
+
+_(New — Investor had no profile/settings page or route at all before this
+pass; the header gear + avatar in `InvestorShell.jsx` were both
+`ComingSoon` placeholders. Modeled on `pages/mentor/Profile.jsx`'s shape:
+identity fields + an account-settings section, rather than Student's
+larger `Settings.jsx`.)_
+
+- **Real:** fetches via the existing generic `getMyProfile("investor")`
+  and saves via `updateProfile("investor", data)`
+  (`src/api/auth/profileApi.js` — same role-parameterized API Mentor's
+  profile page already uses); Save is gated on Full Name + Organization
+  being non-empty, same `canSave` pattern used everywhere else.
+- **Stub:** no investor profile endpoint has ever been called from this
+  screen before, so there's nothing to compare against yet — first real
+  usage of this API surface for this role. `// TODO(backend)` isn't
+  needed here since the call is already real; it just has nothing to
+  fetch until a backend profile exists for this role.
+- **Coming Soon:** Change Password, Notification Settings, Privacy &
+  Security, Deactivate Account — same account-settings stub pattern as
+  every other portal's settings screen.
+
 ---
 
 ## Mentor Portal
@@ -1291,13 +1347,32 @@ _(Fills the "Applicants" nav stub.)_
   icon, Schedule Interview, Download Resume, Contact Applicant, Reject,
   Share Profile, Portfolio/GitHub links.
 
+### `/company/settings` — `src/pages/company/Settings.jsx`
+
+_(New — Company had no profile/settings page or route at all before this
+pass; the sidebar's `real: false` "Profile" stub and the header's
+`ComingSoon` avatar have both been replaced by this one real page,
+matching the "single profile entry point, top-right" pattern now used by
+every portal. Modeled on `pages/mentor/Profile.jsx`'s shape.)_
+
+- **Real:** fetches via `getMyProfile("company")` and saves via
+  `updateProfile("company", data)` (`src/api/auth/profileApi.js` — same
+  generic role-parameterized API Mentor's profile page already uses);
+  Save is gated on Full Name + Company Name being non-empty.
+- **Stub:** first real usage of this API surface for the company role —
+  nothing to compare against yet, just an empty profile until a backend
+  record exists.
+- **Coming Soon:** Change Password, Notification Settings, Privacy &
+  Security, Deactivate Account.
+
 ### Shell — `components/company/CompanyShell.jsx`
 
 Sidebar nav: Dashboard, My Opportunities, Post Opportunity, and
-Applicants are all real now; Profile and Settings remain `real: false`
-(render as `ComingSoon` automatically via the shared `Sidebar.jsx`) since
-those screens don't exist yet. Header search and notifications are
-`ComingSoon`, matching every other portal shell's header.
+Applicants are all real. The sidebar's old `real: false` "Profile" entry
+has been removed (dedup pass — one profile entry point per portal, not
+two); the header avatar is now a real link to `/company/settings` above.
+Header search and notifications remain `ComingSoon`, matching every other
+portal shell's header.
 
 ---
 
