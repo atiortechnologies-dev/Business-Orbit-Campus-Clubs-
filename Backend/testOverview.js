@@ -1,23 +1,22 @@
-require("dotenv").config();
-const mongoose = require("mongoose");
-const { getOverview } = require("./controllers/adminDashboard.controller");
-const connectDB = require("./config/db");
+const mongoose = require('mongoose');
+require('dotenv').config();
 
-(async () => {
-  await connectDB();
-  const req = {};
-  const res = {
-    status: (code) => ({
-      json: (data) => {
-        console.log("Status:", code);
-        console.log("Data:", JSON.stringify(data, null, 2));
-      }
-    })
-  };
-  try {
-    await getOverview(req, res, (err) => console.log("Next called with err:", err));
-  } catch (e) {
-    console.error("Crash:", e);
-  }
+async function test() {
+  await mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/bocc");
+  const User = require('./models/User');
+  const user = await User.findOne({ role: "super_admin" });
+  console.log("Super Admin found:", user?.email);
+  
+  // Create a token for this user
+  const { generateToken } = require('./utils/token');
+  const token = generateToken(user._id);
+  
+  const overviewRes = await fetch('http://localhost:5000/api/admin/overview', {
+    headers: { Cookie: `accessToken=${token}` }
+  });
+  const overviewData = await overviewRes.json();
+  console.log("Overview Data:", overviewData);
+  console.log("Overview Status:", overviewRes.status);
   process.exit(0);
-})();
+}
+test();

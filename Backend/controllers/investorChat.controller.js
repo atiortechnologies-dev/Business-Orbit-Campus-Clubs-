@@ -3,12 +3,12 @@
  * @description Handles chat functionalities between investors and startups.
  */
 
-const mongoose = require("mongoose");
+const _mongoose = require("mongoose");
 const asyncHandler = require("../middlewares/asyncHandler");
 const InvestorChatRoom = require("../models/InvestorChatRoom");
 const InvestorMessage = require("../models/InvestorMessage");
-const Notification = require("../models/Notification");
-const Startup = require("../models/Startup");
+const _Notification = require("../models/Notification");
+const _Startup = require("../models/Startup");
 
 // ==========================================
 // STUDENT -> INVESTOR
@@ -21,17 +21,22 @@ const Startup = require("../models/Startup");
 exports.startInvestorChat = asyncHandler(async (req, res) => {
   const { investorId } = req.params;
   const { startup_id } = req.body; // Since a student could have multiple startups, they should specify which one
-  
+
   if (!startup_id) {
-    return res.status(400).json({ success: false, message: "startup_id is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "startup_id is required" });
   }
 
-  let chatRoom = await InvestorChatRoom.findOne({ investor_id: investorId, startup_id });
-  
+  let chatRoom = await InvestorChatRoom.findOne({
+    investor_id: investorId,
+    startup_id,
+  });
+
   if (!chatRoom) {
     chatRoom = await InvestorChatRoom.create({
       investor_id: investorId,
-      startup_id
+      startup_id,
     });
   }
 
@@ -46,11 +51,16 @@ exports.getInvestorChats = asyncHandler(async (req, res) => {
   const { startup_id } = req.query; // Filter by startup
 
   if (!startup_id) {
-    return res.status(400).json({ success: false, message: "startup_id query parameter is required" });
+    return res.status(400).json({
+      success: false,
+      message: "startup_id query parameter is required",
+    });
   }
 
-  const chatRooms = await InvestorChatRoom.find({ startup_id })
-    .populate("investor_id", "full_name email");
+  const chatRooms = await InvestorChatRoom.find({ startup_id }).populate(
+    "investor_id",
+    "full_name email",
+  );
 
   res.status(200).json({ success: true, data: chatRooms });
 });
@@ -65,19 +75,26 @@ exports.sendInvestorMessage = asyncHandler(async (req, res) => {
   const senderId = req.user._id;
 
   if (!startup_id || !message) {
-    return res.status(400).json({ success: false, message: "startup_id and message are required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "startup_id and message are required" });
   }
 
-  const chatRoom = await InvestorChatRoom.findOne({ investor_id: investorId, startup_id });
+  const chatRoom = await InvestorChatRoom.findOne({
+    investor_id: investorId,
+    startup_id,
+  });
   if (!chatRoom) {
-    return res.status(404).json({ success: false, message: "Chat room not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Chat room not found" });
   }
 
   const newMessage = await InvestorMessage.create({
     chat_id: chatRoom._id,
     sender_id: senderId,
     message,
-    attachment_url: attachment_url || ""
+    attachment_url: attachment_url || "",
   });
 
   res.status(201).json({ success: true, data: newMessage });
@@ -92,15 +109,25 @@ exports.getInvestorMessages = asyncHandler(async (req, res) => {
   const { startup_id } = req.query;
 
   if (!startup_id) {
-    return res.status(400).json({ success: false, message: "startup_id query parameter is required" });
+    return res.status(400).json({
+      success: false,
+      message: "startup_id query parameter is required",
+    });
   }
 
-  const chatRoom = await InvestorChatRoom.findOne({ investor_id: investorId, startup_id });
+  const chatRoom = await InvestorChatRoom.findOne({
+    investor_id: investorId,
+    startup_id,
+  });
   if (!chatRoom) {
-    return res.status(404).json({ success: false, message: "Chat room not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Chat room not found" });
   }
 
-  const messages = await InvestorMessage.find({ chat_id: chatRoom._id }).sort({ created_at: 1 });
+  const messages = await InvestorMessage.find({ chat_id: chatRoom._id }).sort({
+    created_at: 1,
+  });
   res.status(200).json({ success: true, data: messages });
 });
 
@@ -115,13 +142,16 @@ exports.getInvestorMessages = asyncHandler(async (req, res) => {
 exports.startStartupChat = asyncHandler(async (req, res) => {
   const { startupId } = req.params;
   const investorId = req.user._id;
-  
-  let chatRoom = await InvestorChatRoom.findOne({ investor_id: investorId, startup_id: startupId });
-  
+
+  let chatRoom = await InvestorChatRoom.findOne({
+    investor_id: investorId,
+    startup_id: startupId,
+  });
+
   if (!chatRoom) {
     chatRoom = await InvestorChatRoom.create({
       investor_id: investorId,
-      startup_id: startupId
+      startup_id: startupId,
     });
   }
 
@@ -135,8 +165,9 @@ exports.startStartupChat = asyncHandler(async (req, res) => {
 exports.getStartupChats = asyncHandler(async (req, res) => {
   const investorId = req.user._id;
 
-  const chatRooms = await InvestorChatRoom.find({ investor_id: investorId })
-    .populate("startup_id", "startup_name category");
+  const chatRooms = await InvestorChatRoom.find({
+    investor_id: investorId,
+  }).populate("startup_id", "startup_name category");
 
   res.status(200).json({ success: true, data: chatRooms });
 });
@@ -151,19 +182,26 @@ exports.sendStartupMessage = asyncHandler(async (req, res) => {
   const investorId = req.user._id;
 
   if (!message) {
-    return res.status(400).json({ success: false, message: "message is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "message is required" });
   }
 
-  const chatRoom = await InvestorChatRoom.findOne({ investor_id: investorId, startup_id: startupId });
+  const chatRoom = await InvestorChatRoom.findOne({
+    investor_id: investorId,
+    startup_id: startupId,
+  });
   if (!chatRoom) {
-    return res.status(404).json({ success: false, message: "Chat room not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Chat room not found" });
   }
 
   const newMessage = await InvestorMessage.create({
     chat_id: chatRoom._id,
     sender_id: investorId,
     message,
-    attachment_url: attachment_url || ""
+    attachment_url: attachment_url || "",
   });
 
   res.status(201).json({ success: true, data: newMessage });
@@ -177,12 +215,19 @@ exports.getStartupMessages = asyncHandler(async (req, res) => {
   const { startupId } = req.params;
   const investorId = req.user._id;
 
-  const chatRoom = await InvestorChatRoom.findOne({ investor_id: investorId, startup_id: startupId });
+  const chatRoom = await InvestorChatRoom.findOne({
+    investor_id: investorId,
+    startup_id: startupId,
+  });
   if (!chatRoom) {
-    return res.status(404).json({ success: false, message: "Chat room not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Chat room not found" });
   }
 
-  const messages = await InvestorMessage.find({ chat_id: chatRoom._id }).sort({ created_at: 1 });
+  const messages = await InvestorMessage.find({ chat_id: chatRoom._id }).sort({
+    created_at: 1,
+  });
   res.status(200).json({ success: true, data: messages });
 });
 
@@ -213,12 +258,17 @@ exports.getConversationById = asyncHandler(async (req, res) => {
   const { conversationId } = req.params;
   const investorId = req.user._id;
 
-  const chatRoom = await InvestorChatRoom.findOne({ _id: conversationId, investor_id: investorId })
+  const chatRoom = await InvestorChatRoom.findOne({
+    _id: conversationId,
+    investor_id: investorId,
+  })
     .populate("startup_id", "startup_name logo industry")
     .populate("founder_id", "full_name profile_photo");
 
   if (!chatRoom) {
-    return res.status(404).json({ success: false, message: "Conversation not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Conversation not found" });
   }
 
   res.status(200).json({ success: true, data: chatRoom });
@@ -232,12 +282,19 @@ exports.getConversationMessages = asyncHandler(async (req, res) => {
   const { conversationId } = req.params;
   const investorId = req.user._id;
 
-  const chatRoom = await InvestorChatRoom.findOne({ _id: conversationId, investor_id: investorId });
+  const chatRoom = await InvestorChatRoom.findOne({
+    _id: conversationId,
+    investor_id: investorId,
+  });
   if (!chatRoom) {
-    return res.status(404).json({ success: false, message: "Conversation not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Conversation not found" });
   }
 
-  const messages = await InvestorMessage.find({ chat_id: chatRoom._id }).sort({ created_at: 1 });
+  const messages = await InvestorMessage.find({ chat_id: chatRoom._id }).sort({
+    created_at: 1,
+  });
   res.status(200).json({ success: true, data: messages });
 });
 
@@ -251,12 +308,19 @@ exports.sendConversationMessage = asyncHandler(async (req, res) => {
   const investorId = req.user._id;
 
   if (!message) {
-    return res.status(400).json({ success: false, message: "message is required" });
+    return res
+      .status(400)
+      .json({ success: false, message: "message is required" });
   }
 
-  const chatRoom = await InvestorChatRoom.findOne({ _id: conversationId, investor_id: investorId });
+  const chatRoom = await InvestorChatRoom.findOne({
+    _id: conversationId,
+    investor_id: investorId,
+  });
   if (!chatRoom) {
-    return res.status(404).json({ success: false, message: "Conversation not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Conversation not found" });
   }
 
   const newMessage = await InvestorMessage.create({
@@ -264,9 +328,9 @@ exports.sendConversationMessage = asyncHandler(async (req, res) => {
     sender_id: investorId,
     receiver_id: chatRoom.founder_id,
     message,
-    attachment_url: attachment_url || ""
+    attachment_url: attachment_url || "",
   });
-  
+
   // Update the chatroom updated_at
   chatRoom.updated_at = new Date();
   await chatRoom.save();
@@ -281,16 +345,21 @@ exports.sendConversationMessage = asyncHandler(async (req, res) => {
 exports.markConversationRead = asyncHandler(async (req, res) => {
   const { conversationId } = req.params;
   const investorId = req.user._id;
-  
-  const chatRoom = await InvestorChatRoom.findOne({ _id: conversationId, investor_id: investorId });
+
+  const chatRoom = await InvestorChatRoom.findOne({
+    _id: conversationId,
+    investor_id: investorId,
+  });
   if (!chatRoom) {
-    return res.status(404).json({ success: false, message: "Conversation not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Conversation not found" });
   }
-  
+
   await InvestorMessage.updateMany(
     { chat_id: conversationId, receiver_id: investorId, is_read: false },
-    { $set: { is_read: true } }
+    { $set: { is_read: true } },
   );
-  
+
   res.status(200).json({ success: true, message: "Messages marked as read" });
 });

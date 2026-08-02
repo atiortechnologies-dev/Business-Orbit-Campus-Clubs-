@@ -562,3 +562,43 @@ module.exports = {
   getMeetingPrepareContext,
   scheduleMeeting,
 };
+
+const getOverview = asyncHandler(async (req, res) => {
+  return res.status(200).json({
+    totalUsers: 120,
+    activeStartups: 45,
+    pendingVerifications: 8,
+    investorCapital: "$2.5M",
+    funnelViews: {
+      Daily: [
+        { label: "Idea", value: 120 },
+        { label: "Validation", value: 80 },
+        { label: "MVP", value: 40 },
+        { label: "Traction", value: 15 },
+        { label: "Launch", value: 5 },
+      ]
+    },
+    userDistribution: [
+      { label: "Students", pct: 60 },
+      { label: "Mentors", pct: 20 },
+      { label: "Investors", pct: 15 },
+      { label: "Incubators", pct: 5 },
+    ],
+    criticalActions: [
+      { id: 1, iconName: "ShieldAlert", tone: "error", title: "Security Alert", detail: "Multiple failed logins detected" },
+      { id: 2, iconName: "UserPlus", tone: "info", title: "New Mentor Registration", detail: "Review required" },
+    ]
+  });
+});
+
+const getUpdates = asyncHandler(async (req, res) => {
+  return res.status(200).json({
+    updates: [
+      { message: "System backup completed successfully", time: "10 mins ago" },
+      { message: "New investor signed up", time: "1 hour ago" },
+    ]
+  });
+});
+
+module.exports.getOverview = getOverview;
+module.exports.getUpdates = getUpdates;

@@ -1,3 +1,8 @@
+/**
+ * @file chapterAssignment.js
+ * @description Utility functions for assigning college chapters to students.
+ * @architecture Helper module used during student registration to link them with appropriate campus chapters based on college names.
+ */
 const Chapter = require("../models/Chapter");
 
 /**
@@ -34,6 +39,11 @@ const assignChapterToStudent = async (collegeName) => {
   return chapter ? chapter._id : null;
 };
 
+/**
+ * @desc    Exported chapter assignment utility functions
+ * @route   N/A
+ * @access  Internal
+ */
 module.exports = {
   getChapterByCollege,
   assignChapterToStudent,

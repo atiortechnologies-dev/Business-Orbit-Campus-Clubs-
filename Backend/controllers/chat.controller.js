@@ -21,13 +21,28 @@ const { ASSIGNMENT_STATUS } = require("../constants/statusConstants");
  */
 const verifyChatAccess = async (userId, role, chatRoom) => {
   if (role === "mentor") {
-    if (chatRoom.mentor_id.toString() !== userId.toString()) {
+    if (
+      chatRoom.mentor_id &&
+      chatRoom.mentor_id.toString() !== userId.toString()
+    ) {
       const error = new Error("Unauthorized: You are not part of this chat.");
       error.statusCode = 403;
       throw error;
     }
   } else if (role === "student") {
-    if (chatRoom.student_id.toString() !== userId.toString()) {
+    if (
+      chatRoom.student_id &&
+      chatRoom.student_id.toString() !== userId.toString()
+    ) {
+      const error = new Error("Unauthorized: You are not part of this chat.");
+      error.statusCode = 403;
+      throw error;
+    }
+  } else if (role === "investor") {
+    if (
+      chatRoom.investor_id &&
+      chatRoom.investor_id.toString() !== userId.toString()
+    ) {
       const error = new Error("Unauthorized: You are not part of this chat.");
       error.statusCode = 403;
       throw error;
@@ -38,22 +53,71 @@ const verifyChatAccess = async (userId, role, chatRoom) => {
     throw error;
   }
 
-  // Ensure there is an active MentorAssignment
-  const assignment = await MentorAssignment.findOne({
-    mentor_id: chatRoom.mentor_id,
-    student_id: chatRoom.student_id,
-    startup_id: chatRoom.startup_id,
-    status: ASSIGNMENT_STATUS.ACTIVE,
-  });
+  // Ensure there is an active MentorAssignment if mentor is involved
+  if ((role === "mentor" || role === "student") && chatRoom.mentor_id) {
+    const assignment = await MentorAssignment.findOne({
+      mentor_id: chatRoom.mentor_id,
+      student_id: chatRoom.student_id,
+      startup_id: chatRoom.startup_id,
+      status: ASSIGNMENT_STATUS.ACTIVE,
+    });
 
-  if (!assignment) {
-    const error = new Error(
-      "Unauthorized: Mentorship assignment is no longer active.",
-    );
-    error.statusCode = 403;
-    throw error;
+    if (!assignment) {
+      const error = new Error(
+        "Unauthorized: Mentorship assignment is no longer active.",
+      );
+      error.statusCode = 403;
+      throw error;
+    }
   }
 };
+
+/**
+ * @desc    Create a chat room
+ * @route   POST /api/chat/conversations
+ * @access  Private
+ */
+exports.createChatRoom = asyncHandler(async (req, res) => {
+  const userId = req.user.id || req.user._id;
+  const role = req.user.role;
+  const { targetId } = req.body;
+
+  if (!targetId) {
+    return res.status(400).json({ message: "targetId is required." });
+  }
+
+  let chatRoom;
+  if (role === "investor") {
+    chatRoom = await ChatRoom.findOne({
+      investor_id: userId,
+      startup_id: targetId,
+    });
+    if (!chatRoom) {
+      chatRoom = await ChatRoom.create({
+        investor_id: userId,
+        startup_id: targetId,
+      });
+    }
+  } else if (role === "student") {
+    chatRoom = await ChatRoom.findOne({
+      student_id: userId,
+      investor_id: targetId,
+    });
+    if (!chatRoom) {
+      chatRoom = await ChatRoom.create({
+        student_id: userId,
+        investor_id: targetId,
+      });
+    }
+  } else {
+    return res
+      .status(403)
+      .json({ message: "Role not authorized to create this room." });
+  }
+
+  res.status(201).json(chatRoom);
+});
+// Kept for replacement structure
 
 /**
  * @desc    Get all chat rooms for the user
@@ -146,7 +210,7 @@ exports.searchChats = asyncHandler(async (req, res) => {
  * @access  Private (Mentor/Student)
  */
 exports.getChatMessages = asyncHandler(async (req, res) => {
-  const { chatId } = req.params;
+  const { id: chatId } = req.params;
   const userId = req.user.id || req.user._id;
   const role = req.user.role;
 
@@ -170,7 +234,7 @@ exports.getChatMessages = asyncHandler(async (req, res) => {
  * @access  Private (Mentor/Student)
  */
 exports.sendMessage = asyncHandler(async (req, res) => {
-  const { chatId } = req.params;
+  const { id: chatId } = req.params;
   const { message } = req.body;
   const userId = req.user.id || req.user._id;
   const role = req.user.role;
@@ -182,12 +246,10 @@ exports.sendMessage = asyncHandler(async (req, res) => {
   }
 
   if (message.length > 20000) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Message is too long. Maximum allowed length is 20000 characters.",
-      });
+    return res.status(400).json({
+      message:
+        "Message is too long. Maximum allowed length is 20000 characters.",
+    });
   }
 
   const chatRoom = await ChatRoom.findOne({ _id: chatId });
@@ -244,7 +306,7 @@ exports.sendMessage = asyncHandler(async (req, res) => {
  * @access  Private (Mentor/Student)
  */
 exports.uploadAttachment = asyncHandler(async (req, res) => {
-  const { chatId } = req.params;
+  const { id: chatId } = req.params;
   const userId = req.user.id || req.user._id;
   const role = req.user.role;
 
@@ -311,7 +373,7 @@ exports.uploadAttachment = asyncHandler(async (req, res) => {
  * @access  Private (Mentor/Student)
  */
 exports.markMessagesRead = asyncHandler(async (req, res) => {
-  const { chatId } = req.params;
+  const { id: chatId } = req.params;
   const userId = req.user.id || req.user._id;
   const role = req.user.role;
 

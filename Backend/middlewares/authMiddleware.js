@@ -26,6 +26,7 @@ const protect = asyncHandler(async (req, res, next) => {
   try {
     decoded = verifyToken(token);
   } catch (err) {
+    console.log("401 Unauthorized from protect.");
     return res.status(401).json({
       success: false,
       message: "Not authorized, invalid or expired token",
@@ -35,6 +36,7 @@ const protect = asyncHandler(async (req, res, next) => {
 
   const user = await User.findById(decoded.id);
   if (!user) {
+    console.log("401 Unauthorized from protect.");
     return res.status(401).json({
       success: false,
       message: "Not authorized, user no longer exists",
@@ -61,6 +63,7 @@ const requireRole = (roleOrRoles) => (req, res, next) => {
   const allowedRoles = Array.isArray(roleOrRoles) ? roleOrRoles : [roleOrRoles];
 
   if (!req.user || !allowedRoles.includes(req.user.role)) {
+    console.log("403 Forbidden from requireRole. req.user.role:", req.user?.role, "allowedRoles:", allowedRoles);
     return res.status(403).json({
       success: false,
       message: `This endpoint is only available to ${allowedRoles.join(", ")} accounts`,
@@ -85,6 +88,7 @@ const verifyRefreshTokenMiddleware = asyncHandler(async (req, res, next) => {
   try {
     decoded = verifyRefreshToken(refreshToken);
   } catch (err) {
+    console.log("401 Unauthorized from protect.");
     return res.status(401).json({
       success: false,
       message: "Invalid or expired refresh token",
@@ -94,6 +98,7 @@ const verifyRefreshTokenMiddleware = asyncHandler(async (req, res, next) => {
 
   const user = await User.findById(decoded.id);
   if (!user) {
+    console.log("401 Unauthorized from protect.");
     return res.status(401).json({
       success: false,
       message: "User not found",

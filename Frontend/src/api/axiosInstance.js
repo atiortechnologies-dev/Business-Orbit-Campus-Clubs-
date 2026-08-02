@@ -104,7 +104,7 @@ api.interceptors.response.use(
     if (error.response?.status === 403) {
       console.error("Access Forbidden: Invalid Role permissions");
       if (window.location.pathname !== "/unauthorized") {
-        window.location.href = "/unauthorized";
+        // window.location.href = "/unauthorized";
       }
     }
 

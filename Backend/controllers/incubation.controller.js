@@ -1,3 +1,8 @@
+/**
+ * @file incubation.controller.js
+ * @description Manages incubation verification and startup progress through stages.
+ * @architecture Handles startup incubation verification flow and tracking stage progress, interacting with IncubationVerification and StartupStage models.
+ */
 const asyncHandler = require("../middlewares/asyncHandler");
 const IncubationVerification = require("../models/IncubationVerification");
 const StartupStage = require("../models/StartupStage");
@@ -6,6 +11,11 @@ const { getOrCreateStartup } = require("../utils/startupJourney");
 //  ========== Incubation Verification Submission ==========
 
 // POST /api/student/incubation-verification ( Submit incubation verification details )
+/**
+ * @desc    Submit incubation verification details
+ * @route   POST /api/student/incubation-verification
+ * @access  Private/Student
+ */
 const submitIncubationVerification = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const incubationData = req.validatedData;
@@ -53,6 +63,11 @@ const submitIncubationVerification = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/incubation-verification ( get incubation verification details )
+/**
+ * @desc    Get incubation verification details
+ * @route   GET /api/student/incubation-verification
+ * @access  Private/Student
+ */
 const getIncubationVerification = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -76,6 +91,11 @@ const getIncubationVerification = asyncHandler(async (req, res) => {
 });
 
 // PUT /api/student/incubation-verification/{id} ( update verification draft only )
+/**
+ * @desc    Update verification draft only
+ * @route   PUT /api/student/incubation-verification/:verificationId
+ * @access  Private/Student
+ */
 const updateIncubationverification = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
   const { verificationId } = req.params;
@@ -123,6 +143,11 @@ const updateIncubationverification = asyncHandler(async (req, res) => {
 // ========== SCREEN 2: REVIEW STATUS ( Verification Under Review ) ==========
 
 // GET /api/student/incubation-verification/status
+/**
+ * @desc    Get verification review status
+ * @route   GET /api/student/incubation-verification/status
+ * @access  Private/Student
+ */
 const getVerificationStatus = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -155,6 +180,11 @@ const getVerificationStatus = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/incubation-verification/timeline
+/**
+ * @desc    Get verification timeline
+ * @route   GET /api/student/incubation-verification/timeline
+ * @access  Private/Student
+ */
 const getVerificationTimeline = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -189,6 +219,11 @@ const getVerificationTimeline = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/incubation-verification/documents
+/**
+ * @desc    Get verification documents
+ * @route   GET /api/student/incubation-verification/documents
+ * @access  Private/Student
+ */
 const getVerificationDocuments = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -217,6 +252,11 @@ const getVerificationDocuments = asyncHandler(async (req, res) => {
 // ========== SCREEN 3: APPROVAL ==========
 
 // GET /api/student/incubation-verification/result
+/**
+ * @desc    Get verification result
+ * @route   GET /api/student/incubation-verification/result
+ * @access  Private/Student
+ */
 const getVerificationResult = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -264,6 +304,11 @@ const getVerificationResult = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/startup/progress
+/**
+ * @desc    Get startup progress
+ * @route   GET /api/student/startup/progress
+ * @access  Private/Student
+ */
 const getStartupProgress = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -299,6 +344,11 @@ const getStartupProgress = asyncHandler(async (req, res) => {
 // ========== SCREEN 4: STAGE 4 ==========
 
 // GET /api/student/stages/traction
+/**
+ * @desc    Get Stage 4 (Traction) overview
+ * @route   GET /api/student/stages/traction
+ * @access  Private/Student
+ */
 const getStage4Overview = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -351,6 +401,11 @@ const getStage4Overview = asyncHandler(async (req, res) => {
 });
 
 // GET /api/student/stages/traction/checklist
+/**
+ * @desc    Get Stage 4 (Traction) checklist
+ * @route   GET /api/student/stages/traction/checklist
+ * @access  Private/Student
+ */
 const getStage4Checklist = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 
@@ -373,6 +428,11 @@ const getStage4Checklist = asyncHandler(async (req, res) => {
 });
 
 // POST /api/student/stages/traction/start
+/**
+ * @desc    Start Stage 4 (Traction)
+ * @route   POST /api/student/stages/traction/start
+ * @access  Private/Student
+ */
 const startStage4 = asyncHandler(async (req, res) => {
   const { id: userId } = req.user;
 

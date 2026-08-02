@@ -1,0 +1,1269 @@
+=== MERGE ANALYSIS RESULTS ===
+Before commit: b34b524 (your version)
+After: HEAD (post-merge with main)
+Merge commit: f96cc51
+Date: Sun Aug  2 06:28:16 PM IST 2026
+
+=== FRONTEND FILES ===
+FILE: Frontend/src/components/admin/AdminShell.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 206 | AFTER_LINES: 147
+---
+FILE: Frontend/src/components/auth/PasswordStrengthMeter.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 56 | AFTER_LINES: 56
+---
+FILE: Frontend/src/components/auth/RoleCard.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 48 | AFTER_LINES: 39
+---
+FILE: Frontend/src/components/auth/RoleSignupForm.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 295 | AFTER_LINES: 295 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/components/company/ApplicantTable.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 115 | AFTER_LINES: 70
+---
+FILE: Frontend/src/components/company/CompanyShell.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 154 | AFTER_LINES: 131
+---
+FILE: Frontend/src/components/company/OpportunitiesTable.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 179 | AFTER_LINES: 103
+---
+FILE: Frontend/src/components/company/PostOpportunityStepper.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 44 | AFTER_LINES: 28
+---
+FILE: Frontend/src/components/company/RightPanel.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 101 | AFTER_LINES: 68
+---
+FILE: Frontend/src/components/company/StatsRow.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 28 | AFTER_LINES: 18
+---
+FILE: Frontend/src/components/dashboard/DashboardShell.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 184 | AFTER_LINES: 195
+---
+FILE: Frontend/src/components/incubator/IncubatorShell.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 191 | AFTER_LINES: 161
+---
+FILE: Frontend/src/components/investor/InvestorShell.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 140 | AFTER_LINES: 127
+---
+FILE: Frontend/src/components/landing/Advantage.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 60 | AFTER_LINES: 35
+---
+FILE: Frontend/src/components/landing/CTA.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 31 | AFTER_LINES: 22
+---
+FILE: Frontend/src/components/landing/Contact.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=2 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 152 | AFTER_LINES: 50
+---
+FILE: Frontend/src/components/landing/Ecosystem.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 74 | AFTER_LINES: 52
+---
+FILE: Frontend/src/components/landing/FAQ.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 75 | AFTER_LINES: 73 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/components/landing/FeaturedStartups.jsx
+VERDICT: IDENTICAL
+REASON: Files are identical in both versions
+---
+FILE: Frontend/src/components/landing/Footer.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 79 | AFTER_LINES: 57
+---
+FILE: Frontend/src/components/landing/Fostering.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 69 | AFTER_LINES: 39
+---
+FILE: Frontend/src/components/landing/Hero.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 103 | AFTER_LINES: 92
+---
+FILE: Frontend/src/components/landing/LogoStrip.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 68 | AFTER_LINES: 50 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/components/landing/Navbar.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 124 | AFTER_LINES: 87
+---
+FILE: Frontend/src/components/landing/Partner.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 53 | AFTER_LINES: 37
+---
+FILE: Frontend/src/components/landing/Roles.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 86 | AFTER_LINES: 41
+---
+FILE: Frontend/src/components/landing/Stories.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 88 | AFTER_LINES: 67 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/components/landing/companies/CoInnovation.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 63 | AFTER_LINES: 38
+---
+FILE: Frontend/src/components/landing/companies/FAQ.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 80 | AFTER_LINES: 51
+---
+FILE: Frontend/src/components/landing/companies/FinalCTA.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 52 | AFTER_LINES: 36
+---
+FILE: Frontend/src/components/landing/companies/Hero.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 113 | AFTER_LINES: 74
+---
+FILE: Frontend/src/components/landing/companies/Process.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 89 | AFTER_LINES: 46
+---
+FILE: Frontend/src/components/landing/companies/SectionHeading.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 30 | AFTER_LINES: 22
+---
+FILE: Frontend/src/components/landing/companies/TalentPipeline.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 59 | AFTER_LINES: 38
+---
+FILE: Frontend/src/components/landing/companies/ValueProposition.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 60 | AFTER_LINES: 34
+---
+FILE: Frontend/src/components/landing/incubator/FAQ.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 100 | AFTER_LINES: 62
+---
+FILE: Frontend/src/components/landing/incubator/FinalCTA.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 49 | AFTER_LINES: 37
+---
+FILE: Frontend/src/components/landing/incubator/Hero.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=2 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 118 | AFTER_LINES: 83
+---
+FILE: Frontend/src/components/landing/incubator/InstitutionalValue.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=2 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 87 | AFTER_LINES: 64
+---
+FILE: Frontend/src/components/landing/incubator/Lifecycle.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 98 | AFTER_LINES: 59
+---
+FILE: Frontend/src/components/landing/incubator/Stats.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 40 | AFTER_LINES: 35
+---
+FILE: Frontend/src/components/landing/incubator/SuccessStories.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 78 | AFTER_LINES: 41
+---
+FILE: Frontend/src/components/landing/incubator/ValueProps.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 62 | AFTER_LINES: 43
+---
+FILE: Frontend/src/components/landing/investor/CTA.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 39 | AFTER_LINES: 31
+---
+FILE: Frontend/src/components/landing/investor/FAQ.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 79 | AFTER_LINES: 49
+---
+FILE: Frontend/src/components/landing/investor/Hero.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 79 | AFTER_LINES: 59
+---
+FILE: Frontend/src/components/landing/investor/InvestmentWorkflow.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 77 | AFTER_LINES: 36
+---
+FILE: Frontend/src/components/landing/investor/Statistics.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 82 | AFTER_LINES: 60
+---
+FILE: Frontend/src/components/landing/investor/SuccessStories.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 89 | AFTER_LINES: 48
+---
+FILE: Frontend/src/components/landing/investor/WhyInvest.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 63 | AFTER_LINES: 36
+---
+FILE: Frontend/src/components/landing/mentor/CTA.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 38 | AFTER_LINES: 31
+---
+FILE: Frontend/src/components/landing/mentor/Commitments.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 119 | AFTER_LINES: 59
+---
+FILE: Frontend/src/components/landing/mentor/FAQ.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 78 | AFTER_LINES: 50
+---
+FILE: Frontend/src/components/landing/mentor/Hero.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 95 | AFTER_LINES: 65
+---
+FILE: Frontend/src/components/landing/mentor/ImpactStories.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 73 | AFTER_LINES: 41
+---
+FILE: Frontend/src/components/landing/mentor/WhyMentor.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 67 | AFTER_LINES: 36
+---
+FILE: Frontend/src/components/landing/mentor/Workflow.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 118 | AFTER_LINES: 62
+---
+FILE: Frontend/src/components/landing/student/BottomCTA.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 52 | AFTER_LINES: 31
+---
+FILE: Frontend/src/components/landing/student/Features.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 61 | AFTER_LINES: 43
+---
+FILE: Frontend/src/components/landing/student/Footer.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 139 | AFTER_LINES: 90
+---
+FILE: Frontend/src/components/landing/student/Header.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 103 | AFTER_LINES: 63
+---
+FILE: Frontend/src/components/landing/student/Hero.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 79 | AFTER_LINES: 67
+---
+FILE: Frontend/src/components/landing/student/Partners.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 61 | AFTER_LINES: 37
+---
+FILE: Frontend/src/components/landing/student/StartupJourney.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 84 | AFTER_LINES: 51
+---
+FILE: Frontend/src/components/landing/student/SuccessStories.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 72 | AFTER_LINES: 41
+---
+FILE: Frontend/src/components/landing/student/ValueProps.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 74 | AFTER_LINES: 40
+---
+FILE: Frontend/src/components/layout/PublicNav.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 87 | AFTER_LINES: 76
+---
+FILE: Frontend/src/components/layout/Sidebar.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 218 | AFTER_LINES: 179
+---
+FILE: Frontend/src/components/mentor/MentorShell.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 140 | AFTER_LINES: 128
+---
+FILE: Frontend/src/components/onboarding/CheckboxPills.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 29 | AFTER_LINES: 27
+---
+FILE: Frontend/src/components/onboarding/RadioPills.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 34 | AFTER_LINES: 28
+---
+FILE: Frontend/src/components/onboarding/SelectField.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=2
+BEFORE_LINES: 33 | AFTER_LINES: 23
+---
+FILE: Frontend/src/components/onboarding/TagInput.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=3
+BEFORE_LINES: 59 | AFTER_LINES: 56
+---
+FILE: Frontend/src/components/onboarding/TextAreaField.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=3
+BEFORE_LINES: 28 | AFTER_LINES: 18
+---
+FILE: Frontend/src/components/ui/Autocomplete.jsx
+VERDICT: IDENTICAL
+REASON: Files are identical in both versions
+---
+FILE: Frontend/src/components/ui/Badge.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 26 | AFTER_LINES: 22
+---
+FILE: Frontend/src/components/ui/Button.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 61 | AFTER_LINES: 62
+---
+FILE: Frontend/src/components/ui/Card.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 9 | AFTER_LINES: 9
+---
+FILE: Frontend/src/components/ui/ComingSoon.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 49 | AFTER_LINES: 47
+---
+FILE: Frontend/src/components/ui/DataTable.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 90 | AFTER_LINES: 72
+---
+FILE: Frontend/src/components/ui/Input.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=3
+BEFORE_LINES: 100 | AFTER_LINES: 99
+---
+FILE: Frontend/src/components/ui/Logo.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 81 | AFTER_LINES: 81
+---
+FILE: Frontend/src/components/ui/Modal.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 52 | AFTER_LINES: 44
+---
+FILE: Frontend/src/components/ui/PlaceholderGraphic.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 28 | AFTER_LINES: 18
+---
+FILE: Frontend/src/components/ui/StatCard.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 45 | AFTER_LINES: 26
+---
+FILE: Frontend/src/components/ui/ThemeProvider.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (2 -> 2 calls), main version is OK
+BEFORE_LINES: 39 | AFTER_LINES: 31 | BEFORE_API: 2 | AFTER_API: 2
+---
+FILE: Frontend/src/components/ui/ThemeToggle.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 36 | AFTER_LINES: 34
+---
+FILE: Frontend/src/index.css
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 208 | AFTER_LINES: 174
+---
+FILE: Frontend/src/layouts/AuthLayout.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 34 | AFTER_LINES: 34
+---
+FILE: Frontend/src/main.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 21 | AFTER_LINES: 21
+---
+FILE: Frontend/src/pages/BuildStartupJourney.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 351 | AFTER_LINES: 336 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/pages/Dashboard.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 411 | AFTER_LINES: 406 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/pages/Notifications.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=2 AFTER_API=0
+0 HARDCODED=2
+BEFORE_LINES: 344 | AFTER_LINES: 301
+---
+FILE: Frontend/src/pages/Settings.jsx
+VERDICT: RESTORE_YOURS
+REASON: Your version had 4 API calls, current has 1 - main stripped API integration
+BEFORE_LINES: 785 | AFTER_LINES: 594 | BEFORE_API: 4 | AFTER_API: 1
+---
+FILE: Frontend/src/pages/auth/Login.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 437 | AFTER_LINES: 432 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/pages/auth/ResetPassword.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=4 AFTER_API=0
+0 HARDCODED=2
+BEFORE_LINES: 232 | AFTER_LINES: 217
+---
+FILE: Frontend/src/pages/auth/StudentSignup.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 89 | AFTER_LINES: 82 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/pages/landing/Companies.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 35 | AFTER_LINES: 35
+---
+FILE: Frontend/src/pages/landing/Home.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 41 | AFTER_LINES: 39
+---
+FILE: Frontend/src/pages/landing/Incubator.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 37 | AFTER_LINES: 37
+---
+FILE: Frontend/src/pages/landing/Investor.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 37 | AFTER_LINES: 37
+---
+FILE: Frontend/src/pages/landing/Mentor.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 37 | AFTER_LINES: 37
+---
+FILE: Frontend/src/pages/landing/Student.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 32 | AFTER_LINES: 32
+---
+FILE: Frontend/src/pages/legal/PrivacyPolicy.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 371 | AFTER_LINES: 275
+---
+FILE: Frontend/src/pages/onboarding/ApplicationRejected.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 61 | AFTER_LINES: 51
+---
+FILE: Frontend/src/pages/onboarding/VerificationProgress.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 1 calls), main version is OK
+BEFORE_LINES: 244 | AFTER_LINES: 230 | BEFORE_API: 1 | AFTER_API: 1
+---
+FILE: Frontend/src/pages/onboarding/complete-profile/Company.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 2 calls), main version is OK
+BEFORE_LINES: 244 | AFTER_LINES: 254 | BEFORE_API: 1 | AFTER_API: 2
+---
+FILE: Frontend/src/pages/onboarding/complete-profile/Incubator.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 2 calls), main version is OK
+BEFORE_LINES: 222 | AFTER_LINES: 229 | BEFORE_API: 1 | AFTER_API: 2
+---
+FILE: Frontend/src/pages/onboarding/complete-profile/Investor.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 2 calls), main version is OK
+BEFORE_LINES: 222 | AFTER_LINES: 231 | BEFORE_API: 1 | AFTER_API: 2
+---
+FILE: Frontend/src/pages/onboarding/complete-profile/Mentor.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 2 calls), main version is OK
+BEFORE_LINES: 246 | AFTER_LINES: 257 | BEFORE_API: 1 | AFTER_API: 2
+---
+FILE: Frontend/src/pages/onboarding/complete-profile/Student.jsx
+VERDICT: KEEP_MAIN
+REASON: Current version maintains or improves API integration (1 -> 2 calls), main version is OK
+BEFORE_LINES: 168 | AFTER_LINES: 173 | BEFORE_API: 1 | AFTER_API: 2
+---
+FILE: Frontend/src/pages/support/HelpCenter.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 303 | AFTER_LINES: 177
+---
+FILE: Frontend/src/pages/support/RaiseSupportTicket.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=1 AFTER_API=0
+0 HARDCODED=2
+BEFORE_LINES: 294 | AFTER_LINES: 162
+---
+FILE: Frontend/src/pages/support/SupportDashboard.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=1 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 266 | AFTER_LINES: 155
+---
+FILE: Frontend/src/pages/support/TicketDetail.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=1 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 373 | AFTER_LINES: 254
+---
+FILE: Frontend/src/router.jsx
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=0
+0
+BEFORE_LINES: 667 | AFTER_LINES: 698
+---
+FILE: Frontend/src/utils/csv.js
+VERDICT: MANUAL_REVIEW
+REASON: Unclear verdict - BEFORE_API=0
+0 AFTER_API=0
+0 HARDCODED=1
+BEFORE_LINES: 25 | AFTER_LINES: 23
+---
+
+=== BACKEND FILES ===
+FILE: Backend/controllers/admin.controller.js
+VERDICT: IDENTICAL
+REASON: Files are identical in both versions
+---
+FILE: Backend/controllers/adminDashboard.controller.js
+VERDICT: KEEP_MAIN
+REASON: Backend - main version has 604 lines vs your 255 (main added more functionality)
+BEFORE_LINES: 255 | AFTER_LINES: 604
+---
+FILE: Backend/controllers/atior.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 152 | AFTER_LINES: 132
+---
+
+FILE: Backend/controllers/auth.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 631 | AFTER_LINES: 631
+---
+FILE: Backend/controllers/chat.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 393 | AFTER_LINES: 331
+---
+FILE: Backend/controllers/companyOpportunity.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 162 | AFTER_LINES: 158
+---
+FILE: Backend/controllers/incubation.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 487 | AFTER_LINES: 427
+---
+FILE: Backend/controllers/incubationApplication.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 357 | AFTER_LINES: 359
+---
+FILE: Backend/controllers/investorChat.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 365 | AFTER_LINES: 296
+---
+FILE: Backend/controllers/investorDiscovery.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 670 | AFTER_LINES: 654
+---
+FILE: Backend/controllers/launch.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 704 | AFTER_LINES: 569
+---
+FILE: Backend/controllers/meeting.controller.js
+VERDICT: KEEP_MAIN
+REASON: Backend - main version has 83 lines vs your 39 (main added more functionality)
+BEFORE_LINES: 39 | AFTER_LINES: 83
+---
+FILE: Backend/controllers/mentorDashboard.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 130 | AFTER_LINES: 130
+---
+FILE: Backend/controllers/mvpReview.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 148 | AFTER_LINES: 128
+---
+FILE: Backend/controllers/mvpSubmission.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 192 | AFTER_LINES: 172
+---
+FILE: Backend/controllers/notification.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 70 | AFTER_LINES: 70
+---
+FILE: Backend/controllers/pitchSubmission.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 276 | AFTER_LINES: 232
+---
+FILE: Backend/controllers/productType.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 98 | AFTER_LINES: 83
+---
+FILE: Backend/controllers/profile.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 305 | AFTER_LINES: 284
+---
+FILE: Backend/controllers/stage3Overview.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 150 | AFTER_LINES: 135
+---
+FILE: Backend/controllers/startupProgress.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 114 | AFTER_LINES: 116
+---
+FILE: Backend/controllers/student.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 412 | AFTER_LINES: 414
+---
+FILE: Backend/controllers/studentFreelancing.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 754 | AFTER_LINES: 631
+---
+FILE: Backend/controllers/studentInvestor.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 162 | AFTER_LINES: 132
+---
+FILE: Backend/controllers/submission.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 231 | AFTER_LINES: 254
+---
+FILE: Backend/controllers/traction.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 780 | AFTER_LINES: 635
+---
+FILE: Backend/controllers/validation.controller.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 824 | AFTER_LINES: 734
+---
+
+FILE: Backend/middlewares/adminAuth.js
+VERDICT: KEEP_MAIN_NEW
+REASON: File did not exist in your branch (b34b524), introduced by main - keep as-is
+---
+FILE: Backend/middlewares/requireAuth.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 80 | AFTER_LINES: 80
+---
+FILE: Backend/routes/admin.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 107 | AFTER_LINES: 115
+---
+FILE: Backend/routes/adminDashboard.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 40 | AFTER_LINES: 56
+---
+FILE: Backend/routes/atior.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 44 | AFTER_LINES: 34
+---
+
+FILE: Backend/routes/chat.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 72 | AFTER_LINES: 86
+---
+FILE: Backend/routes/incubation.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 85 | AFTER_LINES: 75
+---
+FILE: Backend/routes/investor.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 88 | AFTER_LINES: 64
+---
+FILE: Backend/routes/investorPitch.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 27 | AFTER_LINES: 27
+---
+FILE: Backend/routes/launch.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 114 | AFTER_LINES: 104
+---
+FILE: Backend/routes/mentor.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 92 | AFTER_LINES: 94
+---
+FILE: Backend/routes/mvpReview.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 26 | AFTER_LINES: 16
+---
+FILE: Backend/routes/mvpSubmission.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 38 | AFTER_LINES: 28
+---
+FILE: Backend/routes/productType.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 31 | AFTER_LINES: 21
+---
+FILE: Backend/routes/profile.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 53 | AFTER_LINES: 53
+---
+FILE: Backend/routes/stage3.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 24 | AFTER_LINES: 14
+---
+FILE: Backend/routes/studentFreelancing.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 113 | AFTER_LINES: 113
+---
+FILE: Backend/routes/studentInvestor.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 47 | AFTER_LINES: 47
+---
+FILE: Backend/routes/studentPitch.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 32 | AFTER_LINES: 32
+---
+FILE: Backend/routes/traction.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 123 | AFTER_LINES: 113
+---
+FILE: Backend/routes/validation.routes.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 85 | AFTER_LINES: 75
+---
+FILE: Backend/seeds/adminSeed.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 105 | AFTER_LINES: 61
+---
+FILE: Backend/server.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 225 | AFTER_LINES: 218
+---
+FILE: Backend/services/cascadeService.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 560 | AFTER_LINES: 527
+---
+FILE: Backend/services/chatRoomService.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 112 | AFTER_LINES: 112
+---
+FILE: Backend/tests/admin.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 195 | AFTER_LINES: 179
+---
+FILE: Backend/tests/cascadeDelete.comprehensive.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 240 | AFTER_LINES: 240
+---
+FILE: Backend/tests/cascadeDelete.integration.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 133 | AFTER_LINES: 133
+---
+FILE: Backend/tests/controllers/activityLog.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 85 | AFTER_LINES: 70
+---
+FILE: Backend/tests/controllers/admin.transactions.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 128 | AFTER_LINES: 128
+---
+FILE: Backend/tests/controllers/adminChapterChange.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 233 | AFTER_LINES: 168
+---
+
+
+FILE: Backend/tests/controllers/chat.transactions.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 117 | AFTER_LINES: 117
+---
+FILE: Backend/tests/controllers/companyApplication.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 276 | AFTER_LINES: 276
+---
+FILE: Backend/tests/controllers/dashboard.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 169 | AFTER_LINES: 169
+---
+FILE: Backend/tests/controllers/incubatorDiscovery.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 121 | AFTER_LINES: 121
+---
+FILE: Backend/tests/controllers/investorDiscovery.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 329 | AFTER_LINES: 322
+---
+FILE: Backend/tests/controllers/meeting.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 101 | AFTER_LINES: 101
+---
+FILE: Backend/tests/controllers/mentorProfile.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 75 | AFTER_LINES: 75
+---
+FILE: Backend/tests/controllers/notification.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 123 | AFTER_LINES: 121
+---
+
+FILE: Backend/tests/controllers/profile.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 212 | AFTER_LINES: 212
+---
+
+FILE: Backend/tests/controllers/startupProgress.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 90 | AFTER_LINES: 90
+---
+FILE: Backend/tests/controllers/student.reviews.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 212 | AFTER_LINES: 212
+---
+FILE: Backend/tests/controllers/studentFreelancing.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 475 | AFTER_LINES: 462
+---
+FILE: Backend/tests/controllers/submission.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 198 | AFTER_LINES: 198
+---
+FILE: Backend/tests/fullJourney.integration.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 377 | AFTER_LINES: 377
+---
+FILE: Backend/tests/incubationRemediation.test.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 316 | AFTER_LINES: 316
+---
+FILE: Backend/tests/setup.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 52 | AFTER_LINES: 50
+---
+FILE: Backend/utils/chapterAssignment.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 50 | AFTER_LINES: 40
+---
+FILE: Backend/utils/cookies.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 44 | AFTER_LINES: 69
+---
+FILE: Backend/utils/startupJourney.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 79 | AFTER_LINES: 61
+---
+FILE: Backend/utils/validationStageUtils.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 161 | AFTER_LINES: 151
+---
+FILE: Backend/utils/validators.js
+VERDICT: MANUAL_REVIEW
+REASON: Backend - similar sizes, needs manual review
+BEFORE_LINES: 813 | AFTER_LINES: 853
+---
+
+=== SUMMARY ===
+Total files analyzed: 203
+RESTORE_YOURS (revert to your version): 1
+KEEP_MAIN (keep main version): 17
+KEEP_MAIN_NEW (new file from main): 1
+IDENTICAL (no action needed): 3
+MANUAL_REVIEW (needs human review): 174

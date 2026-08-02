@@ -1,0 +1,1547 @@
+diff --git a/Frontend/src/components/auth/PasswordStrengthMeter.jsx b/Frontend/src/components/auth/PasswordStrengthMeter.jsx
+index 08ab01e..104a125 100644
+--- a/Frontend/src/components/auth/PasswordStrengthMeter.jsx
++++ b/Frontend/src/components/auth/PasswordStrengthMeter.jsx
+@@ -1,26 +1,26 @@
+-const LEVEL_LABELS = ["WAITING...", "WEAK", "FAIR", "GOOD", "STRONG"];
++const LEVEL_LABELS = ['WAITING...', 'WEAK', 'FAIR', 'GOOD', 'STRONG'];
+ 
+ const LABEL_COLORS = [
+-  "text-text-muted",
+-  "text-error",
+-  "text-warning",
+-  "text-info",
+-  "text-success",
++  'text-text-muted',
++  'text-error',
++  'text-warning',
++  'text-info',
++  'text-success',
+ ];
+ 
+ const BAR_COLORS = [
+-  "", // 0 — unused (segments use bg-border-subtle when empty)
+-  "bg-error",
+-  "bg-warning",
+-  "bg-info",
+-  "bg-success",
++  '',                   // 0 — unused (segments use bg-border-subtle when empty)
++  'bg-error',
++  'bg-warning',
++  'bg-info',
++  'bg-success',
+ ];
+ 
+ export default function PasswordStrengthMeter({ strength = 0 }) {
+   const s = Math.min(Math.max(Math.floor(strength), 0), 4);
+   const label = LEVEL_LABELS[s];
+   const labelColor = LABEL_COLORS[s];
+-  const barColor = BAR_COLORS[s] || "";
++  const barColor = BAR_COLORS[s] || '';
+ 
+   return (
+     <div className="flex flex-col gap-1" aria-live="polite" aria-atomic="true">
+@@ -44,10 +44,10 @@ export default function PasswordStrengthMeter({ strength = 0 }) {
+           <div
+             key={i}
+             className={[
+-              "flex-1 h-1 rounded-sm",
+-              "transition-colors duration-200 ease-out",
+-              i < s ? barColor : "bg-border-subtle",
+-            ].join(" ")}
++              'flex-1 h-1 rounded-sm',
++              'transition-colors duration-200 ease-out',
++              i < s ? barColor : 'bg-border-subtle',
++            ].join(' ')}
+           />
+         ))}
+       </div>
+diff --git a/Frontend/src/components/auth/RoleCard.jsx b/Frontend/src/components/auth/RoleCard.jsx
+index e4bd4ed..71765eb 100644
+--- a/Frontend/src/components/auth/RoleCard.jsx
++++ b/Frontend/src/components/auth/RoleCard.jsx
+@@ -1,12 +1,7 @@
+ // Purely presentational — receives `selected` as a prop; the parent
+ // (RoleSelectionPage) owns the selection state via native radio inputs, so
+ // this renders no role="button"/aria-pressed/tabIndex of its own.
+-export default function RoleCard({
+-  title,
+-  description,
+-  icon,
+-  selected = false,
+-}) {
++export default function RoleCard({ title, description, icon, selected = false }) {
+   return (
+     <div className="relative">
+       {/* accent-neon is reserved for exactly this kind of selection signal —
+@@ -22,12 +17,12 @@ export default function RoleCard({
+ 
+       <div
+         className={[
+-          "flex flex-col items-center gap-3 p-5 rounded border text-center w-full",
+-          "transition-all duration-150 ease-linear",
++          'flex flex-col items-center gap-3 p-5 rounded border text-center w-full',
++          'transition-all duration-150 ease-linear',
+           selected
+-            ? "border-brand-black border-2 bg-surface-white"
+-            : "border-border-subtle bg-surface-white hover:border-text-muted",
+-        ].join(" ")}
++            ? 'border-brand-black border-2 bg-surface-white'
++            : 'border-border-subtle bg-surface-white hover:border-text-muted',
++        ].join(' ')}
+       >
+         <div
+           className="w-12 h-12 rounded-full bg-canvas-bg flex items-center justify-center text-text-body transition-colors duration-150"
+@@ -36,12 +31,8 @@ export default function RoleCard({
+           {icon}
+         </div>
+ 
+-        <span className="font-semibold text-small text-text-heading font-inter">
+-          {title}
+-        </span>
+-        <span className="text-caption text-text-muted font-inter">
+-          {description}
+-        </span>
++        <span className="font-semibold text-small text-text-heading font-inter">{title}</span>
++        <span className="text-caption text-text-muted font-inter">{description}</span>
+       </div>
+     </div>
+   );
+diff --git a/Frontend/src/components/company/ApplicantTable.jsx b/Frontend/src/components/company/ApplicantTable.jsx
+index 24ca2a6..7f4c988 100644
+--- a/Frontend/src/components/company/ApplicantTable.jsx
++++ b/Frontend/src/components/company/ApplicantTable.jsx
+@@ -1,66 +1,33 @@
+-import { Link } from "react-router-dom";
+-import Badge from "@/components/ui/Badge";
++import { Link } from 'react-router-dom';
++import Badge from '@/components/ui/Badge';
+ 
+ const ROWS = [
+-  {
+-    id: 1,
+-    name: "Alex Rivera",
+-    role: "Senior Frontend Engineer",
+-    position: "Lead UI Designer",
+-    status: "Under Review",
+-    applied: "2 hours ago",
+-  },
+-  {
+-    id: 2,
+-    name: "Sarah Chen",
+-    role: "Data Scientist",
+-    position: "ML Researcher",
+-    status: "Shortlisted",
+-    applied: "5 hours ago",
+-  },
+-  {
+-    id: 3,
+-    name: "Marcus Thorne",
+-    role: "Product Manager",
+-    position: "Senior PM",
+-    status: "Initial Screen",
+-    applied: "Yesterday",
+-  },
+-  {
+-    id: 4,
+-    name: "Elena Rodriguez",
+-    role: "Systems Architect",
+-    position: "Staff Engineer",
+-    status: "Rejected",
+-    applied: "2 days ago",
+-  },
++  { id: 1, name: 'Alex Rivera', role: 'Senior Frontend Engineer', position: 'Lead UI Designer', status: 'Under Review', applied: '2 hours ago' },
++  { id: 2, name: 'Sarah Chen', role: 'Data Scientist', position: 'ML Researcher', status: 'Shortlisted', applied: '5 hours ago' },
++  { id: 3, name: 'Marcus Thorne', role: 'Product Manager', position: 'Senior PM', status: 'Initial Screen', applied: 'Yesterday' },
++  { id: 4, name: 'Elena Rodriguez', role: 'Systems Architect', position: 'Staff Engineer', status: 'Rejected', applied: '2 days ago' },
+ ];
+ 
+ const STATUS_VARIANT = {
+-  "Under Review": "neutral",
+-  Shortlisted: "success",
+-  "Initial Screen": "neutral",
+-  Rejected: "error",
++  'Under Review': 'neutral',
++  Shortlisted: 'success',
++  'Initial Screen': 'neutral',
++  Rejected: 'error',
+ };
+ 
+ const AVATAR_GRADIENTS = [
+-  "from-blue-500 to-blue-700",
+-  "from-purple-500 to-purple-700",
+-  "from-amber-500 to-orange-600",
+-  "from-rose-500 to-pink-600",
++  'from-blue-500 to-blue-700',
++  'from-purple-500 to-purple-700',
++  'from-amber-500 to-orange-600',
++  'from-rose-500 to-pink-600',
+ ];
+ 
+ export default function ApplicantTable() {
+   return (
+     <div className="bg-surface-white rounded-xl border border-border-subtle overflow-hidden">
+       <div className="flex items-center justify-between px-5 py-4 border-b border-border-subtle">
+-        <h2 className="font-poppins font-bold text-body text-text-heading">
+-          Recent Applicant Activity
+-        </h2>
+-        <Link
+-          to="/company/applicants"
+-          className="font-inter text-small font-semibold text-text-muted hover:text-text-heading transition-colors"
+-        >
++        <h2 className="font-poppins font-bold text-body text-text-heading">Recent Applicant Activity</h2>
++        <Link to="/company/applicants" className="font-inter text-small font-semibold text-text-muted hover:text-text-heading transition-colors">
+           View all
+         </Link>
+       </div>
+@@ -76,27 +43,15 @@ export default function ApplicantTable() {
+           </thead>
+           <tbody>
+             {ROWS.map((r, i) => (
+-              <tr
+-                key={r.id}
+-                className="border-b border-border-subtle last:border-0 hover:bg-canvas-bg/50 transition-colors"
+-              >
++              <tr key={r.id} className="border-b border-border-subtle last:border-0 hover:bg-canvas-bg/50 transition-colors">
+                 <td className="px-5 py-4">
+                   <div className="flex items-center gap-3">
+-                    <div
+-                      className={`w-9 h-9 rounded-full bg-gradient-to-br flex items-center justify-center text-white text-caption font-bold shrink-0 ${AVATAR_GRADIENTS[i % AVATAR_GRADIENTS.length]}`}
+-                    >
+-                      {r.name
+-                        .split(" ")
+-                        .map((n) => n[0])
+-                        .join("")}
++                    <div className={`w-9 h-9 rounded-full bg-gradient-to-br flex items-center justify-center text-white text-caption font-bold shrink-0 ${AVATAR_GRADIENTS[i % AVATAR_GRADIENTS.length]}`}>
++                      {r.name.split(' ').map((n) => n[0]).join('')}
+                     </div>
+                     <div>
+-                      <p className="font-poppins font-semibold text-text-heading">
+-                        {r.name}
+-                      </p>
+-                      <p className="font-inter text-caption text-text-muted">
+-                        {r.role}
+-                      </p>
++                      <p className="font-poppins font-semibold text-text-heading">{r.name}</p>
++                      <p className="font-inter text-caption text-text-muted">{r.role}</p>
+                     </div>
+                   </div>
+                 </td>
+diff --git a/Frontend/src/components/company/OpportunitiesTable.jsx b/Frontend/src/components/company/OpportunitiesTable.jsx
+index 630bd3a..f0267c6 100644
+--- a/Frontend/src/components/company/OpportunitiesTable.jsx
++++ b/Frontend/src/components/company/OpportunitiesTable.jsx
+@@ -1,113 +1,57 @@
+-import { useMemo, useState } from "react";
+-import {
+-  Search,
+-  TrendingUp,
+-  MoreVertical,
+-  ChevronLeft,
+-  ChevronRight,
+-} from "lucide-react";
+-import Badge from "@/components/ui/Badge";
+-import DataTable from "@/components/ui/DataTable";
+-import ComingSoon from "@/components/ui/ComingSoon";
++import { useMemo, useState } from 'react';
++import { Search, TrendingUp, MoreVertical, ChevronLeft, ChevronRight } from 'lucide-react';
++import Badge from '@/components/ui/Badge';
++import DataTable from '@/components/ui/DataTable';
++import ComingSoon from '@/components/ui/ComingSoon';
+ 
+ const OPPORTUNITIES = [
+-  {
+-    id: 1,
+-    title: "Senior Systems Architect",
+-    ref: "ARCH-2024-001",
+-    type: "Full-time",
+-    postedDate: "Oct 12, 2023",
+-    applicants: 48,
+-    status: "Active",
+-  },
+-  {
+-    id: 2,
+-    title: "Regional Operations Director",
+-    ref: "OPS-2024-012",
+-    type: "Contract",
+-    postedDate: "Not Published",
+-    applicants: 0,
+-    status: "Pending Approval",
+-  },
+-  {
+-    id: 3,
+-    title: "Lead Frontend Developer",
+-    ref: "TECH-2023-455",
+-    type: "Internal",
+-    postedDate: "Aug 24, 2023",
+-    applicants: 12,
+-    status: "Closed",
+-  },
+-  {
+-    id: 4,
+-    title: "Market Research Analyst",
+-    ref: "MKT-2024-089",
+-    type: "Contract",
+-    postedDate: "Nov 05, 2023",
+-    applicants: 23,
+-    status: "Active",
+-  },
++  { id: 1, title: 'Senior Systems Architect', ref: 'ARCH-2024-001', type: 'Full-time', postedDate: 'Oct 12, 2023', applicants: 48, status: 'Active' },
++  { id: 2, title: 'Regional Operations Director', ref: 'OPS-2024-012', type: 'Contract', postedDate: 'Not Published', applicants: 0, status: 'Pending Approval' },
++  { id: 3, title: 'Lead Frontend Developer', ref: 'TECH-2023-455', type: 'Internal', postedDate: 'Aug 24, 2023', applicants: 12, status: 'Closed' },
++  { id: 4, title: 'Market Research Analyst', ref: 'MKT-2024-089', type: 'Contract', postedDate: 'Nov 05, 2023', applicants: 23, status: 'Active' },
+ ];
+ 
+ // Pending Approval reflects Admin's opportunity moderation queue (see
+ // admin/OpportunityApprovalQueue.jsx) — a posted opportunity sits here
+ // until an admin reviewer approves or rejects it, same as everywhere
+ // else in this app nothing is actually wired between the two screens.
+-const STATUS_VARIANT = {
+-  Active: "success",
+-  "Pending Approval": "warning",
+-  Draft: "neutral",
+-  Closed: "neutral",
+-};
++const STATUS_VARIANT = { Active: 'success', 'Pending Approval': 'warning', Draft: 'neutral', Closed: 'neutral' };
+ 
+ const COLUMNS = [
+   {
+-    key: "title",
+-    label: "Opportunity Details",
+-    width: "2fr",
++    key: 'title',
++    label: 'Opportunity Details',
++    width: '2fr',
+     render: (opp) => (
+       <div>
+-        <p className="font-inter font-semibold text-small text-text-heading">
+-          {opp.title}
+-        </p>
+-        <p className="font-inter text-caption text-text-muted mt-0.5">
+-          Ref: {opp.ref}
+-        </p>
++        <p className="font-inter font-semibold text-small text-text-heading">{opp.title}</p>
++        <p className="font-inter text-caption text-text-muted mt-0.5">Ref: {opp.ref}</p>
+       </div>
+     ),
+   },
+-  { key: "type", label: "Type", className: "text-text-body" },
+-  { key: "postedDate", label: "Posted Date", className: "text-text-body" },
++  { key: 'type', label: 'Type', className: 'text-text-body' },
++  { key: 'postedDate', label: 'Posted Date', className: 'text-text-body' },
+   {
+-    key: "applicants",
+-    label: "Applicants",
++    key: 'applicants',
++    label: 'Applicants',
+     render: (opp) => (
+       <span className="inline-flex items-center gap-1.5 font-inter font-semibold text-small text-text-heading">
+         {opp.applicants}
+-        {opp.applicants > 0 && (
+-          <TrendingUp size={14} strokeWidth={2} className="text-text-muted" />
+-        )}
++        {opp.applicants > 0 && <TrendingUp size={14} strokeWidth={2} className="text-text-muted" />}
+       </span>
+     ),
+   },
+   {
+-    key: "status",
+-    label: "Status",
+-    render: (opp) => (
+-      <Badge variant={STATUS_VARIANT[opp.status]}>{opp.status}</Badge>
+-    ),
++    key: 'status',
++    label: 'Status',
++    render: (opp) => <Badge variant={STATUS_VARIANT[opp.status]}>{opp.status}</Badge>,
+   },
+   {
+-    key: "actions",
+-    label: "Actions",
++    key: 'actions',
++    label: 'Actions',
+     mobileLabel: false,
+     render: () => (
+-      <ComingSoon
+-        label="Actions"
+-        position="top"
+-        inline
+-        className="p-1 text-text-muted hover:text-text-heading transition-colors"
+-      >
++      <ComingSoon label="Actions" position="top" inline className="p-1 text-text-muted hover:text-text-heading transition-colors">
+         <MoreVertical size={16} strokeWidth={2} />
+       </ComingSoon>
+     ),
+@@ -115,26 +59,20 @@ const COLUMNS = [
+ ];
+ 
+ export default function OpportunitiesTable() {
+-  const [searchQuery, setSearchQuery] = useState("");
++  const [searchQuery, setSearchQuery] = useState('');
+ 
+   const filtered = useMemo(() => {
+     const q = searchQuery.trim().toLowerCase();
+     if (!q) return OPPORTUNITIES;
+     return OPPORTUNITIES.filter(
+-      (opp) =>
+-        opp.title.toLowerCase().includes(q) ||
+-        opp.ref.toLowerCase().includes(q),
++      (opp) => opp.title.toLowerCase().includes(q) || opp.ref.toLowerCase().includes(q)
+     );
+   }, [searchQuery]);
+ 
+   return (
+     <div className="flex flex-col gap-4">
+       <div className="relative max-w-sm">
+-        <Search
+-          size={16}
+-          strokeWidth={2}
+-          className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+-        />
++        <Search size={16} strokeWidth={2} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
+         <input
+           type="text"
+           value={searchQuery}
+@@ -144,32 +82,18 @@ export default function OpportunitiesTable() {
+         />
+       </div>
+ 
+-      <DataTable
+-        columns={COLUMNS}
+-        rows={filtered}
+-        emptyMessage="No opportunities match your search."
+-      />
++      <DataTable columns={COLUMNS} rows={filtered} emptyMessage="No opportunities match your search." />
+ 
+       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+         <p className="font-inter text-small text-text-muted">
+           Showing {filtered.length} of {OPPORTUNITIES.length}
+         </p>
+         <div className="flex items-center gap-1">
+-          <button
+-            type="button"
+-            disabled
+-            className="w-8 h-8 flex items-center justify-center rounded-md border border-border-subtle text-text-muted disabled:opacity-40 disabled:cursor-not-allowed"
+-          >
++          <button type="button" disabled className="w-8 h-8 flex items-center justify-center rounded-md border border-border-subtle text-text-muted disabled:opacity-40 disabled:cursor-not-allowed">
+             <ChevronLeft size={16} strokeWidth={2} />
+           </button>
+-          <span className="w-8 h-8 flex items-center justify-center rounded-md bg-action-bg text-action-text font-inter text-small font-medium">
+-            1
+-          </span>
+-          <button
+-            type="button"
+-            disabled
+-            className="w-8 h-8 flex items-center justify-center rounded-md border border-border-subtle text-text-muted disabled:opacity-40 disabled:cursor-not-allowed"
+-          >
++          <span className="w-8 h-8 flex items-center justify-center rounded-md bg-action-bg text-action-text font-inter text-small font-medium">1</span>
++          <button type="button" disabled className="w-8 h-8 flex items-center justify-center rounded-md border border-border-subtle text-text-muted disabled:opacity-40 disabled:cursor-not-allowed">
+             <ChevronRight size={16} strokeWidth={2} />
+           </button>
+         </div>
+diff --git a/Frontend/src/components/company/PostOpportunityStepper.jsx b/Frontend/src/components/company/PostOpportunityStepper.jsx
+index ac50d07..fb1bcb8 100644
+--- a/Frontend/src/components/company/PostOpportunityStepper.jsx
++++ b/Frontend/src/components/company/PostOpportunityStepper.jsx
+@@ -1,11 +1,6 @@
+-import { Check } from "lucide-react";
++import { Check } from 'lucide-react';
+ 
+-const STEPS = [
+-  "Basic Information",
+-  "Requirements & Eligibility",
+-  "Opportunity Description",
+-  "Preview & Publish",
+-];
++const STEPS = ['Basic Information', 'Requirements & Eligibility', 'Opportunity Description', 'Preview & Publish'];
+ 
+ export default function PostOpportunityStepper({ current }) {
+   return (
+@@ -16,24 +11,13 @@ export default function PostOpportunityStepper({ current }) {
+         const done = stepNum < current;
+         const active = stepNum === current;
+         return (
+-          <div
+-            key={label}
+-            className="relative z-10 flex flex-col items-center gap-2 text-center px-2 bg-canvas-bg max-w-[110px]"
+-          >
+-            <div
+-              className={`w-8 h-8 rounded-full flex items-center justify-center text-caption font-inter font-bold shrink-0 ${
+-                done
+-                  ? "bg-brand-black text-accent-neon"
+-                  : active
+-                    ? "bg-brand-black text-white"
+-                    : "border border-border-subtle text-text-muted"
+-              }`}
+-            >
++          <div key={label} className="relative z-10 flex flex-col items-center gap-2 text-center px-2 bg-canvas-bg max-w-[110px]">
++            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-caption font-inter font-bold shrink-0 ${
++              done ? 'bg-brand-black text-accent-neon' : active ? 'bg-brand-black text-white' : 'border border-border-subtle text-text-muted'
++            }`}>
+               {done ? <Check size={16} strokeWidth={3} /> : stepNum}
+             </div>
+-            <span
+-              className={`text-caption font-inter leading-tight ${active ? "font-bold text-text-heading" : done ? "font-semibold text-text-heading" : "text-text-muted"}`}
+-            >
++            <span className={`text-caption font-inter leading-tight ${active ? 'font-bold text-text-heading' : done ? 'font-semibold text-text-heading' : 'text-text-muted'}`}>
+               {label}
+             </span>
+           </div>
+diff --git a/Frontend/src/components/company/RightPanel.jsx b/Frontend/src/components/company/RightPanel.jsx
+index 0c02447..9176826 100644
+--- a/Frontend/src/components/company/RightPanel.jsx
++++ b/Frontend/src/components/company/RightPanel.jsx
+@@ -1,38 +1,18 @@
+-import { Link } from "react-router-dom";
+-import { Plus, FolderOpen, Users, FileText } from "lucide-react";
+-import Badge from "@/components/ui/Badge";
++import { Link } from 'react-router-dom';
++import { Plus, FolderOpen, Users, FileText } from 'lucide-react';
++import Badge from '@/components/ui/Badge';
+ 
+ const POSTINGS = [
+-  {
+-    id: 1,
+-    title: "Staff Backend Engineer",
+-    meta: "Engineering • Remote • Full-time",
+-    status: "ACTIVE",
+-    applicants: 42,
+-  },
+-  {
+-    id: 2,
+-    title: "UX Researcher",
+-    meta: "Design • New York • Contract",
+-    status: "ACTIVE",
+-    applicants: 18,
+-  },
+-  {
+-    id: 3,
+-    title: "Marketing Associate",
+-    meta: "Growth • London • Full-time",
+-    status: "DRAFT",
+-    applicants: null,
+-  },
++  { id: 1, title: 'Staff Backend Engineer', meta: 'Engineering • Remote • Full-time', status: 'ACTIVE', applicants: 42 },
++  { id: 2, title: 'UX Researcher', meta: 'Design • New York • Contract', status: 'ACTIVE', applicants: 18 },
++  { id: 3, title: 'Marketing Associate', meta: 'Growth • London • Full-time', status: 'DRAFT', applicants: null },
+ ];
+ 
+ export default function RightPanel() {
+   return (
+     <div className="space-y-6">
+       <div className="bg-surface-white rounded-xl border border-border-subtle p-5">
+-        <h2 className="font-poppins font-bold text-body text-text-heading mb-4">
+-          Quick Actions
+-        </h2>
++        <h2 className="font-poppins font-bold text-body text-text-heading mb-4">Quick Actions</h2>
+         <div className="space-y-2.5">
+           <Link
+             to="/company/post-opportunity/step-1"
+@@ -61,37 +41,24 @@ export default function RightPanel() {
+       <div className="bg-surface-white rounded-xl border border-border-subtle overflow-hidden">
+         <div className="px-5 py-4 border-b border-border-subtle flex items-center gap-2">
+           <FileText size={16} strokeWidth={2} className="text-text-muted" />
+-          <h2 className="font-poppins font-bold text-body text-text-heading">
+-            Latest Postings
+-          </h2>
++          <h2 className="font-poppins font-bold text-body text-text-heading">Latest Postings</h2>
+         </div>
+         <div className="divide-y divide-border-subtle">
+           {POSTINGS.map((p) => (
+             <div key={p.id} className="px-5 py-4">
+               <div className="flex items-start justify-between gap-3">
+-                <p className="font-poppins font-semibold text-small text-text-heading">
+-                  {p.title}
+-                </p>
+-                <Badge variant={p.status === "ACTIVE" ? "success" : "neutral"}>
+-                  {p.status}
+-                </Badge>
++                <p className="font-poppins font-semibold text-small text-text-heading">{p.title}</p>
++                <Badge variant={p.status === 'ACTIVE' ? 'success' : 'neutral'}>{p.status}</Badge>
+               </div>
+-              <p className="font-inter text-caption text-text-muted mt-1">
+-                {p.meta}
+-              </p>
++              <p className="font-inter text-caption text-text-muted mt-1">{p.meta}</p>
+               <p className="font-inter text-caption text-text-muted mt-2">
+-                {p.applicants !== null
+-                  ? `${p.applicants} Applicants`
+-                  : "— Applicants"}
++                {p.applicants !== null ? `${p.applicants} Applicants` : '— Applicants'}
+               </p>
+             </div>
+           ))}
+         </div>
+         <div className="px-5 py-3 text-center border-t border-border-subtle">
+-          <Link
+-            to="/company/my-opportunities"
+-            className="font-inter text-caption font-bold tracking-wider text-text-muted hover:text-text-heading transition-colors"
+-          >
++          <Link to="/company/my-opportunities" className="font-inter text-caption font-bold tracking-wider text-text-muted hover:text-text-heading transition-colors">
+             SEE ALL JOB POSTS
+           </Link>
+         </div>
+diff --git a/Frontend/src/components/company/StatsRow.jsx b/Frontend/src/components/company/StatsRow.jsx
+index a0e43ca..1a77892 100644
+--- a/Frontend/src/components/company/StatsRow.jsx
++++ b/Frontend/src/components/company/StatsRow.jsx
+@@ -1,20 +1,10 @@
+-import StatCard from "@/components/ui/StatCard";
++import StatCard from '@/components/ui/StatCard';
+ 
+ const STATS = [
+-  {
+-    label: "Active Opportunities",
+-    value: "12",
+-    subtext: "+2 this week",
+-    trendDirection: "up",
+-  },
+-  {
+-    label: "Total Applicants",
+-    value: "1,248",
+-    subtext: "+15%",
+-    trendDirection: "up",
+-  },
+-  { label: "Shortlisted", value: "84", subtext: "Next: Interviews" },
+-  { label: "Closed Opportunities", value: "50", subtext: "Past 12 months" },
++  { label: 'Active Opportunities', value: '12', subtext: '+2 this week', trendDirection: 'up' },
++  { label: 'Total Applicants', value: '1,248', subtext: '+15%', trendDirection: 'up' },
++  { label: 'Shortlisted', value: '84', subtext: 'Next: Interviews' },
++  { label: 'Closed Opportunities', value: '50', subtext: 'Past 12 months' },
+ ];
+ 
+ export default function StatsRow() {
+diff --git a/Frontend/src/components/layout/PublicNav.jsx b/Frontend/src/components/layout/PublicNav.jsx
+index 16cd890..7aba473 100644
+--- a/Frontend/src/components/layout/PublicNav.jsx
++++ b/Frontend/src/components/layout/PublicNav.jsx
+@@ -1,17 +1,17 @@
+-import { Link } from "react-router-dom";
+-import ComingSoon from "@/components/ui/ComingSoon";
+-import Logo from "@/components/ui/Logo";
+-import ThemeToggle from "@/components/ui/ThemeToggle";
++import { Link } from 'react-router-dom';
++import ComingSoon from '@/components/ui/ComingSoon';
++import Logo from '@/components/ui/Logo';
++import ThemeToggle from '@/components/ui/ThemeToggle';
+ 
+ // 'href' only set where a real destination exists — 'About' is the one
+ // genuine match among the four (the general landing page's own intro
+ // content); 'Clubs'/'Events'/'Partners' have no matching page yet and stay
+ // ComingSoon rather than being forced onto an unrelated landing page.
+ const NAV_LINKS = [
+-  { label: "Clubs" },
+-  { label: "Events" },
+-  { label: "Partners" },
+-  { label: "About", href: "/landing" },
++  { label: 'Clubs' },
++  { label: 'Events' },
++  { label: 'Partners' },
++  { label: 'About', href: '/landing' },
+ ];
+ 
+ // Shared by every unauthenticated route (the 4 auth pages via AuthLayout,
+@@ -26,14 +26,11 @@ export default function PublicNav() {
+     <nav className="w-full top-0 sticky bg-surface-white border-b border-divider-line z-50">
+       <div
+         className="flex justify-between items-center h-[72px] mx-auto px-4 lg:px-10"
+-        style={{ maxWidth: "var(--spacing-container-max)" }}
++        style={{ maxWidth: 'var(--spacing-container-max)' }}
+       >
+         <div className="flex items-center gap-6">
+           <Logo variant="horizontal" size={28} priority />
+-          <div
+-            className="hidden md:flex items-center"
+-            style={{ gap: "var(--spacing-gutter)" }}
+-          >
++          <div className="hidden md:flex items-center" style={{ gap: 'var(--spacing-gutter)' }}>
+             {NAV_LINKS.map((item) =>
+               item.href ? (
+                 <Link
+@@ -44,25 +41,17 @@ export default function PublicNav() {
+                   {item.label}
+                 </Link>
+               ) : (
+-                <ComingSoon
+-                  key={item.label}
+-                  label={item.label}
+-                  position="bottom"
+-                  inline
+-                >
++                <ComingSoon key={item.label} label={item.label} position="bottom" inline>
+                   <span className="text-text-body hover:text-text-heading transition-colors font-inter font-medium text-small">
+                     {item.label}
+                   </span>
+                 </ComingSoon>
+-              ),
++              )
+             )}
+           </div>
+         </div>
+         <div className="flex items-center gap-4">
+-          <Link
+-            to="/login"
+-            className="text-text-body hover:underline cursor-pointer font-inter font-medium text-small"
+-          >
++          <Link to="/login" className="text-text-body hover:underline cursor-pointer font-inter font-medium text-small">
+             Login
+           </Link>
+           <Link to="/role-selection">
+diff --git a/Frontend/src/components/onboarding/CheckboxPills.jsx b/Frontend/src/components/onboarding/CheckboxPills.jsx
+index 6bf9e6b..5cdd3de 100644
+--- a/Frontend/src/components/onboarding/CheckboxPills.jsx
++++ b/Frontend/src/components/onboarding/CheckboxPills.jsx
+@@ -1,9 +1,7 @@
+ export default function CheckboxPills({ label, options, selected, onToggle }) {
+   return (
+     <div className="flex flex-col gap-1.5">
+-      <span className="text-caption font-medium text-text-heading font-inter">
+-        {label}
+-      </span>
++      <span className="text-caption font-medium text-text-heading font-inter">{label}</span>
+       <div className="flex flex-wrap gap-2">
+         {options.map((option) => {
+           const active = selected.includes(option);
+@@ -15,8 +13,8 @@ export default function CheckboxPills({ label, options, selected, onToggle }) {
+               aria-pressed={active}
+               className={`font-inter text-caption font-semibold px-3 py-1.5 rounded-full border transition-all ${
+                 active
+-                  ? "bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black dark:border-white"
+-                  : "bg-surface-white text-text-body border-border-subtle hover:border-text-muted"
++                  ? 'bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black dark:border-white'
++                  : 'bg-surface-white text-text-body border-border-subtle hover:border-text-muted'
+               }`}
+             >
+               {option}
+diff --git a/Frontend/src/components/onboarding/RadioPills.jsx b/Frontend/src/components/onboarding/RadioPills.jsx
+index b062655..a4fff6a 100644
+--- a/Frontend/src/components/onboarding/RadioPills.jsx
++++ b/Frontend/src/components/onboarding/RadioPills.jsx
+@@ -1,14 +1,8 @@
+ export default function RadioPills({ label, options, value, onChange }) {
+   return (
+     <div className="flex flex-col gap-1.5">
+-      <span className="text-caption font-medium text-text-heading font-inter">
+-        {label}
+-      </span>
+-      <div
+-        role="radiogroup"
+-        aria-label={label}
+-        className="flex flex-wrap gap-2"
+-      >
++      <span className="text-caption font-medium text-text-heading font-inter">{label}</span>
++      <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+         {options.map((option) => {
+           const active = value === option;
+           return (
+@@ -20,8 +14,8 @@ export default function RadioPills({ label, options, value, onChange }) {
+               onClick={() => onChange(option)}
+               className={`font-inter text-caption font-semibold px-3 py-1.5 rounded-full border transition-all ${
+                 active
+-                  ? "bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black dark:border-white"
+-                  : "bg-surface-white text-text-body border-border-subtle hover:border-text-muted"
++                  ? 'bg-brand-black text-white border-brand-black dark:bg-white dark:text-brand-black dark:border-white'
++                  : 'bg-surface-white text-text-body border-border-subtle hover:border-text-muted'
+               }`}
+             >
+               {option}
+diff --git a/Frontend/src/components/onboarding/TagInput.jsx b/Frontend/src/components/onboarding/TagInput.jsx
+index 8de47ba..c99a23c 100644
+--- a/Frontend/src/components/onboarding/TagInput.jsx
++++ b/Frontend/src/components/onboarding/TagInput.jsx
+@@ -1,28 +1,25 @@
+-import { useState } from "react";
+-import { X } from "lucide-react";
++import { useState } from 'react';
++import { X } from 'lucide-react';
+ 
+ // Real add/remove on already-loaded local state (not a stub) — press
+ // Enter to add, click the x to remove, same convention used for
+ // client-side-only operations throughout this codebase.
+ export default function TagInput({ id, label, tags, onChange, placeholder }) {
+-  const [draft, setDraft] = useState("");
++  const [draft, setDraft] = useState('');
+ 
+   const addTag = (e) => {
+-    if (e.key !== "Enter") return;
++    if (e.key !== 'Enter') return;
+     e.preventDefault();
+     const next = draft.trim();
+     if (next && !tags.includes(next)) onChange([...tags, next]);
+-    setDraft("");
++    setDraft('');
+   };
+ 
+   const removeTag = (tag) => onChange(tags.filter((t) => t !== tag));
+ 
+   return (
+     <div className="flex flex-col gap-1.5">
+-      <label
+-        htmlFor={id}
+-        className="text-caption font-medium text-text-heading font-inter"
+-      >
++      <label htmlFor={id} className="text-caption font-medium text-text-heading font-inter">
+         {label}
+       </label>
+       {tags.length > 0 && (
+diff --git a/Frontend/src/components/ui/Badge.jsx b/Frontend/src/components/ui/Badge.jsx
+index 3c2dd4a..a1c8027 100644
+--- a/Frontend/src/components/ui/Badge.jsx
++++ b/Frontend/src/components/ui/Badge.jsx
+@@ -1,21 +1,17 @@
+ const VARIANTS = {
+-  success: "bg-success/15 text-success",
+-  warning: "bg-warning/15 text-warning",
+-  error: "bg-error/15 text-error",
+-  info: "bg-info/15 text-info",
+-  neutral: "bg-border-subtle/60 text-text-muted",
+-  brand: "bg-brand-black text-white",
++  success: 'bg-success/15 text-success',
++  warning: 'bg-warning/15 text-warning',
++  error: 'bg-error/15 text-error',
++  info: 'bg-info/15 text-info',
++  neutral: 'bg-border-subtle/60 text-text-muted',
++  brand: 'bg-brand-black text-white',
+ };
+ 
+ // Renders whatever case `children` is passed in rather than forcing
+ // uppercase — design guide wants Title Case ("Under Review", not "UNDER
+ // REVIEW"). Pre-existing screens with their own inline uppercase badges
+ // don't need retrofitting; this is just the standard going forward.
+-export default function Badge({
+-  variant = "neutral",
+-  children,
+-  className = "",
+-}) {
++export default function Badge({ variant = 'neutral', children, className = '' }) {
+   return (
+     <span
+       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-inter font-semibold text-caption whitespace-nowrap ${VARIANTS[variant] ?? VARIANTS.neutral} ${className}`}
+diff --git a/Frontend/src/components/ui/Button.jsx b/Frontend/src/components/ui/Button.jsx
+index d543270..30647ac 100644
+--- a/Frontend/src/components/ui/Button.jsx
++++ b/Frontend/src/components/ui/Button.jsx
+@@ -1,22 +1,22 @@
+ export default function Button({
+   children,
+-  variant = "primary",
+-  size = "md",
+-  className = "",
+-  type = "button",
++  variant = 'primary',
++  size = 'md',
++  className = '',
++  type = 'button',
+   fullWidth = false,
+   disabled = false,
+   onClick,
+   ...rest
+ }) {
+   const base = [
+-    "inline-flex items-center justify-center gap-2 font-semibold rounded-md font-poppins",
+-    "transition-all duration-150 ease-linear",
+-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-black",
+-    "active:scale-[.98]",
+-    "disabled:cursor-not-allowed disabled:active:scale-100",
+-    "cursor-pointer",
+-  ].join(" ");
++    'inline-flex items-center justify-center gap-2 font-semibold rounded-md font-poppins',
++    'transition-all duration-150 ease-linear',
++    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-brand-black',
++    'active:scale-[.98]',
++    'disabled:cursor-not-allowed disabled:active:scale-100',
++    'cursor-pointer',
++  ].join(' ');
+ 
+   const variants = {
+     // `action-bg`/`action-text` invert between themes (black-on-white in
+@@ -28,15 +28,16 @@ export default function Button({
+     // both — this is the same pattern already used correctly elsewhere in
+     // the app (e.g. incubator/Settings.jsx's Save Changes button).
+     primary:
+-      "bg-action-bg text-action-text hover:opacity-90 disabled:bg-canvas-bg disabled:text-text-muted",
++      'bg-action-bg text-action-text hover:opacity-90 disabled:bg-canvas-bg disabled:text-text-muted',
+     outline:
+-      "border border-border-subtle text-text-heading bg-surface-white hover:bg-canvas-bg disabled:bg-canvas-bg disabled:text-text-muted disabled:border-border-subtle",
+-    ghost: "text-text-body bg-transparent hover:bg-canvas-bg",
++      'border border-border-subtle text-text-heading bg-surface-white hover:bg-canvas-bg disabled:bg-canvas-bg disabled:text-text-muted disabled:border-border-subtle',
++    ghost:
++      'text-text-body bg-transparent hover:bg-canvas-bg',
+   };
+ 
+   const sizes = {
+-    md: "px-5 py-2.5 text-sm min-h-[44px]",
+-    sm: "px-4 py-2 text-xs min-h-[36px]",
++    md: 'px-5 py-2.5 text-sm min-h-[44px]',
++    sm: 'px-4 py-2 text-xs min-h-[36px]',
+   };
+ 
+   return (
+@@ -47,11 +48,11 @@ export default function Button({
+         base,
+         variants[variant],
+         sizes[size],
+-        fullWidth ? "w-full" : "",
++        fullWidth ? 'w-full' : '',
+         className,
+       ]
+         .filter(Boolean)
+-        .join(" ")}
++        .join(' ')}
+       onClick={onClick}
+       {...rest}
+     >
+diff --git a/Frontend/src/components/ui/Card.jsx b/Frontend/src/components/ui/Card.jsx
+index 0590b89..a72b749 100644
+--- a/Frontend/src/components/ui/Card.jsx
++++ b/Frontend/src/components/ui/Card.jsx
+@@ -1,4 +1,4 @@
+-export default function Card({ children, className = "" }) {
++export default function Card({ children, className = '' }) {
+   return (
+     <div
+       className={`bg-surface-white rounded-lg border border-border-subtle shadow-card p-6 transition-all duration-150 ease-linear ${className}`}
+diff --git a/Frontend/src/components/ui/ComingSoon.jsx b/Frontend/src/components/ui/ComingSoon.jsx
+index bc71d26..97e92e6 100644
+--- a/Frontend/src/components/ui/ComingSoon.jsx
++++ b/Frontend/src/components/ui/ComingSoon.jsx
+@@ -1,4 +1,4 @@
+-import { useState } from "react";
++import { useState } from 'react';
+ 
+ // Marks a not-yet-built feature. Shows a "Coming Soon" tooltip on hover or
+ // keyboard focus; never navigates or fires an action (aria-disabled, no
+@@ -10,16 +10,14 @@ import { useState } from "react";
+ export default function ComingSoon({
+   children,
+   label,
+-  position = "top", // 'top' or 'bottom'
+-  className = "",
++  position = 'top', // 'top' or 'bottom'
++  className = '',
+   inline = false,
+ }) {
+   const [show, setShow] = useState(false);
+ 
+   return (
+-    <div
+-      className={`relative ${inline ? "inline-flex" : "flex w-full"} items-center`}
+-    >
++    <div className={`relative ${inline ? 'inline-flex' : 'flex w-full'} items-center`}>
+       <div
+         role="button"
+         tabIndex={0}
+@@ -29,7 +27,7 @@ export default function ComingSoon({
+         onMouseLeave={() => setShow(false)}
+         onFocus={() => setShow(true)}
+         onBlur={() => setShow(false)}
+-        className={`text-text-muted cursor-not-allowed select-none outline-none focus:outline-none ${inline ? "" : "w-full"} ${className}`}
++        className={`text-text-muted cursor-not-allowed select-none outline-none focus:outline-none ${inline ? '' : 'w-full'} ${className}`}
+       >
+         {children}
+       </div>
+@@ -37,8 +35,8 @@ export default function ComingSoon({
+         <div
+           className="absolute left-1/2 -translate-x-1/2 z-50 px-2 py-1 text-[11px] font-inter font-medium text-white bg-brand-black rounded shadow-md pointer-events-none whitespace-nowrap"
+           style={{
+-            bottom: position === "top" ? "120%" : "auto",
+-            top: position === "bottom" ? "120%" : "auto",
++            bottom: position === 'top' ? '120%' : 'auto',
++            top: position === 'bottom' ? '120%' : 'auto',
+           }}
+         >
+           Coming Soon
+@@ -46,4 +44,4 @@ export default function ComingSoon({
+       )}
+     </div>
+   );
+-}
++}
+\ No newline at end of file
+diff --git a/Frontend/src/components/ui/DataTable.jsx b/Frontend/src/components/ui/DataTable.jsx
+index 880c7b1..e68fe83 100644
+--- a/Frontend/src/components/ui/DataTable.jsx
++++ b/Frontend/src/components/ui/DataTable.jsx
+@@ -2,12 +2,7 @@
+ // column per row with an inline field label per cell — per the design
+ // guide's "Tabular Table Data Stacking" rule (a 6+ column table can't
+ // meaningfully shrink to a 375px screen).
+-export default function DataTable({
+-  columns,
+-  rows,
+-  onRowClick,
+-  emptyMessage = "No results.",
+-}) {
++export default function DataTable({ columns, rows, onRowClick, emptyMessage = 'No results.' }) {
+   // Every track wrapped in minmax(0, ...): a bare `Nfr` track has an implicit
+   // min-width of its content's min-content, so unbreakable cell content (a
+   // Badge, an IP address, a long id) blows the grid past its container
+@@ -21,9 +16,7 @@ export default function DataTable({
+   // see that literal text in source, so don't interpolate widths directly
+   // into a class string (e.g. `grid-cols-[${widths}]`); same gotcha as
+   // Logo.jsx's sidebar sizing.
+-  const gridStyle = {
+-    "--cols": columns.map((c) => `minmax(0, ${c.width || "1fr"})`).join(" "),
+-  };
++  const gridStyle = { '--cols': columns.map((c) => `minmax(0, ${c.width || '1fr'})`).join(' ') };
+ 
+   if (rows.length === 0) {
+     return (
+@@ -34,17 +27,11 @@ export default function DataTable({
+   }
+ 
+   return (
+-    <div
+-      className="bg-surface-white border border-border-subtle rounded-xl shadow-card overflow-hidden"
+-      style={gridStyle}
+-    >
++    <div className="bg-surface-white border border-border-subtle rounded-xl shadow-card overflow-hidden" style={gridStyle}>
+       {/* Header — desktop only, mobile rows carry their own inline labels */}
+       <div className="hidden md:grid md:grid-cols-[var(--cols)] gap-4 px-6 py-4 border-b border-border-subtle bg-canvas-bg/50">
+         {columns.map((col) => (
+-          <div
+-            key={col.key}
+-            className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider truncate"
+-          >
++          <div key={col.key} className="font-poppins font-semibold text-caption text-text-muted uppercase tracking-wider truncate">
+             {col.label}
+           </div>
+         ))}
+@@ -53,7 +40,7 @@ export default function DataTable({
+       <div className="divide-y divide-border-subtle">
+         {rows.map((row) => {
+           const cells = columns.map((col) => (
+-            <div key={col.key} className={col.className || ""}>
++            <div key={col.key} className={col.className || ''}>
+               {/* mobileLabel: false suppresses this inline label — useful
+                   when the column is already self-explanatory, e.g. an avatar. */}
+               {col.mobileLabel !== false && (
+@@ -66,16 +53,11 @@ export default function DataTable({
+           ));
+ 
+           const rowClasses = `grid grid-cols-1 md:grid-cols-[var(--cols)] gap-2 md:gap-4 items-center px-6 py-4 md:py-5 w-full text-left transition-colors ${
+-            onRowClick ? "hover:bg-canvas-bg/40 cursor-pointer" : ""
++            onRowClick ? 'hover:bg-canvas-bg/40 cursor-pointer' : ''
+           }`;
+ 
+           return onRowClick ? (
+-            <button
+-              key={row.id}
+-              type="button"
+-              onClick={() => onRowClick(row)}
+-              className={rowClasses}
+-            >
++            <button key={row.id} type="button" onClick={() => onRowClick(row)} className={rowClasses}>
+               {cells}
+             </button>
+           ) : (
+diff --git a/Frontend/src/components/ui/Input.jsx b/Frontend/src/components/ui/Input.jsx
+index 9661fd3..ce1791a 100644
+--- a/Frontend/src/components/ui/Input.jsx
++++ b/Frontend/src/components/ui/Input.jsx
+@@ -1,15 +1,15 @@
+ export default function Input({
+   id,
+   label,
+-  labelClassName = "",
+-  type = "text",
+-  placeholder = "",
++  labelClassName = '',
++  type = 'text',
++  placeholder = '',
+   autoComplete,
+   error,
+   helperText,
+   leftSlot,
+   rightSlot,
+-  className = "",
++  className = '',
+   required = false,
+   ...rest
+ }) {
+@@ -17,15 +17,10 @@ export default function Input({
+ 
+   return (
+     <div className={`flex flex-col gap-1 ${className}`}>
+-      <label
+-        htmlFor={id}
+-        className={`text-caption font-medium text-text-heading font-inter ${labelClassName}`}
+-      >
++      <label htmlFor={id} className={`text-caption font-medium text-text-heading font-inter ${labelClassName}`}>
+         {label}
+         {required && (
+-          <span className="text-error ml-0.5" aria-hidden="true">
+-            *
+-          </span>
++          <span className="text-error ml-0.5" aria-hidden="true">*</span>
+         )}
+       </label>
+ 
+@@ -48,24 +43,28 @@ export default function Input({
+           required={required}
+           aria-invalid={hasError || undefined}
+           aria-describedby={
+-            hasError ? `${id}-error` : helperText ? `${id}-hint` : undefined
++            hasError
++              ? `${id}-error`
++              : helperText
++              ? `${id}-hint`
++              : undefined
+           }
+           className={[
+             // bg-surface-white matches the surrounding Card, so the field
+             // reads as recessed rather than a separate surface.
+-            "w-full rounded-md border bg-surface-white text-sm text-text-body font-inter",
+-            "placeholder:text-text-muted",
+-            "transition-all duration-150 ease-linear",
+-            "focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black",
+-            "min-h-[44px] py-2.5",
+-            leftSlot ? "pl-9" : "pl-3",
+-            rightSlot ? "pr-9" : "pr-3",
++            'w-full rounded-md border bg-surface-white text-sm text-text-body font-inter',
++            'placeholder:text-text-muted',
++            'transition-all duration-150 ease-linear',
++            'focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black',
++            'min-h-[44px] py-2.5',
++            leftSlot ? 'pl-9' : 'pl-3',
++            rightSlot ? 'pr-9' : 'pr-3',
+             hasError
+-              ? "border-error focus:border-error focus:ring-error"
+-              : "border-border-subtle focus:border-brand-black",
++              ? 'border-error focus:border-error focus:ring-error'
++              : 'border-border-subtle focus:border-brand-black',
+           ]
+             .filter(Boolean)
+-            .join(" ")}
++            .join(' ')}
+           {...rest}
+         />
+ 
+diff --git a/Frontend/src/components/ui/Logo.jsx b/Frontend/src/components/ui/Logo.jsx
+index bd40d54..052bc49 100644
+--- a/Frontend/src/components/ui/Logo.jsx
++++ b/Frontend/src/components/ui/Logo.jsx
+@@ -1,37 +1,37 @@
+-import { useTheme } from "@/components/ui/ThemeProvider";
++import { useTheme } from '@/components/ui/ThemeProvider';
+ 
+ // Natural PNG dimensions, measured via `sips -g pixelWidth -g pixelHeight`
+ // against the real files in /public/logos/. A previous guessed-from-Figma
+ // version of this table was wrong in both size and aspect ratio for all
+ // three variants — re-measure, don't guess, if these PNGs are ever replaced.
+ const DIMS = {
+-  mark: { w: 285, h: 305 } /* ~0.93:1 */,
+-  horizontal: { w: 305, h: 127 } /* ~2.40:1 */,
+-  stacked: { w: 112, h: 108 } /* ~1.04:1 */,
++  mark:       { w: 285, h: 305 },   /* ~0.93:1 */
++  horizontal: { w: 305, h: 127 },   /* ~2.40:1 */
++  stacked:    { w: 112, h: 108 },   /* ~1.04:1 */
+ };
+ 
+ const FILENAME = {
+-  mark: "logo-mark",
+-  horizontal: "logo-lockup-horizontal",
+-  stacked: "logo-lockup-stacked",
++  mark:       'logo-mark',
++  horizontal: 'logo-lockup-horizontal',
++  stacked:    'logo-lockup-stacked',
+ };
+ 
+ // Fixed h-6 (24px) / md:h-8 (32px) per the design guide's sidebar sizing
+ // spec. Written as a literal class string, not computed from a number —
+ // Tailwind's class scanner only generates CSS for literal class text found
+ // in source, so a dynamic `h-[${size}px]` would never generate any styles.
+-const SIDEBAR_SIZE_CLASSES = "h-6 md:h-8 w-auto";
++const SIDEBAR_SIZE_CLASSES = 'h-6 md:h-8 w-auto';
+ 
+ // priority: pass true only for the one above-the-fold logo per page
+ // (header/sidebar) — it eager-loads and competes for bandwidth with the
+ // rest of the page; footer/secondary copies should stay lazy (the default).
+ export default function Logo({
+-  variant = "horizontal",
+-  size = 32,
+-  sidebar = false,
++  variant   = 'horizontal',
++  size      = 32,
++  sidebar   = false,
+   force,
+-  priority = false,
+-  className = "",
++  priority  = false,
++  className = '',
+ }) {
+   const { theme } = useTheme();
+   const resolvedTheme = force ?? theme;
+@@ -39,7 +39,7 @@ export default function Logo({
+   const { w: nw, h: nh } = DIMS[variant] ?? DIMS.horizontal;
+   const filename = FILENAME[variant] ?? FILENAME.horizontal;
+   const src = `/logos/${filename}-${resolvedTheme}.png`;
+-  const alt = "BOCC — Business Orbit Campus Clubs";
++  const alt = 'BOCC — Business Orbit Campus Clubs';
+ 
+   if (sidebar) {
+     return (
+@@ -48,8 +48,8 @@ export default function Logo({
+         alt={alt}
+         className={`object-contain select-none ${SIDEBAR_SIZE_CLASSES} ${className}`}
+         style={{ aspectRatio: `${nw} / ${nh}` }}
+-        loading={priority ? "eager" : "lazy"}
+-        fetchPriority={priority ? "high" : "auto"}
++        loading={priority ? 'eager' : 'lazy'}
++        fetchPriority={priority ? 'high' : 'auto'}
+       />
+     );
+   }
+@@ -74,8 +74,8 @@ export default function Logo({
+       height={size}
+       className={`object-contain select-none ${className}`}
+       style={{ height: size, aspectRatio: `${nw} / ${nh}` }}
+-      loading={priority ? "eager" : "lazy"}
+-      fetchPriority={priority ? "high" : "auto"}
++      loading={priority ? 'eager' : 'lazy'}
++      fetchPriority={priority ? 'high' : 'auto'}
+     />
+   );
+ }
+diff --git a/Frontend/src/components/ui/Modal.jsx b/Frontend/src/components/ui/Modal.jsx
+index d3a812f..78af643 100644
+--- a/Frontend/src/components/ui/Modal.jsx
++++ b/Frontend/src/components/ui/Modal.jsx
+@@ -1,5 +1,5 @@
+-import { useEffect } from "react";
+-import { X } from "lucide-react";
++import { useEffect } from 'react';
++import { X } from 'lucide-react';
+ 
+ // Centered dialog (backdrop, Escape-to-close, click-backdrop-to-close) —
+ // same mechanics as Sidebar.jsx's mobile drawer, generalized here since
+@@ -9,21 +9,17 @@ export default function Modal({ isOpen, onClose, title, children }) {
+   useEffect(() => {
+     if (!isOpen) return;
+     const onKeyDown = (e) => {
+-      if (e.key === "Escape") onClose();
++      if (e.key === 'Escape') onClose();
+     };
+-    window.addEventListener("keydown", onKeyDown);
+-    return () => window.removeEventListener("keydown", onKeyDown);
++    window.addEventListener('keydown', onKeyDown);
++    return () => window.removeEventListener('keydown', onKeyDown);
+   }, [isOpen, onClose]);
+ 
+   if (!isOpen) return null;
+ 
+   return (
+     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+-      <div
+-        className="absolute inset-0 bg-black/50"
+-        onClick={onClose}
+-        aria-hidden="true"
+-      />
++      <div className="absolute inset-0 bg-black/50" onClick={onClose} aria-hidden="true" />
+       <div
+         role="dialog"
+         aria-modal="true"
+@@ -31,11 +27,7 @@ export default function Modal({ isOpen, onClose, title, children }) {
+         className="relative bg-surface-white rounded-xl border border-border-subtle shadow-overlay w-full max-w-md p-6 animate-slide-in"
+       >
+         <div className="flex items-start justify-between gap-4 mb-4">
+-          {title && (
+-            <h3 className="font-poppins font-semibold text-card text-text-heading">
+-              {title}
+-            </h3>
+-          )}
++          {title && <h3 className="font-poppins font-semibold text-card text-text-heading">{title}</h3>}
+           <button
+             type="button"
+             onClick={onClose}
+diff --git a/Frontend/src/components/ui/ThemeProvider.jsx b/Frontend/src/components/ui/ThemeProvider.jsx
+index f94022a..a942a6c 100644
+--- a/Frontend/src/components/ui/ThemeProvider.jsx
++++ b/Frontend/src/components/ui/ThemeProvider.jsx
+@@ -1,33 +1,25 @@
+-import { createContext, useContext, useEffect, useState } from "react";
++import { createContext, useContext, useEffect, useState } from 'react';
+ 
+-const ThemeContext = createContext({
+-  theme: "light",
+-  toggleTheme: () => {},
+-  mounted: false,
+-});
++const ThemeContext = createContext({ theme: 'light', toggleTheme: () => {}, mounted: false });
+ 
+ export function ThemeProvider({ children }) {
+-  const [theme, setTheme] = useState("light");
++  const [theme, setTheme] = useState('light');
+   const [mounted, setMounted] = useState(false);
+ 
+   useEffect(() => {
+-    const stored = localStorage.getItem("theme");
+-    const initial =
+-      stored ||
+-      (window.matchMedia("(prefers-color-scheme: dark)").matches
+-        ? "dark"
+-        : "light");
++    const stored = localStorage.getItem('theme');
++    const initial = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+     setTheme(initial);
+     setMounted(true);
+   }, []);
+ 
+   useEffect(() => {
+     if (!mounted) return;
+-    document.documentElement.classList.toggle("dark", theme === "dark");
+-    localStorage.setItem("theme", theme);
++    document.documentElement.classList.toggle('dark', theme === 'dark');
++    localStorage.setItem('theme', theme);
+   }, [theme, mounted]);
+ 
+-  const toggleTheme = () => setTheme((t) => (t === "light" ? "dark" : "light"));
++  const toggleTheme = () => setTheme(t => (t === 'light' ? 'dark' : 'light'));
+ 
+   return (
+     <ThemeContext.Provider value={{ theme, toggleTheme, mounted }}>
+diff --git a/Frontend/src/components/ui/ThemeToggle.jsx b/Frontend/src/components/ui/ThemeToggle.jsx
+index 084ce04..631c01b 100644
+--- a/Frontend/src/components/ui/ThemeToggle.jsx
++++ b/Frontend/src/components/ui/ThemeToggle.jsx
+@@ -1,5 +1,5 @@
+-import { Sun, Moon } from "lucide-react";
+-import { useTheme } from "@/components/ui/ThemeProvider";
++import { Sun, Moon } from 'lucide-react';
++import { useTheme } from '@/components/ui/ThemeProvider';
+ 
+ // Light/dark toggle button, shared by every header (auth, dashboard,
+ // incubator). Reads/writes theme via ThemeProvider's useTheme().
+@@ -10,7 +10,7 @@ import { useTheme } from "@/components/ui/ThemeProvider";
+ // itself is already set correctly pre-paint by index.html's inline script,
+ // but this component's own icon choice isn't until after that effect runs)
+ // — rendering Sun/Moon before then would flash the wrong icon for a frame.
+-export default function ThemeToggle({ size = 20, className = "" }) {
++export default function ThemeToggle({ size = 20, className = '' }) {
+   const { theme, toggleTheme, mounted } = useTheme();
+ 
+   if (!mounted) {
+@@ -21,12 +21,10 @@ export default function ThemeToggle({ size = 20, className = "" }) {
+     <button
+       type="button"
+       onClick={toggleTheme}
+-      aria-label={
+-        theme === "dark" ? "Switch to light mode" : "Switch to dark mode"
+-      }
++      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+       className={`p-2 rounded-full text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors ${className}`}
+     >
+-      {theme === "dark" ? (
++      {theme === 'dark' ? (
+         <Sun size={size} strokeWidth={2} />
+       ) : (
+         <Moon size={size} strokeWidth={2} />
+diff --git a/Frontend/src/layouts/AuthLayout.jsx b/Frontend/src/layouts/AuthLayout.jsx
+index a1ed54e..ac8bb99 100644
+--- a/Frontend/src/layouts/AuthLayout.jsx
++++ b/Frontend/src/layouts/AuthLayout.jsx
+@@ -1,5 +1,5 @@
+-import { Link, Outlet } from "react-router-dom";
+-import PublicNav from "@/components/layout/PublicNav";
++import { Link, Outlet } from 'react-router-dom';
++import PublicNav from '@/components/layout/PublicNav';
+ 
+ export default function AuthLayout() {
+   return (
+diff --git a/Frontend/src/pages/BuildStartupJourney.jsx b/Frontend/src/pages/BuildStartupJourney.jsx
+index 85e918c..a8d558e 100644
+--- a/Frontend/src/pages/BuildStartupJourney.jsx
++++ b/Frontend/src/pages/BuildStartupJourney.jsx
+@@ -12,7 +12,6 @@ import {
+   Users,
+   CheckCircle2,
+   Loader2,
+-  AlertCircle,
+ } from "lucide-react";
+ import DashboardShell from "@/components/dashboard/DashboardShell";
+ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+@@ -34,7 +33,6 @@ export default function JourneyPage() {
+   const [progressData, setProgressData] = useState(null);
+   const [stagesData, setStagesData] = useState([]);
+   const [loading, setLoading] = useState(true);
+-  const [errorMsg, setErrorMsg] = useState("");
+ 
+   useEffect(() => {
+     async function fetchJourneyData() {
+@@ -62,12 +60,6 @@ export default function JourneyPage() {
+ 
+         if (redirectDestination) {
+           navigate(redirectDestination, { replace: true });
+-        } else {
+-          setErrorMsg(
+-            err?.response?.data?.message ||
+-              err?.message ||
+-              "Failed to load journey data.",
+-          );
+         }
+       } finally {
+         setLoading(false);
+@@ -128,13 +120,6 @@ export default function JourneyPage() {
+         Startup Journey
+       </h1>
+ 
+-      {errorMsg && (
+-        <div className="mb-8 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2">
+-          <AlertCircle size={16} className="shrink-0" />
+-          <span>{errorMsg}</span>
+-        </div>
+-      )}
+-
+       <section
+         className="grid grid-cols-1 md:grid-cols-12 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card mb-12 items-center"
+         style={{ gap: "var(--spacing-gutter)" }}
+diff --git a/Frontend/src/pages/auth/StudentSignup.jsx b/Frontend/src/pages/auth/StudentSignup.jsx
+index f54184d..500e8a2 100644
+--- a/Frontend/src/pages/auth/StudentSignup.jsx
++++ b/Frontend/src/pages/auth/StudentSignup.jsx
+@@ -21,7 +21,7 @@ const BASE_FIELDS = [
+   {
+     name: "college",
+     label: "College Name",
+-    type: "autocomplete",
++    type: "select",
+     options: [], // Populated dynamically from API
+   },
+   {
+@@ -42,7 +42,6 @@ export default function StudentSignupPage() {
+ 
+   const [fields, setFields] = useState(BASE_FIELDS);
+   const [isFetchingChapters, setIsFetchingChapters] = useState(true);
+-  const [fetchError, setFetchError] = useState("");
+ 
+   useEffect(() => {
+     const fetchChapters = async () => {
+@@ -60,11 +59,6 @@ export default function StudentSignupPage() {
+         );
+       } catch (err) {
+         console.error("Failed to load chapters:", err);
+-        setFetchError(
+-          err?.response?.data?.message ||
+-            err?.message ||
+-            "Unable to load colleges. Please refresh the page.",
+-        );
+       } finally {
+         setIsFetchingChapters(false);
+       }
+@@ -83,7 +77,6 @@ export default function StudentSignupPage() {
+       }
+       fields={fields}
+       isLoadingChapters={isFetchingChapters}
+-      globalError={fetchError}
+     />
+   );
+ }
+diff --git a/Frontend/src/pages/onboarding/ApplicationRejected.jsx b/Frontend/src/pages/onboarding/ApplicationRejected.jsx
+index 33ac141..1293fa4 100644
+--- a/Frontend/src/pages/onboarding/ApplicationRejected.jsx
++++ b/Frontend/src/pages/onboarding/ApplicationRejected.jsx
+@@ -1,10 +1,10 @@
+-import { Link } from "react-router-dom";
+-import { AlertCircle } from "lucide-react";
+-import ComingSoon from "@/components/ui/ComingSoon";
+-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
++import { Link } from 'react-router-dom';
++import { AlertCircle } from 'lucide-react';
++import ComingSoon from '@/components/ui/ComingSoon';
++import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+ 
+ export default function ApplicationRejectedPage() {
+-  useDocumentTitle("Application Not Approved — BOCC");
++  useDocumentTitle('Application Not Approved — BOCC');
+ 
+   return (
+     <div className="flex-1 flex items-center justify-center px-4 py-12 bg-canvas-bg">
+@@ -19,24 +19,19 @@ export default function ApplicationRejectedPage() {
+           We could not approve this application
+         </h1>
+         <p className="font-inter text-small text-text-body leading-relaxed mb-5">
+-          Your submission did not pass the current review criteria. Please
+-          review the reason below and update the required details before
+-          resubmitting.
++          Your submission did not pass the current review criteria. Please review the reason below
++          and update the required details before resubmitting.
+         </p>
+ 
+         <div className="bg-canvas-bg border border-border-subtle rounded-lg p-4 text-left mb-4">
+-          <p className="font-poppins font-semibold text-small text-text-heading mb-1">
+-            Reason for review
+-          </p>
++          <p className="font-poppins font-semibold text-small text-text-heading mb-1">Reason for review</p>
+           <p className="font-inter text-small text-text-muted">
+-            One or more submitted documents were incomplete or did not meet the
+-            required format.
++            One or more submitted documents were incomplete or did not meet the required format.
+           </p>
+         </div>
+ 
+         <p className="font-inter text-small text-text-muted mb-6">
+-          Our support team can help you correct the issue quickly and guide you
+-          through the next step.
++          Our support team can help you correct the issue quickly and guide you through the next step.
+         </p>
+ 
+         <div className="flex flex-col sm:flex-row gap-3">
+@@ -46,12 +41,7 @@ export default function ApplicationRejectedPage() {
+           >
+             Back to Dashboard
+           </Link>
+-          <ComingSoon
+-            label="Contact Support"
+-            position="top"
+-            inline
+-            className="flex-1 flex items-center justify-center border border-border-subtle text-text-heading font-inter font-medium text-small px-5 py-2.5 rounded-md"
+-          >
++          <ComingSoon label="Contact Support" position="top" inline className="flex-1 flex items-center justify-center border border-border-subtle text-text-heading font-inter font-medium text-small px-5 py-2.5 rounded-md">
+             Contact Support
+           </ComingSoon>
+         </div>
+diff --git a/Frontend/src/pages/onboarding/VerificationProgress.jsx b/Frontend/src/pages/onboarding/VerificationProgress.jsx
+index 926c744..7ebbb8c 100644
+--- a/Frontend/src/pages/onboarding/VerificationProgress.jsx
++++ b/Frontend/src/pages/onboarding/VerificationProgress.jsx
+@@ -8,7 +8,6 @@ import {
+   Check,
+   RotateCw,
+   Loader2,
+-  AlertCircle,
+ } from "lucide-react";
+ import ComingSoon from "@/components/ui/ComingSoon";
+ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+@@ -41,7 +40,6 @@ export default function VerificationProgressPage() {
+ 
+   const [isRefreshing, setIsRefreshing] = useState(false);
+   const [lastChecked, setLastChecked] = useState(null);
+-  const [errorMsg, setErrorMsg] = useState("");
+ 
+   // Poll server status to check if admin approved/rejected
+   const checkStatus = useCallback(async () => {
+@@ -61,11 +59,6 @@ export default function VerificationProgressPage() {
+       }
+     } catch (err) {
+       console.error("Failed to fetch onboarding status:", err);
+-      setErrorMsg(
+-        err?.response?.data?.message ||
+-          err?.message ||
+-          "Failed to check status.",
+-      );
+     } finally {
+       setIsRefreshing(false);
+     }
+@@ -102,13 +95,6 @@ export default function VerificationProgressPage() {
+           our professional ecosystem standards.
+         </p>
+ 
+-        {errorMsg && (
+-          <div className="mb-4 p-3 bg-error/15 border border-error/30 text-error rounded-md text-small flex items-center gap-2 max-w-sm mx-auto">
+-            <AlertCircle size={16} className="shrink-0" />
+-            <span>{errorMsg}</span>
+-          </div>
+-        )}
+-
+         {/* Status Badge & Manual Refresh Button */}
+         <div className="flex items-center justify-center gap-3 mb-6">
+           <span className="inline-flex items-center gap-2 font-inter text-caption font-semibold uppercase tracking-wide text-warning bg-warning/15 px-3 py-1.5 rounded-full">

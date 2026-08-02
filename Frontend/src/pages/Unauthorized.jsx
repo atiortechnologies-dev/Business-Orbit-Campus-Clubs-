@@ -14,6 +14,7 @@ export default function Unauthorized() {
 
     switch (user.role) {
       case "admin":
+      case "super_admin":
         navigate("/admin");
         break;
       case "company":

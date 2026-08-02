@@ -1,0 +1,1170 @@
+{
+  "meta": {
+    "created": "2026-08-02T18:37:54+05:30",
+    "before_commit": "b34b524",
+    "merge_commit": "f96cc51",
+    "repo": "/home/jimfleax/Business-Orbit-Campus-Clubs-",
+    "description": "Progress tracking for merge revert operation. Two subagents work in parallel on separate file groups (Frontend vs Backend). Each updates this file atomically before and after processing each file."
+  },
+  "locks": {
+    "frontend_agent": null,
+    "backend_agent": null
+  },
+  "frontend": {
+    "status": "IN_PROGRESS",
+    "agent_id": null,
+    "files": {
+      "Frontend/src/pages/Notifications.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:55.523Z"
+      },
+      "Frontend/src/pages/Settings.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:55.940Z"
+      },
+      "Frontend/src/pages/auth/ResetPassword.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:56.504Z"
+      },
+      "Frontend/src/pages/support/RaiseSupportTicket.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:56.903Z"
+      },
+      "Frontend/src/pages/support/SupportDashboard.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:57.417Z"
+      },
+      "Frontend/src/pages/support/TicketDetail.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:57.919Z"
+      },
+      "Frontend/src/pages/legal/PrivacyPolicy.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:58.239Z"
+      },
+      "Frontend/src/pages/support/HelpCenter.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:58.718Z"
+      },
+      "Frontend/src/index.css": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:59.096Z"
+      },
+      "Frontend/src/components/onboarding/SelectField.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:59.605Z"
+      },
+      "Frontend/src/components/onboarding/TextAreaField.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:59.913Z"
+      },
+      "Frontend/src/components/ui/PlaceholderGraphic.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:00.427Z"
+      },
+      "Frontend/src/components/ui/StatCard.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:00.872Z"
+      },
+      "Frontend/src/components/landing/companies/CoInnovation.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:01.198Z"
+      },
+      "Frontend/src/components/landing/companies/FAQ.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:01.872Z"
+      },
+      "Frontend/src/components/landing/companies/FinalCTA.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:02.493Z"
+      },
+      "Frontend/src/components/landing/companies/Hero.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:03.154Z"
+      },
+      "Frontend/src/components/landing/companies/Process.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:03.751Z"
+      },
+      "Frontend/src/components/landing/companies/SectionHeading.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "RESTORE_YOURS",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:12.459Z"
+      },
+      "Frontend/src/components/landing/companies/TalentPipeline.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:04.990Z"
+      },
+      "Frontend/src/components/landing/companies/ValueProposition.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:05.954Z"
+      },
+      "Frontend/src/components/landing/incubator/FAQ.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:06.564Z"
+      },
+      "Frontend/src/components/landing/incubator/Hero.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:07.224Z"
+      },
+      "Frontend/src/components/landing/incubator/InstitutionalValue.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:08.991Z"
+      },
+      "Frontend/src/components/landing/incubator/Lifecycle.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:09.490Z"
+      },
+      "Frontend/src/components/landing/incubator/SuccessStories.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:10.209Z"
+      },
+      "Frontend/src/components/landing/incubator/ValueProps.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:10.817Z"
+      },
+      "Frontend/src/components/landing/investor/FAQ.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:11.679Z"
+      },
+      "Frontend/src/components/landing/investor/InvestmentWorkflow.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:12.150Z"
+      },
+      "Frontend/src/components/landing/investor/Statistics.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:12.772Z"
+      },
+      "Frontend/src/components/landing/investor/SuccessStories.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:13.228Z"
+      },
+      "Frontend/src/components/landing/investor/WhyInvest.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:14.023Z"
+      },
+      "Frontend/src/components/landing/mentor/Commitments.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:14.913Z"
+      },
+      "Frontend/src/components/landing/mentor/FAQ.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:15.502Z"
+      },
+      "Frontend/src/components/landing/mentor/Hero.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:16.003Z"
+      },
+      "Frontend/src/components/landing/mentor/ImpactStories.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:16.767Z"
+      },
+      "Frontend/src/components/landing/mentor/WhyMentor.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:17.404Z"
+      },
+      "Frontend/src/components/landing/mentor/Workflow.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:18.139Z"
+      },
+      "Frontend/src/components/landing/student/BottomCTA.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:18.753Z"
+      },
+      "Frontend/src/components/landing/student/Features.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:19.131Z"
+      },
+      "Frontend/src/components/landing/student/Footer.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:19.681Z"
+      },
+      "Frontend/src/components/landing/student/Header.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:20.039Z"
+      },
+      "Frontend/src/components/landing/student/Partners.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:20.543Z"
+      },
+      "Frontend/src/components/landing/student/StartupJourney.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:21.014Z"
+      },
+      "Frontend/src/components/landing/student/SuccessStories.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:13:02.511Z"
+      },
+      "Frontend/src/components/landing/student/ValueProps.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:13:02.708Z"
+      },
+      "Frontend/src/utils/csv.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:22.181Z"
+      },
+      "Frontend/src/components/admin/AdminShell.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:22.875Z"
+      },
+      "Frontend/src/components/layout/Sidebar.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:23.566Z"
+      },
+      "Frontend/src/components/company/CompanyShell.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:24.172Z"
+      },
+      "Frontend/src/components/incubator/IncubatorShell.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:24.915Z"
+      },
+      "Frontend/src/components/investor/InvestorShell.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:25.577Z"
+      },
+      "Frontend/src/components/mentor/MentorShell.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:26.051Z"
+      },
+      "Frontend/src/pages/Dashboard.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:12:26.552Z"
+      },
+      "Frontend/src/router.jsx": {
+        "status": "DONE_MERGED",
+        "verdict": "MANUAL_MERGE",
+        "note": "Restored from b34b524 + added new admin verification routes and /unauthorized from main",
+        "updated_at": "2026-08-02T13:17:06.596Z"
+      },
+      "Frontend/src/components/dashboard/DashboardShell.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:01.981Z"
+      },
+      "Frontend/src/main.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:02.553Z"
+      },
+      "Frontend/src/pages/landing/Companies.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:03.164Z"
+      },
+      "Frontend/src/pages/landing/Home.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:03.789Z"
+      },
+      "Frontend/src/pages/landing/Incubator.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:04.265Z"
+      },
+      "Frontend/src/pages/landing/Investor.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:04.942Z"
+      },
+      "Frontend/src/pages/landing/Mentor.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:05.822Z"
+      },
+      "Frontend/src/pages/landing/Student.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:06.426Z"
+      },
+      "Frontend/src/pages/onboarding/complete-profile/Company.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:07.117Z"
+      },
+      "Frontend/src/pages/onboarding/complete-profile/Incubator.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:08.508Z"
+      },
+      "Frontend/src/pages/onboarding/complete-profile/Investor.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:09.238Z"
+      },
+      "Frontend/src/pages/onboarding/complete-profile/Mentor.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:09.948Z"
+      },
+      "Frontend/src/pages/onboarding/complete-profile/Student.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:10.723Z"
+      },
+      "Frontend/src/components/landing/FAQ.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:11.155Z"
+      },
+      "Frontend/src/components/landing/Hero.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:11.898Z"
+      },
+      "Frontend/src/components/landing/Stories.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:12.390Z"
+      },
+      "Frontend/src/components/landing/incubator/FinalCTA.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:13.035Z"
+      },
+      "Frontend/src/components/landing/incubator/Stats.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:13.632Z"
+      },
+      "Frontend/src/components/landing/investor/CTA.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:14.119Z"
+      },
+      "Frontend/src/components/landing/investor/Hero.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:14.777Z"
+      },
+      "Frontend/src/components/landing/mentor/CTA.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:15.207Z"
+      },
+      "Frontend/src/components/landing/student/Hero.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:15.793Z"
+      },
+      "Frontend/src/components/auth/PasswordStrengthMeter.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:12.604Z"
+      },
+      "Frontend/src/components/auth/RoleCard.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:12.725Z"
+      },
+      "Frontend/src/components/auth/RoleSignupForm.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:16.627Z"
+      },
+      "Frontend/src/components/company/ApplicantTable.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:12.838Z"
+      },
+      "Frontend/src/components/company/OpportunitiesTable.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:12.958Z"
+      },
+      "Frontend/src/components/company/PostOpportunityStepper.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:13.076Z"
+      },
+      "Frontend/src/components/company/RightPanel.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:13.206Z"
+      },
+      "Frontend/src/components/company/StatsRow.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:13.320Z"
+      },
+      "Frontend/src/components/layout/PublicNav.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:13.436Z"
+      },
+      "Frontend/src/components/onboarding/CheckboxPills.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:13.550Z"
+      },
+      "Frontend/src/components/onboarding/RadioPills.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:13.655Z"
+      },
+      "Frontend/src/components/onboarding/TagInput.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:13.785Z"
+      },
+      "Frontend/src/components/ui/Badge.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:13.917Z"
+      },
+      "Frontend/src/components/ui/Button.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:14.045Z"
+      },
+      "Frontend/src/components/ui/Card.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:14.158Z"
+      },
+      "Frontend/src/components/ui/ComingSoon.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:14.274Z"
+      },
+      "Frontend/src/components/ui/DataTable.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:14.384Z"
+      },
+      "Frontend/src/components/ui/Input.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:14.503Z"
+      },
+      "Frontend/src/components/ui/Logo.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:14.623Z"
+      },
+      "Frontend/src/components/ui/Modal.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:14.753Z"
+      },
+      "Frontend/src/components/ui/ThemeProvider.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:14.870Z"
+      },
+      "Frontend/src/components/ui/ThemeToggle.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:15.000Z"
+      },
+      "Frontend/src/layouts/AuthLayout.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:15.149Z"
+      },
+      "Frontend/src/pages/BuildStartupJourney.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main removed errorMsg state and error display UI",
+        "updated_at": "2026-08-02T13:15:26.883Z"
+      },
+      "Frontend/src/pages/auth/Login.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Kept current HEAD version",
+        "updated_at": "2026-08-02T13:12:17.160Z"
+      },
+      "Frontend/src/pages/auth/StudentSignup.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main changed autocomplete->select type and removed fetch error state",
+        "updated_at": "2026-08-02T13:15:27.253Z"
+      },
+      "Frontend/src/pages/onboarding/ApplicationRejected.jsx": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only quote style reformatting, no functional changes",
+        "updated_at": "2026-08-02T13:15:15.287Z"
+      },
+      "Frontend/src/pages/onboarding/VerificationProgress.jsx": {
+        "status": "DONE_RESTORED",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main removed errorMsg state and AlertCircle error display",
+        "updated_at": "2026-08-02T13:15:27.044Z"
+      }
+    }
+  },
+  "backend": {
+    "status": "IN_PROGRESS",
+    "agent_id": null,
+    "files": {
+      "Backend/controllers/auditLog.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:58.598Z"
+      },
+      "Backend/cron/archiveLogs.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Restored from b34b524",
+        "updated_at": "2026-08-02T13:11:58.992Z"
+      },
+      "Backend/routes/auditLog.routes.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Was deleted by main, restored from b34b524",
+        "updated_at": "2026-08-02T13:17:17.678Z"
+      },
+      "Backend/tests/controllers/adminChapterEvents.test.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "DELETED by main - 137 lines",
+        "updated_at": "2026-08-02T13:12:32.556Z"
+      },
+      "Backend/tests/controllers/auditLog.test.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "DELETED by main - 128 lines",
+        "updated_at": "2026-08-02T13:12:32.587Z"
+      },
+      "Backend/tests/controllers/opportunity.test.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "DELETED by main - 128 lines",
+        "updated_at": "2026-08-02T13:12:32.617Z"
+      },
+      "Backend/tests/controllers/settings.test.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "DELETED by main - 260 lines",
+        "updated_at": "2026-08-02T13:12:32.646Z"
+      },
+      "Backend/routes/mvpReview.routes.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "27->17 lines, routes stripped",
+        "updated_at": "2026-08-02T13:12:32.680Z"
+      },
+      "Backend/routes/stage3.routes.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "25->15 lines, routes stripped",
+        "updated_at": "2026-08-02T13:12:32.712Z"
+      },
+      "Backend/seeds/adminSeed.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "106->62 lines, seed data stripped",
+        "updated_at": "2026-08-02T13:12:32.746Z"
+      },
+      "Backend/utils/chapterAssignment.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "51->41 lines, logic stripped",
+        "updated_at": "2026-08-02T13:12:32.765Z"
+      },
+      "Backend/utils/startupJourney.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "80->62 lines, logic stripped",
+        "updated_at": "2026-08-02T13:12:32.805Z"
+      },
+      "Backend/utils/validationStageUtils.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "162->152 lines, minor stripping",
+        "updated_at": "2026-08-02T13:12:32.832Z"
+      },
+      "Backend/controllers/traction.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "781->636 lines, -145 lines of logic removed",
+        "updated_at": "2026-08-02T13:12:32.858Z"
+      },
+      "Backend/controllers/validation.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "825->735 lines, -90 lines removed",
+        "updated_at": "2026-08-02T13:12:32.907Z"
+      },
+      "Backend/controllers/launch.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "705->570 lines, -135 lines removed",
+        "updated_at": "2026-08-02T13:12:32.946Z"
+      },
+      "Backend/controllers/studentFreelancing.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "755->632 lines, -123 lines removed",
+        "updated_at": "2026-08-02T13:12:32.984Z"
+      },
+      "Backend/controllers/investorChat.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "366->297 lines, -69 lines removed",
+        "updated_at": "2026-08-02T13:12:33.031Z"
+      },
+      "Backend/controllers/incubation.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "488->428 lines, -60 lines removed",
+        "updated_at": "2026-08-02T13:12:33.074Z"
+      },
+      "Backend/controllers/auth.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "RESTORE_YOURS",
+        "note": "Main removed super_admin from login redirect. CRITICAL.",
+        "updated_at": "2026-08-02T13:12:33.106Z"
+      },
+      "Backend/controllers/adminDashboard.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Main: 605 vs yours: 256 - main merged admin sub-controllers",
+        "updated_at": "2026-08-02T13:12:33.108Z"
+      },
+      "Backend/controllers/meeting.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Main: 84 vs yours: 40 - main added functionality",
+        "updated_at": "2026-08-02T13:12:33.110Z"
+      },
+      "Backend/utils/cookies.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Main version larger (70 vs 45 lines)",
+        "updated_at": "2026-08-02T13:12:33.111Z"
+      },
+      "Backend/utils/validators.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Main version larger (854 vs 814 lines)",
+        "updated_at": "2026-08-02T13:12:33.134Z"
+      },
+      "Backend/middlewares/adminAuth.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "New file from main (adminAuth middleware)",
+        "updated_at": "2026-08-02T13:12:33.136Z"
+      },
+      "Backend/middlewares/requireAuth.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Main fixed: catch {} -> catch (error) linting fix",
+        "updated_at": "2026-08-02T13:12:33.138Z"
+      },
+      "Backend/server.js": {
+        "status": "DONE_MERGED",
+        "verdict": "MANUAL_MERGE",
+        "note": "Main removed settingsRoutes, auditLogRoutes, initCronJobs(). Need to restore these 3 sections."
+      },
+      "Backend/routes/admin.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Changed protect->adminAuth (new middleware), also removed unused imports - intentional refactor",
+        "updated_at": "2026-08-02T13:18:39.748Z"
+      },
+      "Backend/routes/adminDashboard.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "Main added more routes (41->57, API 5->12). Main improvements.",
+        "updated_at": "2026-08-02T13:12:33.140Z"
+      },
+      "Backend/routes/atior.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc file-level comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:39.876Z"
+      },
+      "Backend/routes/chat.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "KEEP_MAIN",
+        "note": "73->87 lines, API 7->14. Main added more routes.",
+        "updated_at": "2026-08-02T13:12:33.142Z"
+      },
+      "Backend/routes/incubation.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:40.024Z"
+      },
+      "Backend/routes/investor.routes.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main removed conversation routes (/conversations/:id, /messages)",
+        "updated_at": "2026-08-02T13:18:19.111Z"
+      },
+      "Backend/routes/investorPitch.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only trailing comma change",
+        "updated_at": "2026-08-02T13:18:40.152Z"
+      },
+      "Backend/routes/launch.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:40.279Z"
+      },
+      "Backend/routes/mentor.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main added new schema imports (sendMessageSchema, searchChatsQuerySchema) - improvement",
+        "updated_at": "2026-08-02T13:18:40.420Z"
+      },
+      "Backend/routes/mvpSubmission.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:40.550Z"
+      },
+      "Backend/routes/productType.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:40.678Z"
+      },
+      "Backend/routes/profile.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only trailing whitespace changes",
+        "updated_at": "2026-08-02T13:18:40.783Z"
+      },
+      "Backend/routes/studentFreelancing.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor formatting only (trailing comma, whitespace)",
+        "updated_at": "2026-08-02T13:18:40.896Z"
+      },
+      "Backend/routes/studentInvestor.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only trailing comma change",
+        "updated_at": "2026-08-02T13:18:41.020Z"
+      },
+      "Backend/routes/studentPitch.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only trailing comma change",
+        "updated_at": "2026-08-02T13:18:41.136Z"
+      },
+      "Backend/routes/traction.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:41.300Z"
+      },
+      "Backend/routes/validation.routes.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:41.437Z"
+      },
+      "Backend/controllers/admin.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main removed getResourceList helper function used by routes",
+        "updated_at": "2026-08-02T13:18:19.489Z"
+      },
+      "Backend/controllers/atior.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:41.585Z"
+      },
+      "Backend/controllers/chat.controller.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main removed null-safety checks (.mentor_id && ...) - regression",
+        "updated_at": "2026-08-02T13:18:19.286Z"
+      },
+      "Backend/controllers/companyOpportunity.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Cascade delete refactored (explicit call vs hook) - main version equivalent",
+        "updated_at": "2026-08-02T13:18:41.732Z"
+      },
+      "Backend/controllers/incubationApplication.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSON formatting change (method chaining)",
+        "updated_at": "2026-08-02T13:18:41.856Z"
+      },
+      "Backend/controllers/investorDiscovery.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main added chapter filter to search - improvement",
+        "updated_at": "2026-08-02T13:18:41.983Z"
+      },
+      "Backend/controllers/mentorDashboard.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main added missing ChatRoom model require - improvement",
+        "updated_at": "2026-08-02T13:18:42.113Z"
+      },
+      "Backend/controllers/mvpReview.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:42.240Z"
+      },
+      "Backend/controllers/mvpSubmission.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:42.374Z"
+      },
+      "Backend/controllers/notification.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only trailing comma change",
+        "updated_at": "2026-08-02T13:18:42.494Z"
+      },
+      "Backend/controllers/pitchSubmission.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only formatting change (destructuring layout), no functional change",
+        "updated_at": "2026-08-02T13:18:42.636Z"
+      },
+      "Backend/controllers/productType.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:42.783Z"
+      },
+      "Backend/controllers/profile.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSON formatting (method chaining to inline)",
+        "updated_at": "2026-08-02T13:18:42.924Z"
+      },
+      "Backend/controllers/stage3Overview.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only JSDoc comments stripped, no functional change",
+        "updated_at": "2026-08-02T13:18:43.050Z"
+      },
+      "Backend/controllers/startupProgress.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main updated status field names to match schema update",
+        "updated_at": "2026-08-02T13:18:43.181Z"
+      },
+      "Backend/controllers/student.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor _next->next rename, improved formatting",
+        "updated_at": "2026-08-02T13:18:43.303Z"
+      },
+      "Backend/controllers/studentInvestor.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Only formatting change (method chaining to inline)",
+        "updated_at": "2026-08-02T13:18:43.424Z"
+      },
+      "Backend/controllers/submission.controller.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main added new fields (solution/target_audience etc) and request_changes status - improvement",
+        "updated_at": "2026-08-02T13:18:43.545Z"
+      },
+      "Backend/services/cascadeService.js": {
+        "status": "DONE_RESTORED",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main removed AuditLog/UserSession/AdminNotificationSetting cascade deletions",
+        "updated_at": "2026-08-02T13:18:19.663Z"
+      },
+      "Backend/services/chatRoomService.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main added participantAlias logic - improvement",
+        "updated_at": "2026-08-02T13:18:43.679Z"
+      },
+      "Backend/tests/admin.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Changed protect mock to adminAuth mock - matches new middleware",
+        "updated_at": "2026-08-02T13:19:22.608Z"
+      },
+      "Backend/tests/cascadeDelete.comprehensive.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor var rename only",
+        "updated_at": "2026-08-02T13:19:22.737Z"
+      },
+      "Backend/tests/cascadeDelete.integration.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor var rename only",
+        "updated_at": "2026-08-02T13:19:22.877Z"
+      },
+      "Backend/tests/controllers/activityLog.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor var rename (_student2Jwt -> student2Jwt)",
+        "updated_at": "2026-08-02T13:19:23.105Z"
+      },
+      "Backend/tests/controllers/admin.transactions.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor formatting changes",
+        "updated_at": "2026-08-02T13:19:23.235Z"
+      },
+      "Backend/tests/controllers/adminChapterChange.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Updated to use ADMIN_API_KEY auth instead of token - matches new adminAuth middleware",
+        "updated_at": "2026-08-02T13:19:23.366Z"
+      },
+      "Backend/tests/controllers/chat.transactions.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor var rename only",
+        "updated_at": "2026-08-02T13:19:23.495Z"
+      },
+      "Backend/tests/controllers/companyApplication.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Trivial change",
+        "updated_at": "2026-08-02T13:19:23.608Z"
+      },
+      "Backend/tests/controllers/dashboard.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Trivial change",
+        "updated_at": "2026-08-02T13:19:23.737Z"
+      },
+      "Backend/tests/controllers/incubatorDiscovery.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor changes",
+        "updated_at": "2026-08-02T13:19:23.863Z"
+      },
+      "Backend/tests/controllers/investorDiscovery.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor changes",
+        "updated_at": "2026-08-02T13:19:23.992Z"
+      },
+      "Backend/tests/controllers/meeting.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Trivial change",
+        "updated_at": "2026-08-02T13:19:24.130Z"
+      },
+      "Backend/tests/controllers/mentorProfile.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Trivial change",
+        "updated_at": "2026-08-02T13:19:24.274Z"
+      },
+      "Backend/tests/controllers/notification.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor changes",
+        "updated_at": "2026-08-02T13:19:24.399Z"
+      },
+      "Backend/tests/controllers/profile.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Trivial change",
+        "updated_at": "2026-08-02T13:19:24.515Z"
+      },
+      "Backend/tests/controllers/startupProgress.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Trivial change",
+        "updated_at": "2026-08-02T13:19:24.655Z"
+      },
+      "Backend/tests/controllers/student.reviews.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Minor changes",
+        "updated_at": "2026-08-02T13:19:24.788Z"
+      },
+      "Backend/tests/controllers/studentFreelancing.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Renamed _prefixed vars, no functional change",
+        "updated_at": "2026-08-02T13:19:24.950Z"
+      },
+      "Backend/tests/controllers/submission.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Trivial change",
+        "updated_at": "2026-08-02T13:19:25.068Z"
+      },
+      "Backend/tests/fullJourney.integration.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Renamed _prefixed vars + used DUMMY_SECRET instead of real-looking key",
+        "updated_at": "2026-08-02T13:19:25.215Z"
+      },
+      "Backend/tests/incubationRemediation.test.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Trivial change",
+        "updated_at": "2026-08-02T13:19:25.393Z"
+      },
+      "Backend/tests/setup.js": {
+        "status": "DONE_KEPT_MAIN",
+        "verdict": "MANUAL_REVIEW",
+        "note": "Main improved: safer URI regex handling + faster dropDatabase() vs deleteMany loop",
+        "updated_at": "2026-08-02T13:19:25.540Z"
+      }
+    }
+  }
+}

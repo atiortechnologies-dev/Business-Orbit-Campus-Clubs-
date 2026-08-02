@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Lock, Shield, Eye, EyeOff } from "lucide-react";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import PasswordStrengthMeter from "@/components/auth/PasswordStrengthMeter";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import api from "@/api/axiosInstance";
 
 function computeStrength(password) {
   if (!password) return 0;
@@ -37,6 +38,9 @@ function EyeToggle({ show, onToggle }) {
 export default function ResetPasswordPage() {
   useDocumentTitle("Reset Password — BOCC");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get("email");
+  const token = searchParams.get("token");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
@@ -65,17 +69,28 @@ export default function ResetPasswordPage() {
     }
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setConfirmTouched(true);
     const err = validateConfirm(confirmPassword);
     setConfirmError(err);
     if (!err && newPassword.length >= 8) {
-      // TODO(backend): replace with a real POST /api/auth/reset-password
-      // call, sending newPassword (and whatever reset token got the user
-      // here). On success this redirect to /login stays the same; on
-      // failure, surface the API's error via confirmError instead.
-      navigate("/login");
+      if (!email || !token) {
+        setConfirmError("Invalid password reset link.");
+        return;
+      }
+      try {
+        await api.post("/auth/reset-password", {
+          email,
+          reset_token: token,
+          new_password: newPassword,
+        });
+        navigate("/login");
+      } catch (err) {
+        setConfirmError(
+          err.response?.data?.message || "Failed to reset password",
+        );
+      }
     }
   }
 

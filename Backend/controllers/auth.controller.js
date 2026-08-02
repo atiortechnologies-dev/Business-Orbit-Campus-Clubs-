@@ -410,7 +410,7 @@ const login = asyncHandler(async (req, res) => {
 
   // 6. Determine target redirect URL dynamically (with Admin override)
   const redirectTo =
-    user.role === "admin"
+    (user.role === "admin" || user.role === "super_admin")
       ? "/admin"
       : user.profile_status === "not_started"
         ? `/onboarding/complete-profile/${user.role}`

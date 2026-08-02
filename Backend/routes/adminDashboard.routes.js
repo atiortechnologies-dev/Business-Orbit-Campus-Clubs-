@@ -5,7 +5,11 @@ const { validateRequest } = require("../middlewares/validateRequest");
 const adminDashboardController = require("../controllers/adminDashboard.controller");
 const { createAnnouncementSchema } = require("../utils/validators");
 
-router.use(protect, requireRole("admin"));
+router.use(protect, requireRole(["admin", "super_admin"]));
+
+// --- Overview & Updates ---
+router.get("/overview", adminDashboardController.getOverview);
+router.get("/updates", adminDashboardController.getUpdates);
 
 // --- Announcement Screen ---
 
