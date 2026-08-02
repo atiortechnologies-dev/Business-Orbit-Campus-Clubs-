@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   Download,
   Zap,
@@ -15,53 +16,9 @@ import StatCard from "@/components/ui/StatCard";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { downloadCsv } from "@/utils/csv";
+import { getReviewQueue } from "@/api/admin/adminStartupReviewApi";
 
-const SUBMISSIONS = [
-  {
-    id: "s1",
-    name: "Lumina AI",
-    founder: "Sarah Jenkins",
-    chapter: "Stanford Chapter",
-    stage: "MVP",
-    date: "2024-10-24",
-    reviewer: "Alex Rivera",
-    priority: "High",
-    status: "Pending",
-  },
-  {
-    id: "s2",
-    name: "EcoFlow",
-    founder: "Mark Zuberi",
-    chapter: "MIT Tech Hub",
-    stage: "Traction",
-    date: "2024-10-23",
-    reviewer: "Priya Sharma",
-    priority: "Medium",
-    status: "Under Review",
-  },
-  {
-    id: "s3",
-    name: "BlockDocs",
-    founder: "Elena Rodriguez",
-    chapter: "UC Berkeley",
-    stage: "Idea",
-    date: "2024-10-23",
-    reviewer: "Alex Rivera",
-    priority: "Low",
-    status: "Pending",
-  },
-  {
-    id: "s4",
-    name: "StitchPoint",
-    founder: "James Chen",
-    chapter: "UT Austin",
-    stage: "Validation",
-    date: "2024-10-22",
-    reviewer: "Jessica Wu",
-    priority: "High",
-    status: "Under Review",
-  },
-];
+
 
 const PRIORITY_VARIANT = { High: "error", Medium: "warning", Low: "neutral" };
 const STATUS_VARIANT = { Pending: "info", "Under Review": "warning" };
@@ -69,6 +26,24 @@ const STATUS_VARIANT = { Pending: "info", "Under Review": "warning" };
 export default function ReviewQueuePage() {
   useDocumentTitle("Stage Approval Queue — BOCC Admin");
   const navigate = useNavigate();
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQueue = async () => {
+      try {
+        const res = await getReviewQueue();
+        if (res.data?.success) {
+          setSubmissions(res.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch review queue", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQueue();
+  }, []);
 
   const columns = [
     {
@@ -163,7 +138,7 @@ export default function ReviewQueuePage() {
                   { key: "priority", label: "Priority" },
                   { key: "status", label: "Status" },
                 ],
-                SUBMISSIONS,
+                submissions,
               )
             }
             className="flex items-center gap-1.5 bg-surface-white border border-border-subtle px-4 py-2 rounded-lg text-text-heading font-poppins font-semibold text-small hover:bg-canvas-bg transition-colors"
@@ -203,13 +178,13 @@ export default function ReviewQueuePage() {
 
       <DataTable
         columns={columns}
-        rows={SUBMISSIONS}
-        onRowClick={() => navigate("/admin/reviews/detail")}
-        emptyMessage="No submissions in the queue."
+        rows={submissions}
+        onRowClick={(row) => navigate(`/admin/reviews/detail?id=${row.id}`)}
+        emptyMessage={loading ? "Loading submissions..." : "No submissions in the queue."}
       />
       <div className="flex justify-between items-center mt-4">
         <span className="font-inter text-small text-text-muted">
-          Showing 1-4 of 42 submissions
+          Showing 1-{submissions.length} of {submissions.length} submissions
         </span>
       </div>
     </AdminShell>

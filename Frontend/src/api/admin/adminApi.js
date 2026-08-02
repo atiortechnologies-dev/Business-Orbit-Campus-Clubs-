@@ -25,14 +25,24 @@ export const adminStatsApi = {
 };
 
 export const adminChapterApi = {
-  getChangeRequests: () => api.get("/chapter-change-requests"),
+  getChapters: () => api.get("/admin/chapters"),
+  getChangeRequests: () => api.get("/admin/chapter-change-requests"),
   approveChangeRequest: (id) =>
-    api.put(`/chapter-change-requests/${id}/approve`),
-  rejectChangeRequest: (id) => api.put(`/chapter-change-requests/${id}/reject`),
-  bulkApproveRequests: (data) => api.post("/bulk-approve", data),
+    api.put(`/admin/chapter-change-requests/${id}/approve`),
+  rejectChangeRequest: (id) => api.put(`/admin/chapter-change-requests/${id}/reject`),
+  bulkApproveRequests: (data) => api.post("/admin/chapter-change-requests/bulk-approve", data),
 };
 
 export const adminUserApi = {
   getUsers: () => api.get("/admin/users"),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
 };
+
+export const adminChapterDetailApi = {
+  getOverview: (id) => api.get(`/admin/chapters/${id}/overview`),
+  getStudents: (id) => api.get(`/admin/chapters/${id}/students`),
+  getStartups: (id) => api.get(`/admin/chapters/${id}/startups`),
+  getEvents: (id) => api.get(`/admin/chapters/${id}/events`),
+  assignLead: (id, data) => api.put(`/admin/chapters/${id}/assign-lead`, data),
+};
+

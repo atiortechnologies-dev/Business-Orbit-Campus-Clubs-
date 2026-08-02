@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { ChevronsLeft, ChevronsRight } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { ChevronsLeft, ChevronsRight, LogOut } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
 
@@ -13,9 +14,6 @@ import Logo from "@/components/ui/Logo";
 // prop since each portal's link list is genuinely feature-specific.
 export default function Sidebar({
   navItems,
-  footerInitials,
-  footerName,
-  footerRole,
   children,
   isOpen = false,
   onClose = () => {},
@@ -25,6 +23,17 @@ export default function Sidebar({
   onToggleCollapse = () => {},
 }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
+    window.dispatchEvent(new Event("auth:logout"));
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   // Escape closes the drawer — only matters below `lg`, but harmless to
   // register unconditionally since `onClose` no-ops when nothing's using
@@ -107,7 +116,7 @@ export default function Sidebar({
           </div>
         </div>
 
-        <nav className="flex-1 space-y-1">
+        <nav className="flex-1 overflow-y-auto min-h-0 space-y-1 pb-4">
           {navItems.map(({ icon: Icon, label, href, real }) => {
             const isActive = real && href === activeHref;
             const itemClasses = `flex items-center gap-3 py-3 transition-all duration-200 ${
@@ -175,7 +184,7 @@ export default function Sidebar({
           type="button"
           onClick={onToggleCollapse}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          className={`hidden lg:flex items-center gap-2 mx-4 mb-4 py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors ${
+          className={`hidden lg:flex items-center gap-2 mx-4 mb-2 py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors ${
             collapsed ? "justify-center px-0" : "px-3"
           } ${children ? "" : "mt-auto"}`}
         >
@@ -189,30 +198,20 @@ export default function Sidebar({
           </span>
         </button>
 
-        {/* User card. TODO(backend): swap initials/name/role for the
-          authenticated user's real profile data once auth/session state
-          exists — the surrounding structure/classes are intentional and
-          shouldn't need to change, only these three values need to become
-          dynamic. Collapses to just the initials circle. */}
-        <div className="px-4">
-          <div
-            className={`bg-white/5 rounded-xl border border-white/10 flex items-center gap-3 ${collapsed ? "lg:p-0 lg:justify-center lg:bg-transparent lg:border-none p-3" : "p-3"}`}
-          >
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center font-bold text-white text-xs select-none shrink-0">
-              {footerInitials}
-            </div>
-            <div
-              className={`flex flex-col min-w-0 ${collapsed ? "lg:hidden" : ""}`}
-            >
-              <span className="font-poppins font-semibold text-small text-white truncate">
-                {footerName}
-              </span>
-              <span className="font-inter text-caption text-white/60 truncate">
-                {footerRole}
-              </span>
-            </div>
-          </div>
-        </div>
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className={`flex items-center gap-3 mx-4 mb-4 py-2 rounded-lg text-white/70 hover:text-red-400 hover:bg-red-500/10 transition-colors ${
+            collapsed ? "justify-center px-0 lg:px-0" : "px-3"
+          }`}
+          title={collapsed ? "Logout" : undefined}
+        >
+          <LogOut size={18} strokeWidth={2} />
+          <span className={`font-poppins font-medium text-body ${collapsed ? "lg:hidden" : ""}`}>
+            Logout
+          </span>
+        </button>
+
       </aside>
     </>
   );

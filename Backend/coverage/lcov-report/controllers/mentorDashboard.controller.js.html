@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40.74% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>11/27</span>
+                <span class='fraction'>0/26</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>11/25</span>
+                <span class='fraction'>0/24</span>
             </div>
         
             
@@ -199,24 +199,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -254,7 +254,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -286,7 +286,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -316,7 +316,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -329,24 +329,24 @@
  * @architecture Controller layer providing summary APIs to feed the mentor dashboard UI.
  */
 &nbsp;
-const asyncHandler = require("../middlewares/asyncHandler");
-const MentorAssignment = require("../models/MentorAssignment");
-const MentorRequest = require("../models/MentorRequest");
-const MentorMeeting = require("../models/MentorMeeting");
-const ChatRoom = require("../models/ChatRoom");
-const { getHydratedChatRooms } = require("../services/chatRoomService");
+const asyncHandler = <span class="cstat-no" title="statement not covered" >require("../middlewares/asyncHandler");</span>
+const MentorAssignment = <span class="cstat-no" title="statement not covered" >require("../models/MentorAssignment");</span>
+const MentorRequest = <span class="cstat-no" title="statement not covered" >require("../models/MentorRequest");</span>
+const MentorMeeting = <span class="cstat-no" title="statement not covered" >require("../models/MentorMeeting");</span>
+&nbsp;
+const { getHydratedChatRooms } = <span class="cstat-no" title="statement not covered" >require("../services/chatRoomService");</span>
 const {
   REQUEST_STATUS,
   ASSIGNMENT_STATUS,
   MEETING_STATUS,
-} = require("../constants/statusConstants");
+} = <span class="cstat-no" title="statement not covered" >require("../constants/statusConstants");</span>
 &nbsp;
 /**
  * @desc    Get dashboard summary counters
  * @route   GET /api/mentor/dashboard
  * @access  Private (Mentor)
  */
-exports.getDashboardSummary = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+<span class="cstat-no" title="statement not covered" >exports.getDashboardSummary = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {</span>
   const mentorId = <span class="cstat-no" title="statement not covered" >req.user._id;</span>
 &nbsp;
   const [activeStudents, pendingRequests, upcomingMeetings, completedSessions] =
@@ -384,7 +384,7 @@ exports.getDashboardSummary = asyncHandler(<span class="fstat-no" title="functio
  * @route   GET /api/mentor/requests/recent
  * @access  Private (Mentor)
  */
-exports.getRecentRequests = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+<span class="cstat-no" title="statement not covered" >exports.getRecentRequests = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {</span>
   const mentorId = <span class="cstat-no" title="statement not covered" >req.user._id;</span>
 &nbsp;
   const requests = <span class="cstat-no" title="statement not covered" >await MentorRequest.find({</span>
@@ -416,7 +416,7 @@ exports.getRecentRequests = asyncHandler(<span class="fstat-no" title="function 
  * @route   GET /api/mentor/meetings/upcoming
  * @access  Private (Mentor)
  */
-exports.getUpcomingMeetings = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+<span class="cstat-no" title="statement not covered" >exports.getUpcomingMeetings = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {</span>
   const mentorId = <span class="cstat-no" title="statement not covered" >req.user._id;</span>
 &nbsp;
   const meetings = <span class="cstat-no" title="statement not covered" >await MentorMeeting.find({</span>
@@ -446,7 +446,7 @@ exports.getUpcomingMeetings = asyncHandler(<span class="fstat-no" title="functio
  * @route   GET /api/mentor/chats/recent
  * @access  Private (Mentor)
  */
-exports.getRecentConversations = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
+<span class="cstat-no" title="statement not covered" >exports.getRecentConversations = asyncHandler(<span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {</span>
   const mentorId = <span class="cstat-no" title="statement not covered" >req.user._id;</span>
 &nbsp;
   const chatRooms = <span class="cstat-no" title="statement not covered" >await getHydratedChatRooms(mentorId, "mentor", 10);</span>
@@ -460,7 +460,7 @@ exports.getRecentConversations = asyncHandler(<span class="fstat-no" title="func
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-28T09:37:19.438Z
+                at 2026-08-01T23:32:15.339Z
             </div>
         <script src="../prettify.js"></script>
         <script>

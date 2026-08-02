@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -28,6 +29,8 @@ const NAV_ITEMS = [
 // footer, shared Sidebar) — see DashboardShell.jsx for the original
 // reasoning.
 export default function MentorShell({ children }) {
+  const { user } = useAuth();
+  const initials = user?.full_name ? user.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : user?.first_name ? (user.first_name[0] + (user.last_name ? user.last_name[0] : '')).toUpperCase() : user?.name ? user.name.substring(0,2).toUpperCase() : '??';
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, onToggleCollapse] = useSidebarCollapsed();
 
@@ -35,9 +38,6 @@ export default function MentorShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="PA"
-        footerName="Priya Anand"
-        footerRole="Senior Mentor"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -96,7 +96,7 @@ export default function MentorShell({ children }) {
               <ThemeToggle size={20} className="block" />
               <ComingSoon label="User" position="bottom" inline>
                 <div className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
-                  PA
+                  {initials}
                 </div>
               </ComingSoon>
             </div>

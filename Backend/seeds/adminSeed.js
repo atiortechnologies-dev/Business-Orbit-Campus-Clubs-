@@ -9,26 +9,68 @@
  * Architecture relevance: Used during initial setup or deployment to ensure there is at least one admin user in the system to manage other entities.
  */
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const { hashPassword } = require("../utils/password");
 const dotenv = require("dotenv");
 const User = require("../models/User");
+const readline = require("readline");
 
 dotenv.config();
 
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const askQuestion = (query) => {
+  return new Promise((resolve) => rl.question(query, resolve));
+};
+
 const seedAdmin = async () => {
   try {
+    // Parse command line arguments
+    const args = process.argv.slice(2);
+    let argEmail, argPassword, argName;
+
+    for (let i = 0; i < args.length; i++) {
+      if (args[i] === "--email" || args[i] === "-e") argEmail = args[i + 1];
+      if (args[i] === "--password" || args[i] === "-p") argPassword = args[i + 1];
+      if (args[i] === "--name" || args[i] === "-n") argName = args[i + 1];
+    }
+
+    // Determine values with priority: Args -> Prompt
+    let adminEmail = argEmail;
+    let adminPassword = argPassword;
+    let adminName = argName || "Super Admin";
+
+    // Ask for missing required fields
+    if (!adminEmail) {
+      const emailInput = await askQuestion("Enter super_admin email: ");
+      adminEmail = emailInput.trim();
+    }
+
+    if (!adminPassword) {
+      const pwdInput = await askQuestion("Enter super_admin password: ");
+      adminPassword = pwdInput.trim();
+    }
+
+    if (!argName) {
+      const nameInput = await askQuestion(`Enter super_admin full name [${adminName}]: `);
+      if (nameInput.trim()) {
+        adminName = nameInput.trim();
+      }
+    }
+
+    rl.close();
+
+    if (!adminEmail || !adminPassword || !adminName) {
+      console.error("Missing required inputs for super_admin creation.");
+      process.exit(1);
+    }
+
     await mongoose.connect(
       process.env.MONGODB_URI || "mongodb://localhost:27017/bocc",
     );
     console.log("MongoDB Connected for seeding.");
-
-    const adminEmail = process.env.ADMIN_EMAIL;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-
-    if (!adminEmail || !adminPassword) {
-      console.error("Please define ADMIN_EMAIL and ADMIN_PASSWORD in .env");
-      process.exit(1);
-    }
 
     const existingAdmin = await User.findOne({ email: adminEmail });
     if (existingAdmin) {
@@ -36,25 +78,27 @@ const seedAdmin = async () => {
       process.exit(0);
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(adminPassword, salt);
+    const hashedPassword = await hashPassword(adminPassword);
 
     const adminUser = new User({
-      role: "admin",
+      full_name: adminName,
+      role: "super_admin",
       email: adminEmail,
-      password: hashedPassword,
-      status: "approved",
-      emailVerified: true,
+      password_hash: hashedPassword,
+      account_status: "active",
+      email_verified: true,
     });
 
     await adminUser.save();
-    console.log(`Admin user ${adminEmail} seeded successfully!`);
+    console.log(`Super Admin user '${adminName}' (${adminEmail}) seeded successfully!`);
   } catch (error) {
     console.error(`Error seeding admin: ${error.message}`);
     process.exit(1);
   } finally {
-    await mongoose.connection.close();
-    console.log("MongoDB connection closed.");
+    if (mongoose.connection.readyState !== 0) {
+      await mongoose.connection.close();
+      console.log("MongoDB connection closed.");
+    }
   }
 };
 

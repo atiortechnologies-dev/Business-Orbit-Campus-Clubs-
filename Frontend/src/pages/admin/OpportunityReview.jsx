@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ChevronRight,
   Terminal,
@@ -13,7 +13,7 @@ import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import api from "@/api/axiosInstance";
+import { adminOpportunityApi } from "@/api/admin/adminOpportunityApi";
 
 const REQUIRED_SKILLS = ["PyTorch", "CUDA", "C++", "Triton"];
 const RESPONSIBILITIES = [
@@ -31,27 +31,52 @@ const CHANGE_REASONS = [
 export default function OpportunityReviewPage() {
   useDocumentTitle("Opportunity Review — BOCC Admin");
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+
+  const [opportunity, setOpportunity] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [openModal, setOpenModal] = useState(null); // 'approve' | 'reject' | 'changes' | null
   const [changeReason, setChangeReason] = useState(CHANGE_REASONS[0]);
+  const [rejectReason, setRejectReason] = useState("");
   const [notes, setNotes] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  async function confirmDecision() {
-    let decisionStr =
-      openModal === "approve"
-        ? "approved"
-        : openModal === "reject"
-          ? "rejected"
-          : "changes_requested";
-    let payload = { decision: decisionStr, reviewerNotes: notes };
-    if (openModal === "changes") payload.changeReason = changeReason;
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+    adminOpportunityApi.getOpportunityDetails(id)
+      .then(res => {
+        setOpportunity(res.data?.data?.opportunity || res.data?.data || res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch opportunity", err);
+        setErrorMsg("Failed to load details");
+        setLoading(false);
+      });
+  }, [id]);
 
+  async function confirmDecision() {
     try {
       setErrorMsg("");
-      // In a real scenario, the ID would be from useParams(). Using 'OP-8821' based on the hardcoded UI.
-      await api.patch(`/admin/opportunities/OP-8821`, payload);
+
+      if (openModal === "approve") {
+        await adminOpportunityApi.approve(id);
+      } else if (openModal === "reject") {
+        if (!rejectReason) {
+          setErrorMsg("Reject reason is required.");
+          return;
+        }
+        await adminOpportunityApi.reject(id, { reason: rejectReason });
+      } else if (openModal === "changes") {
+        await adminOpportunityApi.requestChanges(id, { reason: changeReason, reviewerNotes: notes });
+      }
+
       setOpenModal(null);
       navigate("/admin/opportunities");
     } catch (e) {
@@ -65,6 +90,16 @@ export default function OpportunityReviewPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <AdminShell>
+        <div className="flex items-center justify-center p-12">
+          <span className="font-inter text-text-muted">Loading...</span>
+        </div>
+      </AdminShell>
+    );
+  }
+
   return (
     <AdminShell>
       <nav className="mb-6 flex items-center gap-2 text-text-muted font-inter font-normal text-small">
@@ -75,7 +110,7 @@ export default function OpportunityReviewPage() {
           Opportunities
         </Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <span className="text-text-heading font-semibold">#OP-8821</span>
+        <span className="text-text-heading font-semibold">#{id}</span>
       </nav>
 
       <div className="flex items-center justify-between mb-8">
@@ -84,7 +119,7 @@ export default function OpportunityReviewPage() {
             Opportunity Review
           </h1>
           <p className="font-inter text-caption text-text-muted mt-1">
-            #OP-8821 · <Badge variant="warning">Pending Verification</Badge>
+            #{id} · <Badge variant="warning">{opportunity?.status || "Pending Verification"}</Badge>
           </p>
         </div>
       </div>
@@ -104,34 +139,18 @@ export default function OpportunityReviewPage() {
               <Terminal size={28} strokeWidth={2} className="text-text-muted" />
             </div>
             <h2 className="font-poppins font-semibold text-card text-text-heading mb-1">
-              NeuralFlow AI
+              {opportunity?.company_id?.company_name || "Company Name"}
             </h2>
             <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-4">
-              Deep Tech / ML
+              {opportunity?.company_id?.industry || "Industry"}
             </p>
             <div className="space-y-3">
-              <div>
-                <p className="font-inter text-caption text-text-muted uppercase mb-0.5">
-                  Founded
-                </p>
-                <p className="font-inter text-small text-text-heading">
-                  Jan 2023
-                </p>
-              </div>
-              <div>
-                <p className="font-inter text-caption text-text-muted uppercase mb-0.5">
-                  Team Size
-                </p>
-                <p className="font-inter text-small text-text-heading">
-                  12 Employees
-                </p>
-              </div>
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase mb-0.5">
                   Website
                 </p>
                 <p className="font-inter text-small text-brand-black underline">
-                  neuralflow.ai
+                  {opportunity?.company_id?.website || "N/A"}
                 </p>
               </div>
             </div>
@@ -141,10 +160,7 @@ export default function OpportunityReviewPage() {
               Company Profile
             </h3>
             <p className="font-inter text-small text-text-body leading-relaxed">
-              NeuralFlow is building low-latency inference engines for edge
-              computing. Backed by Y-Combinator and Sequoia, they are scaling
-              their core engineering team to support growing enterprise demands
-              in the autonomous vehicle sector.
+              {opportunity?.company_id?.description || "No company profile available."}
             </p>
           </div>
         </div>
@@ -154,17 +170,14 @@ export default function OpportunityReviewPage() {
           <div className="bg-surface-white border border-border-subtle rounded-lg p-8 shadow-card">
             <div className="mb-6 pb-6 border-b border-divider-line">
               <h2 className="font-poppins font-semibold text-section text-text-heading mb-3">
-                Senior Machine Learning Engineer
+                {opportunity?.title || "Opportunity Title"}
               </h2>
               <div className="flex flex-wrap gap-2">
                 <span className="px-3 py-1 bg-canvas-bg rounded font-inter text-caption font-semibold uppercase text-text-body">
-                  Full-Time
+                  {opportunity?.opportunity_type || "Type"}
                 </span>
                 <span className="px-3 py-1 bg-canvas-bg rounded font-inter text-caption font-semibold uppercase text-text-body">
-                  Engineering
-                </span>
-                <span className="px-3 py-1 bg-canvas-bg rounded font-inter text-caption font-semibold uppercase text-text-body">
-                  Remote (US)
+                  {opportunity?.location || "Location"}
                 </span>
               </div>
             </div>
@@ -174,11 +187,7 @@ export default function OpportunityReviewPage() {
                   Description
                 </h4>
                 <p className="font-inter text-body text-text-body leading-relaxed">
-                  We are looking for a Senior ML Engineer to lead our
-                  optimization efforts. You will be responsible for taking
-                  state-of-the-art transformer models and compressing them for
-                  deployment on ARM-based hardware architectures without
-                  significant loss in precision.
+                  {opportunity?.description || "No description provided."}
                 </p>
               </section>
               <section>
@@ -303,6 +312,15 @@ export default function OpportunityReviewPage() {
             <h3 className="font-poppins font-semibold text-body text-text-heading mb-3">
               Internal Notes
             </h3>
+            {opportunity?.admin_notes && opportunity.admin_notes.length > 0 && (
+              <div className="mb-4 space-y-3">
+                {opportunity.admin_notes.map((note, idx) => (
+                  <div key={idx} className="p-3 bg-canvas-bg rounded-md border border-border-subtle">
+                    <p className="font-inter text-small text-text-body">{note.note || note.text || note}</p>
+                  </div>
+                ))}
+              </div>
+            )}
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -320,11 +338,15 @@ export default function OpportunityReviewPage() {
                 onClick={() => {
                   if (notes.trim()) {
                     setErrorMsg("");
-                    api
-                      .post("/notes", { entityId: "OP-8821", text: notes })
+                    adminOpportunityApi
+                      .addNote(id, { note: notes })
                       .then(() => {
                         setNoteSaved(true);
+                        setNotes("");
                         setTimeout(() => setNoteSaved(false), 2000);
+                        adminOpportunityApi.getOpportunityDetails(id).then(res => {
+                           setOpportunity(res.data?.data?.opportunity || res.data?.data || res.data);
+                        });
                       })
                       .catch((err) => {
                         console.error("Failed to save notes:", err);
@@ -401,10 +423,17 @@ export default function OpportunityReviewPage() {
         onClose={() => setOpenModal(null)}
         title="Reject Opportunity?"
       >
-        <p className="font-inter text-small text-text-body mb-6">
+        <p className="font-inter text-small text-text-body mb-4">
           The posting company will be notified this opportunity was rejected,
           along with your internal notes.
         </p>
+        <textarea
+          value={rejectReason}
+          onChange={(e) => setRejectReason(e.target.value)}
+          placeholder="Reason for rejection (required)..."
+          rows={3}
+          className="w-full bg-canvas-bg border border-border-subtle rounded-md p-3 font-inter text-small text-text-body resize-none focus:outline-none focus:ring-1 focus:ring-brand-black mb-6"
+        />
         <div className="flex justify-end gap-2">
           <Button
             variant="outline"

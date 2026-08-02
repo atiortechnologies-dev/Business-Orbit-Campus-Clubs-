@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -140,23 +140,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -204,30 +198,36 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * @file roleConfig.js
  * @description Centralized configuration mapping user roles to their respective profile models, fields, and routing logic.
  * @architecture Acts as a lookup dictionary used dynamically during onboarding and profile creation.
  */
 &nbsp;
-const StudentProfile = require("../models/StudentProfile");
-const MentorProfile = require("../models/MentorProfile");
-const InvestorProfile = require("../models/InvestorProfile");
-const IncubatorProfile = require("../models/IncubatorProfile");
-const CompanyProfile = require("../models/CompanyProfile");
+const StudentProfile = <span class="cstat-no" title="statement not covered" >require("../models/StudentProfile");</span>
+const MentorProfile = <span class="cstat-no" title="statement not covered" >require("../models/MentorProfile");</span>
+const InvestorProfile = <span class="cstat-no" title="statement not covered" >require("../models/InvestorProfile");</span>
+const IncubatorProfile = <span class="cstat-no" title="statement not covered" >require("../models/IncubatorProfile");</span>
+const CompanyProfile = <span class="cstat-no" title="statement not covered" >require("../models/CompanyProfile");</span>
 &nbsp;
 /**
  * @constant {Object} roleConfig
  * @description Maps role strings to their specific profile model and required configuration details.
  */
-const roleConfig = {
+const roleConfig = <span class="cstat-no" title="statement not covered" >{</span>
   student: {
     ProfileModel: StudentProfile,
     profileFields: ["college", "degree", "graduation_year"],
-    redirectTo: "welcome_to_your_chapter",
+    redirectTo: "/onboarding/welcome",
     initialStatus: "pending_verification",
-    dashboardRedirect: "student_dashboard",
+    dashboardRedirect: "/dashboard",
   },
   mentor: {
     ProfileModel: MentorProfile,
@@ -237,9 +237,9 @@ const roleConfig = {
       "expertise",
       "years_of_experience",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
-    dashboardRedirect: "mentor_dashboard",
+    dashboardRedirect: "/mentor",
   },
   investor: {
     ProfileModel: InvestorProfile,
@@ -249,16 +249,16 @@ const roleConfig = {
       "investment_stage",
       "profile_url",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
-    dashboardRedirect: "investor_dashboard",
+    dashboardRedirect: "/investor",
   },
   incubator: {
     ProfileModel: IncubatorProfile,
     profileFields: ["incubator_name", "organization", "city", "website"],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
-    dashboardRedirect: "incubator_dashboard",
+    dashboardRedirect: "/incubator",
   },
   company: {
     ProfileModel: CompanyProfile,
@@ -269,13 +269,13 @@ const roleConfig = {
       "website",
       "contact_person",
     ],
-    redirectTo: "email_verification",
+    redirectTo: "/onboarding/verify-email",
     initialStatus: "pending_verification",
-    dashboardRedirect: "company_dashboard",
+    dashboardRedirect: "/company/dashboard",
   },
 };
 &nbsp;
-module.exports = roleConfig;
+<span class="cstat-no" title="statement not covered" >module.exports = roleConfig;</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -283,7 +283,7 @@ module.exports = roleConfig;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-28T09:37:19.438Z
+                at 2026-08-01T23:32:15.339Z
             </div>
         <script src="../prettify.js"></script>
         <script>
