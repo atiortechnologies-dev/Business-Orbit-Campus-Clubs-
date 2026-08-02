@@ -92,34 +92,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-=======
-      setLoading(false);
-    }
-  }, []);
-
-  // Clears the httpOnly auth cookies on the backend (frontend JS can't read
-  // or delete them directly) and resets local user state.
-  const logout = useCallback(async () => {
-    try {
-      await logoutUser();
-    } catch {
-      // Even if the request fails, clear local state so the UI reflects
-      // a logged-out user; the cookies will simply expire on their own.
-    } finally {
-      setUser(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchUser({ silent: true });
-  }, [fetchUser]);
-
-  return (
-    <AuthContext.Provider value={{ user, setUser, loading, fetchUser, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
->>>>>>> origin/main
 };
 
 export const useAuth = () => useContext(AuthContext);
