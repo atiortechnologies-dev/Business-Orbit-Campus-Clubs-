@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronRight,
   Bold,
@@ -32,6 +33,7 @@ const CHAR_LIMIT = 2000;
 export default function CreateAnnouncementPage() {
   useDocumentTitle("Create Announcement — BOCC Admin");
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [form, setForm] = useState({
     title: "",
@@ -41,7 +43,6 @@ export default function CreateAnnouncementPage() {
     priority: "Normal",
   });
 
-  const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const update = (field) => (e) =>
@@ -63,6 +64,23 @@ export default function CreateAnnouncementPage() {
   const isBodyValid = form.body.trim().length >= 50;
   const isAudienceValid = form.audience.length > 0;
 
+  const mutation = useMutation({
+    mutationFn: createAnnouncement,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminAnnouncements"] });
+      navigate("/admin/announcements", { replace: true });
+    },
+    onError: (err) => {
+      console.error("Failed to create announcement:", err);
+      setErrorMsg(
+        err?.response?.data?.message || err?.message ||
+          "Failed to create announcement. Please check all fields.",
+      );
+    },
+  });
+
+  const submitting = mutation.isPending;
+
   const canSubmit =
     isTitleValid &&
     isSummaryValid &&
@@ -70,34 +88,21 @@ export default function CreateAnnouncementPage() {
     isAudienceValid &&
     !submitting;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e?.preventDefault();
     if (!canSubmit) return;
 
-    try {
-      setSubmitting(true);
-      setErrorMsg("");
+    setErrorMsg("");
 
-      const payload = {
-        title: form.title.trim(),
-        short_summary: form.summary.trim(),
-        body_content: form.body.trim(),
-        target_audience: form.audience,
-        priority: form.priority,
-      };
+    const payload = {
+      title: form.title.trim(),
+      short_summary: form.summary.trim(),
+      body_content: form.body.trim(),
+      target_audience: form.audience,
+      priority: form.priority,
+    };
 
-      await createAnnouncement(payload);
-
-      navigate("/admin/announcements", { replace: true });
-    } catch (err) {
-      console.error("Failed to create announcement:", err);
-      setErrorMsg(
-        err?.message ||
-          "Failed to create announcement. Please check all fields.",
-      );
-    } finally {
-      setSubmitting(false);
-    }
+    mutation.mutate(payload);
   };
 
   return (

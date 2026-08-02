@@ -24,6 +24,38 @@ const formatPaginatedResponse = (data, page, limit, totalRecords, metrics = {}) 
 });
 
 /**
+ * @desc    Get all chapters (paginated)
+ * @route   GET /api/admin/chapters
+ * @access  Private (Admin)
+ */
+exports.getChapters = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10, search, status } = req.query;
+
+  const query = {};
+  if (search) {
+    query.college_name = { $regex: search, $options: 'i' };
+  }
+  if (status) query.status = status;
+
+  const pageNum = parseInt(page, 10);
+  const limitNum = parseInt(limit, 10);
+  const skip = (pageNum - 1) * limitNum;
+
+  const totalRecords = await Chapter.countDocuments(query);
+  const chapters = await Chapter.find(query)
+    .sort({ created_at: -1 })
+    .skip(skip)
+    .limit(limitNum)
+    .populate('lead_id', 'full_name email')
+    .lean();
+
+  res.status(200).json({
+    success: true,
+    data: formatPaginatedResponse(chapters, pageNum, limitNum, totalRecords)
+  });
+});
+
+/**
  * @desc    Get chapter overview and high-level stats
  * @route   GET /api/admin/chapters/:id/overview
  * @access  Private (Admin)

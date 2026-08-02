@@ -5,7 +5,15 @@ const { validateRequest } = require("../middlewares/validateRequest");
 const adminDashboardController = require("../controllers/adminDashboard.controller");
 const { createAnnouncementSchema } = require("../utils/validators");
 
+const auditLogRoutes = require("./admin/auditLog.routes");
+const chapterRoutes = require("./admin/chapter.routes");
+const opportunityRoutes = require("./admin/opportunity.routes");
+const settingsRoutes = require("./admin/settings.routes");
+
 router.use(protect, requireRole("admin"));
+
+// --- Overview ---
+router.get("/overview", adminDashboardController.getOverview);
 
 // --- Announcement Screen ---
 
@@ -15,6 +23,9 @@ router.post(
   validateRequest(createAnnouncementSchema),
   adminDashboardController.createAnnouncement,
 );
+
+// --- users directory ---
+router.get("/users/all", adminDashboardController.getAllUsers);
 
 // --- users verification ---
 
@@ -48,5 +59,11 @@ router.get(
   adminDashboardController.getMeetingPrepareContext,
 );
 router.post("/meetings/schedule", adminDashboardController.scheduleMeeting);
+
+// --- newly integrated routes from backend_reetabrata ---
+router.use("/audit-logs", auditLogRoutes);
+router.use("/chapters", chapterRoutes);
+router.use("/opportunities", opportunityRoutes);
+router.use("/settings", settingsRoutes);
 
 module.exports = router;

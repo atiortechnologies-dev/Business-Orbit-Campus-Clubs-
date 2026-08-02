@@ -14,6 +14,7 @@ import {
   Search,
   Bell,
   Menu,
+  Users,
 } from 'lucide-react';
 import ComingSoon from '@/components/ui/ComingSoon';
 import Logo from '@/components/ui/Logo';
@@ -24,7 +25,8 @@ import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: 'Dashboard',     href: '/admin', real: true },
   { icon: Megaphone,       label: 'Announcements', href: '/admin/announcements', real: true },
-  { icon: ShieldCheck,     label: 'Users',         href: '/admin/verification', real: true },
+  { icon: Users,           label: 'Users',         href: '/admin/users', real: true },
+  { icon: ShieldCheck,     label: 'Verifications', href: '/admin/verification', real: true },
   { icon: Rocket,          label: 'Startups',      href: '/admin/reviews', real: true },
   { icon: Lightbulb,       label: 'Opportunities', href: '/admin/opportunities', real: true },
   { icon: Building2,       label: 'Chapters',      href: '/admin/chapters', real: true },

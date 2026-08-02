@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   ChevronRight,
   Link2,
@@ -38,10 +39,6 @@ export default function ScheduleMeetingPage() {
     searchParams.get("submissionId") || searchParams.get("id");
   const startupIdParam = searchParams.get("startupId");
 
-  const [loading, setLoading] = useState(true);
-  const [contextData, setContextData] = useState(null);
-  const [notApprovedError, setNotApprovedError] = useState("");
-
   // Form State
   const [reviewerId, setReviewerId] = useState("");
   const [date, setDate] = useState("2026-11-04");
@@ -52,64 +49,69 @@ export default function ScheduleMeetingPage() {
     "1. Review technical audit findings\n2. Discuss implementation timeline\n3. Confirm stage eligibility\n4. Q&A",
   );
 
-  const [submitting, setSubmitting] = useState(false);
   const [scheduled, setScheduled] = useState(false);
 
+  // Queries
+  const {
+    data: contextData,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    queryKey: ["adminMeetingContext", submissionId, startupIdParam],
+    queryFn: async () => {
+      const res = await getMeetingPrepareContext({
+        submissionId,
+        startupId: startupIdParam,
+      });
+      return res?.data || res;
+    },
+    enabled: !!submissionId || !!startupIdParam,
+    retry: false,
+  });
+
+  const notApprovedError =
+    queryError?.response?.data?.message ||
+    queryError?.data?.message ||
+    queryError?.message ||
+    (queryError
+      ? "Meetings can only be scheduled for approved startup ideas."
+      : "");
+
   useEffect(() => {
-    async function loadContext() {
-      try {
-        setLoading(true);
-        setNotApprovedError("");
-        const res = await getMeetingPrepareContext({
-          submissionId,
-          startupId: startupIdParam,
-        });
-        const data = res?.data || res;
-        setContextData(data);
-
-        if (data?.reviewers?.length > 0) {
-          setReviewerId(data.reviewers[0].id);
-        }
-      } catch (err) {
-        console.error("Failed to load scheduling context:", err);
-        setNotApprovedError(
-          err?.response?.data?.message ||
-            "Meetings can only be scheduled for approved startup ideas.",
-        );
-      } finally {
-        setLoading(false);
-      }
+    if (contextData?.reviewers?.length > 0 && !reviewerId) {
+      setReviewerId(contextData.reviewers[0].id);
     }
+  }, [contextData, reviewerId]);
 
-    loadContext();
-  }, [submissionId, startupIdParam]);
+  // Mutations
+  const scheduleMutation = useMutation({
+    mutationFn: scheduleMeeting,
+    onSuccess: () => {
+      setScheduled(true);
+      setTimeout(() => navigate("/admin/reviews"), 2000);
+    },
+    onError: (err) => {
+      console.error("Failed to schedule meeting:", err);
+    },
+  });
 
+  const submitting = scheduleMutation.isPending;
   const canSchedule =
     agenda.trim().length > 0 && !submitting && !notApprovedError;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!canSchedule || !contextData?.startup?.id) return;
 
-    try {
-      setSubmitting(true);
-      await scheduleMeeting({
-        startup_id: contextData.startup.id,
-        reviewer_id: reviewerId,
-        meeting_date: date,
-        meeting_time: time,
-        duration,
-        platform,
-        agenda,
-      });
-
-      setScheduled(true);
-      setTimeout(() => navigate("/admin/reviews"), 2000);
-    } catch (err) {
-      console.error("Failed to schedule meeting:", err);
-    } finally {
-      setSubmitting(false);
-    }
+    scheduleMutation.mutate({
+      startup_id: contextData.startup.id,
+      reviewer_id: reviewerId,
+      meeting_date: date,
+      meeting_time: time,
+      duration,
+      platform,
+      agenda,
+    });
   };
 
   if (loading) {

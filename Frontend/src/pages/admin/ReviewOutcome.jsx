@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Leaf, CheckCircle, Unlock, Lock, Star, Upload, Mail, Undo2, Info, PenLine } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getSubmissionDetail } from '@/api/admin/adminReviewApi';
+import { Leaf, CheckCircle, Lock, Star, Upload, Mail, Undo2, Info, PenLine, Loader2 } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
@@ -13,8 +15,21 @@ const TIMELINE = [
 ];
 
 export default function ReviewOutcomePage() {
-  useDocumentTitle('Review Outcome: EcoLoop — BOCC Admin');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const submissionId = searchParams.get('id');
+
+  const { data: resData, isLoading, error } = useQuery({
+    queryKey: ['adminSubmissionDetail', submissionId],
+    queryFn: () => getSubmissionDetail(submissionId),
+    enabled: !!submissionId,
+  });
+
+  const data = resData?.data;
+  const startupName = data?.startup?.name || 'EcoLoop';
+
+  useDocumentTitle(`Review Outcome: ${startupName} — BOCC Admin`);
+  
   const [published, setPublished] = useState(false);
   const [revisions, setRevisions] = useState([
     { text: 'Clarify revenue model for Q4 campus rollout.', done: true },
@@ -23,6 +38,26 @@ export default function ReviewOutcomePage() {
 
   function toggleRevision(index) {
     setRevisions((prev) => prev.map((r, i) => (i === index ? { ...r, done: !r.done } : r)));
+  }
+
+  if (isLoading) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center py-20">
+          <Loader2 size={32} className="animate-spin text-text-muted" />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center py-20 text-error">
+          <p>Failed to load submission outcome. Please try again.</p>
+        </div>
+      </AdminShell>
+    );
   }
 
   return (
@@ -35,7 +70,7 @@ export default function ReviewOutcomePage() {
                 <Leaf size={22} strokeWidth={2} />
               </div>
               <div>
-                <h1 className="font-poppins font-semibold text-card text-text-heading">EcoLoop</h1>
+                <h1 className="font-poppins font-semibold text-card text-text-heading">{startupName}</h1>
                 <p className="font-inter text-small text-text-muted">Sustainable Logistics Infrastructure</p>
               </div>
             </div>
@@ -77,7 +112,7 @@ export default function ReviewOutcomePage() {
             </div>
           </div>
           <p className="font-inter text-small text-text-muted pt-4 border-t border-divider-line">
-            Approval unlocks the <strong className="text-text-heading">Traction Stage</strong>. EcoLoop is now eligible for University Seed Funding Phase II.
+            Approval unlocks the <strong className="text-text-heading">Traction Stage</strong>. {startupName} is now eligible for University Seed Funding Phase II.
           </p>
         </section>
       </div>
@@ -133,7 +168,7 @@ export default function ReviewOutcomePage() {
 
             {published ? (
               <div className="p-4 bg-success/10 border border-success/30 rounded-md flex items-center gap-2 text-success font-inter text-small mb-3">
-                <CheckCircle size={16} strokeWidth={2} /> Published — EcoLoop promoted to Traction.
+                <CheckCircle size={16} strokeWidth={2} /> Published — {startupName} promoted to Traction.
               </div>
             ) : (
               // TODO(backend): POST the publish decision to the real API

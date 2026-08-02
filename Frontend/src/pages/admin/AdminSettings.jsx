@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Fingerprint,
   Upload,
@@ -9,12 +9,15 @@ import {
   Share2,
   DatabaseBackup,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AdminShell from '@/components/admin/AdminShell';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { getAdminSettings, updateAdminSettings } from '@/api/admin/adminMiscApi';
 
 const TIMEZONE_OPTIONS = ['(GMT-05:00) Eastern Time (US & Canada)', '(GMT+00:00) UTC'];
 
@@ -37,6 +40,7 @@ const LOGIN_ACTIVITY = [
 
 export default function AdminSettingsPage() {
   useDocumentTitle('Settings — BOCC Admin');
+  const queryClient = useQueryClient();
 
   const [profile, setProfile] = useState({
     fullName: 'Jane Admin',
@@ -71,23 +75,105 @@ export default function AdminSettingsPage() {
 
   const [saved, setSaved] = useState(false);
 
+  const { data: settingsResponse, isLoading, isError, error } = useQuery({
+    queryKey: ['adminSettings'],
+    queryFn: getAdminSettings,
+  });
+
+  useEffect(() => {
+    if (settingsResponse?.data) {
+      const data = settingsResponse.data;
+      if (data.profile) {
+         setProfile(prev => ({
+           ...prev,
+           fullName: data.profile.full_name || prev.fullName,
+           email: data.profile.email || prev.email,
+           phone: data.profile.phone || prev.phone,
+           designation: data.profile.designation || data.profile.role || prev.designation
+         }));
+      }
+      if (data.platformSetting) {
+         setPlatform(prev => ({
+           ...prev,
+           name: data.platformSetting.platform_name || prev.name,
+           supportEmail: data.platformSetting.support_email || prev.supportEmail,
+           timezone: data.platformSetting.timezone || prev.timezone,
+           newRegistrations: data.platformSetting.allow_new_registrations ?? prev.newRegistrations,
+           emailVerificationRequired: data.platformSetting.require_email_verification ?? prev.emailVerificationRequired,
+           maintenanceMode: data.platformSetting.maintenance_mode ?? prev.maintenanceMode,
+           publicProfilesVisible: data.platformSetting.public_profiles_visible ?? prev.publicProfilesVisible
+         }));
+      }
+      if (data.notifications && Array.isArray(data.notifications)) {
+         const newToggles = { ...eventToggles };
+         let anyInApp = false;
+         let anyEmail = false;
+         data.notifications.forEach(n => {
+           if (newToggles[n.event_category] !== undefined) {
+             newToggles[n.event_category] = n.in_app_enabled || n.email_enabled;
+           }
+           if (n.in_app_enabled) anyInApp = true;
+           if (n.email_enabled) anyEmail = true;
+         });
+         setEventToggles(newToggles);
+         setNotifyInApp(anyInApp);
+         setNotifyEmail(anyEmail);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingsResponse]);
+
+  const mutation = useMutation({
+    mutationFn: (newSettings) => updateAdminSettings(newSettings),
+    onSuccess: (res) => {
+      queryClient.setQueryData(['adminSettings'], res);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    },
+  });
+
   const updateProfile = (field) => (e) => setProfile((prev) => ({ ...prev, [field]: e.target.value }));
   const updatePlatform = (field) => (e) => setPlatform((prev) => ({ ...prev, [field]: e.target.value }));
   const toggleEvent = (event) => setEventToggles((prev) => ({ ...prev, [event]: !prev[event] }));
 
   const handleSaveChanges = () => {
-    // TODO(backend): PATCH /api/admin/settings { profile, platform, notifications: { inApp: notifyInApp, email: notifyEmail, events: eventToggles } }.
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    mutation.mutate({
+      profile,
+      platform,
+      notifications: { inApp: notifyInApp, email: notifyEmail, events: eventToggles },
+    });
   };
+
+  if (isLoading) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="w-8 h-8 text-brand-black animate-spin" />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (isError) {
+    return (
+      <AdminShell>
+        <div className="p-8 text-center bg-error/10 text-error rounded-lg border border-error/20 mt-8">
+          <p className="font-poppins font-semibold text-body">Failed to load platform settings.</p>
+          <p className="font-inter text-small mt-2">{error?.message || 'Please try again later.'}</p>
+        </div>
+      </AdminShell>
+    );
+  }
 
   return (
     <AdminShell>
-      <div className="mb-8">
-        <h1 className="font-poppins font-semibold text-page text-text-heading">Settings</h1>
-        <p className="font-inter text-body text-text-body mt-1 max-w-2xl">
-          Manage your administrator account, platform preferences, notifications, and system configuration.
-        </p>
+      <div className="mb-8 flex justify-between items-end">
+        <div>
+          <h1 className="font-poppins font-semibold text-page text-text-heading">Settings</h1>
+          <p className="font-inter text-body text-text-body mt-1 max-w-2xl">
+            Manage your administrator account, platform preferences, notifications, and system configuration.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -321,10 +407,12 @@ export default function AdminSettingsPage() {
         </div>
       </div>
 
-      <div className="sticky bottom-0 bg-canvas-bg/95 backdrop-blur-sm border-t border-divider-line py-4 mt-8 flex items-center justify-end gap-4">
+      <div className="sticky bottom-0 bg-canvas-bg/95 backdrop-blur-sm border-t border-divider-line py-4 mt-8 flex items-center justify-end gap-4 z-10">
         {saved && <span className="font-inter text-small text-success mr-auto">Changes saved.</span>}
         <Button variant="outline">Cancel</Button>
-        <Button onClick={handleSaveChanges}>Save Changes</Button>
+        <Button onClick={handleSaveChanges} disabled={mutation.isPending}>
+          {mutation.isPending ? 'Saving...' : 'Save Changes'}
+        </Button>
       </div>
     </AdminShell>
   );

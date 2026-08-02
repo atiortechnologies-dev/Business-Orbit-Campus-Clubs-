@@ -1,8 +1,10 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ChevronRight, User, Calendar, Paperclip } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ChevronRight, User, Calendar, Paperclip, Loader2 } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import Button from '@/components/ui/Button';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { createAnnouncement } from '@/api/admin/adminAnnouncementApi';
 
 const FALLBACK_DRAFT = {
   title: 'Maintenance Schedule',
@@ -18,18 +20,54 @@ const FALLBACK_DRAFT = {
 export default function PreviewAnnouncementPage() {
   useDocumentTitle('Preview Announcement — BOCC Admin');
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { state } = useLocation();
   const draft = state?.draft ?? FALLBACK_DRAFT;
 
+  const publishMutation = useMutation({
+    mutationFn: createAnnouncement,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminAnnouncements"] });
+      navigate('/admin/announcements/published', { state: { draft } });
+    },
+    onError: (err) => {
+      console.error("Failed to publish announcement:", err);
+    },
+  });
+
   const handlePublish = () => {
-    // TODO(backend): PATCH /api/admin/announcements/:id { status: 'published', publishedAt: now } —
-    // or POST /api/admin/announcements if this draft was never saved, then fan out
-    // notifications to every selected audience group.
-    navigate('/admin/announcements/published', { state: { draft } });
+    const payload = {
+      title: draft.title,
+      short_summary: draft.summary,
+      body_content: draft.body,
+      target_audience: draft.audience,
+      priority: draft.priority,
+      status: 'Published'
+    };
+    publishMutation.mutate(payload);
   };
 
+  const draftMutation = useMutation({
+    mutationFn: createAnnouncement,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminAnnouncements"] });
+      navigate('/admin/announcements', { replace: true });
+    },
+    onError: (err) => {
+      console.error("Failed to save draft:", err);
+    },
+  });
+
   const handleSaveDraft = () => {
-    // TODO(backend): PATCH /api/admin/announcements/:id { status: 'draft' }.
+    const payload = {
+      title: draft.title,
+      short_summary: draft.summary,
+      body_content: draft.body,
+      target_audience: draft.audience,
+      priority: draft.priority,
+      status: 'Draft'
+    };
+    draftMutation.mutate(payload);
   };
 
   return (
@@ -110,8 +148,14 @@ export default function PreviewAnnouncementPage() {
           Back to Edit
         </Link>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={handleSaveDraft}>Save Draft</Button>
-          <Button onClick={handlePublish}>Publish Announcement</Button>
+          <Button variant="outline" onClick={handleSaveDraft} disabled={draftMutation.isPending || publishMutation.isPending}>
+            {draftMutation.isPending && <Loader2 size={16} className="animate-spin mr-2 inline" />}
+            Save Draft
+          </Button>
+          <Button onClick={handlePublish} disabled={draftMutation.isPending || publishMutation.isPending}>
+            {publishMutation.isPending && <Loader2 size={16} className="animate-spin mr-2 inline" />}
+            Publish Announcement
+          </Button>
         </div>
       </div>
     </AdminShell>

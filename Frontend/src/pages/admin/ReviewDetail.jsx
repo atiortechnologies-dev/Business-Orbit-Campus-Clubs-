@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import {
   ChevronRight,
   Rocket,
@@ -17,6 +18,8 @@ import Badge from '@/components/ui/Badge';
 import ComingSoon from '@/components/ui/ComingSoon';
 import Modal from '@/components/ui/Modal';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { getSubmissionDetail } from '@/api/admin/adminReviewApi';
+import { Loader2 } from 'lucide-react';
 
 const TIMELINE = [
   { label: 'Idea', date: 'Aug 12, 2024', status: 'done' },
@@ -37,22 +40,58 @@ const PREVIOUS_REVIEWS = [
 ];
 
 export default function ReviewDetailPage() {
-  useDocumentTitle('Review: Luminara AI — BOCC Admin');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const submissionId = searchParams.get('id');
+
+  const { data: resData, isLoading, error } = useQuery({
+    queryKey: ['adminSubmissionDetail', submissionId],
+    queryFn: () => getSubmissionDetail(submissionId),
+    enabled: !!submissionId,
+  });
+
+  const data = resData?.data;
+  const startupName = data?.startup?.name || 'Luminara AI';
+  const currentStage = data?.startup?.currentStage ? `Stage ${data.startup.currentStage}` : 'MVP';
+  const founderName = data?.startup?.founder || 'Sarah Jenkins';
+  const chapterName = data?.startup?.chapter || 'Silicon Valley Hub';
+
+  useDocumentTitle(`Review: ${startupName} — BOCC Admin`);
+  
   const [revisionRequested, setRevisionRequested] = useState(false);
   const [previousReviewsOpen, setPreviousReviewsOpen] = useState(false);
+
+  if (isLoading) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center py-20">
+          <Loader2 size={32} className="animate-spin text-text-muted" />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center py-20 text-error">
+          <p>Failed to load submission details. Please try again.</p>
+        </div>
+      </AdminShell>
+    );
+  }
 
   return (
     <AdminShell>
       <nav className="mb-6 flex items-center gap-2 text-text-muted font-inter text-small">
         <Link to="/admin/reviews" className="hover:text-text-heading transition-colors">Stage Approval Queue</Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <span className="text-text-heading font-semibold">Review: Luminara AI</span>
+        <span className="text-text-heading font-semibold">Review: {startupName}</span>
       </nav>
 
       {revisionRequested && (
         <div className="mb-6 p-4 rounded-lg border border-warning/30 bg-warning/10 text-warning font-inter text-small">
-          A revision request has been logged for Luminara AI.
+          A revision request has been logged for {startupName}.
         </div>
       )}
 
@@ -65,18 +104,18 @@ export default function ReviewDetailPage() {
                 <Rocket size={22} strokeWidth={2} />
               </div>
               <div>
-                <h1 className="font-poppins font-semibold text-card text-text-heading">Luminara AI</h1>
-                <Badge variant="brand" className="mt-1">Stage: MVP</Badge>
+                <h1 className="font-poppins font-semibold text-card text-text-heading">{startupName}</h1>
+                <Badge variant="brand" className="mt-1">Stage: {currentStage}</Badge>
               </div>
             </div>
             <dl className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 mt-4 border-t border-divider-line">
               <div>
                 <dt className="font-inter text-caption text-text-muted uppercase">Founder</dt>
-                <dd className="font-inter font-medium text-small text-text-heading">Sarah Jenkins</dd>
+                <dd className="font-inter font-medium text-small text-text-heading">{founderName}</dd>
               </div>
               <div>
                 <dt className="font-inter text-caption text-text-muted uppercase">Chapter</dt>
-                <dd className="font-inter font-medium text-small text-text-heading">Silicon Valley Hub</dd>
+                <dd className="font-inter font-medium text-small text-text-heading">{chapterName}</dd>
               </div>
               <div>
                 <dt className="font-inter text-caption text-text-muted uppercase">Mentor</dt>
@@ -189,7 +228,7 @@ export default function ReviewDetailPage() {
             <h3 className="font-poppins font-semibold text-body text-text-heading mb-2">Quick Actions</h3>
             <button
               type="button"
-              onClick={() => navigate('/admin/reviews/schedule-meeting')}
+              onClick={() => navigate(`/admin/reviews/schedule-meeting${submissionId ? `?submissionId=${submissionId}` : ''}`)}
               className="w-full flex items-center gap-2 py-2.5 px-3 border border-border-subtle rounded-md font-inter font-medium text-small text-text-heading hover:bg-canvas-bg transition-colors"
             >
               <Calendar size={16} strokeWidth={2} /> Schedule Meeting
@@ -221,7 +260,7 @@ export default function ReviewDetailPage() {
               </button>
               <button
                 type="button"
-                onClick={() => navigate('/admin/reviews/workspace')}
+                onClick={() => navigate(`/admin/reviews/workspace${submissionId ? `?id=${submissionId}` : ''}`)}
                 className="w-full py-2.5 bg-action-bg text-action-text rounded-md font-poppins font-semibold text-small hover:opacity-90 transition-opacity"
               >
                 Begin Evaluation
@@ -231,7 +270,7 @@ export default function ReviewDetailPage() {
         </div>
       </div>
 
-      <Modal isOpen={previousReviewsOpen} onClose={() => setPreviousReviewsOpen(false)} title="Previous Reviews — Luminara AI">
+      <Modal isOpen={previousReviewsOpen} onClose={() => setPreviousReviewsOpen(false)} title={`Previous Reviews — ${startupName}`}>
         <div className="space-y-4">
           {PREVIOUS_REVIEWS.map(({ stage, date, reviewer, outcome, note }) => (
             <div key={stage} className="border border-border-subtle rounded-lg p-4">

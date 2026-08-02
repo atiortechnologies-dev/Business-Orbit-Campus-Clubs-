@@ -12,6 +12,163 @@ const StartupStage = require("../models/StartupStage");
 const StudentProfile = require("../models/StudentProfile");
 const User = require("../models/User");
 
+// --- Overview ---
+
+/**
+ * @desc    Get system-wide overview statistics for the admin dashboard
+ * @route   GET /api/admin/overview
+ * @access  Private (Admin only)
+ */
+const getOverview = asyncHandler(async (req, res) => {
+  // Basic Stats
+  const totalUsers = await User.countDocuments();
+  const activeStartups = await Startup.countDocuments();
+  
+  const pendingUserVerifications = await User.countDocuments({
+    account_status: { $in: ["pending_verification", "pending_approval"] },
+  });
+  const pendingStageSubmissions = await StageSubmission.countDocuments({
+    status: "pending_review",
+  });
+  const pendingVerifications = pendingUserVerifications + pendingStageSubmissions;
+
+  // Mocking Investor Capital for now
+  const investorCapital = "$0";
+
+  // User Distribution
+  const userRolesCount = await User.aggregate([
+    { $group: { _id: "$role", count: { $sum: 1 } } }
+  ]);
+  
+  // Transform to match frontend expectations:
+  const roleMapping = {
+    student: "Students",
+    mentor: "Mentors",
+    investor: "Investors",
+    incubator: "Incubators",
+    company: "Companies",
+    admin: "Admins",
+  };
+  
+  const userDistribution = userRolesCount
+    .filter(r => roleMapping[r._id] && r._id !== "admin")
+    .map(r => ({
+      label: roleMapping[r._id],
+      pct: totalUsers > 0 ? Math.round((r.count / totalUsers) * 100) : 0,
+      count: r.count
+    }));
+
+  // Funnel Views (Startup Stages)
+  // Stage 1 = Idea, 2 = Validation, 3 = MVP, 4 = Traction, 5 = Launch
+  const startupStagesCount = await Startup.aggregate([
+    { $group: { _id: "$current_stage", count: { $sum: 1 } } }
+  ]);
+  
+  const stageMapping = {
+    1: "Idea",
+    2: "Validation",
+    3: "MVP",
+    4: "Traction",
+    5: "Launch"
+  };
+
+  const funnelViews = {
+    Daily: [
+      { label: "Idea", value: 0 },
+      { label: "Validation", value: 0 },
+      { label: "MVP", value: 0 },
+      { label: "Traction", value: 0 },
+      { label: "Launch", value: 0 },
+    ],
+    Monthly: [
+      { label: "Idea", value: 0 },
+      { label: "Validation", value: 0 },
+      { label: "MVP", value: 0 },
+      { label: "Traction", value: 0 },
+      { label: "Launch", value: 0 },
+    ]
+  };
+
+  startupStagesCount.forEach(st => {
+    const stageName = stageMapping[st._id];
+    if (stageName) {
+      const idx = funnelViews.Daily.findIndex(fv => fv.label === stageName);
+      if (idx !== -1) {
+        funnelViews.Daily[idx].value = st.count;
+        funnelViews.Monthly[idx].value = st.count; // For now, mirror daily
+      }
+    }
+  });
+
+  // Upcoming Cycles (Meetings)
+  const upcomingMeetings = await Meeting.find({
+    status: "scheduled",
+    meeting_date: { $gte: new Date() }
+  })
+    .populate("startup_id", "startup_name")
+    .populate("reviewer_id", "full_name")
+    .sort({ meeting_date: 1 })
+    .limit(2);
+
+  const formattedMeetings = upcomingMeetings.map(m => ({
+    title: `${m.agenda || "Review Sync"} — ${m.startup_id?.startup_name || "Startup"}`,
+    time: m.meeting_date
+  }));
+
+  // Critical Actions
+  const criticalActions = [];
+  if (pendingUserVerifications > 0) {
+    criticalActions.push({
+      id: "ca1",
+      iconType: "AlertTriangle",
+      tone: "error",
+      title: "Identity Verification Needed",
+      detail: `${pendingUserVerifications} user(s) flagged for review`,
+      reviewHref: "/admin/verification",
+    });
+  }
+  if (pendingStageSubmissions > 0) {
+    criticalActions.push({
+      id: "ca2",
+      iconType: "FileText",
+      tone: "warning",
+      title: "Stage Submissions Pending",
+      detail: `${pendingStageSubmissions} startup(s) waiting for stage approval`,
+      reviewHref: "/admin/verification",
+    });
+  }
+  
+  if (criticalActions.length === 0) {
+    criticalActions.push({
+      id: "ca3",
+      iconType: "UserPlus",
+      tone: "info",
+      title: "All Clear",
+      detail: "No critical actions pending at the moment",
+    });
+  }
+
+  // Activity Stream (Mocked for now as per plan)
+  const activityStream = [
+    { iconType: "RefreshCw", text: "Dashboard data synced", time: "Just now" },
+  ];
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      totalUsers,
+      activeStartups,
+      pendingVerifications,
+      investorCapital,
+      userDistribution,
+      funnelViews,
+      upcomingCycle: formattedMeetings,
+      criticalActions,
+      activityStream
+    }
+  });
+});
+
 // -- Announcement Screen ---
 
 const getAnnouncements = asyncHandler(async (req, res) => {
@@ -551,6 +708,7 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  getOverview,
   getAnnouncements,
   createAnnouncement,
   getVerificationUsers,
@@ -562,3 +720,47 @@ module.exports = {
   getMeetingPrepareContext,
   scheduleMeeting,
 };
+
+/**
+ * @desc    Get all users (paginated)
+ * @route   GET /api/admin/users/all
+ * @access  Private (Admin only)
+ */
+const getAllUsers = asyncHandler(async (req, res) => {
+  const { role, status, page = 1, limit = 10, search } = req.query;
+
+  const query = {};
+  if (role) query.role = role;
+  if (status) query.status = status;
+  if (search) {
+    query.$or = [
+      { full_name: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } },
+    ];
+  }
+
+  const pageNum = parseInt(page, 10);
+  const limitNum = parseInt(limit, 10);
+  const skip = (pageNum - 1) * limitNum;
+
+  const total = await User.countDocuments(query);
+  const users = await User.find(query)
+    .sort({ created_at: -1 })
+    .skip(skip)
+    .limit(limitNum)
+    .select('-password_hash -__v')
+    .lean();
+
+  res.status(200).json({
+    success: true,
+    data: {
+      users,
+      page: pageNum,
+      limit: limitNum,
+      total_records: total,
+      total_pages: Math.ceil(total / limitNum),
+    },
+  });
+});
+
+module.exports.getAllUsers = getAllUsers;

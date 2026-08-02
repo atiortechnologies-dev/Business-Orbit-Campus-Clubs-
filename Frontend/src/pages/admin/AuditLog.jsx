@@ -1,18 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Calendar, ChevronLeft, ChevronRight, Zap, User as UserIcon, AlertTriangle, FileText, Cloud, Download } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Zap, User as UserIcon, AlertTriangle, FileText, Cloud, Download, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import AdminShell from '@/components/admin/AdminShell';
 import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { downloadCsv } from '@/utils/csv';
-
-const LOGS = [
-  { id: 'l1', timestamp: '2024-10-24 14:22:01', date: '2024-10-24', initials: 'JD', user: 'j_doe_admin', module: 'Security', action: 'Updated User Permissions', target: 'ID: 8829-X-22', status: 'Success', ip: '192.168.1.104' },
-  { id: 'l2', timestamp: '2024-10-24 14:18:55', date: '2024-10-24', initials: 'SM', user: 's_miller_op', module: 'Clubs', action: 'Modified Club Metadata', target: 'Central Tennis Hub', status: 'Success', ip: '216.58.214.14' },
-  { id: 'l3', timestamp: '2024-10-24 13:55:12', date: '2024-10-24', initials: '??', user: 'Unknown', module: 'Auth', action: 'Failed Login Attempt', target: 'Admin Portal Login', status: 'Rejected', ip: '45.12.8.212', flagged: true },
-  { id: 'l4', timestamp: '2024-10-23 13:40:02', date: '2024-10-23', initials: 'AK', user: 'a_kapoor_sys', module: 'System', action: 'Backup Execution Initiated', target: 'Global Storage Cluster', status: 'Pending', ip: '10.0.0.42' },
-  { id: 'l5', timestamp: '2024-10-22 13:22:11', date: '2024-10-22', initials: 'JD', user: 'j_doe_admin', module: 'Content', action: 'Archived Report Cycle', target: 'FY23_Q3_Final', status: 'Success', ip: '192.168.1.104' },
-];
+import Pagination from '@/components/ui/Pagination';
+import { getAuditLogs } from '@/api/admin/adminMiscApi';
+// Removed MOCK LOGS
 
 const MODULES = ['All', 'Security', 'Clubs', 'Auth', 'System', 'Content'];
 const USERS = ['All', 'j_doe_admin', 's_miller_op', 'a_kapoor_sys', 'Unknown'];
@@ -35,15 +31,40 @@ export default function AuditLogPage() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [dateFilterOpen, setDateFilterOpen] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const { data: logsResponse, isLoading, isError, error } = useQuery({
+    queryKey: ['adminAuditLogs', page],
+    queryFn: () => getAuditLogs({ page, limit: 10 }),
+  });
+
+  const logsData = useMemo(() => {
+    if (logsResponse?.data?.auditLogs) {
+      return logsResponse.data.auditLogs.map((log) => ({
+        id: log._id,
+        timestamp: new Date(log.created_at).toLocaleString(),
+        date: new Date(log.created_at).toISOString().split('T')[0],
+        initials: log.actor_name ? log.actor_name.substring(0, 2).toUpperCase() : '??',
+        user: log.actor_name || 'Unknown',
+        module: log.module,
+        action: log.action,
+        target: log.target_entity_name || 'System',
+        status: log.status,
+        ip: log.ip_address,
+        flagged: log.status === 'Rejected',
+      }));
+    }
+    return [];
+  }, [logsResponse]);
 
   const filteredLogs = useMemo(
-    () => LOGS.filter((l) =>
+    () => logsData.filter((l) =>
       (moduleFilter === 'All' || l.module === moduleFilter) &&
       (userFilter === 'All' || l.user === userFilter) &&
       (!dateFrom || l.date >= dateFrom) &&
       (!dateTo || l.date <= dateTo)
     ),
-    [moduleFilter, userFilter, dateFrom, dateTo]
+    [moduleFilter, userFilter, dateFrom, dateTo, logsData]
   );
 
   const dateRangeLabel = dateFrom || dateTo ? `${dateFrom || '…'} → ${dateTo || '…'}` : 'Last 24 Hours';
@@ -145,21 +166,30 @@ export default function AuditLogPage() {
             </button>
           </div>
 
-          <DataTable columns={columns} rows={filteredLogs} emptyMessage="No log entries match these filters." />
-
-          <div className="flex items-center justify-between">
-            <span className="font-inter text-small text-text-muted">Showing {filteredLogs.length} of {LOGS.length} logs</span>
-            <div className="flex items-center gap-2">
-              <button type="button" disabled className="p-1.5 border border-border-subtle rounded text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
-                <ChevronLeft size={16} strokeWidth={2} />
-              </button>
-              <span className="px-3 py-1 bg-action-bg text-action-text font-inter font-semibold text-small rounded">1</span>
-              <button type="button" disabled className="p-1.5 border border-border-subtle rounded text-text-muted disabled:opacity-50 disabled:cursor-not-allowed">
-                <ChevronRight size={16} strokeWidth={2} />
-              </button>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <Loader2 className="w-8 h-8 text-brand-black animate-spin" />
+            </div>
+          ) : isError ? (
+            <div className="p-8 text-center bg-error/10 text-error rounded-lg border border-error/20 mb-8">
+              <p className="font-poppins font-semibold text-body">Failed to load audit logs.</p>
+              <p className="font-inter text-small mt-2">{error?.message || 'Please try again later.'}</p>
+            </div>
+          ) : (
+            <>
+              <DataTable columns={columns} rows={filteredLogs} emptyMessage="No audit logs match your criteria." />
+              <Pagination 
+                currentPage={page} 
+                totalPages={logsResponse?.data?.total_pages || 1} 
+                onPageChange={setPage} 
+              />
+              <p className="font-inter text-small text-text-muted mt-4 mb-8 text-center">
+                Showing {filteredLogs.length} entries (Page {page} of {logsResponse?.data?.total_pages || 1})
+              </p>
+            </>
+          )}
             </div>
           </div>
-        </div>
 
         <aside className="xl:col-span-3 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <h3 className="font-poppins font-semibold text-body text-text-heading mb-6">Activity Timeline</h3>
@@ -187,7 +217,6 @@ export default function AuditLogPage() {
             </div>
           </div>
         </aside>
-      </div>
     </AdminShell>
   );
 }

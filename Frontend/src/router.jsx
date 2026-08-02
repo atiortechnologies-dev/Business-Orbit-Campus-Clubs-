@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import GuestRoute from "@/components/GuestRoute";
 import Unauthorized from "./pages/Unauthorized";
 
 const Login = lazy(() => import("@/pages/auth/Login"));
@@ -202,6 +203,7 @@ const AnnouncementPublished = lazy(
   () => import("@/pages/admin/AnnouncementPublished"),
 );
 const ChapterManagement = lazy(() => import("@/pages/admin/ChapterManagement"));
+const UserDirectory = lazy(() => import("@/pages/admin/UserDirectory"));
 const ChapterDetail = lazy(() => import("@/pages/admin/ChapterDetail"));
 const OpportunityApprovalQueue = lazy(
   () => import("@/pages/admin/OpportunityApprovalQueue"),
@@ -306,15 +308,20 @@ export const router = createBrowserRouter([
   {
     element: <AuthLayout />,
     children: [
-      { path: "/login", element: withSuspense(Login) },
-      { path: "/forgot-password", element: withSuspense(ForgotPassword) },
-      { path: "/reset-password", element: withSuspense(ResetPassword) },
-      { path: "/role-selection", element: withSuspense(RoleSelection) },
-      { path: "/signup/student", element: withSuspense(StudentSignup) },
-      { path: "/signup/company", element: withSuspense(CompanySignup) },
-      { path: "/signup/investor", element: withSuspense(InvestorSignup) },
-      { path: "/signup/mentor", element: withSuspense(MentorSignup) },
-      { path: "/signup/incubator", element: withSuspense(IncubatorSignup) },
+      {
+        element: <GuestRoute />,
+        children: [
+          { path: "/login", element: withSuspense(Login) },
+          { path: "/forgot-password", element: withSuspense(ForgotPassword) },
+          { path: "/reset-password", element: withSuspense(ResetPassword) },
+          { path: "/role-selection", element: withSuspense(RoleSelection) },
+          { path: "/signup/student", element: withSuspense(StudentSignup) },
+          { path: "/signup/company", element: withSuspense(CompanySignup) },
+          { path: "/signup/investor", element: withSuspense(InvestorSignup) },
+          { path: "/signup/mentor", element: withSuspense(MentorSignup) },
+          { path: "/signup/incubator", element: withSuspense(IncubatorSignup) },
+        ],
+      },
       { path: "/onboarding/welcome", element: withSuspense(OnboardingWelcome) },
       { path: "/onboarding/verify-email", element: withSuspense(VerifyEmail) },
       {
@@ -409,6 +416,7 @@ export const router = createBrowserRouter([
         element: withSuspense(AnnouncementPublished),
       },
       { path: "/admin/chapters", element: withSuspense(ChapterManagement) },
+      { path: "/admin/users", element: withSuspense(UserDirectory) },
       { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
       {
         path: "/admin/opportunities",

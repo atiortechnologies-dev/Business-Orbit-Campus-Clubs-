@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronRight,
   Check,
@@ -17,7 +18,7 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import {
   getSubmissionDetail,
   submitReviewDecision,
-} from "@/api/admin/adminStartupReviewApi";
+} from "@/api/admin/adminReviewApi";
 
 export default function IdeationReviewPage() {
   const navigate = useNavigate();
@@ -26,35 +27,33 @@ export default function IdeationReviewPage() {
 
   useDocumentTitle(`Ideation Review — BOCC Admin`);
 
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
+  const queryClient = useQueryClient();
 
   const [remarks, setRemarks] = useState("");
   const [requestChangesOpen, setRequestChangesOpen] = useState(false);
   const [changesText, setChangesText] = useState("");
 
-  useEffect(() => {
-    if (!submissionId) return;
-    async function loadDetail() {
-      try {
-        setLoading(true);
-        const res = await getSubmissionDetail(submissionId);
-        const resData = res?.data || res;
-        setData(resData);
-      } catch (error) {
-        console.error("Failed to load submission details:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadDetail();
-  }, [submissionId]);
+  const { data: resData, isLoading: loading, error } = useQuery({
+    queryKey: ["adminSubmissionDetail", submissionId],
+    queryFn: () => getSubmissionDetail(submissionId),
+    enabled: !!submissionId,
+  });
+
+  const data = resData?.data || {};
+
+  const decisionMutation = useMutation({
+    mutationFn: (payload) => submitReviewDecision(submissionId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminSubmissionDetail", submissionId] });
+      queryClient.invalidateQueries({ queryKey: ["adminReviewQueue"] });
+    },
+  });
+
+  const submitting = decisionMutation.isPending;
 
   const handleApproveAndSchedule = async () => {
     try {
-      setSubmitting(true);
-      await submitReviewDecision(submissionId, {
+      await decisionMutation.mutateAsync({
         decision: "approve",
         remarks,
       });
@@ -63,15 +62,12 @@ export default function IdeationReviewPage() {
       navigate(`/admin/reviews/schedule-meeting?submissionId=${submissionId}`);
     } catch (error) {
       console.error("Failed to approve submission:", error);
-    } finally {
-      setSubmitting(false);
     }
   };
 
   const confirmRequestChanges = async () => {
     try {
-      setSubmitting(true);
-      await submitReviewDecision(submissionId, {
+      await decisionMutation.mutateAsync({
         decision: "request_changes",
         remarks,
         changesText,
@@ -81,8 +77,6 @@ export default function IdeationReviewPage() {
       navigate("/admin/reviews");
     } catch (error) {
       console.error("Failed to request changes:", error);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -91,6 +85,16 @@ export default function IdeationReviewPage() {
       <AdminShell>
         <div className="flex justify-center py-20">
           <Loader2 size={32} className="animate-spin text-text-muted" />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center py-20 text-error">
+          <p>Failed to load submission details. Please try again.</p>
         </div>
       </AdminShell>
     );

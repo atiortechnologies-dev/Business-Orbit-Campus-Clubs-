@@ -1,20 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Users, Rocket, CalendarCheck, Edit, Archive, Download } from 'lucide-react';
+import { Building2, Users, Rocket, CalendarCheck, Edit, Archive, Download, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import AdminShell from '@/components/admin/AdminShell';
 import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
 import StatCard from '@/components/ui/StatCard';
 import ComingSoon from '@/components/ui/ComingSoon';
+import Pagination from '@/components/ui/Pagination';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-
-const CHAPTERS = [
-  { id: 'c1', name: 'Stanford Alpha', initial: 'S', institution: 'Stanford University', lead: 'Marcus Chen', students: 1240, startups: 32, status: 'Active' },
-  { id: 'c2', name: 'MIT Beta', initial: 'M', institution: 'MIT', lead: 'Elena Rodriguez', students: 980, startups: 28, status: 'Active' },
-  { id: 'c3', name: 'Harvard Delta', initial: 'H', institution: 'Harvard University', lead: 'Jameson Blake', students: 754, startups: 14, status: 'Pending' },
-  { id: 'c4', name: 'UCB Gamma', initial: 'U', institution: 'UC Berkeley', lead: 'Sarah Jenkins', students: 1102, startups: 41, status: 'Active' },
-  { id: 'c5', name: 'CMU Sigma', initial: 'C', institution: 'Carnegie Mellon', lead: 'David Wu', students: 540, startups: 19, status: 'Probation' },
-];
+import { getChapters } from '@/api/admin/adminMiscApi';
 
 const STATUS_VARIANT = { Active: 'success', Pending: 'warning', Probation: 'neutral' };
 const STATE_OPTIONS = ['All States', 'California', 'Massachusetts'];
@@ -28,9 +23,34 @@ export default function ChapterManagementPage() {
 
   const [stateFilter, setStateFilter] = useState('All States');
   const [statusFilter, setStatusFilter] = useState('Status: All');
+  const [page, setPage] = useState(1);
 
-  const visible = CHAPTERS.filter((c) => {
-    if (statusFilter !== 'Status: All' && c.status !== statusFilter) return false;
+  const { data: chaptersResponse, isLoading, isError, error } = useQuery({
+    queryKey: ['adminChapters', page, statusFilter],
+    queryFn: () => getChapters({ 
+      page, 
+      limit: 10,
+      status: statusFilter === 'Status: All' ? undefined : statusFilter 
+    }),
+  });
+
+  const chaptersData = useMemo(() => {
+    if (chaptersResponse?.data?.data) {
+      return chaptersResponse.data.data.map(c => ({
+        id: c._id,
+        name: c.chapter_name || c.college_name,
+        initial: (c.chapter_name || c.college_name || 'C').charAt(0).toUpperCase(),
+        institution: c.college_name,
+        lead: c.lead_id?.full_name || 'Unassigned',
+        students: c.total_members || 0,
+        startups: c.active_startups || 0,
+        status: c.status
+      }));
+    }
+    return [];
+  }, [chaptersResponse]);
+
+  const visible = chaptersData.filter((c) => {
     if (stateFilter === 'California' && !['Stanford University', 'UC Berkeley'].includes(c.institution)) return false;
     if (stateFilter === 'Massachusetts' && !['MIT', 'Harvard University'].includes(c.institution)) return false;
     return true;
@@ -44,7 +64,7 @@ export default function ChapterManagementPage() {
       render: (row) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-text-heading text-small shrink-0 select-none">
-            {row.initial}
+            {row.initial || row.name?.charAt(0)}
           </div>
           <span className="font-poppins font-semibold text-small text-text-heading">{row.name}</span>
         </div>
@@ -52,13 +72,13 @@ export default function ChapterManagementPage() {
     },
     { key: 'institution', label: 'Institution', width: '1.4fr', className: 'text-text-body' },
     { key: 'lead', label: 'Chapter Lead', width: '1.2fr', className: 'text-text-body' },
-    { key: 'students', label: 'Students', width: '0.8fr', render: (row) => row.students.toLocaleString() },
+    { key: 'students', label: 'Students', width: '0.8fr', render: (row) => row.students?.toLocaleString() || '0' },
     { key: 'startups', label: 'Startups', width: '0.7fr' },
     {
       key: 'status',
       label: 'Status',
       width: '0.8fr',
-      render: (row) => <Badge variant={STATUS_VARIANT[row.status]}>{row.status}</Badge>,
+      render: (row) => <Badge variant={STATUS_VARIANT[row.status] || 'neutral'}>{row.status}</Badge>,
     },
     {
       key: 'actions',
@@ -67,7 +87,7 @@ export default function ChapterManagementPage() {
       mobileLabel: false,
       render: (row) => (
         <div className="flex items-center gap-1">
-          <Link to="/admin/chapters/detail" className="p-1.5 rounded-md text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors" title="View">
+          <Link to={`/admin/chapters/detail?id=${row.id || row._id}`} className="p-1.5 rounded-md text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors" title="View">
             <Users size={16} strokeWidth={2} />
           </Link>
           <ComingSoon label="Edit" position="top" inline className="p-1.5 rounded-md text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors">
@@ -127,10 +147,28 @@ export default function ChapterManagementPage() {
         </ComingSoon>
       </div>
 
-      <DataTable columns={columns} rows={visible} emptyMessage="No chapters match the current filters." />
-      <p className="font-inter text-small text-text-muted mt-4 mb-8">
-        Showing {visible.length} of {CHAPTERS.length} entries
-      </p>
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="w-8 h-8 text-brand-black animate-spin" />
+        </div>
+      ) : isError ? (
+        <div className="p-8 text-center bg-error/10 text-error rounded-lg border border-error/20 mb-8">
+          <p className="font-poppins font-semibold text-body">Failed to load chapters.</p>
+          <p className="font-inter text-small mt-2">{error.message || 'Please try again later.'}</p>
+        </div>
+      ) : (
+        <>
+          <DataTable columns={columns} rows={visible} emptyMessage="No chapters match the current filters." />
+          <Pagination 
+            currentPage={page} 
+            totalPages={chaptersResponse?.data?.total_pages || 1} 
+            onPageChange={setPage} 
+          />
+          <p className="font-inter text-small text-text-muted mt-4 mb-8 text-center">
+            Showing {visible.length} entries (Page {page} of {chaptersResponse?.data?.total_pages || 1})
+          </p>
+        </>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">

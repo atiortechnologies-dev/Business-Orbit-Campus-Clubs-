@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import {
   ChevronRight,
@@ -13,11 +13,11 @@ import Badge from "@/components/ui/Badge";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getUserVerificationDetail,
   submitVerificationDecision,
-} from "@/api/admin/adminUsersVerificationApi";
-
+} from "@/api/admin/adminVerificationApi";
 export default function StudentVerificationPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -25,49 +25,42 @@ export default function StudentVerificationPage() {
 
   useDocumentTitle(`Student Verification — BOCC Admin`);
 
-  const [loading, setLoading] = useState(true);
-  const [appData, setAppData] = useState(null);
-  const [openModal, setOpenModal] = useState(null); // 'approve' | 'reject' | 'request' | null
-  const [submitting, setSubmitting] = useState(false);
+  const [openModal, setOpenModal] = useState(null);
   const [remarks, setRemarks] = useState("");
   const [requestText, setRequestText] = useState("");
 
-  useEffect(() => {
-    if (!userId) return;
-    async function loadUser() {
-      try {
-        setLoading(true);
-        const res = await getUserVerificationDetail(userId);
-        const data = res?.data || res;
-        setAppData(data);
-      } catch (error) {
-        console.error("Failed to load student details:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadUser();
-  }, [userId]);
+  const queryClient = useQueryClient();
 
-  const handleDecision = async (decisionType) => {
-    try {
-      setSubmitting(true);
-      await submitVerificationDecision(userId, {
-        decision: decisionType,
-        remarks,
-        requestText,
-      });
+  const { data: appData, isLoading: loading, isError } = useQuery({
+    queryKey: ["adminVerificationDetail", userId],
+    queryFn: async () => {
+      const res = await getUserVerificationDetail(userId);
+      return res?.data || res;
+    },
+    enabled: !!userId,
+  });
 
+  const decisionMutation = useMutation({
+    mutationFn: (decisionData) => submitVerificationDecision(userId, decisionData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["adminVerificationQueue"] });
       setOpenModal(null);
-
-      // Redirect back to main verification queue on completion
       navigate("/admin/verification", { replace: true });
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Failed to process decision:", error);
-    } finally {
-      setSubmitting(false);
-    }
+    },
+  });
+
+  const handleDecision = (decisionType) => {
+    decisionMutation.mutate({
+      decision: decisionType,
+      remarks,
+      requestText,
+    });
   };
+
+  const submitting = decisionMutation.isPending;
 
   if (loading) {
     return (
@@ -79,6 +72,15 @@ export default function StudentVerificationPage() {
     );
   }
 
+  if (isError) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center py-20 text-error font-inter font-medium text-small">
+          Failed to load student details. Please try again later.
+        </div>
+      </AdminShell>
+    );
+  }
   const { user, profile } = appData || {};
 
   return (

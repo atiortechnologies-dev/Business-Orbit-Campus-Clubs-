@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getAdminOverview } from '@/api/admin/adminDashboardApi';
 import {
   Users,
   Rocket,
   ShieldAlert,
   DollarSign,
-  TrendingUp,
   AlertTriangle,
   FileText,
   UserPlus,
@@ -14,6 +15,7 @@ import {
   FolderPlus,
   Calendar,
   Map,
+  Loader2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdminShell from '@/components/admin/AdminShell';
@@ -21,60 +23,14 @@ import StatCard from '@/components/ui/StatCard';
 import ComingSoon from '@/components/ui/ComingSoon';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
-const USER_DISTRIBUTION = [
-  { label: 'Students', pct: 65 },
-  { label: 'Mentors', pct: 20 },
-  { label: 'Investors', pct: 15 },
-];
-
-const FUNNEL_VIEWS = {
-  Daily: [
-    { label: 'Idea', value: 1240 },
-    { label: 'Validation', value: 840 },
-    { label: 'MVP', value: 456 },
-    { label: 'Traction', value: 182 },
-    { label: 'Launch', value: 42 },
-  ],
-  Monthly: [
-    { label: 'Idea', value: 5180 },
-    { label: 'Validation', value: 3420 },
-    { label: 'MVP', value: 1890 },
-    { label: 'Traction', value: 705 },
-    { label: 'Launch', value: 168 },
-  ],
+const ICON_MAP = {
+  AlertTriangle,
+  FileText,
+  UserPlus,
+  RefreshCw,
+  Upload,
+  FolderPlus,
 };
-
-const ACTIVITY_STREAM = [
-  { icon: RefreshCw, text: 'System Upgrade Complete', time: '12m ago' },
-  { icon: UserPlus, text: 'New User Registered', time: '38m ago' },
-  { icon: Upload, text: 'Bulk Export Initiated', time: '1h ago' },
-  { icon: FolderPlus, text: 'Club Created "Fintech 2024"', time: '3h ago' },
-];
-
-const INITIAL_CRITICAL_ACTIONS = [
-  {
-    id: 'ca1',
-    icon: AlertTriangle,
-    tone: 'error',
-    title: 'Identity Verification Loophole',
-    detail: '14 records flagged in batch #482',
-    reviewHref: '/admin/verification',
-  },
-  {
-    id: 'ca2',
-    icon: FileText,
-    tone: 'warning',
-    title: 'Compliance Report Due',
-    detail: 'Quarterly submission due in 3 days',
-  },
-  {
-    id: 'ca3',
-    icon: UserPlus,
-    tone: 'info',
-    title: 'New Mentor Application',
-    detail: 'Dr. Sarah Jenkins awaiting approval',
-  },
-];
 
 const TONE_CLASSES = {
   error: 'bg-error/15 text-error',
@@ -85,38 +41,64 @@ const TONE_CLASSES = {
 export default function AdminDashboardPage() {
   useDocumentTitle('BOCC Command Center — Admin Dashboard');
   const [funnelView, setFunnelView] = useState('Daily');
-  const [criticalActions, setCriticalActions] = useState(INITIAL_CRITICAL_ACTIONS);
+  const [dismissedActions, setDismissedActions] = useState([]);
 
-  const funnel = FUNNEL_VIEWS[funnelView];
-  const funnelMax = funnel[0].value;
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['adminOverview'],
+    queryFn: getAdminOverview,
+  });
 
-  // TODO(backend): PATCH this critical action as acknowledged server-side
-  // (e.g. { actionId: id, status: 'dismissed' }) so it doesn't reappear
-  // for this admin on next load — the local removal below is optimistic.
-  const dismissAction = (id) => setCriticalActions((prev) => prev.filter((a) => a.id !== id));
+  if (isLoading) {
+    return (
+      <AdminShell>
+        <div className="flex items-center justify-center h-[50vh]">
+          <Loader2 className="animate-spin text-text-muted" size={48} />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (isError || !data) {
+    return (
+      <AdminShell>
+        <div className="flex flex-col items-center justify-center h-[50vh] text-center">
+          <AlertTriangle className="text-error mb-4" size={48} />
+          <h2 className="text-text-heading font-poppins font-semibold text-xl mb-2">Failed to load overview</h2>
+          <p className="text-text-muted font-inter">Please try refreshing the page.</p>
+        </div>
+      </AdminShell>
+    );
+  }
+
+  const overview = data;
+  const funnel = overview.funnelViews[funnelView] || overview.funnelViews['Daily'];
+  const funnelMax = Math.max(...funnel.map(f => f.value), 1);
+
+  const dismissAction = (id) => setDismissedActions((prev) => [...prev, id]);
+  const criticalActions = overview.criticalActions.filter(a => !dismissedActions.includes(a.id));
 
   return (
     <AdminShell>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard label="Total Users" value="12,482" icon={<Users size={18} strokeWidth={2} />} subtext="+8.4% this month" trendDirection="up" />
-        <StatCard label="Active Startups" value="456" icon={<Rocket size={18} strokeWidth={2} />} subtext="92% engagement" />
+        <StatCard label="Total Users" value={overview.totalUsers.toLocaleString()} icon={<Users size={18} strokeWidth={2} />} subtext="Platform total" trendDirection="up" />
+        <StatCard label="Active Startups" value={overview.activeStartups.toLocaleString()} icon={<Rocket size={18} strokeWidth={2} />} subtext="Registered ideas" />
         <StatCard
           label="Pending Verifications"
-          value="24"
+          value={overview.pendingVerifications.toLocaleString()}
           icon={<ShieldAlert size={18} strokeWidth={2} />}
-          subtext="8 critical alerts"
+          subtext="Action required"
           trendDirection="down"
-          className="border-error/40"
+          className={overview.pendingVerifications > 0 ? "border-error/40" : ""}
         />
-        <StatCard label="Investor Capital" value="$24.8M" icon={<DollarSign size={18} strokeWidth={2} />} subtext="Tracked across all rounds" />
+        <StatCard label="Investor Capital" value={overview.investorCapital} icon={<DollarSign size={18} strokeWidth={2} />} subtext="Tracked across all rounds" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
         <section className="lg:col-span-5 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <h3 className="font-poppins font-semibold text-card text-text-heading mb-6">User Distribution</h3>
           <div className="space-y-4 mb-6">
-            {USER_DISTRIBUTION.map(({ label, pct }) => (
-              <div key={label}>
+            {overview.userDistribution.map(({ label, pct, count }) => (
+              <div key={label} title={`${count} Users`}>
                 <div className="flex justify-between mb-1.5">
                   <span className="font-inter text-small text-text-body">{label}</span>
                   <span className="font-inter font-semibold text-small text-text-heading">{pct}%</span>
@@ -139,7 +121,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-poppins font-semibold text-card text-text-heading">Startup Journey Funnel</h3>
             <div className="flex items-center gap-1 bg-canvas-bg rounded-md p-1">
-              {Object.keys(FUNNEL_VIEWS).map((view) => (
+              {Object.keys(overview.funnelViews).map((view) => (
                 <button
                   key={view}
                   type="button"
@@ -194,11 +176,13 @@ export default function AdminDashboardPage() {
             <p className="p-6 font-inter text-small text-text-muted">No critical actions — you're all caught up.</p>
           ) : (
             <div className="divide-y divide-border-subtle">
-              {criticalActions.map(({ id, icon: Icon, tone, title, detail, reviewHref }) => (
-                <div key={id} className="p-6 flex items-start gap-4">
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${TONE_CLASSES[tone]}`}>
-                    <Icon size={18} strokeWidth={2} />
-                  </div>
+              {criticalActions.map(({ id, iconType, tone, title, detail, reviewHref }) => {
+                const Icon = ICON_MAP[iconType] || AlertTriangle;
+                return (
+                  <div key={id} className="p-6 flex items-start gap-4">
+                    <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${TONE_CLASSES[tone]}`}>
+                      <Icon size={18} strokeWidth={2} />
+                    </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-inter font-semibold text-body text-text-heading">{title}</p>
                     <p className="font-inter text-small text-text-muted">{detail}</p>
@@ -218,7 +202,8 @@ export default function AdminDashboardPage() {
                     </button>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </section>
@@ -228,15 +213,18 @@ export default function AdminDashboardPage() {
             <h3 className="font-poppins font-semibold text-card text-text-heading">Activity Stream</h3>
           </div>
           <div className="divide-y divide-border-subtle">
-            {ACTIVITY_STREAM.map(({ icon: Icon, text, time }) => (
-              <div key={text} className="px-6 py-4 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center text-text-muted shrink-0">
-                  <Icon size={16} strokeWidth={2} />
+            {overview.activityStream.map(({ iconType, text, time }) => {
+              const Icon = ICON_MAP[iconType] || RefreshCw;
+              return (
+                <div key={text} className="px-6 py-4 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center text-text-muted shrink-0">
+                    <Icon size={16} strokeWidth={2} />
+                  </div>
+                  <p className="flex-1 font-inter text-small text-text-body">{text}</p>
+                  <span className="font-inter text-caption text-text-muted whitespace-nowrap">{time}</span>
                 </div>
-                <p className="flex-1 font-inter text-small text-text-body">{text}</p>
-                <span className="font-inter text-caption text-text-muted whitespace-nowrap">{time}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       </div>
@@ -246,25 +234,18 @@ export default function AdminDashboardPage() {
           <div className="flex-1">
             <h3 className="font-poppins font-semibold text-card mb-4">Upcoming Cycle</h3>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <Calendar size={16} strokeWidth={2} className="text-white/60 shrink-0" />
-                <p className="font-inter text-small flex-1">Advisory Board Sync — Today, 14:00</p>
-                <div className="flex -space-x-2" aria-hidden="true">
-                  {['S', 'M', 'E'].map((letter, i) => (
-                    <span
-                      key={letter}
-                      className="w-6 h-6 rounded-full bg-white/10 border-2 border-brand-black flex items-center justify-center text-[10px] font-semibold"
-                      style={{ zIndex: 3 - i }}
-                    >
-                      {letter}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Calendar size={16} strokeWidth={2} className="text-white/60 shrink-0" />
-                <p className="font-inter text-small flex-1">Investor Showcase Review — Tomorrow, 10:30 AM</p>
-              </div>
+              {overview.upcomingCycle.length > 0 ? (
+                overview.upcomingCycle.map((m, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <Calendar size={16} strokeWidth={2} className="text-white/60 shrink-0" />
+                    <p className="font-inter text-small flex-1">
+                      {m.title} — {new Date(m.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="font-inter text-small text-white/60">No upcoming meetings scheduled.</p>
+              )}
             </div>
           </div>
           <div className="w-full md:w-64 shrink-0">

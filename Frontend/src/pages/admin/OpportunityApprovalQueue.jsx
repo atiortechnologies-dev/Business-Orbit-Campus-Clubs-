@@ -1,19 +1,15 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, CheckCheck, Eye, Check, X, Hourglass, Verified, Ban, FileText } from 'lucide-react';
+import { Download, CheckCheck, Eye, Check, X, Hourglass, Verified, Ban, FileText, Loader2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import AdminShell from '@/components/admin/AdminShell';
 import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
 import StatCard from '@/components/ui/StatCard';
 import ComingSoon from '@/components/ui/ComingSoon';
+import Pagination from '@/components/ui/Pagination';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-
-const OPPORTUNITIES = [
-  { id: 'OP-8821', title: 'Senior Product Design Lead', company: 'Quantas Systems', type: 'Job', posted: 'Oct 12, 2023', deadline: 'Nov 15, 2023', status: 'Pending', reviewer: 'Jane Doe', reviewerInitials: 'JD' },
-  { id: 'OP-9012', title: 'AI Research Internship', company: 'Neural Foundry', type: 'Internship', posted: 'Oct 11, 2023', deadline: 'Dec 01, 2023', status: 'Approved', reviewer: 'Mark Smith', reviewerInitials: 'MS' },
-  { id: 'OP-7734', title: 'Sustainable Campus Project', company: 'EcoRoots Global', type: 'Collaboration', posted: 'Oct 10, 2023', deadline: 'Oct 30, 2023', status: 'Rejected', reviewer: null, reviewerInitials: null },
-  { id: 'OP-1109', title: 'Frontend Dev - Q4 Sprint', company: 'DevOps Dynamics', type: 'Project', posted: 'Oct 09, 2023', deadline: 'Nov 10, 2023', status: 'Draft', reviewer: 'Alex Rivera', reviewerInitials: 'AR' },
-];
+import { getOpportunitiesQueue } from '@/api/admin/adminMiscApi';
 
 const STATUS_VARIANT = { Pending: 'warning', Approved: 'success', Rejected: 'error', Draft: 'neutral' };
 const COMPANY_OPTIONS = ['All Companies', 'Quantas Systems', 'Neural Foundry', 'EcoRoots Global', 'DevOps Dynamics'];
@@ -26,8 +22,33 @@ export default function OpportunityApprovalQueuePage() {
   const [companyFilter, setCompanyFilter] = useState('All Companies');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [statusFilter, setStatusFilter] = useState('All Statuses');
+  const [page, setPage] = useState(1);
 
-  const visible = OPPORTUNITIES.filter((o) => {
+  const { data: opportunitiesResponse, isLoading, isError, error } = useQuery({
+    queryKey: ['adminOpportunities', page],
+    queryFn: () => getOpportunitiesQueue({ page, limit: 10 }),
+  });
+
+  const opportunitiesData = useMemo(() => {
+    if (opportunitiesResponse?.data?.opportunities) {
+      return opportunitiesResponse.data.opportunities.map(opp => ({
+        id: opp._id,
+        title: opp.title,
+        company: opp.company_id?.company_name || opp.company_id?.name || 'Unknown Company',
+        type: opp.opportunity_type || 'Unknown',
+        posted: new Date(opp.created_at).toLocaleDateString(),
+        deadline: opp.deadline ? new Date(opp.deadline).toLocaleDateString() : 'No deadline',
+        status: opp.status,
+        reviewer: opp.reviewer_id?.name || null,
+        reviewerInitials: opp.reviewer_id?.name ? opp.reviewer_id.name.substring(0, 2).toUpperCase() : null
+      }));
+    }
+    return [];
+  }, [opportunitiesResponse]);
+  
+  const metricCards = opportunitiesResponse?.data?.metricCards || { pending: 128, approved: 1240, rejected: 42, drafts: 18 };
+
+  const visible = opportunitiesData.filter((o) => {
     if (companyFilter !== 'All Companies' && o.company !== companyFilter) return false;
     if (typeFilter !== 'All Types' && o.type !== typeFilter) return false;
     if (statusFilter !== 'All Statuses' && o.status !== statusFilter) return false;
@@ -42,7 +63,7 @@ export default function OpportunityApprovalQueuePage() {
       render: (row) => (
         <div>
           <p className="font-poppins font-semibold text-small text-text-heading">{row.title}</p>
-          <p className="font-inter text-caption text-text-muted">{row.id}</p>
+          <p className="font-inter text-caption text-text-muted">{row.id || row._id}</p>
         </div>
       ),
     },
@@ -59,7 +80,7 @@ export default function OpportunityApprovalQueuePage() {
       key: 'status',
       label: 'Status',
       width: '0.9fr',
-      render: (row) => <Badge variant={STATUS_VARIANT[row.status]}>{row.status}</Badge>,
+      render: (row) => <Badge variant={STATUS_VARIANT[row.status] || 'neutral'}>{row.status}</Badge>,
     },
     {
       key: 'reviewer',
@@ -67,7 +88,7 @@ export default function OpportunityApprovalQueuePage() {
       width: '1.1fr',
       render: (row) => row.reviewer ? (
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[9px] text-text-heading">{row.reviewerInitials}</div>
+          <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[9px] text-text-heading">{row.reviewerInitials || row.reviewer.charAt(0)}</div>
           <span className="font-inter text-small text-text-body">{row.reviewer}</span>
         </div>
       ) : (
@@ -79,9 +100,9 @@ export default function OpportunityApprovalQueuePage() {
       label: 'Actions',
       width: '1.1fr',
       mobileLabel: false,
-      render: () => (
+      render: (row) => (
         <div className="flex items-center gap-1">
-          <Link to="/admin/opportunities/review" className="p-1.5 rounded-md text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors" title="View Details">
+          <Link to={`/admin/opportunities/review?id=${row.id || row._id}`} className="p-1.5 rounded-md text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors" title="View Details">
             <Eye size={16} strokeWidth={2} />
           </Link>
           <ComingSoon label="Approve" position="top" inline className="p-1.5 rounded-md text-success hover:bg-success/10 transition-colors">
@@ -119,10 +140,10 @@ export default function OpportunityApprovalQueuePage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Pending Reviews" value="128" icon={<Hourglass size={16} strokeWidth={2} />} subtext="+12% from yesterday" trendDirection="up" />
-        <StatCard label="Approved" value="1,240" icon={<Verified size={16} strokeWidth={2} />} subtext="System healthy" />
-        <StatCard label="Rejected" value="42" icon={<Ban size={16} strokeWidth={2} />} subtext="+3 reported issues" />
-        <StatCard label="Drafts" value="18" icon={<FileText size={16} strokeWidth={2} />} subtext="Expiring soon" />
+        <StatCard label="Pending Reviews" value={metricCards.pending.toString()} icon={<Hourglass size={16} strokeWidth={2} />} subtext="+12% from yesterday" trendDirection="up" />
+        <StatCard label="Approved" value={metricCards.approved.toString()} icon={<Verified size={16} strokeWidth={2} />} subtext="System healthy" />
+        <StatCard label="Rejected" value={metricCards.rejected.toString()} icon={<Ban size={16} strokeWidth={2} />} subtext="+3 reported issues" />
+        <StatCard label="Drafts" value={metricCards.drafts.toString()} icon={<FileText size={16} strokeWidth={2} />} subtext="Expiring soon" />
       </div>
 
       <div className="flex flex-wrap items-center gap-4 bg-surface-white border border-border-subtle rounded-lg p-4 mb-6 shadow-card">
@@ -137,10 +158,28 @@ export default function OpportunityApprovalQueuePage() {
         </select>
       </div>
 
-      <DataTable columns={columns} rows={visible} emptyMessage="No opportunities match the current filters." />
-      <p className="font-inter text-small text-text-muted mt-4">
-        Showing {visible.length} of {OPPORTUNITIES.length} results
-      </p>
+      {isLoading ? (
+        <div className="flex justify-center items-center py-12">
+          <Loader2 className="w-8 h-8 text-brand-black animate-spin" />
+        </div>
+      ) : isError ? (
+        <div className="p-8 text-center bg-error/10 text-error rounded-lg border border-error/20 mb-8">
+          <p className="font-poppins font-semibold text-body">Failed to load opportunities.</p>
+          <p className="font-inter text-small mt-2">{error.message || 'Please try again later.'}</p>
+        </div>
+      ) : (
+        <>
+          <DataTable columns={columns} rows={visible} emptyMessage="No opportunities match the current filters." />
+          <Pagination 
+            currentPage={page} 
+            totalPages={opportunitiesResponse?.data?.total_pages || 1} 
+            onPageChange={setPage} 
+          />
+          <p className="font-inter text-small text-text-muted mt-4 text-center">
+            Showing {visible.length} entries (Page {page} of {opportunitiesResponse?.data?.total_pages || 1})
+          </p>
+        </>
+      )}
     </AdminShell>
   );
 }

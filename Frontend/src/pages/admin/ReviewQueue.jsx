@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   Download,
   Zap,
@@ -19,7 +20,7 @@ import StatCard from "@/components/ui/StatCard";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { downloadCsv } from "@/utils/csv";
-import { getReviewQueue } from "@/api/admin/adminStartupReviewApi";
+import { getReviewQueue } from "@/api/admin/adminReviewApi";
 
 const STATUS_VARIANT = {
   Pending: "info",
@@ -35,39 +36,24 @@ export default function ReviewQueuePage() {
   useDocumentTitle("Stage Approval Queue — BOCC Admin");
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
-  const [submissions, setSubmissions] = useState([]);
-  const [stats, setStats] = useState({
+  const { data, isLoading: loading, error } = useQuery({
+    queryKey: ["adminReviewQueue"],
+    queryFn: getReviewQueue,
+  });
+
+  const submissions = data?.data?.submissions || [];
+  const stats = data?.data?.stats || {
     pendingReviews: 0,
     approvedToday: 0,
     rejectedToday: 0,
     meetingsPending: 0,
-  });
+  };
 
   // Client-side Filters
   const [stageFilter, setStageFilter] = useState("All Stages");
   const [statusFilter, setStatusFilter] = useState("All Statuses");
   const [chapterFilter, setChapterFilter] = useState("All Chapters");
   const [dateFilter, setDateFilter] = useState("");
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const res = await getReviewQueue();
-        const data = res?.data || res;
-        setSubmissions(data?.submissions || []);
-        if (data?.stats) {
-          setStats(data.stats);
-        }
-      } catch (error) {
-        console.error("Failed to load review queue:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
 
   const chapterOptions = [
     "All Chapters",
@@ -248,6 +234,10 @@ export default function ReviewQueuePage() {
       {loading ? (
         <div className="flex justify-center py-16">
           <Loader2 size={32} className="animate-spin text-text-muted" />
+        </div>
+      ) : error ? (
+        <div className="flex justify-center py-16 text-error">
+          <p>Failed to load review queue. Please try again.</p>
         </div>
       ) : (
         <>

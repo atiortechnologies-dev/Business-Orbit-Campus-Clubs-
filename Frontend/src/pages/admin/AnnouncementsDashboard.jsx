@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   Plus,
   Archive,
@@ -7,7 +8,6 @@ import {
   Eye,
   Edit,
   Zap,
-  Info,
   Loader2,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
@@ -38,38 +38,24 @@ export default function AnnouncementsDashboardPage() {
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [priorityFilter, setPriorityFilter] = useState("All Priority");
 
-  const [announcements, setAnnouncements] = useState([]);
-  const [stats, setStats] = useState({
+  const { data: res, isLoading: loading, isError } = useQuery({
+    queryKey: ["adminAnnouncements", statusFilter, priorityFilter],
+    queryFn: () => {
+      const params = {};
+      if (statusFilter !== "All Status") params.status = statusFilter;
+      if (priorityFilter !== "All Priority") params.priority = priorityFilter;
+      return getAnnouncements(params);
+    },
+  });
+
+  const data = res?.data || res;
+  const announcements = Array.isArray(data) ? data : data?.data || [];
+  const stats = res?.stats || {
     total_views_today: 0,
     published_today: 0,
     scheduled: 0,
     drafts: 0,
-  });
-  const [loading, setLoading] = useState(true);
-
-  const fetchAnnouncementsData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const params = {};
-      if (statusFilter !== "All Status") params.status = statusFilter;
-      if (priorityFilter !== "All Priority") params.priority = priorityFilter;
-
-      const res = await getAnnouncements(params);
-      const data = res?.data || res;
-
-      // Extract array payload and stats
-      setAnnouncements(Array.isArray(data) ? data : data?.data || []);
-      if (res?.stats) setStats(res.stats);
-    } catch (err) {
-      console.error("Failed to load announcements:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [statusFilter, priorityFilter]);
-
-  useEffect(() => {
-    fetchAnnouncementsData();
-  }, [fetchAnnouncementsData]);
+  };
 
   const columns = [
     {
@@ -233,6 +219,10 @@ export default function AnnouncementsDashboardPage() {
           {loading ? (
             <div className="flex items-center justify-center py-20 bg-surface-white border border-border-subtle rounded-lg">
               <Loader2 size={32} className="animate-spin text-text-muted" />
+            </div>
+          ) : isError ? (
+            <div className="flex items-center justify-center py-20 bg-surface-white border border-border-subtle rounded-lg text-error">
+              Failed to load announcements. Please try again.
             </div>
           ) : (
             <>

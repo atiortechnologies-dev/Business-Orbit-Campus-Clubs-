@@ -6,6 +6,7 @@
 
 const express = require("express");
 const {
+  getChapters,
   getChapterOverview,
   getChapterStudents,
   getChapterStartups,
@@ -16,6 +17,7 @@ const {
 
 const router = express.Router();
 
+router.get("/", getChapters);
 router.get("/:id/overview", getChapterOverview);
 router.get("/:id/students", getChapterStudents);
 router.get("/:id/startups", getChapterStartups);

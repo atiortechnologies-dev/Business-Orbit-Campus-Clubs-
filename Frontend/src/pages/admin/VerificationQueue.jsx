@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Download, Zap, Loader2 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
@@ -7,8 +7,8 @@ import Badge from "@/components/ui/Badge";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { downloadCsv } from "@/utils/csv";
-import { getVerificationQueue } from "@/api/admin/adminUsersVerificationApi";
-
+import { useQuery } from "@tanstack/react-query";
+import { getVerificationQueue } from "@/api/admin/adminVerificationApi";
 const ROLE_OPTIONS = [
   "All Roles",
   "Student",
@@ -35,9 +35,6 @@ export default function VerificationQueuePage() {
   useDocumentTitle("User Verification Queue — BOCC Admin");
   const navigate = useNavigate();
 
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   // Client-side filter states
   const [roleFilter, setRoleFilter] = useState("All Roles");
   const [statusFilter, setStatusFilter] = useState("All Statuses");
@@ -48,22 +45,16 @@ export default function VerificationQueuePage() {
 
   const [selectedIds, setSelectedIds] = useState([]);
 
-  // Fetch all pending users once on mount (No parameters required)
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        setLoading(true);
-        const res = await getVerificationQueue();
-        const data = res?.data || res;
-        setUsers(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Failed to load verification queue:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchUsers();
-  }, []);
+  const { data: usersData, isLoading: loading, isError } = useQuery({
+    queryKey: ["adminVerificationQueue"],
+    queryFn: async () => {
+      const res = await getVerificationQueue();
+      const data = res?.data || res;
+      return Array.isArray(data) ? data : [];
+    },
+  });
+
+  const users = usersData || [];
 
   const handleApplyFilters = () => {
     setDateFrom(dateFromInput);
@@ -273,6 +264,10 @@ export default function VerificationQueuePage() {
       {loading ? (
         <div className="flex justify-center py-16">
           <Loader2 size={32} className="animate-spin text-text-muted" />
+        </div>
+      ) : isError ? (
+        <div className="flex justify-center py-16 text-error font-inter font-medium text-small">
+          Failed to load verification queue. Please try again later.
         </div>
       ) : (
         <>

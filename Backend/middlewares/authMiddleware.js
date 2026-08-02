@@ -58,7 +58,7 @@ const protect = asyncHandler(async (req, res, next) => {
  * @param   {string} role - The allowed user role (e.g., 'student', 'admin')
  */
 const requireRole = (role) => (req, res, next) => {
-  if (!req.user || req.user.role !== role) {
+  if (!req.user || (req.user.role !== role && req.user.role !== "super_admin")) {
     return res.status(403).json({
       success: false,
       message: `This endpoint is only available to ${role} accounts`,

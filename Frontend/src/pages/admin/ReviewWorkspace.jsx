@@ -1,9 +1,12 @@
 import { useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { getSubmissionDetail, submitReviewDecision } from '@/api/admin/adminReviewApi';
 import { ChevronRight, Lock, Send, FileText } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import Badge from '@/components/ui/Badge';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { Loader2 } from 'lucide-react';
 
 const INITIAL_CHECKLIST = [
   { id: 'c1', label: 'Technical Whitepaper Review', done: true },
@@ -27,8 +30,20 @@ const DECISIONS = [
 ];
 
 export default function ReviewWorkspacePage() {
-  useDocumentTitle('Evaluation Workspace: NeuralStream AI — BOCC Admin');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const submissionId = searchParams.get('id');
+
+  const { data: resData, isLoading, error } = useQuery({
+    queryKey: ['adminSubmissionDetail', submissionId],
+    queryFn: () => getSubmissionDetail(submissionId),
+    enabled: !!submissionId,
+  });
+
+  const data = resData?.data;
+  const startupName = data?.startup?.name || 'NeuralStream AI';
+
+  useDocumentTitle(`Evaluation Workspace: ${startupName} — BOCC Admin`);
 
   const [checklist, setChecklist] = useState(INITIAL_CHECKLIST);
   const [metrics, setMetrics] = useState(INITIAL_METRICS);
@@ -59,6 +74,46 @@ export default function ReviewWorkspacePage() {
     setTimeout(() => setDraftSaved(false), 2000);
   }
 
+  const decisionMutation = useMutation({
+    mutationFn: (payload) => submitReviewDecision(submissionId, payload),
+    onSuccess: () => {
+      navigate(`/admin/reviews/outcome${submissionId ? `?id=${submissionId}` : ''}`);
+    },
+  });
+
+  const handleSubmitReview = () => {
+    if (!decision) return;
+    
+    if (submissionId) {
+      decisionMutation.mutate({
+        decision: decision === 'approve' ? 'approve' : 'request_changes',
+        remarks: strengths,
+      });
+    } else {
+      navigate(`/admin/reviews/outcome`);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center py-20">
+          <Loader2 size={32} className="animate-spin text-text-muted" />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (error) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center py-20 text-error">
+          <p>Failed to load workspace data. Please try again.</p>
+        </div>
+      </AdminShell>
+    );
+  }
+
   return (
     <AdminShell>
       <nav className="mb-6 flex items-center gap-2 text-text-muted font-inter text-small">
@@ -66,13 +121,13 @@ export default function ReviewWorkspacePage() {
         <ChevronRight size={14} strokeWidth={2} />
         <span>Active Queue</span>
         <ChevronRight size={14} strokeWidth={2} />
-        <span className="text-text-heading font-semibold">Evaluation Workspace: NeuralStream AI</span>
+        <span className="text-text-heading font-semibold">Evaluation Workspace: {startupName}</span>
       </nav>
 
       <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="font-poppins font-semibold text-page text-text-heading">Evaluation Workspace</h1>
-          <p className="font-inter text-body text-text-body mt-1">Reviewing NeuralStream AI for Seed Stage Funding Approval.</p>
+          <p className="font-inter text-body text-text-body mt-1">Reviewing {startupName} for Seed Stage Funding Approval.</p>
         </div>
         <Badge variant="error">Priority Review</Badge>
       </div>
@@ -204,13 +259,13 @@ export default function ReviewWorkspacePage() {
           </button>
           <button
             type="button"
-            disabled={!decision}
-            onClick={() => navigate('/admin/reviews/outcome')}
+            disabled={!decision || decisionMutation.isPending}
+            onClick={handleSubmitReview}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-md font-poppins font-semibold text-small transition-all ${
               decision ? 'bg-action-bg text-action-text hover:opacity-90 active:scale-[0.98]' : 'bg-canvas-bg text-text-muted cursor-not-allowed'
             }`}
           >
-            Submit Review <Send size={14} strokeWidth={2} />
+            {decisionMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : 'Submit Review'} <Send size={14} strokeWidth={2} />
           </button>
         </div>
       </div>

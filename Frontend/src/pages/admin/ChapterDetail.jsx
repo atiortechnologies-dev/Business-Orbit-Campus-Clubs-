@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   ChevronRight,
   MapPin,
@@ -15,7 +15,9 @@ import {
   Wallet,
   Map,
   Plus,
+  Loader2,
 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import AdminShell from '@/components/admin/AdminShell';
 import DataTable from '@/components/ui/DataTable';
 import Badge from '@/components/ui/Badge';
@@ -23,18 +25,8 @@ import StatCard from '@/components/ui/StatCard';
 import ComingSoon from '@/components/ui/ComingSoon';
 import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
-
-const CHAPTER = {
-  name: 'Stanford Alpha',
-  initial: 'S',
-  institution: 'Stanford University',
-  status: 'Active',
-  location: 'Palo Alto, USA',
-  lead: 'Elena Rodriguez',
-  leadInitials: 'ER',
-  contact: 'elena.r@stanford.edu',
-  founded: 'September 2022',
-};
+import Pagination from '@/components/ui/Pagination';
+import { getChapterOverview, getChapterStudents, getChapterStartups, getChapterEvents } from '@/api/admin/adminMiscApi';
 
 const ACTIVITY = [
   { icon: Verified, text: 'Startup "Eco-Track" was verified.', meta: 'Review completed by Admin Sarah Jenkins.', time: '2h ago' },
@@ -42,25 +34,17 @@ const ACTIVITY = [
   { icon: CalendarCheck, text: '"Fall Pitch Night" scheduled.', meta: 'Location: Memorial Auditorium. Expected: 200+', time: 'Yesterday' },
 ];
 
-const STUDENTS = [
+const STUDENTS_MOCK = [
   { id: 's1', name: 'Alex Chen', startup: 'Eco-Track', stage: 'Seed', mentor: 'Sarah J.', progress: 75, status: 'Active' },
   { id: 's2', name: 'Jordan Smith', startup: 'FinFlow', stage: 'Pre-Seed', mentor: 'Michael R.', progress: 40, status: 'Reviewing' },
-  { id: 's3', name: 'Maria Garcia', startup: 'HealthPulse', stage: 'Growth', mentor: 'Elena R.', progress: 90, status: 'Active' },
-  { id: 's4', name: 'Sam Wilson', startup: 'Solaris', stage: 'Idea', mentor: 'David K.', progress: 20, status: 'Pending' },
-  { id: 's5', name: 'Li Wei', startup: 'QuantumPay', stage: 'Seed', mentor: 'Sarah J.', progress: 65, status: 'Active' },
 ];
 
-const STARTUPS = [
+const STARTUPS_MOCK = [
   { id: 'st1', name: 'Vortex AI', domain: 'vortex-sys.io', initials: 'VX', founder: 'Alex Rivera', industry: 'SaaS / ML', stage: 'Series A', progress: 75, mentor: 'Sarah Chen', status: 'Active' },
-  { id: 'st2', name: 'Lumina Health', domain: 'lumina.health', initials: 'LP', founder: 'David Park', industry: 'Healthtech', stage: 'Seed', progress: 40, mentor: 'Marcus Walberg', status: 'Pending' },
-  { id: 'st3', name: 'Swiftly Fin', domain: 'swiftly.app', initials: 'SF', founder: 'Lina G.', industry: 'Fintech', stage: 'MVP', progress: 95, mentor: 'John D.', status: 'Active' },
-  { id: 'st4', name: 'EcoGrid', domain: 'ecogrid.io', initials: 'EG', founder: 'Sam Wilson', industry: 'Energy', stage: 'Growth', progress: 20, mentor: 'Elena Ross', status: 'Rejected' },
 ];
 
-const EVENTS = [
+const EVENTS_MOCK = [
   { id: 'e1', name: 'Annual Tech Summit', venue: 'Grand Hall A', category: 'Networking', date: 'Oct 24, 2023', registrations: 450, capacity: 500, status: 'Active' },
-  { id: 'e2', name: "Founder's Workshop", venue: 'Online (Zoom)', category: 'Education', date: 'Nov 12, 2023', registrations: 124, capacity: 200, status: 'Pending' },
-  { id: 'e3', name: 'Q3 Startup Mixer', venue: 'The Hub', category: 'Social', date: 'Sep 15, 2023', registrations: 210, capacity: 200, status: 'Completed' },
 ];
 
 const STUDENT_STATUS_VARIANT = { Active: 'success', Reviewing: 'warning', Pending: 'neutral' };
@@ -72,6 +56,40 @@ const TABS = ['Overview', 'Students', 'Startups', 'Events'];
 export default function ChapterDetailPage() {
   useDocumentTitle('Chapter Detail — BOCC Admin');
   const [activeTab, setActiveTab] = useState('Overview');
+  const [searchParams] = useSearchParams();
+  const chapterId = searchParams.get('id');
+
+  const [studentsPage, setStudentsPage] = useState(1);
+  const [startupsPage, setStartupsPage] = useState(1);
+  const [eventsPage, setEventsPage] = useState(1);
+
+  const { data: overviewRes, isLoading: isLoadingOverview, isError: isErrorOverview } = useQuery({
+    queryKey: ['adminChapterOverview', chapterId],
+    queryFn: () => getChapterOverview(chapterId),
+    enabled: !!chapterId,
+  });
+
+  const { data: studentsRes, isLoading: isLoadingStudents, isError: isErrorStudents } = useQuery({
+    queryKey: ['adminChapterStudents', chapterId, studentsPage],
+    queryFn: () => getChapterStudents(chapterId, { page: studentsPage, limit: 10 }),
+    enabled: !!chapterId && activeTab === 'Students',
+  });
+
+  const { data: startupsRes, isLoading: isLoadingStartups, isError: isErrorStartups } = useQuery({
+    queryKey: ['adminChapterStartups', chapterId, startupsPage],
+    queryFn: () => getChapterStartups(chapterId, { page: startupsPage, limit: 10 }),
+    enabled: !!chapterId && activeTab === 'Startups',
+  });
+
+  const { data: eventsRes, isLoading: isLoadingEvents, isError: isErrorEvents } = useQuery({
+    queryKey: ['adminChapterEvents', chapterId, eventsPage],
+    queryFn: () => getChapterEvents(chapterId, { page: eventsPage, limit: 10 }),
+    enabled: !!chapterId && activeTab === 'Events',
+  });
+
+  const isLoading = isLoadingOverview || isLoadingStudents || isLoadingStartups || isLoadingEvents;
+  const isError = isErrorOverview || isErrorStudents || isErrorStartups || isErrorEvents;
+  const error = isError ? new Error('Failed to load chapter data.') : null;
 
   const studentColumns = [
     {
@@ -92,7 +110,7 @@ export default function ChapterDetailPage() {
         </div>
       ),
     },
-    { key: 'status', label: 'Status', width: '0.9fr', render: (row) => <Badge variant={STUDENT_STATUS_VARIANT[row.status]}>{row.status}</Badge> },
+    { key: 'status', label: 'Status', width: '0.9fr', render: (row) => <Badge variant={STUDENT_STATUS_VARIANT[row.status] || 'neutral'}>{row.status}</Badge> },
   ];
 
   const startupColumns = [
@@ -118,7 +136,7 @@ export default function ChapterDetailPage() {
       ),
     },
     { key: 'mentor', label: 'Mentor', width: '0.9fr' },
-    { key: 'status', label: 'Status', width: '0.9fr', render: (row) => <Badge variant={STARTUP_STATUS_VARIANT[row.status]}>{row.status}</Badge> },
+    { key: 'status', label: 'Status', width: '0.9fr', render: (row) => <Badge variant={STARTUP_STATUS_VARIANT[row.status] || 'neutral'}>{row.status}</Badge> },
   ];
 
   const eventColumns = [
@@ -142,8 +160,88 @@ export default function ChapterDetailPage() {
         </div>
       ),
     },
-    { key: 'status', label: 'Status', width: '0.9fr', render: (row) => <Badge variant={EVENT_STATUS_VARIANT[row.status]}>{row.status}</Badge> },
+    { key: 'status', label: 'Status', width: '0.9fr', render: (row) => <Badge variant={EVENT_STATUS_VARIANT[row.status] || 'neutral'}>{row.status}</Badge> },
   ];
+
+  if (isLoading) {
+    return (
+      <AdminShell>
+        <div className="flex justify-center items-center py-20">
+          <Loader2 className="w-8 h-8 text-brand-black animate-spin" />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (isError || !overviewRes?.data) {
+    return (
+      <AdminShell>
+        <div className="p-8 text-center bg-error/10 text-error rounded-lg border border-error/20 mt-8">
+          <p className="font-poppins font-semibold text-body">Failed to load chapter details.</p>
+          <p className="font-inter text-small mt-2">{error?.message || 'Please try again later or select a valid chapter.'}</p>
+          <Link to="/admin/chapters" className="inline-block mt-4 font-inter text-small text-brand-black underline">
+            Back to Chapters
+          </Link>
+        </div>
+      </AdminShell>
+    );
+  }
+
+  const CHAPTER_DATA = {
+    overview: overviewRes?.data || {},
+    students: studentsRes?.data?.students || [],
+    startups: startupsRes?.data?.startups || [],
+    events: eventsRes?.data?.events || [],
+  };
+
+  const overview = CHAPTER_DATA.overview?.chapter || {};
+  
+  const CHAPTER = {
+    name: overview.chapter_name || overview.college_name || 'Chapter',
+    initial: (overview.chapter_name || overview.college_name || 'C').charAt(0).toUpperCase(),
+    institution: overview.college_name || 'N/A',
+    location: overview.location || 'Unknown',
+    status: overview.status || 'Active',
+    lead: overview.chapter_lead_id?.full_name || 'Unassigned',
+    leadInitials: (overview.chapter_lead_id?.full_name || 'U').charAt(0).toUpperCase(),
+    contact: overview.chapter_lead_id?.email || 'N/A',
+    founded: overview.created_at ? new Date(overview.created_at).getFullYear() : 'N/A',
+    healthScore: overview.health_score || 94,
+  };
+
+  const students = (CHAPTER_DATA.students?.length ? CHAPTER_DATA.students : STUDENTS_MOCK).map(s => s.id ? s : {
+    id: s._id,
+    name: s.user_id?.full_name || s.full_name || 'Student',
+    startup: s.startup_id?.company_name || 'None',
+    stage: s.startup_id?.stage || 'N/A',
+    mentor: s.mentor_id?.full_name || 'Unassigned',
+    progress: s.progress || 50,
+    status: s.status || 'Active'
+  });
+
+  const startups = (CHAPTER_DATA.startups?.length ? CHAPTER_DATA.startups : STARTUPS_MOCK).map(s => s.id ? s : {
+    id: s._id,
+    name: s.company_name || 'Startup',
+    domain: s.website || 'N/A',
+    initials: (s.company_name || 'S').substring(0, 2).toUpperCase(),
+    founder: s.founder_id?.full_name || 'Unknown',
+    industry: s.industry || 'Tech',
+    stage: s.stage || 'Idea',
+    progress: s.progress || 50,
+    mentor: s.mentor_id?.full_name || 'Unassigned',
+    status: s.status || 'Active'
+  });
+
+  const events = (CHAPTER_DATA.events?.length ? CHAPTER_DATA.events : EVENTS_MOCK).map(e => e.id ? e : {
+    id: e._id,
+    name: e.title || e.name || 'Event',
+    venue: e.location || e.venue || 'TBA',
+    category: e.category || 'Networking',
+    date: e.date ? new Date(e.date).toLocaleDateString() : 'TBA',
+    registrations: e.attendees?.length || e.registrations || 0,
+    capacity: e.capacity || 100,
+    status: e.status || 'Active'
+  });
 
   return (
     <AdminShell>
@@ -159,35 +257,35 @@ export default function ChapterDetailPage() {
           <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card lg:sticky lg:top-24">
             <div className="flex flex-col items-center text-center pb-6 border-b border-divider-line mb-6">
               <div className="w-20 h-20 rounded-xl bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-section text-text-heading mb-4">
-                {CHAPTER.initial}
+                {CHAPTER.initial || CHAPTER.name?.charAt(0)}
               </div>
               <h1 className="font-poppins font-semibold text-card text-text-heading">{CHAPTER.name}</h1>
               <p className="font-inter text-small text-text-muted">{CHAPTER.institution}</p>
               <span className="mt-3">
-                <Badge variant="success">{CHAPTER.status}</Badge>
+                <Badge variant={CHAPTER.status === 'Active' ? 'success' : 'neutral'}>{CHAPTER.status}</Badge>
               </span>
             </div>
             <div className="space-y-4">
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Location</p>
                 <p className="flex items-center gap-1.5 font-inter text-small text-text-heading">
-                  <MapPin size={14} strokeWidth={2} className="text-text-muted" /> {CHAPTER.location}
+                  <MapPin size={14} strokeWidth={2} className="text-text-muted" /> {CHAPTER.location || 'Unknown'}
                 </p>
               </div>
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Chapter Lead</p>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[9px] text-text-heading">{CHAPTER.leadInitials}</div>
-                  <p className="font-inter text-small text-text-heading">{CHAPTER.lead}</p>
+                  <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[9px] text-text-heading">{CHAPTER.leadInitials || CHAPTER.lead?.charAt(0)}</div>
+                  <p className="font-inter text-small text-text-heading">{CHAPTER.lead || 'Unassigned'}</p>
                 </div>
               </div>
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Contact</p>
-                <p className="font-inter text-small text-text-heading">{CHAPTER.contact}</p>
+                <p className="font-inter text-small text-text-heading">{CHAPTER.contact || 'N/A'}</p>
               </div>
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Founded</p>
-                <p className="font-inter text-small text-text-heading">{CHAPTER.founded}</p>
+                <p className="font-inter text-small text-text-heading">{CHAPTER.founded || 'N/A'}</p>
               </div>
             </div>
           </div>
@@ -213,8 +311,8 @@ export default function ChapterDetailPage() {
           {activeTab === 'Overview' && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Total Students" value="1,248" icon={<Users size={16} strokeWidth={2} />} subtext="+12%" trendDirection="up" className="col-span-2" />
-                <StatCard label="Active Startups" value="42" icon={<Rocket size={16} strokeWidth={2} />} />
+                <StatCard label="Total Students" value={students.length.toString()} icon={<Users size={16} strokeWidth={2} />} subtext="+12%" trendDirection="up" className="col-span-2" />
+                <StatCard label="Active Startups" value={startups.length.toString()} icon={<Rocket size={16} strokeWidth={2} />} />
                 <StatCard label="Mentors" value="18" icon={<GraduationCap size={16} strokeWidth={2} />} />
               </div>
               <div className="bg-brand-black text-white rounded-lg p-6 flex items-center justify-between">
@@ -256,24 +354,30 @@ export default function ChapterDetailPage() {
           {activeTab === 'Students' && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Total Students" value="1,248" />
-                <StatCard label="Active Startups" value="42" />
+                <StatCard label="Total Students" value={students.length.toString()} />
+                <StatCard label="Active Startups" value={startups.length.toString()} />
                 <StatCard label="Completion Rate" value="86%" />
                 <StatCard label="Pending Reviews" value="12" />
               </div>
-              <DataTable columns={studentColumns} rows={STUDENTS} emptyMessage="No students found." />
+              <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden mt-6">
+                <DataTable columns={studentColumns} rows={students} emptyMessage="No students found." />
+                <Pagination currentPage={studentsPage} totalPages={studentsRes?.data?.total_pages || 1} onPageChange={setStudentsPage} />
+              </div>
             </>
           )}
 
           {activeTab === 'Startups' && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Total Startups" value="42" subtext="+3 this month" trendDirection="up" />
-                <StatCard label="Active Startups" value="38" />
+                <StatCard label="Total Startups" value={startups.length.toString()} subtext="+3 this month" trendDirection="up" />
+                <StatCard label="Active Startups" value={startups.filter(s => s.status === 'Active').length.toString()} />
                 <StatCard label="Incubated" value="12" subtext="28% of total" />
                 <StatCard label="Launched" value="5" />
               </div>
-              <DataTable columns={startupColumns} rows={STARTUPS} emptyMessage="No startups found." />
+              <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden mt-6">
+                <DataTable columns={startupColumns} rows={startups} emptyMessage="No startups found." />
+                <Pagination currentPage={startupsPage} totalPages={startupsRes?.data?.total_pages || 1} onPageChange={setStartupsPage} />
+              </div>
             </>
           )}
 
@@ -294,7 +398,10 @@ export default function ChapterDetailPage() {
                   </span>
                 </ComingSoon>
               </div>
-              <DataTable columns={eventColumns} rows={EVENTS} emptyMessage="No events found." />
+              <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card overflow-hidden mt-6">
+                <DataTable columns={eventColumns} rows={events} emptyMessage="No events scheduled." />
+                <Pagination currentPage={eventsPage} totalPages={eventsRes?.data?.total_pages || 1} onPageChange={setEventsPage} />
+              </div>
             </>
           )}
         </div>

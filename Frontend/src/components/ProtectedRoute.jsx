@@ -21,7 +21,11 @@ const ProtectedRoute = ({ allowedRoles }) => {
   }
 
   // Check if route requires specific roles
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  if (
+    allowedRoles &&
+    !allowedRoles.includes(user.role) &&
+    user.role !== "super_admin"
+  ) {
     return <Navigate to="/unauthorized" replace />;
   }
 
