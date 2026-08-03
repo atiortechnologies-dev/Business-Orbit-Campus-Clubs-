@@ -203,6 +203,8 @@ const AnnouncementPublished = lazy(
 );
 const ChapterManagement = lazy(() => import("@/pages/admin/ChapterManagement"));
 const ChapterDetail = lazy(() => import("@/pages/admin/ChapterDetail"));
+const CreateChapter = lazy(() => import("@/pages/admin/CreateChapter"));
+const ChapterOnboarding = lazy(() => import("@/pages/admin/ChapterOnboarding"));
 const OpportunityApprovalQueue = lazy(
   () => import("@/pages/admin/OpportunityApprovalQueue"),
 );
@@ -630,7 +632,16 @@ export const router = createBrowserRouter([
         element: withSuspense(AnnouncementPublished),
       },
       { path: "/admin/chapters", element: withSuspense(ChapterManagement) },
+      { path: "/admin/chapters/create", element: withSuspense(CreateChapter) },
+      {
+        path: "/admin/chapters/onboarding/:chapterId",
+        element: withSuspense(ChapterOnboarding),
+      },
       { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
+      {
+        path: "/admin/chapters/detail/:chapterId",
+        element: withSuspense(ChapterDetail),
+      },
       {
         path: "/admin/opportunities",
         element: withSuspense(OpportunityApprovalQueue),
