@@ -87,15 +87,28 @@ export default function RoleSignupForm({
 
       await fetchUser({ silent: false });
 
-      await fetchUser({ silent: false });
-
       // Safe navigation using response payload
       const redirectTo = res.data?.redirect_to || "/email-verification";
       navigate(redirectTo);
     } catch (err) {
-      setError(
-        err.message || "An unexpected error occurred. Please try again.",
-      );
+      const backendErrors = err.data?.errors;
+
+      if (Array.isArray(backendErrors) && backendErrors.length > 0) {
+        // Join all messages into a readable bulleted list or string
+        const detailedMessage = backendErrors
+          .map((e) => e.message)
+          .filter(Boolean)
+          .join(". ");
+
+        setError(detailedMessage);
+      } else {
+        // 2. Fallback to general message
+        setError(
+          err.data?.message ||
+            err.message ||
+            "An unexpected error occurred. Please try again.",
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -142,7 +155,7 @@ export default function RoleSignupForm({
                         isLoading ||
                         (field.name === "college" && isLoadingChapters)
                       }
-                      className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-[44px] px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black disabled:opacity-50"
+                      className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-11 px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black disabled:opacity-50"
                     >
                       <option value="" disabled>
                         {field.name === "college" && isLoadingChapters

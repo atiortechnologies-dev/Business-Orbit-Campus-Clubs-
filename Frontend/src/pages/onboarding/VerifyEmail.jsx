@@ -165,8 +165,6 @@ export default function VerifyEmailPage() {
 
       await fetchUser({ silent: false });
 
-      await fetchUser({ silent: false });
-
       // 3. Resolve destination URL safely with fallback
       const destination =
         payload?.redirect_to ||
