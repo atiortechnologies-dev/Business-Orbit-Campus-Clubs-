@@ -37,7 +37,11 @@ const GuestRoute = () => {
   }
 
   // If user is already authenticated, redirect them away from auth pages
-  if (user) {
+  if (
+    user &&
+    user.account_status === "active" &&
+    user.profile_status !== "not_started"
+  ) {
     const destination = getDashboardPath(user.role);
     return <Navigate to={destination} replace />;
   }

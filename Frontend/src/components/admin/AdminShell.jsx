@@ -19,6 +19,7 @@ import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
+import { useAuth } from "@/context/AuthContext";
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin", real: true },
@@ -39,31 +40,44 @@ const NAV_ITEMS = [
     icon: Lightbulb,
     label: "Opportunities",
     href: "/admin/opportunities",
-    real: true,
+    real: false,
   },
   { icon: Building2, label: "Chapters", href: "/admin/chapters", real: true },
-  {
-    icon: Building2,
-    label: "Chapter Requests",
-    href: "/admin/chapter-change-requests",
-    real: true,
-  },
-  { icon: History, label: "Audit Log", href: "/admin/audit-log", real: true },
-  {
-    icon: ShieldCheck,
-    label: "User Mgmt",
-    href: "/admin/user-management",
-    real: true,
-  },
+  // {
+  //   icon: Building2,
+  //   label: "Chapter Requests",
+  //   href: "/admin/chapter-change-requests",
+  //   real: true,
+  // },
+  { icon: History, label: "Audit Log", href: "/admin/audit-log", real: false },
+  // {
+  //   icon: ShieldCheck,
+  //   label: "User Mgmt",
+  //   href: "/admin/user-management",
+  //   real: true,
+  // },
 ];
 
-// Same three-piece pattern (header + content slot + footer, shared
-// <Sidebar>) as DashboardShell/IncubatorShell — see those files for the
-// reasoning; this is the third instance of one pattern, not a fourth
-// divergent one.
+function getUserInitials(user) {
+  if (!user) return "GU";
+  const name = user.full_name || user.email || "";
+  if (!name) return "US";
+
+  const cleanName = name.split("@")[0].trim();
+  const parts = cleanName.split(" ").filter(Boolean);
+
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+  return cleanName.slice(0, 2).toUpperCase();
+}
+
 export default function AdminShell({ children }) {
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, onToggleCollapse] = useSidebarCollapsed();
+  const { user } = useAuth();
+
+  const initials = getUserInitials(user);
 
   return (
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
@@ -83,7 +97,7 @@ export default function AdminShell({ children }) {
         <div className="border-t border-white/10 pt-4 mb-4 space-y-1">
           <ComingSoon
             label="New Request"
-            position="top"
+            position="top-right"
             inline={false}
             className="flex items-center gap-3 py-2 px-3 text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200"
           >
@@ -107,9 +121,9 @@ export default function AdminShell({ children }) {
       </Sidebar>
 
       <main
-        className={`${collapsed ? "lg:pl-20" : "lg:pl-[var(--spacing-sidebar-width)]"} min-h-screen flex flex-col`}
+        className={`${collapsed ? "lg:pl-20" : "lg:pl-sidebar-width"} min-h-screen flex flex-col`}
       >
-        <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
+        <header className="sticky top-0 z-40 w-full h-18 bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -147,17 +161,14 @@ export default function AdminShell({ children }) {
               >
                 <Settings size={20} strokeWidth={2} />
               </Link>
-              <Link
-                to="/admin/settings"
-                className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
-              >
-                AR
-              </Link>
+              <div className="w-9 h-9 aspect-square shrink-0 rounded-full bg-brand-black text-surface-white border border-border-subtle flex items-center justify-center font-bold text-caption select-none hover:opacity-80 transition-opacity">
+                {initials}
+              </div>
             </div>
           </div>
         </header>
 
-        <div className="flex-1 p-6 md:p-8 max-w-(--spacing-container-max) w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-container-max w-full mx-auto flex flex-col">
           {children}
         </div>
 

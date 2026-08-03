@@ -7,6 +7,10 @@ const { createAnnouncementSchema } = require("../utils/validators");
 
 router.use(protect, requireRole("admin"));
 
+// -- Dashboard Screen ---
+// --- Overview ---
+router.get("/overview", adminDashboardController.getOverview);
+
 // --- Announcement Screen ---
 
 router.get("/announcements", adminDashboardController.getAnnouncements);
@@ -48,5 +52,12 @@ router.get(
   adminDashboardController.getMeetingPrepareContext,
 );
 router.post("/meetings/schedule", adminDashboardController.scheduleMeeting);
+
+// --- Chapters ---
+router.get("/chapters", adminDashboardController.getChapters);
+
+router.post("/chapters", adminDashboardController.createChapter);
+
+router.get("/chapters/:id", adminDashboardController.getChapterDetails);
 
 module.exports = router;

@@ -108,8 +108,78 @@ const sendOTPEmail = async (
   });
 };
 
+const sendAdminMeetingReminder = async (
+  adminEmail,
+  {
+    startupName,
+    studentName,
+    reviewerName,
+    meetingDate,
+    meetingTime,
+    duration,
+    platform,
+    agenda,
+  },
+) => {
+  const subject = `[BCOC Internal] Meeting Reminder: ${startupName} with ${reviewerName}`;
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
+      <h2 style="color: #111; margin-bottom: 10px;">BCOC Internal Meeting Notification</h2>
+      <p style="color: #444; font-size: 15px; line-height: 1.5;">
+        A review meeting has been scheduled in the system. Here are the summary details for admin records:
+      </p>
+
+      <div style="background-color: #f9f9f9; padding: 15px 20px; border-radius: 6px; margin: 20px 0;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #333;">
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold; width: 140px;">Startup Name:</td>
+            <td style="padding: 6px 0;">${startupName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold;">Student / Founder:</td>
+            <td style="padding: 6px 0;">${studentName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold;">Assigned Reviewer:</td>
+            <td style="padding: 6px 0;">${reviewerName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold;">Date & Time:</td>
+            <td style="padding: 6px 0;">${meetingDate} at ${meetingTime}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold;">Duration:</td>
+            <td style="padding: 6px 0;">${duration}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold;">Platform:</td>
+            <td style="padding: 6px 0;">${platform}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold;">Agenda:</td>
+            <td style="padding: 6px 0;">${agenda || "N/A"}</td>
+          </tr>
+        </table>
+      </div>
+
+      <p style="color: #666; font-size: 12px; text-align: center;">
+        Business Orbit Campus Clubs (BCOC) — Internal System Notification
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    toEmail: adminEmail,
+    subject,
+    htmlContent,
+    category: "Admin Meeting Reminder",
+  });
+};
+
 module.exports = {
   generateOTP,
   sendEmail,
   sendOTPEmail,
+  sendAdminMeetingReminder,
 };

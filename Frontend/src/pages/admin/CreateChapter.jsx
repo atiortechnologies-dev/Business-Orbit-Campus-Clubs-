@@ -59,6 +59,7 @@ export default function CreateChapterPage() {
       setSubmitting(true);
       setErrorMsg("");
 
+      // Full payload preserving all metadata fields
       const payload = {
         name: form.chapterName.trim(),
         institution: form.institutionName.trim(),
@@ -74,17 +75,17 @@ export default function CreateChapterPage() {
         description: form.description.trim(),
       };
 
-      // Real call — no chapter-create endpoint exists yet, so this
-      // currently fails with a Network Error rather than a fake success.
-      // Once POST /api/admin/chapters exists and returns the created
-      // chapter (with its real id), this replaces the placeholder id
-      // below automatically — nothing else in this file needs to change.
-      const created = await createChapter(payload);
-      const chapterId = created?.id || created?._id || created?.chapterId;
+      // Call API
+      const res = await createChapter(payload);
+      const createdData = res?.data || res;
+      const chapterId = createdData?.id || createdData?._id;
 
-      navigate(`/admin/chapters/onboarding/${chapterId}`, {
-        state: { chapter: { ...payload, id: chapterId } },
-      });
+      if (chapterId) {
+        // Redirect directly to details page
+        navigate(`/admin/chapters/detail?id=${chapterId}`);
+      } else {
+        navigate("/admin/chapters");
+      }
     } catch (err) {
       console.error("Failed to create chapter:", err);
       setErrorMsg(
@@ -127,7 +128,7 @@ export default function CreateChapterPage() {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-surface-white border border-border-subtle rounded-lg max-w-4xl"
+        className="bg-surface-white border border-border-subtle rounded-lg max-w-4xl shadow-card"
       >
         <div className="p-8 space-y-10">
           {/* 1. Basic Information */}
@@ -141,19 +142,21 @@ export default function CreateChapterPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <Input
                 id="chapterName"
-                label="Chapter Name"
+                label="Chapter Name *"
                 required
                 placeholder="e.g. Stanford Innovators"
                 value={form.chapterName}
                 onChange={update("chapterName")}
+                disabled={submitting}
               />
               <Input
                 id="institutionName"
-                label="Institution Name"
+                label="Institution Name *"
                 required
                 placeholder="e.g. Stanford University"
                 value={form.institutionName}
                 onChange={update("institutionName")}
+                disabled={submitting}
               />
               <div className="md:col-span-2 flex flex-col gap-1">
                 <label
@@ -166,6 +169,7 @@ export default function CreateChapterPage() {
                   id="chapterType"
                   value={form.chapterType}
                   onChange={update("chapterType")}
+                  disabled={submitting}
                   className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-[44px] px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black transition-all"
                 >
                   {CHAPTER_TYPES.map((t) => (
@@ -193,6 +197,7 @@ export default function CreateChapterPage() {
                 placeholder="e.g. United States"
                 value={form.country}
                 onChange={update("country")}
+                disabled={submitting}
               />
               <Input
                 id="state"
@@ -200,6 +205,7 @@ export default function CreateChapterPage() {
                 placeholder="e.g. California"
                 value={form.state}
                 onChange={update("state")}
+                disabled={submitting}
               />
               <Input
                 id="city"
@@ -207,6 +213,7 @@ export default function CreateChapterPage() {
                 placeholder="e.g. Palo Alto"
                 value={form.city}
                 onChange={update("city")}
+                disabled={submitting}
               />
               <Input
                 id="address"
@@ -214,6 +221,7 @@ export default function CreateChapterPage() {
                 placeholder="450 Serra Mall"
                 value={form.address}
                 onChange={update("address")}
+                disabled={submitting}
               />
             </div>
           </section>
@@ -233,6 +241,7 @@ export default function CreateChapterPage() {
                 placeholder="Full name of the lead"
                 value={form.leadName}
                 onChange={update("leadName")}
+                disabled={submitting}
               />
               <Input
                 id="leadEmail"
@@ -241,6 +250,7 @@ export default function CreateChapterPage() {
                 placeholder="lead@institution.edu"
                 value={form.leadEmail}
                 onChange={update("leadEmail")}
+                disabled={submitting}
               />
               <Input
                 id="leadPhone"
@@ -249,6 +259,7 @@ export default function CreateChapterPage() {
                 placeholder="+1 (555) 000-0000"
                 value={form.leadPhone}
                 onChange={update("leadPhone")}
+                disabled={submitting}
               />
               <div className="md:col-span-2 p-4 bg-canvas-bg border-l-4 border-border-subtle rounded flex items-start gap-3">
                 <HelpCircle
@@ -257,8 +268,8 @@ export default function CreateChapterPage() {
                   className="text-text-muted shrink-0 mt-0.5"
                 />
                 <p className="font-inter text-small text-text-muted italic">
-                  If the lead is not yet registered, an invitation email will
-                  be sent after chapter creation.
+                  If the lead is not yet registered, an invitation email will be
+                  sent after chapter creation.
                 </p>
               </div>
             </div>
@@ -288,6 +299,7 @@ export default function CreateChapterPage() {
                   id="status"
                   value={form.status}
                   onChange={update("status")}
+                  disabled={submitting}
                   className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter min-h-[44px] px-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black transition-all"
                 >
                   {STATUS_OPTIONS.map((s) => (
@@ -323,6 +335,7 @@ export default function CreateChapterPage() {
                   placeholder="Brief mission statement or background..."
                   value={form.description}
                   onChange={update("description")}
+                  disabled={submitting}
                   className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter p-3 focus:outline-none focus:border-brand-black focus:ring-1 focus:ring-brand-black transition-all resize-none"
                 />
               </div>
@@ -330,7 +343,7 @@ export default function CreateChapterPage() {
           </div>
         </div>
 
-        <div className="p-8 border-t border-divider-line flex items-center justify-between">
+        <div className="p-8 border-t border-divider-line flex items-center justify-between bg-canvas-bg/30">
           <Link
             to="/admin/chapters"
             className="font-poppins font-semibold text-small text-text-muted hover:text-text-heading transition-colors"

@@ -1,15 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import {
-  Plus,
-  Archive,
-  FileEdit,
-  Eye,
-  Edit,
-  Zap,
-  Info,
-  Loader2,
-} from "lucide-react";
+import { Plus, Archive, FileEdit, Eye, Edit, Zap, Loader2 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import DataTable from "@/components/ui/DataTable";
 import Badge from "@/components/ui/Badge";

@@ -5,12 +5,167 @@ const CompanyProfile = require("../models/CompanyProfile");
 const IncubatorProfile = require("../models/IncubatorProfile");
 const InvestorProfile = require("../models/InvestorProfile");
 const Meeting = require("../models/Meeting");
+const Chapter = require("../models/Chapter");
 const MentorProfile = require("../models/MentorProfile");
 const StageSubmission = require("../models/StageSubmission");
 const Startup = require("../models/Startup");
 const StartupStage = require("../models/StartupStage");
 const StudentProfile = require("../models/StudentProfile");
 const User = require("../models/User");
+const { sendAdminMeetingReminder } = require("../utils/email");
+
+// -- Dashboard Screen --
+
+const getOverview = asyncHandler(async (req, res) => {
+  // Basic Stats
+  const totalUsers = await User.countDocuments();
+  const activeStartups = await Startup.countDocuments();
+
+  const pendingUserVerifications = await User.countDocuments({
+    account_status: { $in: ["pending_verification", "pending_approval"] },
+  });
+  const pendingStageSubmissions = await StageSubmission.countDocuments({
+    status: "pending_review",
+  });
+  const pendingVerifications =
+    pendingUserVerifications + pendingStageSubmissions;
+
+  // Mocking Investor Capital for now
+  const investorCapital = "$0";
+
+  // User Distribution
+  const userRolesCount = await User.aggregate([
+    { $group: { _id: "$role", count: { $sum: 1 } } },
+  ]);
+
+  // Transform to match frontend expectations:
+  const roleMapping = {
+    student: "Students",
+    mentor: "Mentors",
+    investor: "Investors",
+    incubator: "Incubators",
+    company: "Companies",
+    admin: "Admins",
+  };
+
+  const userDistribution = userRolesCount
+    .filter((r) => roleMapping[r._id] && r._id !== "admin")
+    .map((r) => ({
+      label: roleMapping[r._id],
+      pct: totalUsers > 0 ? Math.round((r.count / totalUsers) * 100) : 0,
+      count: r.count,
+    }));
+
+  // Funnel Views (Startup Stages)
+  // Stage 1 = Idea, 2 = Validation, 3 = MVP, 4 = Traction, 5 = Launch
+  const startupStagesCount = await Startup.aggregate([
+    { $group: { _id: "$current_stage", count: { $sum: 1 } } },
+  ]);
+
+  const stageMapping = {
+    1: "Idea",
+    2: "Validation",
+    3: "MVP",
+    4: "Traction",
+    5: "Launch",
+  };
+
+  const funnelViews = {
+    Daily: [
+      { label: "Idea", value: 0 },
+      { label: "Validation", value: 0 },
+      { label: "MVP", value: 0 },
+      { label: "Traction", value: 0 },
+      { label: "Launch", value: 0 },
+    ],
+    Monthly: [
+      { label: "Idea", value: 0 },
+      { label: "Validation", value: 0 },
+      { label: "MVP", value: 0 },
+      { label: "Traction", value: 0 },
+      { label: "Launch", value: 0 },
+    ],
+  };
+
+  startupStagesCount.forEach((st) => {
+    const stageName = stageMapping[st._id];
+    if (stageName) {
+      const idx = funnelViews.Daily.findIndex((fv) => fv.label === stageName);
+      if (idx !== -1) {
+        funnelViews.Daily[idx].value = st.count;
+        funnelViews.Monthly[idx].value = st.count; // For now, mirror daily
+      }
+    }
+  });
+
+  // Upcoming Cycles (Meetings)
+  const upcomingMeetings = await Meeting.find({
+    status: "scheduled",
+    meeting_date: { $gte: new Date() },
+  })
+    .populate("startup_id", "startup_name")
+    .populate("reviewer_id", "full_name")
+    .sort({ meeting_date: 1 })
+    .limit(2);
+
+  const formattedMeetings = upcomingMeetings.map((m) => ({
+    title: `${m.agenda || "Review Sync"} — ${m.startup_id?.startup_name || "Startup"}`,
+    time: m.meeting_date,
+  }));
+
+  // Critical Actions
+  const criticalActions = [];
+  if (pendingUserVerifications > 0) {
+    criticalActions.push({
+      id: "ca1",
+      iconType: "AlertTriangle",
+      tone: "error",
+      title: "Identity Verification Needed",
+      detail: `${pendingUserVerifications} user(s) flagged for review`,
+      reviewHref: "/admin/verification",
+    });
+  }
+  if (pendingStageSubmissions > 0) {
+    criticalActions.push({
+      id: "ca2",
+      iconType: "FileText",
+      tone: "warning",
+      title: "Stage Submissions Pending",
+      detail: `${pendingStageSubmissions} startup(s) waiting for stage approval`,
+      reviewHref: "/admin/verification",
+    });
+  }
+
+  if (criticalActions.length === 0) {
+    criticalActions.push({
+      id: "ca3",
+      iconType: "UserPlus",
+      tone: "info",
+      title: "All Clear",
+      detail: "No critical actions pending at the moment",
+    });
+  }
+
+  // Activity Stream (Mocked for now as per plan)
+  const activityStream = [
+    { iconType: "RefreshCw", text: "Dashboard data synced", time: "Just now" },
+  ];
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      totalUsers,
+      activeStartups,
+      pendingVerifications,
+      investorCapital,
+      userDistribution,
+      funnelViews,
+      upcomingCycle: formattedMeetings,
+      criticalActions,
+      activityStream,
+    },
+  });
+});
 
 // -- Announcement Screen ---
 
@@ -528,6 +683,25 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
     });
   }
 
+  const startup = await Startup.findById(startup_id)
+    .populate("student_id", "full_name email") // <-- Change user_id to student_id here
+    .lean();
+
+  if (!startup) {
+    return res.status(404).json({
+      success: false,
+      message: "Startup not found",
+    });
+  }
+
+  const studentName = startup.student_id?.full_name || "Student";
+  const startupName = startup.startup_name || "Startup Idea";
+
+  const activeReviewerId = reviewer_id || req.user.id;
+  const reviewer = await User.findById(activeReviewerId).lean();
+  const reviewerName =
+    reviewer?.full_name || req.user?.full_name || "Assigned Mentor";
+
   // Combine date and time strings into a Date object
   const combinedDateTime = new Date(`${meeting_date}T${meeting_time}:00`);
 
@@ -543,6 +717,25 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
 
   await meeting.save();
 
+  const meetingPayload = {
+    startupName,
+    studentName,
+    reviewerName,
+    meetingDate: meeting_date,
+    meetingTime: meeting_time,
+    duration: meeting.duration,
+    platform: meeting.platform,
+    agenda: meeting.agenda,
+  };
+
+  try {
+    // Send Admin Reminder to Sneha
+    const BCOC_ADMIN_EMAIL = "sneha@atiortechnologies.com";
+    sendAdminMeetingReminder(BCOC_ADMIN_EMAIL, meetingPayload);
+  } catch (emailError) {
+    console.error("Failed to send meeting emails:", emailError);
+  }
+
   return res.status(201).json({
     success: true,
     message: "Meeting scheduled successfully",
@@ -550,7 +743,123 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
   });
 });
 
+// ---- Chapters ----
+
+const getChapters = asyncHandler(async (req, res) => {
+  const chapters = await Chapter.find({})
+    .sort({ created_at: -1 })
+    .populate("lead_id", "full_name email")
+    .lean();
+
+  res.status(200).json({
+    success: true,
+    data: chapters,
+  });
+});
+
+const getChapterDetails = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // 1. Fetch Chapter and populate lead details if present
+  const chapter = await Chapter.findById(id)
+    .populate("lead_id", "full_name email")
+    .lean();
+
+  if (!chapter) {
+    res.status(404);
+    throw new Error("Chapter not found");
+  }
+
+  // 2. Fetch all students registered under this chapter
+  const students = await StudentProfile.find({ chapter_id: id })
+    .populate("user_id", "full_name email status")
+    .sort({ created_at: -1 })
+    .lean();
+
+  // 3. Format students payload for the frontend DataTable
+  const formattedStudents = students.map((s) => ({
+    id: s._id,
+    name: s.user_id?.full_name || "Unknown Student",
+    email: s.user_id?.email || "",
+    degree: s.degree || "—",
+    graduation_year: s.graduation_year || "—",
+    profile_photo: s.profile_photo || "",
+    status:
+      s.user_id?.status ||
+      (s.profile_status === "completed" ? "Active" : "Pending"),
+  }));
+
+  res.status(200).json({
+    success: true,
+    data: {
+      chapter: {
+        id: chapter._id,
+        name: chapter.chapter_name || chapter.college_name,
+        institution: chapter.college_name,
+        status: chapter.status || "Active",
+        lead_name: chapter.lead_id?.full_name || "Unassigned",
+        lead_email: chapter.lead_id?.email || "—",
+        description: chapter.description || "",
+        mission: chapter.mission || "",
+        created_at: chapter.created_at,
+        stats: {
+          total_members: chapter.total_members || formattedStudents.length,
+          active_startups: chapter.active_startups || 0,
+          mentors_count: chapter.mentors_count || 0,
+          events_conducted: chapter.events_conducted || 0,
+        },
+      },
+      students: formattedStudents,
+    },
+  });
+});
+
+const createChapter = asyncHandler(async (req, res) => {
+  const {
+    name,
+    institution,
+    type,
+    country,
+    state,
+    city,
+    address,
+    lead_name,
+    lead_email,
+    lead_phone,
+    status,
+    description,
+  } = req.body;
+
+  if (!name || !institution) {
+    res.status(400);
+    throw new Error("Chapter Name and Institution Name are required.");
+  }
+
+  // Create new Chapter in MongoDB using all form fields
+  const chapter = await Chapter.create({
+    chapter_name: name.trim(),
+    college_name: institution.trim(),
+    chapter_type: type || "University",
+    country: country ? country.trim() : "",
+    state: state ? state.trim() : "",
+    city: city ? city.trim() : "",
+    address: address ? address.trim() : "",
+    lead_name: lead_name ? lead_name.trim() : "",
+    lead_email: lead_email ? lead_email.trim() : "",
+    lead_phone: lead_phone ? lead_phone.trim() : "",
+    status: status || "Pending",
+    description: description ? description.trim() : "",
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Chapter created successfully",
+    data: chapter,
+  });
+});
+
 module.exports = {
+  getOverview,
   getAnnouncements,
   createAnnouncement,
   getVerificationUsers,
@@ -561,4 +870,7 @@ module.exports = {
   handleSubmissionDecision,
   getMeetingPrepareContext,
   scheduleMeeting,
+  getChapters,
+  getChapterDetails,
+  createChapter,
 };
