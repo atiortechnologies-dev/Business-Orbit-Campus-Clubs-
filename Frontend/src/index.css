@@ -6,7 +6,7 @@
    sparingly for interactive signals. Light theme only — no dark mode.
 ══════════════════════════════════════════════════════════════ */
 
-:root {
+@theme {
   --color-brand-black: #0b0b0b;
   --color-accent-neon: #e8f012;
   --color-surface-white: #ffffff;
