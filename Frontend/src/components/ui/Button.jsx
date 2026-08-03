@@ -19,14 +19,10 @@ export default function Button({
   ].join(' ');
 
   const variants = {
-    // `action-bg`/`action-text` invert between themes (black-on-white in
-    // light mode, light-fill-on-dark in dark mode — see src/index.css). A
-    // hardcoded hover color like `hover:bg-[#1F2937]` only works for ONE
-    // of those two states and turns the button dark-text-on-dark-bg (or
-    // light-on-light) in the other. `hover:opacity-90` dims/brightens
-    // whatever the current theme's colors already are, so it's correct in
-    // both — this is the same pattern already used correctly elsewhere in
-    // the app (e.g. incubator/Settings.jsx's Save Changes button).
+    // `hover:opacity-90` rather than a hardcoded hover color — dims
+    // whatever action-bg/action-text already are, matching the pattern
+    // used elsewhere in the app (e.g. incubator/Settings.jsx's Save
+    // Changes button).
     primary:
       'bg-action-bg text-action-text hover:opacity-90 disabled:bg-canvas-bg disabled:text-text-muted',
     outline:

@@ -7,7 +7,6 @@ import {
   Wallet,
   Building2,
   Briefcase,
-  User,
   HelpCircle,
   Search,
   Bell,
@@ -16,7 +15,6 @@ import {
 } from "lucide-react";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Logo from "@/components/ui/Logo";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 import Sidebar from "@/components/layout/Sidebar";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 import { useAuth } from "@/context/AuthContext";
@@ -33,7 +31,6 @@ const NAV_ITEMS = [
   { icon: Wallet, label: "Investors", href: "/investors", real: true },
   { icon: Building2, label: "Incubators", href: "/incubators", real: true },
   { icon: Briefcase, label: "Freelancing", href: "/freelancing", real: true },
-  { icon: User, label: "Profile", href: "/settings", real: true },
   { icon: HelpCircle, label: "Help", href: "/support", real: true },
 ];
 
@@ -72,9 +69,6 @@ export default function DashboardShell({ pageId = "pg", children }) {
 
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials={initials}
-        footerName={user?.full_name || user?.email?.split("@")[0] || "User"}
-        footerRole={user?.role ? user.role.toUpperCase() : "STUDENT"}
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -129,13 +123,9 @@ export default function DashboardShell({ pageId = "pg", children }) {
               >
                 <Settings size={20} strokeWidth={2} />
               </Link>
-              <ThemeToggle size={20} className="block" />
-
-              {/* CLEAN SIMPLE INITIALS AVATAR */}
               <Link
-                to="/settings"
-                title={user?.full_name || "Profile"}
-                className="w-9 h-9 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-caption text-text-heading hover:opacity-80 transition-opacity select-none"
+                to="/profile"
+                className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
               >
                 {initials}
               </Link>

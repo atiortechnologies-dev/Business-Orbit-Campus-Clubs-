@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Megaphone,
@@ -14,22 +14,47 @@ import {
   Search,
   Bell,
   Menu,
-} from 'lucide-react';
-import ComingSoon from '@/components/ui/ComingSoon';
-import Logo from '@/components/ui/Logo';
-import ThemeToggle from '@/components/ui/ThemeToggle';
-import Sidebar from '@/components/layout/Sidebar';
-import { useSidebarCollapsed } from '@/hooks/useSidebarCollapsed';
+} from "lucide-react";
+import ComingSoon from "@/components/ui/ComingSoon";
+import Logo from "@/components/ui/Logo";
+import Sidebar from "@/components/layout/Sidebar";
+import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 
 const NAV_ITEMS = [
-  { icon: LayoutDashboard, label: 'Dashboard',     href: '/admin', real: true },
-  { icon: Megaphone,       label: 'Announcements', href: '/admin/announcements', real: true },
-  { icon: ShieldCheck,     label: 'Users',         href: '/admin/verification', real: true },
-  { icon: Rocket,          label: 'Startups',      href: '/admin/reviews', real: true },
-  { icon: Lightbulb,       label: 'Opportunities', href: '/admin/opportunities', real: true },
-  { icon: Building2,       label: 'Chapters',      href: '/admin/chapters', real: true },
-  { icon: History,         label: 'Audit Log',     href: '/admin/audit-log', real: true },
-  { icon: Settings,        label: 'Settings',      href: '/admin/settings', real: true },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/admin", real: true },
+  {
+    icon: Megaphone,
+    label: "Announcements",
+    href: "/admin/announcements",
+    real: true,
+  },
+  {
+    icon: ShieldCheck,
+    label: "Users",
+    href: "/admin/verification",
+    real: true,
+  },
+  { icon: Rocket, label: "Startups", href: "/admin/reviews", real: true },
+  {
+    icon: Lightbulb,
+    label: "Opportunities",
+    href: "/admin/opportunities",
+    real: true,
+  },
+  { icon: Building2, label: "Chapters", href: "/admin/chapters", real: true },
+  {
+    icon: Building2,
+    label: "Chapter Requests",
+    href: "/admin/chapter-change-requests",
+    real: true,
+  },
+  { icon: History, label: "Audit Log", href: "/admin/audit-log", real: true },
+  {
+    icon: ShieldCheck,
+    label: "User Mgmt",
+    href: "/admin/user-management",
+    real: true,
+  },
 ];
 
 // Same three-piece pattern (header + content slot + footer, shared
@@ -44,9 +69,6 @@ export default function AdminShell({ children }) {
     <div className="bg-canvas-bg text-text-body font-inter min-h-screen transition-colors duration-150 ease-linear">
       <Sidebar
         navItems={NAV_ITEMS}
-        footerInitials="AR"
-        footerName="Alex Rivera"
-        footerRole="Super Admin"
         isOpen={isDrawerOpen}
         onClose={() => setDrawerOpen(false)}
         collapsed={collapsed}
@@ -59,18 +81,34 @@ export default function AdminShell({ children }) {
             Incubator's Help Center row, for the same reason (this renders
             inside the permanently-black sidebar). */}
         <div className="border-t border-white/10 pt-4 mb-4 space-y-1">
-          <ComingSoon label="New Request" position="top" inline={false} className="flex items-center gap-3 py-2 px-3 text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200">
+          <ComingSoon
+            label="New Request"
+            position="top"
+            inline={false}
+            className="flex items-center gap-3 py-2 px-3 text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
             <Plus size={20} strokeWidth={2} />
-            <span className="font-poppins font-medium text-body">New Request</span>
+            <span className="font-poppins font-medium text-body">
+              New Request
+            </span>
           </ComingSoon>
-          <ComingSoon label="Help Center" position="top" inline={false} className="flex items-center gap-3 py-2 px-3 text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200">
+          <ComingSoon
+            label="Help Center"
+            position="top"
+            inline={false}
+            className="flex items-center gap-3 py-2 px-3 text-white/70 hover:text-white hover:bg-white/5 transition-all duration-200"
+          >
             <HelpCircle size={20} strokeWidth={2} />
-            <span className="font-poppins font-medium text-body">Help Center</span>
+            <span className="font-poppins font-medium text-body">
+              Help Center
+            </span>
           </ComingSoon>
         </div>
       </Sidebar>
 
-      <main className={`${collapsed ? 'lg:pl-20' : 'lg:pl-[var(--spacing-sidebar-width)]'} min-h-screen flex flex-col`}>
+      <main
+        className={`${collapsed ? "lg:pl-20" : "lg:pl-[var(--spacing-sidebar-width)]"} min-h-screen flex flex-col`}
+      >
         <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-4">
             <button
@@ -103,20 +141,23 @@ export default function AdminShell({ children }) {
                   <Bell size={20} strokeWidth={2} />
                 </span>
               </ComingSoon>
-              <Link to="/admin/settings" className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted">
+              <Link
+                to="/admin/settings"
+                className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted"
+              >
                 <Settings size={20} strokeWidth={2} />
               </Link>
-              <ThemeToggle size={20} className="block" />
-              <ComingSoon label="User" position="bottom" inline>
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none">
-                  AR
-                </div>
-              </ComingSoon>
+              <Link
+                to="/admin/settings"
+                className="w-8 h-8 rounded-full overflow-hidden bg-brand-black text-white flex items-center justify-center font-poppins font-semibold text-caption select-none hover:opacity-80 transition-opacity"
+              >
+                AR
+              </Link>
             </div>
           </div>
         </header>
 
-        <div className="flex-1 p-6 md:p-8 max-w-[var(--spacing-container-max)] w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-(--spacing-container-max) w-full mx-auto flex flex-col">
           {children}
         </div>
 
@@ -128,10 +169,16 @@ export default function AdminShell({ children }) {
             </p>
           </div>
           <div className="flex gap-8">
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Privacy Policy
             </Link>
-            <Link to="/legal/privacy-policy" className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small">
+            <Link
+              to="/legal/privacy-policy"
+              className="text-text-muted hover:text-text-heading transition-colors font-inter font-normal text-small"
+            >
               Terms of Service
             </Link>
             <ComingSoon label="Contact Support" position="top" inline>

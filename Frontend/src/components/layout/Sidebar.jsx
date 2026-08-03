@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { ChevronsLeft, ChevronsRight } from 'lucide-react';
-import ComingSoon from '@/components/ui/ComingSoon';
-import Logo from '@/components/ui/Logo';
+import { useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { ChevronsLeft, ChevronsRight, LogOut } from "lucide-react";
+import ComingSoon from "@/components/ui/ComingSoon";
+import Logo from "@/components/ui/Logo";
+import { useAuth } from "@/context/AuthContext";
 
 // Shared "Dashboard Control Sidebar" (fixed 264px, brand-black canvas,
 // neon-yellow active border) used by DashboardShell/IncubatorShell/
@@ -13,9 +14,6 @@ import Logo from '@/components/ui/Logo';
 // prop since each portal's link list is genuinely feature-specific.
 export default function Sidebar({
   navItems,
-  footerInitials,
-  footerName,
-  footerRole,
   children,
   isOpen = false,
   onClose = () => {},
@@ -25,6 +23,13 @@ export default function Sidebar({
   onToggleCollapse = () => {},
 }) {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/login", { replace: true });
+  }
 
   // Escape closes the drawer — only matters below `lg`, but harmless to
   // register unconditionally since `onClose` no-ops when nothing's using
@@ -32,10 +37,10 @@ export default function Sidebar({
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen, onClose]);
 
   // A naive per-item "pathname === href || pathname.startsWith(href + '/')"
@@ -46,8 +51,15 @@ export default function Sidebar({
   // Instead: find every real item whose href matches, then only the
   // *longest* (most specific) match wins.
   const activeHref = navItems
-    .filter(({ real, href }) => real && (pathname === href || pathname.startsWith(`${href}/`)))
-    .reduce((best, { href }) => (best === null || href.length > best.length ? href : best), null);
+    .filter(
+      ({ real, href }) =>
+        real && (pathname === href || pathname.startsWith(`${href}/`)),
+    )
+    .reduce(
+      (best, { href }) =>
+        best === null || href.length > best.length ? href : best,
+      null,
+    );
 
   return (
     <>
@@ -67,10 +79,10 @@ export default function Sidebar({
       <aside
         className={`flex flex-col h-screen py-6 fixed left-0 top-0 z-50 border-r border-white/10 bg-brand-black
           transform transition-[transform,width] duration-200 ease-out
-          lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          ${collapsed ? 'lg:w-20' : 'lg:w-[var(--spacing-sidebar-width)]'} w-[var(--spacing-sidebar-width)]`}
+          lg:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          ${collapsed ? "lg:w-20" : "lg:w-[var(--spacing-sidebar-width)]"} w-[var(--spacing-sidebar-width)]`}
       >
-      {/* IMPORTANT for anyone editing this file: this sidebar's background
+        {/* IMPORTANT for anyone editing this file: this sidebar's background
           is ALWAYS brand-black, in both light and dark theme — it does not
           flip like the rest of the page does. That means every color used
           in here must be a FIXED value (white/70, white/5, brand-black,
@@ -89,90 +101,116 @@ export default function Sidebar({
           (force="dark") asset for the same reason, regardless of theme.
           Switches to the square "mark" variant while collapsed since the
           full lockup won't fit an 80px rail. */}
-      <div className="px-6 mb-10 flex items-center justify-center lg:justify-start">
-        {collapsed ? (
-          <div className="hidden lg:block">
-            <Logo variant="mark" size={32} force="dark" priority />
+        <div className="px-6 mb-10 flex items-center justify-center lg:justify-start">
+          {collapsed ? (
+            <div className="hidden lg:block">
+              <Logo variant="mark" size={32} force="dark" priority />
+            </div>
+          ) : null}
+          <div className={collapsed ? "lg:hidden" : ""}>
+            <Logo variant="horizontal" sidebar force="dark" priority />
           </div>
-        ) : null}
-        <div className={collapsed ? 'lg:hidden' : ''}>
-          <Logo variant="horizontal" sidebar force="dark" priority />
         </div>
-      </div>
 
-      <nav className="flex-1 space-y-1">
-        {navItems.map(({ icon: Icon, label, href, real }) => {
-          const isActive = real && href === activeHref;
-          const itemClasses = `flex items-center gap-3 py-3 transition-all duration-200 ${
-            collapsed ? 'lg:justify-center lg:px-0' : ''
-          } ${
-            isActive
-              ? 'border-l-4 border-accent-neon text-white pl-3 pr-4'
-              : 'text-white/70 hover:text-white hover:bg-white/5 pl-4 pr-4'
-          }`;
+        <nav className="flex-1 space-y-1">
+          {navItems.map(({ icon: Icon, label, href, real }) => {
+            const isActive = real && href === activeHref;
+            const itemClasses = `flex items-center gap-3 py-3 transition-all duration-200 ${
+              collapsed ? "lg:justify-center lg:px-0" : ""
+            } ${
+              isActive
+                ? "border-l-4 border-accent-neon text-white pl-3 pr-4"
+                : "text-white/70 hover:text-white hover:bg-white/5 pl-4 pr-4"
+            }`;
 
-          if (!real) {
+            if (!real) {
+              return (
+                <ComingSoon
+                  key={label}
+                  label={label}
+                  position="top"
+                  className={itemClasses}
+                >
+                  <Icon size={20} strokeWidth={2} />
+                  <span
+                    className={`font-poppins font-medium text-body ${collapsed ? "lg:hidden" : ""}`}
+                  >
+                    {label}
+                  </span>
+                </ComingSoon>
+              );
+            }
+
             return (
-              <ComingSoon key={label} label={label} position="top" className={itemClasses}>
-                <Icon size={20} strokeWidth={2} />
-                <span className={`font-poppins font-medium text-body ${collapsed ? 'lg:hidden' : ''}`}>{label}</span>
-              </ComingSoon>
+              <Link
+                key={label}
+                to={href}
+                onClick={onClose}
+                title={collapsed ? label : undefined}
+                className={`${itemClasses} active:scale-[0.98] cursor-pointer`}
+              >
+                <Icon
+                  size={20}
+                  strokeWidth={2}
+                  className={isActive ? "text-white" : ""}
+                />
+                <span
+                  className={`font-poppins font-medium text-body ${collapsed ? "lg:hidden" : ""}`}
+                >
+                  {label}
+                </span>
+              </Link>
             );
-          }
+          })}
+        </nav>
 
-          return (
-            <Link
-              key={label}
-              to={href}
-              onClick={onClose}
-              title={collapsed ? label : undefined}
-              className={`${itemClasses} active:scale-[0.98] cursor-pointer`}
-            >
-              <Icon size={20} strokeWidth={2} className={isActive ? 'text-white' : ''} />
-              <span className={`font-poppins font-medium text-body ${collapsed ? 'lg:hidden' : ''}`}>{label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Portal-specific extra rows (e.g. Incubator's Help Center, Admin's
+        {/* Portal-specific extra rows (e.g. Incubator's Help Center, Admin's
           New Request) — hidden while collapsed rather than made
           collapse-aware themselves, since they're arbitrary JSX passed in
           by each shell and can't be trusted to render sensibly icon-only. */}
-      {children && <div className={`px-4 mt-auto ${collapsed ? 'lg:hidden' : ''}`}>{children}</div>}
+        {children && (
+          <div className={`px-4 mt-auto ${collapsed ? "lg:hidden" : ""}`}>
+            {children}
+          </div>
+        )}
 
-      {/* Collapse toggle — desktop only, mobile already has a full
+        {/* Collapse toggle — desktop only, mobile already has a full
           hide/show drawer via isOpen so there's nothing to collapse there. */}
-      <button
-        type="button"
-        onClick={onToggleCollapse}
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        className={`hidden lg:flex items-center gap-2 mx-4 mb-4 py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors ${
-          collapsed ? 'justify-center px-0' : 'px-3'
-        } ${children ? '' : 'mt-auto'}`}
-      >
-        {collapsed ? <ChevronsRight size={18} strokeWidth={2} /> : <ChevronsLeft size={18} strokeWidth={2} />}
-        <span className={collapsed ? 'lg:hidden' : ''}>
-          <span className="font-inter text-caption">Collapse</span>
-        </span>
-      </button>
+        <button
+          type="button"
+          onClick={onToggleCollapse}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          className={`hidden lg:flex items-center gap-2 mx-4 mb-4 py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors ${
+            collapsed ? "justify-center px-0" : "px-3"
+          } ${children ? "" : "mt-auto"}`}
+        >
+          {collapsed ? (
+            <ChevronsRight size={18} strokeWidth={2} />
+          ) : (
+            <ChevronsLeft size={18} strokeWidth={2} />
+          )}
+          <span className={collapsed ? "lg:hidden" : ""}>
+            <span className="font-inter text-caption">Collapse</span>
+          </span>
+        </button>
 
-      {/* User card. TODO(backend): swap initials/name/role for the
-          authenticated user's real profile data once auth/session state
-          exists — the surrounding structure/classes are intentional and
-          shouldn't need to change, only these three values need to become
-          dynamic. Collapses to just the initials circle. */}
-      <div className="px-4">
-        <div className={`bg-white/5 rounded-xl border border-white/10 flex items-center gap-3 ${collapsed ? 'lg:p-0 lg:justify-center lg:bg-transparent lg:border-none p-3' : 'p-3'}`}>
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center font-bold text-white text-xs select-none shrink-0">
-            {footerInitials}
-          </div>
-          <div className={`flex flex-col min-w-0 ${collapsed ? 'lg:hidden' : ''}`}>
-            <span className="font-poppins font-semibold text-small text-white truncate">{footerName}</span>
-            <span className="font-inter text-caption text-white/60 truncate">{footerRole}</span>
-          </div>
+        <div className="px-4">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className={`flex items-center gap-2 w-full py-2 rounded-lg text-white/50 hover:text-white hover:bg-white/5 transition-colors ${
+              collapsed ? "lg:justify-center lg:px-0" : "px-3"
+            }`}
+            title={collapsed ? "Log Out" : undefined}
+          >
+            <LogOut size={18} strokeWidth={2} />
+            <span
+              className={`font-inter text-caption ${collapsed ? "lg:hidden" : ""}`}
+            >
+              Log Out
+            </span>
+          </button>
         </div>
-      </div>
       </aside>
     </>
   );

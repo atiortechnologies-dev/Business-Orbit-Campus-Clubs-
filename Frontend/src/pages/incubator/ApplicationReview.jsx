@@ -211,7 +211,7 @@ export default function ApplicationReview() {
         </div>
 
         <div className="col-span-12 lg:col-span-4 space-y-6">
-          <div className="bg-surface-white border-2 border-brand-black dark:border-border-subtle rounded-xl p-6 shadow-card flex flex-col gap-6 transition-colors duration-150 ease-linear">
+          <div className="bg-surface-white border-2 border-brand-black rounded-xl p-6 shadow-card flex flex-col gap-6 transition-colors duration-150 ease-linear">
             <div>
               <h3 className="font-poppins font-bold text-card text-text-heading mb-1">
                 Reviewer Decision
@@ -345,7 +345,7 @@ export default function ApplicationReview() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="mt-1.5 w-2 h-2 rounded-full bg-brand-black dark:bg-white flex-shrink-0 ring-4 ring-brand-black/10 dark:ring-white/10"></div>
+                <div className="mt-1.5 w-2 h-2 rounded-full bg-brand-black flex-shrink-0 ring-4 ring-brand-black/10"></div>
                 <div className="flex flex-col">
                   <span className="font-poppins font-bold text-small text-text-heading">
                     Review Started

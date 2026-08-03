@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Unauthorized from "./pages/Unauthorized";
+import GuestRoute from "./components/GuestRoute";
 
 const Login = lazy(() => import("@/pages/auth/Login"));
 const ForgotPassword = lazy(() => import("@/pages/auth/ForgotPassword"));
@@ -202,6 +203,8 @@ const AnnouncementPublished = lazy(
   () => import("@/pages/admin/AnnouncementPublished"),
 );
 const ChapterManagement = lazy(() => import("@/pages/admin/ChapterManagement"));
+const CreateChapter = lazy(() => import("@/pages/admin/CreateChapter"));
+const ChapterOnboarding = lazy(() => import("@/pages/admin/ChapterOnboarding"));
 const ChapterDetail = lazy(() => import("@/pages/admin/ChapterDetail"));
 const OpportunityApprovalQueue = lazy(
   () => import("@/pages/admin/OpportunityApprovalQueue"),
@@ -306,15 +309,20 @@ export const router = createBrowserRouter([
   {
     element: <AuthLayout />,
     children: [
-      { path: "/login", element: withSuspense(Login) },
-      { path: "/forgot-password", element: withSuspense(ForgotPassword) },
-      { path: "/reset-password", element: withSuspense(ResetPassword) },
-      { path: "/role-selection", element: withSuspense(RoleSelection) },
-      { path: "/signup/student", element: withSuspense(StudentSignup) },
-      { path: "/signup/company", element: withSuspense(CompanySignup) },
-      { path: "/signup/investor", element: withSuspense(InvestorSignup) },
-      { path: "/signup/mentor", element: withSuspense(MentorSignup) },
-      { path: "/signup/incubator", element: withSuspense(IncubatorSignup) },
+      {
+        element: <GuestRoute />,
+        children: [
+          { path: "/login", element: withSuspense(Login) },
+          { path: "/forgot-password", element: withSuspense(ForgotPassword) },
+          { path: "/reset-password", element: withSuspense(ResetPassword) },
+          { path: "/role-selection", element: withSuspense(RoleSelection) },
+          { path: "/signup/student", element: withSuspense(StudentSignup) },
+          { path: "/signup/company", element: withSuspense(CompanySignup) },
+          { path: "/signup/investor", element: withSuspense(InvestorSignup) },
+          { path: "/signup/mentor", element: withSuspense(MentorSignup) },
+          { path: "/signup/incubator", element: withSuspense(IncubatorSignup) },
+        ],
+      },
       { path: "/onboarding/welcome", element: withSuspense(OnboardingWelcome) },
       { path: "/onboarding/verify-email", element: withSuspense(VerifyEmail) },
       {
@@ -409,6 +417,21 @@ export const router = createBrowserRouter([
         element: withSuspense(AnnouncementPublished),
       },
       { path: "/admin/chapters", element: withSuspense(ChapterManagement) },
+      { path: "/admin/chapters/create", element: withSuspense(CreateChapter) },
+      {
+        path: "/admin/chapters/onboarding/:chapterId",
+        element: withSuspense(ChapterOnboarding),
+      },
+      { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
+      {
+        path: "/admin/chapters/detail/:chapterId",
+        element: withSuspense(ChapterDetail),
+      },
+      { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
+      {
+        path: "/admin/chapters/detail/:chapterId",
+        element: withSuspense(ChapterDetail),
+      },
       { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
       {
         path: "/admin/opportunities",

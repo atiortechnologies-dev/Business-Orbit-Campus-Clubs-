@@ -93,7 +93,7 @@ export default function ApplicationsQueue() {
       case 'NEW':
         return (
           <span className="flex items-center gap-1.5 font-poppins font-bold text-xs text-text-heading uppercase select-none">
-            <span className="w-2 h-2 rounded-full bg-brand-black dark:bg-white"></span>
+            <span className="w-2 h-2 rounded-full bg-brand-black"></span>
             New
           </span>
         );
@@ -107,15 +107,15 @@ export default function ApplicationsQueue() {
       case 'INTERVIEW_SCHEDULED':
         return (
           <span className="flex items-center gap-1.5 font-poppins font-bold text-xs text-text-heading uppercase select-none">
-            <span className="w-2 h-2 rounded-full bg-brand-black dark:bg-white"></span>
+            <span className="w-2 h-2 rounded-full bg-brand-black"></span>
             Interview Scheduled
           </span>
         );
       case 'REJECTED':
       default:
         return (
-          <span className="flex items-center gap-1.5 font-poppins font-bold text-xs text-text-muted/50 dark:text-text-muted/30 uppercase select-none">
-            <span className="w-2 h-2 rounded-full bg-border-subtle/50 dark:bg-border-subtle/30"></span>
+          <span className="flex items-center gap-1.5 font-poppins font-bold text-xs text-text-muted/50 uppercase select-none">
+            <span className="w-2 h-2 rounded-full bg-border-subtle/50"></span>
             Rejected
           </span>
         );

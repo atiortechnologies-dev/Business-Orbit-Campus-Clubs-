@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import {
   ChevronRight,
   MapPin,
@@ -15,6 +15,9 @@ import {
   Wallet,
   Map,
   Plus,
+  Loader2,
+  Sparkles,
+  Inbox,
 } from 'lucide-react';
 import AdminShell from '@/components/admin/AdminShell';
 import DataTable from '@/components/ui/DataTable';
@@ -23,6 +26,27 @@ import StatCard from '@/components/ui/StatCard';
 import ComingSoon from '@/components/ui/ComingSoon';
 import PlaceholderGraphic from '@/components/ui/PlaceholderGraphic';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { getChapterById } from '@/api/admin/chapterApi';
+
+function initialsOf(name = '') {
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .map((p) => p[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || '?'
+  );
+}
+
+function locationOf(chapter) {
+  return [chapter.city, chapter.state || chapter.country]
+    .filter(Boolean)
+    .join(', ');
+}
+
+const CHAPTER_STATUS_VARIANT = { Active: 'success', Pending: 'warning', Inactive: 'neutral' };
 
 const CHAPTER = {
   name: 'Stanford Alpha',
@@ -70,8 +94,107 @@ const EVENT_STATUS_VARIANT = { Active: 'success', Pending: 'neutral', Completed:
 const TABS = ['Overview', 'Students', 'Startups', 'Events'];
 
 export default function ChapterDetailPage() {
-  useDocumentTitle('Chapter Detail — BOCC Admin');
   const [activeTab, setActiveTab] = useState('Overview');
+
+  // A :chapterId param means this page was reached via a real chapter
+  // (created through /admin/chapters/create) rather than the static
+  // /admin/chapters/detail demo route below. Every chapter reachable by
+  // id today is, by definition, brand new — there's no populated-by-id
+  // example yet — so isNewChapter drives the empty-state Overview
+  // rendering further down.
+  const { chapterId } = useParams();
+  const location = useLocation();
+  useDocumentTitle(
+    chapterId ? 'New Chapter Overview — BOCC Admin' : 'Chapter Detail — BOCC Admin',
+  );
+  const [newChapter, setNewChapter] = useState(location.state?.chapter || null);
+  const [loadStatus, setLoadStatus] = useState(
+    chapterId ? (location.state?.chapter ? 'ready' : 'loading') : 'static',
+  );
+
+  useEffect(() => {
+    if (!chapterId || location.state?.chapter) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await getChapterById(chapterId);
+        const data = res?.data || res;
+        if (!cancelled) {
+          setNewChapter(data);
+          setLoadStatus('ready');
+        }
+      } catch (err) {
+        // Honest failure — no GET /api/admin/chapters/:id exists yet, so
+        // this always 404s/network-errors today. Once it's live, a
+        // successful response replaces this catch path automatically.
+        console.error('Failed to load chapter:', err);
+        if (!cancelled) setLoadStatus('error');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [chapterId, location.state]);
+
+  const isNewChapter = Boolean(chapterId);
+
+  // Unifies the two data sources (hardcoded demo vs. a freshly created
+  // chapter) into the one shape the JSX below reads from, so nothing
+  // past this point needs its own isNewChapter branch just to read a
+  // field name.
+  const chapter = isNewChapter
+    ? {
+        name: newChapter?.name || 'New Chapter',
+        initial: initialsOf(newChapter?.name || 'New Chapter'),
+        institution: newChapter?.institution || '—',
+        status: newChapter?.status || 'Pending',
+        location: locationOf(newChapter || {}) || '—',
+        lead: newChapter?.lead_name || '—',
+        leadInitials: newChapter?.lead_name ? initialsOf(newChapter.lead_name) : '—',
+        contact: newChapter?.lead_email || '—',
+        founded: new Date().toLocaleDateString('en-US', {
+          month: 'long',
+          year: 'numeric',
+        }),
+        description: newChapter?.description,
+      }
+    : CHAPTER;
+
+  const students = isNewChapter ? [] : STUDENTS;
+  const startups = isNewChapter ? [] : STARTUPS;
+  const events = isNewChapter ? [] : EVENTS;
+
+  if (loadStatus === 'loading') {
+    return (
+      <AdminShell>
+        <div className="min-h-[50vh] flex items-center justify-center">
+          <Loader2 size={28} className="animate-spin text-text-muted" />
+        </div>
+      </AdminShell>
+    );
+  }
+
+  if (loadStatus === 'error') {
+    return (
+      <AdminShell>
+        <div className="min-h-[50vh] flex flex-col items-center justify-center text-center gap-3">
+          <Inbox size={32} className="text-text-muted" />
+          <p className="font-poppins font-semibold text-card text-text-heading">
+            Couldn't load this chapter
+          </p>
+          <p className="font-inter text-small text-text-muted max-w-sm">
+            This chapter's details aren't available right now.
+          </p>
+          <Link
+            to="/admin/chapters"
+            className="font-poppins font-semibold text-small text-text-heading hover:opacity-80 transition-opacity"
+          >
+            Back to Chapters
+          </Link>
+        </div>
+      </AdminShell>
+    );
+  }
 
   const studentColumns = [
     {
@@ -150,7 +273,9 @@ export default function ChapterDetailPage() {
       <nav className="mb-6 flex items-center gap-2 text-text-muted font-inter font-normal text-small">
         <Link to="/admin/chapters" className="hover:text-text-heading transition-colors">Chapters</Link>
         <ChevronRight size={14} strokeWidth={2} />
-        <span className="text-text-heading font-semibold">{CHAPTER.name}</span>
+        <span className="text-text-heading font-semibold">
+          {isNewChapter ? 'New Chapter Overview' : chapter.name}
+        </span>
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -159,36 +284,44 @@ export default function ChapterDetailPage() {
           <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card lg:sticky lg:top-24">
             <div className="flex flex-col items-center text-center pb-6 border-b border-divider-line mb-6">
               <div className="w-20 h-20 rounded-xl bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-section text-text-heading mb-4">
-                {CHAPTER.initial}
+                {chapter.initial}
               </div>
-              <h1 className="font-poppins font-semibold text-card text-text-heading">{CHAPTER.name}</h1>
-              <p className="font-inter text-small text-text-muted">{CHAPTER.institution}</p>
+              <h1 className="font-poppins font-semibold text-card text-text-heading">{chapter.name}</h1>
+              <p className="font-inter text-small text-text-muted">{chapter.institution}</p>
               <span className="mt-3">
-                <Badge variant="success">{CHAPTER.status}</Badge>
+                <Badge variant={CHAPTER_STATUS_VARIANT[chapter.status] || 'neutral'}>
+                  {chapter.status}
+                </Badge>
               </span>
             </div>
             <div className="space-y-4">
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Location</p>
                 <p className="flex items-center gap-1.5 font-inter text-small text-text-heading">
-                  <MapPin size={14} strokeWidth={2} className="text-text-muted" /> {CHAPTER.location}
+                  <MapPin size={14} strokeWidth={2} className="text-text-muted" /> {chapter.location}
                 </p>
               </div>
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Chapter Lead</p>
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[9px] text-text-heading">{CHAPTER.leadInitials}</div>
-                  <p className="font-inter text-small text-text-heading">{CHAPTER.lead}</p>
+                  <div className="w-6 h-6 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-[9px] text-text-heading">{chapter.leadInitials}</div>
+                  <p className="font-inter text-small text-text-heading">{chapter.lead}</p>
                 </div>
               </div>
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Contact</p>
-                <p className="font-inter text-small text-text-heading">{CHAPTER.contact}</p>
+                <p className="font-inter text-small text-text-heading">{chapter.contact}</p>
               </div>
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Founded</p>
-                <p className="font-inter text-small text-text-heading">{CHAPTER.founded}</p>
+                <p className="font-inter text-small text-text-heading">{chapter.founded}</p>
               </div>
+              {chapter.description && (
+                <div>
+                  <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">Description</p>
+                  <p className="font-inter text-small text-text-body leading-relaxed">{chapter.description}</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -210,7 +343,46 @@ export default function ChapterDetailPage() {
             ))}
           </div>
 
-          {activeTab === 'Overview' && (
+          {activeTab === 'Overview' && isNewChapter && (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard label="Students" value="0" icon={<Users size={16} strokeWidth={2} />} />
+                <StatCard label="Startups" value="0" icon={<Rocket size={16} strokeWidth={2} />} />
+                <StatCard label="Events" value="0" icon={<CalendarCheck size={16} strokeWidth={2} />} />
+                <StatCard label="Chapter Status" value={chapter.status} icon={<Sparkles size={16} strokeWidth={2} />} />
+              </div>
+              <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+                <div className="w-20 h-20 rounded-xl bg-canvas-bg border border-border-subtle flex items-center justify-center shrink-0">
+                  <Sparkles size={28} strokeWidth={1.5} className="text-text-muted" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-poppins font-semibold text-card text-text-heading mb-1">Welcome to Your Chapter</h3>
+                  <p className="font-inter text-small text-text-muted">
+                    This chapter has been initialized successfully. Once students begin building startups and hosting events, this dashboard will update automatically.
+                  </p>
+                </div>
+                <ComingSoon label="Edit Chapter" position="top" inline>
+                  <span className="px-5 py-2.5 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading whitespace-nowrap">Edit Chapter</span>
+                </ComingSoon>
+              </div>
+              <div className="bg-surface-white border border-border-subtle rounded-lg overflow-hidden shadow-card">
+                <div className="px-6 py-4 border-b border-divider-line bg-canvas-bg/50 flex justify-between items-center">
+                  <h3 className="font-poppins font-semibold text-body text-text-heading">Recent Activity</h3>
+                </div>
+                <div className="py-16 flex flex-col items-center text-center px-6">
+                  <div className="w-14 h-14 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center mb-4">
+                    <Inbox size={22} strokeWidth={1.75} className="text-text-muted" />
+                  </div>
+                  <p className="font-poppins font-semibold text-small text-text-heading mb-1">No activity yet</p>
+                  <p className="font-inter text-caption text-text-muted max-w-xs">
+                    Student registrations, startup submissions, approvals, and chapter events will appear here automatically.
+                  </p>
+                </div>
+              </div>
+            </>
+          )}
+
+          {activeTab === 'Overview' && !isNewChapter && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatCard label="Total Students" value="1,248" icon={<Users size={16} strokeWidth={2} />} subtext="+12%" trendDirection="up" className="col-span-2" />
@@ -256,24 +428,24 @@ export default function ChapterDetailPage() {
           {activeTab === 'Students' && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Total Students" value="1,248" />
-                <StatCard label="Active Startups" value="42" />
-                <StatCard label="Completion Rate" value="86%" />
-                <StatCard label="Pending Reviews" value="12" />
+                <StatCard label="Total Students" value={isNewChapter ? '0' : '1,248'} />
+                <StatCard label="Active Startups" value={isNewChapter ? '0' : '42'} />
+                <StatCard label="Completion Rate" value={isNewChapter ? '—' : '86%'} />
+                <StatCard label="Pending Reviews" value={isNewChapter ? '0' : '12'} />
               </div>
-              <DataTable columns={studentColumns} rows={STUDENTS} emptyMessage="No students found." />
+              <DataTable columns={studentColumns} rows={students} emptyMessage="No students found." />
             </>
           )}
 
           {activeTab === 'Startups' && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <StatCard label="Total Startups" value="42" subtext="+3 this month" trendDirection="up" />
-                <StatCard label="Active Startups" value="38" />
-                <StatCard label="Incubated" value="12" subtext="28% of total" />
-                <StatCard label="Launched" value="5" />
+                <StatCard label="Total Startups" value={isNewChapter ? '0' : '42'} subtext={isNewChapter ? undefined : '+3 this month'} trendDirection={isNewChapter ? undefined : 'up'} />
+                <StatCard label="Active Startups" value={isNewChapter ? '0' : '38'} />
+                <StatCard label="Incubated" value={isNewChapter ? '0' : '12'} subtext={isNewChapter ? undefined : '28% of total'} />
+                <StatCard label="Launched" value={isNewChapter ? '0' : '5'} />
               </div>
-              <DataTable columns={startupColumns} rows={STARTUPS} emptyMessage="No startups found." />
+              <DataTable columns={startupColumns} rows={startups} emptyMessage="No startups found." />
             </>
           )}
 
@@ -281,10 +453,10 @@ export default function ChapterDetailPage() {
             <>
               <div className="flex justify-between items-center">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 flex-1">
-                  <StatCard label="Upcoming" value="12" />
-                  <StatCard label="Completed" value="48" />
-                  <StatCard label="Registrations" value="2.4k" />
-                  <StatCard label="Attendance" value="86%" />
+                  <StatCard label="Upcoming" value={isNewChapter ? '0' : '12'} />
+                  <StatCard label="Completed" value={isNewChapter ? '0' : '48'} />
+                  <StatCard label="Registrations" value={isNewChapter ? '0' : '2.4k'} />
+                  <StatCard label="Attendance" value={isNewChapter ? '—' : '86%'} />
                 </div>
               </div>
               <div className="flex justify-end">
@@ -294,7 +466,7 @@ export default function ChapterDetailPage() {
                   </span>
                 </ComingSoon>
               </div>
-              <DataTable columns={eventColumns} rows={EVENTS} emptyMessage="No events found." />
+              <DataTable columns={eventColumns} rows={events} emptyMessage="No events found." />
             </>
           )}
         </div>
@@ -345,14 +517,23 @@ export default function ChapterDetailPage() {
             </div>
             <div className="p-6">
               <div className="flex items-end justify-between mb-2">
-                <p className="font-poppins font-semibold text-section text-text-heading">94%</p>
-                <span className="font-inter font-semibold text-small text-success">Excellent</span>
+                <p className="font-poppins font-semibold text-section text-text-heading">
+                  {isNewChapter ? '--' : '94%'}
+                </p>
+                <span className="font-inter font-semibold text-small text-text-muted">
+                  {isNewChapter ? 'Initializing' : 'Excellent'}
+                </span>
               </div>
               <div className="w-full h-2 bg-canvas-bg rounded-full overflow-hidden">
-                <div className="bg-brand-black h-full rounded-full" style={{ width: '94%' }} />
+                <div
+                  className="bg-brand-black h-full rounded-full"
+                  style={{ width: isNewChapter ? '0%' : '94%' }}
+                />
               </div>
               <p className="font-inter text-caption text-text-muted mt-4 leading-relaxed">
-                Health score is based on member engagement, startup activity, and reporting consistency over the last 30 days.
+                {isNewChapter
+                  ? 'This score will become available after students register and chapter activity begins.'
+                  : 'Health score is based on member engagement, startup activity, and reporting consistency over the last 30 days.'}
               </p>
             </div>
           </div>

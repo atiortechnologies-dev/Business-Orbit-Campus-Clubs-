@@ -90,11 +90,12 @@ export default function ChapterManagementPage() {
             Oversee and regulate centralized BOCC campus operations across all institutions.
           </p>
         </div>
-        <ComingSoon label="Create New Chapter" position="bottom" inline>
-          <span className="flex items-center gap-1.5 bg-action-bg text-action-text px-4 py-2 rounded-lg font-poppins font-semibold text-small">
-            <Building2 size={14} strokeWidth={2} /> Create New Chapter
-          </span>
-        </ComingSoon>
+        <Link
+          to="/admin/chapters/create"
+          className="flex items-center gap-1.5 bg-action-bg text-action-text px-4 py-2 rounded-lg font-poppins font-semibold text-small hover:opacity-90 transition-opacity"
+        >
+          <Building2 size={14} strokeWidth={2} /> Create New Chapter
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
