@@ -90,11 +90,23 @@ file to reconstruct what's needed. Grouped by resource, not by screen.
 
 **Admin — Chapters:**
 
-- `pages/admin/{ChapterManagement,ChapterDetail}.jsx` — read-only for now,
-  no save/submit action exists yet (every mutating action on
-  `ChapterDetail.jsx` — Edit, Assign Lead, Verify, Approve Funding — is
-  still `ComingSoon`, not stubbed, since none of them have a defined
-  operation yet)
+- `pages/admin/CreateChapter.jsx` — real `createChapter()` call, already
+  wired (`src/api/admin/chapterApi.js`); currently fails with a Network
+  Error since `POST /api/admin/chapters` doesn't exist yet — needs the
+  endpoint, not frontend changes, once it's live
+- `pages/admin/ChapterOnboarding.jsx` — real `getChapterById()` call as a
+  refresh/deep-link fallback (needs `GET /api/admin/chapters/:id`); the
+  common path (arriving straight from Create) uses the chapter object
+  passed via navigation state instead, so it doesn't wait on a fetch it
+  doesn't need
+- `pages/admin/{ChapterManagement,ChapterDetail}.jsx` — read-only for the
+  original demo content, no save/submit action exists yet (every
+  mutating action on `ChapterDetail.jsx` — Edit, Assign Lead, Verify,
+  Approve Funding — is still `ComingSoon`, not stubbed, since none of
+  them have a defined operation yet). `ChapterDetail.jsx` additionally
+  now takes an optional `:chapterId` and calls `getChapterById()` the
+  same way `ChapterOnboarding.jsx` does — see the dedicated section
+  below.
 
 **Admin — Opportunity moderation:**
 
@@ -1101,29 +1113,85 @@ on Company, real on Incubator, absent everywhere else).
 
 - **Real:** State/Status filters genuinely filter the table client-side.
   Row "View" (the people icon) → real navigation to `/admin/chapters/detail`.
+  "Create New Chapter" → real navigation to `/admin/chapters/create`
+  (previously a `ComingSoon` stub with no page behind it at all).
 - **Stub:** the 5 listed chapters, the 4 stat cards, and the Chapter
   Growth Distribution chart are hardcoded. `// TODO(backend)`: a real
-  version needs `GET /api/admin/chapters`.
-- **Coming Soon:** Create New Chapter, row-level Edit/Archive, Export,
-  Generate Report.
+  version needs `GET /api/admin/chapters`. Deliberately left alone by the
+  Create/Onboarding work below — a newly created chapter does not appear
+  in this table, since wiring that would mean faking a shared client-side
+  chapters store ahead of the real endpoint existing, not a real fix.
+- **Coming Soon:** row-level Edit/Archive, Export, Generate Report.
 
-### `/admin/chapters/detail` — `ChapterDetail.jsx`
+### `/admin/chapters/create` — `CreateChapter.jsx` (new)
 
-- One chapter (Stanford Alpha), one internal Overview/Students/Startups/
-  Events tab switch (`useState`, not 4 separate routes) — the source
-  wireframes shipped 4 independently-Stitch-regenerated "chapter detail"
-  files that disagreed with each other on the chapter's own name, lead,
-  and even sidebar icon; merged into one consistent chapter across all 4
-  tabs instead of reproducing that inconsistency as 4 real pages.
+_(Wireframe: `stitch_bocc_admin_portal_wireframes/create_new_chapter`.)_
+
+- **Real:** all 5 sections (Basic Information, Location, Chapter Lead,
+  Chapter Status, Description) are controlled inputs; Submit is gated on
+  Chapter Name + Institution Name (the two fields marked required in the
+  wireframe). Submit calls the real `createChapter()`
+  (`src/api/admin/chapterApi.js`, `POST /api/admin/chapters`) — this is a
+  genuine API call, not a stub, and currently fails with an honest
+  Network Error since the endpoint doesn't exist yet. On a real success
+  response it navigates to `/admin/chapters/onboarding/:chapterId`,
+  carrying the submitted values forward via router state so the next
+  screen reflects what was actually typed rather than a placeholder name.
+- **Coming Soon:** none — every field in the wireframe is a real input.
+
+### `/admin/chapters/onboarding/:chapterId` — `ChapterOnboarding.jsx` (new)
+
+_(Wireframe: `stitch_bocc_admin_portal_wireframes/chapter_onboarding_empty_state`.)_
+
+- **Real:** reads the just-created chapter from navigation state (the
+  fast path, right after Create); falls back to a real
+  `getChapterById()` call (`GET /api/admin/chapters/:chapterId`) if
+  state is missing — e.g. a page refresh — same honest-failure pattern
+  as everywhere else (shows a "couldn't load" state, not a fake one).
+  "Copy Invitation" genuinely copies a real registration link to the
+  clipboard via `navigator.clipboard`. "View Details" → real navigation
+  to `/admin/chapters/detail/:chapterId`.
+- **Stub:** the Setup Progress checklist is hardcoded at "Chapter
+  Created" only — the other 5 steps (Add Students, Invite Mentors,
+  Approve Startup, Create Event, Chapter Ready) have no real trigger
+  condition defined yet to mark them done.
+- **Coming Soon:** Edit Chapter, Invite Students, Manage Mentors, View
+  Startup Queue, Create Event, Share Registration, Deactivate Chapter —
+  none of these flows exist elsewhere in the app yet to link to.
+
+### `/admin/chapters/detail` and `/admin/chapters/detail/:chapterId` — `ChapterDetail.jsx`
+
+- The static `/admin/chapters/detail` (no id) is **completely unchanged**
+  — same one hardcoded chapter (Stanford Alpha), same internal
+  Overview/Students/Startups/Events tab switch (`useState`, not 4
+  separate routes) — the source wireframes shipped 4 independently-
+  Stitch-regenerated "chapter detail" files that disagreed with each
+  other on the chapter's own name, lead, and even sidebar icon; merged
+  into one consistent chapter across all 4 tabs instead of reproducing
+  that inconsistency as 4 real pages.
+- **New:** an optional `:chapterId` route param. Wireframe:
+  `chapter_overview_new_chapter`. Any chapter reached this way is, by
+  definition, brand new (there's no populated-by-id example yet), so the
+  Overview tab renders an empty-state variant (0/0/0 stat cards, a
+  "Welcome to Your Chapter" card instead of the Seed Funding banner, an
+  empty Recent Activity state, Chapter Health showing "Initializing/--")
+  instead of the demo's populated content. The Students/Startups/Events
+  tabs reuse the exact same `DataTable` + `emptyMessage` plumbing the
+  demo chapter already had — passing empty arrays is enough to trigger
+  the "No students found." (etc.) empty state that already existed but
+  was never actually reachable before.
 - **Real:** tab switching; the "View Students" quick action switches the
-  tab directly (no navigation needed, it's the same page).
+  tab directly (no navigation needed, it's the same page); with a
+  `:chapterId`, real `getChapterById()` fetch as a refresh/deep-link
+  fallback, same pattern as `ChapterOnboarding.jsx`.
 - **Stub:** every stat, table row, and the Chapter Health score (94%) on
-  all 4 tabs are hardcoded. `// TODO(backend)`:
+  the static demo chapter are hardcoded. `// TODO(backend)`:
   `GET /api/admin/chapters/:id` (profile + overview) and
   `GET /api/admin/chapters/:id/{students,startups,events}` per tab.
 - **Coming Soon:** Edit Chapter, Assign Lead, Export Data, Verify
   Chapter, Approve Funding, Create Event, and the "View Queue" funding
-  shortcut.
+  shortcut — unchanged from before, applies to both the static and
+  `:chapterId` paths.
 
 ### `/admin/opportunities` — `OpportunityApprovalQueue.jsx`
 

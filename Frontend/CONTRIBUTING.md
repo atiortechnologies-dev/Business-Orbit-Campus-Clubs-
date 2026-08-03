@@ -110,8 +110,14 @@ src/
                                AnnouncementsDashboard.jsx → CreateAnnouncement.jsx
                                → PreviewAnnouncement.jsx → AnnouncementPublished.jsx
                                (a third pipeline), ChapterManagement.jsx →
-                               ChapterDetail.jsx (one page, 4 internal tabs —
-                               not 4 routes), OpportunityApprovalQueue.jsx →
+                               CreateChapter.jsx → ChapterOnboarding.jsx →
+                               ChapterDetail.jsx (a fourth pipeline;
+                               ChapterDetail.jsx is one page, 4 internal tabs —
+                               not 4 routes — and doubles as both the static
+                               demo chapter at /admin/chapters/detail and the
+                               empty-state Overview for a real chapter at
+                               /admin/chapters/detail/:chapterId),
+                               OpportunityApprovalQueue.jsx →
                                OpportunityReview.jsx (a fourth pipeline,
                                mirrors the Verification one's Modal-based
                                3-decision pattern), AdminSettings.jsx —
