@@ -478,6 +478,7 @@ const updateProfileSchema = z.object({
     .optional(),
   linkedin_url: z.string().url("Invalid LinkedIn URL").optional().default(""),
   portfolio_url: z.string().url("Invalid portfolio URL").optional().default(""),
+  profile_photo: z.string().trim().optional().or(z.literal("")),
 });
 
 const updateStartupSchema = z.object({

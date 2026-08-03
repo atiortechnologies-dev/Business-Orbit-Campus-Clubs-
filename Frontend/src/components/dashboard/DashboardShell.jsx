@@ -78,7 +78,7 @@ export default function DashboardShell({ pageId = "pg", children }) {
       <main id={`${pageId}-main`} className="flex flex-col min-h-screen">
         <header
           id={`${pageId}-header`}
-          className="flex justify-between items-center w-full sticky top-0 h-[72px] bg-surface-white border-b border-divider-line z-40"
+          className="flex justify-between items-center w-full sticky top-0 h-18 bg-surface-white border-b border-divider-line z-40"
           style={{
             paddingLeft: "var(--spacing-margin-mobile)",
             paddingRight: "var(--spacing-margin-mobile)",
@@ -112,23 +112,22 @@ export default function DashboardShell({ pageId = "pg", children }) {
               </span>
             </ComingSoon>
             <div className="flex items-center gap-4">
-              <Link to="/notifications">
+              <ComingSoon label="Notification" position="bottom">
                 <span className="block text-text-muted cursor-pointer hover:bg-canvas-bg p-2 rounded-full transition-colors">
                   <Bell size={20} strokeWidth={2} />
                 </span>
-              </Link>
+              </ComingSoon>
               <Link
                 to="/settings"
                 className="block p-2 rounded-full transition-colors hover:bg-canvas-bg text-text-muted hover:text-text-heading"
               >
                 <Settings size={20} strokeWidth={2} />
               </Link>
-              <Link
-                to="/profile"
-                className="w-8 h-8 rounded-full overflow-hidden bg-canvas-bg border border-border-subtle flex items-center justify-center font-bold text-text-heading text-caption select-none hover:opacity-80 transition-opacity"
-              >
+
+              {/* FIXED HERE: added `aspect-square shrink-0` and set equal `w-10 h-10` */}
+              <div className="w-10 h-10 aspect-square shrink-0 rounded-full bg-brand-black text-surface-white border border-border-subtle flex items-center justify-center font-bold text-caption select-none hover:opacity-80 transition-opacity">
                 {initials}
-              </Link>
+              </div>
             </div>
           </div>
         </header>
@@ -156,7 +155,7 @@ export default function DashboardShell({ pageId = "pg", children }) {
           <div className="mb-4 md:mb-0">
             <Logo variant="mark" size={20} />
             <p className="text-text-muted font-inter font-normal text-small mt-1">
-              © 2024 Business Orbit Campus Clubs. All rights reserved.
+              © 2026 Business Orbit Campus Clubs. All rights reserved.
             </p>
           </div>
           <div className="flex gap-8">

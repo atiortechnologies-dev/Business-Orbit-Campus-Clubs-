@@ -6,17 +6,13 @@ import {
   Plus,
   CheckCircle2,
   ChevronRight,
-  ChevronDown,
-  KeyRound,
   ShieldCheck,
-  Trash2,
-  AlertTriangle,
   Loader2,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
-import Modal from "@/components/ui/Modal";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getStudentProfile, updateProfile } from "@/api/dashboardApi";
+import { uploadToCloudinary } from "@/api/uploadApi";
 
 export default function SettingsPage() {
   useDocumentTitle("Settings — BOCC");
@@ -39,7 +35,11 @@ export default function SettingsPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // Photo & Upload States
   const [photoUrl, setPhotoUrl] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  /* Commented out security feature states for future use
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     current: "",
@@ -51,6 +51,7 @@ export default function SettingsPage() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
   const [deleteRequested, setDeleteRequested] = useState(false);
+  */
 
   // Load student details from /api/student/profile-details
   useEffect(() => {
@@ -90,36 +91,10 @@ export default function SettingsPage() {
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    setSelectedFile(file);
+    // Instant local preview
     setPhotoUrl(URL.createObjectURL(file));
-  };
-
-  const handlePasswordField = (e) => {
-    const { name, value } = e.target;
-    setPasswordForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handlePasswordSubmit = () => {
-    if (passwordForm.next.length < 8) {
-      setPasswordError("New password must be at least 8 characters.");
-      return;
-    }
-    if (passwordForm.next !== passwordForm.confirm) {
-      setPasswordError("New password and confirmation do not match.");
-      return;
-    }
-    setPasswordError("");
-    setPasswordSuccess(true);
-    setPasswordForm({ current: "", next: "", confirm: "" });
-    setTimeout(() => {
-      setPasswordSuccess(false);
-      setPasswordOpen(false);
-    }, 1500);
-  };
-
-  const handleDeleteConfirm = () => {
-    setDeleteOpen(false);
-    setDeleteConfirmText("");
-    setDeleteRequested(true);
   };
 
   const handleChange = (e) => {
@@ -146,6 +121,17 @@ export default function SettingsPage() {
       setSaving(true);
       setErrorMsg("");
 
+      let updatedPhotoUrl = photoUrl;
+
+      // 1. Upload photo to Cloudinary if user picked a new file
+      if (selectedFile) {
+        updatedPhotoUrl = await uploadToCloudinary(
+          selectedFile,
+          "student_avatars",
+        );
+      }
+
+      // 2. Prepare payload
       const updatePayload = {
         full_name: form.fullName.trim(),
         phone: form.phone.trim(),
@@ -155,13 +141,20 @@ export default function SettingsPage() {
         linkedin_url: form.linkedin.trim(),
         portfolio_url: form.portfolio.trim(),
         skills,
+        profile_photo: updatedPhotoUrl,
       };
 
+      // 3. Persist details
       await updateProfile(updatePayload);
+
+      // Reset file selection state after success
+      setSelectedFile(null);
+      setPhotoUrl(updatedPhotoUrl);
 
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
+      console.error("Save profile error:", err);
       setErrorMsg(err?.message || "Failed to update profile details.");
     } finally {
       setSaving(false);
@@ -230,7 +223,7 @@ export default function SettingsPage() {
             <div className="bg-surface-white border border-border-subtle rounded-lg shadow-card p-6 flex flex-col items-center text-center">
               <div className="relative mb-4">
                 <div
-                  className="w-24 h-24 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-text-heading text-3xl select-none bg-cover bg-center"
+                  className="w-24 h-24 rounded-full bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-text-heading text-3xl select-none bg-cover bg-center overflow-hidden"
                   style={
                     photoUrl
                       ? { backgroundImage: `url(${photoUrl})` }
@@ -239,7 +232,7 @@ export default function SettingsPage() {
                 >
                   {!photoUrl && initials}
                 </div>
-                <label className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-brand-black flex items-center justify-center border-2 border-surface-white cursor-pointer hover:opacity-90 transition-opacity">
+                <label className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-brand-black flex items-center justify-center border-2 border-surface-white cursor-pointer hover:opacity-90 transition-opacity shadow-sm">
                   <Camera size={14} strokeWidth={2} className="text-white" />
                   <input
                     type="file"
@@ -247,6 +240,7 @@ export default function SettingsPage() {
                     onChange={handlePhotoChange}
                     className="sr-only"
                     aria-label="Change photo"
+                    disabled={saving}
                   />
                 </label>
               </div>
@@ -440,78 +434,78 @@ export default function SettingsPage() {
                 Account Security
               </h3>
               <div className="space-y-3">
-                <div className="border border-border-subtle rounded-lg overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={() => setPasswordOpen((v) => !v)}
-                    className="flex items-center justify-between w-full p-4 hover:bg-canvas-bg transition-colors"
-                  >
-                    <span className="flex items-center gap-2.5 font-inter text-small text-text-body">
-                      <KeyRound
+                {/* 
+                  CHANGE PASSWORD SECTION (COMMENTED OUT FOR NOW)
+                  -------------------------------------------------
+                  <div className="border border-border-subtle rounded-lg overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => setPasswordOpen((v) => !v)}
+                      className="flex items-center justify-between w-full p-4 hover:bg-canvas-bg transition-colors"
+                    >
+                      <span className="flex items-center gap-2.5 font-inter text-small text-text-body">
+                        <KeyRound size={16} strokeWidth={2} className="text-text-muted" />
+                        Change Password
+                      </span>
+                      <ChevronDown
                         size={16}
                         strokeWidth={2}
-                        className="text-text-muted"
-                      />{" "}
-                      Change Password
-                    </span>
-                    <ChevronDown
-                      size={16}
-                      strokeWidth={2}
-                      className={`text-text-muted transition-transform ${
-                        passwordOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {passwordOpen && (
-                    <div className="p-4 pt-0 space-y-3 border-t border-divider-line">
-                      {passwordSuccess ? (
-                        <p className="flex items-center gap-2 text-success font-inter text-small pt-3">
-                          <CheckCircle2 size={16} strokeWidth={2} /> Password
-                          updated.
-                        </p>
-                      ) : (
-                        <>
-                          <input
-                            type="password"
-                            name="current"
-                            value={passwordForm.current}
-                            onChange={handlePasswordField}
-                            placeholder="Current password"
-                            className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 mt-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
-                          />
-                          <input
-                            type="password"
-                            name="next"
-                            value={passwordForm.next}
-                            onChange={handlePasswordField}
-                            placeholder="New password"
-                            className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
-                          />
-                          <input
-                            type="password"
-                            name="confirm"
-                            value={passwordForm.confirm}
-                            onChange={handlePasswordField}
-                            placeholder="Confirm new password"
-                            className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
-                          />
-                          {passwordError && (
-                            <p className="text-error font-inter text-small">
-                              {passwordError}
-                            </p>
-                          )}
-                          <button
-                            type="button"
-                            onClick={handlePasswordSubmit}
-                            className="bg-action-bg text-action-text px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
-                          >
-                            Update Password
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
+                        className={`text-text-muted transition-transform ${
+                          passwordOpen ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+                    {passwordOpen && (
+                      <div className="p-4 pt-0 space-y-3 border-t border-divider-line">
+                        {passwordSuccess ? (
+                          <p className="flex items-center gap-2 text-success font-inter text-small pt-3">
+                            <CheckCircle2 size={16} strokeWidth={2} /> Password updated.
+                          </p>
+                        ) : (
+                          <>
+                            <input
+                              type="password"
+                              name="current"
+                              value={passwordForm.current}
+                              onChange={handlePasswordField}
+                              placeholder="Current password"
+                              className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 mt-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                            />
+                            <input
+                              type="password"
+                              name="next"
+                              value={passwordForm.next}
+                              onChange={handlePasswordField}
+                              placeholder="New password"
+                              className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                            />
+                            <input
+                              type="password"
+                              name="confirm"
+                              value={passwordForm.confirm}
+                              onChange={handlePasswordField}
+                              placeholder="Confirm new password"
+                              className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                            />
+                            {passwordError && (
+                              <p className="text-error font-inter text-small">
+                                {passwordError}
+                              </p>
+                            )}
+                            <button
+                              type="button"
+                              onClick={handlePasswordSubmit}
+                              className="bg-action-bg text-action-text px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small"
+                            >
+                              Update Password
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div> 
+                */}
+
                 <div className="flex items-center justify-between border border-border-subtle rounded-lg p-4">
                   <span className="flex items-center gap-2.5 font-inter text-small text-text-body">
                     <ShieldCheck
@@ -525,22 +519,27 @@ export default function SettingsPage() {
                     Not Enabled
                   </span>
                 </div>
-                {deleteRequested ? (
-                  <div className="flex items-center gap-2.5 border border-warning/30 bg-warning/10 rounded-lg p-4 font-inter text-small text-warning">
-                    <AlertTriangle size={16} strokeWidth={2} /> Deletion
-                    requested — our team will follow up by email.
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setDeleteOpen(true)}
-                    className="flex items-center justify-between w-full border border-error/30 rounded-lg p-4 hover:bg-error/5 transition-colors"
-                  >
-                    <span className="flex items-center gap-2.5 font-inter text-small text-error">
-                      <Trash2 size={16} strokeWidth={2} /> Delete Account
-                    </span>
-                  </button>
-                )}
+
+                {/* 
+                  DELETE ACCOUNT SECTION (COMMENTED OUT FOR NOW)
+                  -----------------------------------------------
+                  {deleteRequested ? (
+                    <div className="flex items-center gap-2.5 border border-warning/30 bg-warning/10 rounded-lg p-4 font-inter text-small text-warning">
+                      <AlertTriangle size={16} strokeWidth={2} /> Deletion
+                      requested — our team will follow up by email.
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setDeleteOpen(true)}
+                      className="flex items-center justify-between w-full border border-error/30 rounded-lg p-4 hover:bg-error/5 transition-colors"
+                    >
+                      <span className="flex items-center gap-2.5 font-inter text-small text-error">
+                        <Trash2 size={16} strokeWidth={2} /> Delete Account
+                      </span>
+                    </button>
+                  )} 
+                */}
               </div>
             </div>
 
@@ -559,46 +558,50 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <Modal
-        isOpen={deleteOpen}
-        onClose={() => {
-          setDeleteOpen(false);
-          setDeleteConfirmText("");
-        }}
-        title="Delete account"
-      >
-        <p className="font-inter text-small text-text-body mb-4">
-          This permanently removes your BOCC account and startup progress. Type{" "}
-          <strong>DELETE</strong> to confirm.
-        </p>
-        <input
-          type="text"
-          value={deleteConfirmText}
-          onChange={(e) => setDeleteConfirmText(e.target.value)}
-          placeholder="DELETE"
-          className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 mb-4 focus:outline-none focus:ring-1 focus:ring-error"
-        />
-        <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={() => {
-              setDeleteOpen(false);
-              setDeleteConfirmText("");
-            }}
-            className="border border-border-subtle text-text-heading px-5 py-2 rounded-md hover:bg-canvas-bg transition-colors font-poppins font-semibold text-small"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={handleDeleteConfirm}
-            disabled={deleteConfirmText !== "DELETE"}
-            className="bg-error text-white px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Delete Account
-          </button>
-        </div>
-      </Modal>
+      {/* 
+        DELETE ACCOUNT MODAL (COMMENTED OUT FOR NOW)
+        ---------------------------------------------
+        <Modal
+          isOpen={deleteOpen}
+          onClose={() => {
+            setDeleteOpen(false);
+            setDeleteConfirmText("");
+          }}
+          title="Delete account"
+        >
+          <p className="font-inter text-small text-text-body mb-4">
+            This permanently removes your BOCC account and startup progress. Type{" "}
+            <strong>DELETE</strong> to confirm.
+          </p>
+          <input
+            type="text"
+            value={deleteConfirmText}
+            onChange={(e) => setDeleteConfirmText(e.target.value)}
+            placeholder="DELETE"
+            className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 mb-4 focus:outline-none focus:ring-1 focus:ring-error"
+          />
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setDeleteOpen(false);
+                setDeleteConfirmText("");
+              }}
+              className="border border-border-subtle text-text-heading px-5 py-2 rounded-md hover:bg-canvas-bg transition-colors font-poppins font-semibold text-small"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleDeleteConfirm}
+              disabled={deleteConfirmText !== "DELETE"}
+              className="bg-error text-white px-5 py-2 rounded-md hover:opacity-90 active:scale-[0.98] transition-all font-poppins font-semibold text-small disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Delete Account
+            </button>
+          </div>
+        </Modal> 
+      */}
     </DashboardShell>
   );
 }

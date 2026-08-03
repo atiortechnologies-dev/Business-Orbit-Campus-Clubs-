@@ -24,7 +24,7 @@ export default function PublicNav() {
   return (
     <nav className="w-full top-0 sticky bg-surface-white border-b border-divider-line z-50">
       <div
-        className="flex justify-between items-center h-[72px] mx-auto px-4 lg:px-10"
+        className="flex justify-between items-center h-18 mx-auto px-4 lg:px-10"
         style={{ maxWidth: "var(--spacing-container-max)" }}
       >
         <div className="flex items-center gap-6">

@@ -159,6 +159,8 @@ const updateProfile = asyncHandler(async (req, res) => {
     });
   }
 
+  // let studentProfile =
+
   // Update fields
   Object.assign(profile, updateData);
   profile.updated_at = new Date();
