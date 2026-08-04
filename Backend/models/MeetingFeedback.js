@@ -1,3 +1,4 @@
+// models/MeetingFeedback.js
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -5,9 +6,9 @@ const MeetingFeedbackSchema = new mongoose.Schema(
   {
     meeting_id: {
       type: ObjectId,
-      ref: "ReviewMeeting",
+      ref: "Meeting", // Updated to point to unified Meeting model
       required: true,
-      unique: true, // One feedback per meeting
+      unique: true,
     },
     reviewer_id: {
       type: ObjectId,

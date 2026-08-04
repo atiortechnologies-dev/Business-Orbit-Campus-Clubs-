@@ -155,16 +155,21 @@ export default function IdeationReviewMeetingPage() {
     );
   }
 
-  // Format Date and Time
-  const meetingDateObj = new Date(meetingData.meetingDate);
-  const monthStr = meetingDateObj
-    .toLocaleString("default", { month: "short" })
-    .toUpperCase();
-  const dayStr = meetingDateObj.getDate();
-  const timeStr = meetingDateObj.toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  // Safely parse Date & Time from scheduledAt or fallback meetingDate
+  const dateSource = meetingData.scheduledAt || meetingData.meetingDate;
+  const meetingDateObj = dateSource ? new Date(dateSource) : new Date();
+  const isValidDate = !isNaN(meetingDateObj.getTime());
+
+  const monthStr = isValidDate
+    ? meetingDateObj.toLocaleString("default", { month: "short" }).toUpperCase()
+    : "TBD";
+  const dayStr = isValidDate ? meetingDateObj.getDate() : "--";
+  const timeStr = isValidDate
+    ? meetingDateObj.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    : "Time TBD";
 
   return (
     <DashboardShell pageId="ideation-review-meeting">
@@ -210,7 +215,10 @@ export default function IdeationReviewMeetingPage() {
                 {timeStr}
               </p>
               <p className="font-inter text-small text-text-muted">
-                Duration: {meetingData.duration || "60 mins"}
+                Duration:{" "}
+                {meetingData.duration
+                  ? `${meetingData.duration} mins`
+                  : "30 mins"}
               </p>
             </div>
           </div>

@@ -1,11 +1,7 @@
-/**
- * @file Meeting.js
- * @description Mongoose schema for scheduling and tracking meetings between startups and reviewers.
- */
-
+// models/Meeting.js
 const mongoose = require("mongoose");
 
-const MeetingSchema = mongoose.Schema(
+const MeetingSchema = new mongoose.Schema(
   {
     startup_id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,31 +11,69 @@ const MeetingSchema = mongoose.Schema(
     reviewer_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    stage: {
+      type: String,
+      enum: [
+        "ideation",
+        "validation",
+        "mvp",
+        "incubation",
+        "traction",
+        "launch",
+      ],
       required: true,
     },
-    meeting_date: {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    description: {
+      type: String,
+      trim: true,
+    },
+    scheduledAt: {
       type: Date,
       required: true,
     },
     duration: {
-      type: String,
-      default: "60 minutes",
-    },
-    platform: {
-      type: String,
-      default: "Google Meet",
-    },
-    agenda: {
-      type: String,
-      default: "",
+      type: Number,
+      default: 30,
     },
     status: {
       type: String,
-      enum: ["scheduled", "completed", "cancelled", "reschedule_requested"],
+      enum: ["scheduled", "rescheduled", "completed", "cancelled"],
       default: "scheduled",
     },
+    rescheduleHistory: [
+      {
+        requestedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        previousDate: {
+          type: Date,
+        },
+        newDate: {
+          type: Date,
+        },
+        reason: {
+          type: String,
+        },
+        status: {
+          type: String,
+          enum: ["pending", "accepted", "rejected"],
+          default: "pending",
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
   },
-  { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } },
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Meeting", MeetingSchema);

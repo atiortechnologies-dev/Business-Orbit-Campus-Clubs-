@@ -588,6 +588,12 @@ const getMeetingPrepareContext = asyncHandler(async (req, res) => {
       "full_name email",
     );
 
+    if (!startup) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Startup not found" });
+    }
+
     // Check if at least one submission is approved for this startup
     const approvedSub = await StageSubmission.findOne({
       startup_id: startupId,
@@ -612,11 +618,11 @@ const getMeetingPrepareContext = asyncHandler(async (req, res) => {
     role: { $in: ["admin", "mentor"] },
   }).select("_id full_name role");
 
-  // Fetch upcoming scheduled meetings for sidebar display
+  // Fetch upcoming scheduled meetings sorted by scheduledAt
   const upcomingMeetings = await Meeting.find({ status: "scheduled" })
-    .populate("startup_id", "startup_name")
+    .populate("startup_id", "startup_name name")
     .populate("reviewer_id", "full_name")
-    .sort({ meeting_date: 1 })
+    .sort({ scheduledAt: 1 }) // FIXED: meeting_date -> scheduledAt
     .limit(5);
 
   return res.status(200).json({
@@ -624,25 +630,36 @@ const getMeetingPrepareContext = asyncHandler(async (req, res) => {
     data: {
       startup: {
         id: startup._id,
-        name: startup.startup_name,
+        name: startup.startup_name || startup.name || "Startup Idea",
         founder: startup.student_id?.full_name || "N/A",
         email: startup.student_id?.email || "N/A",
+        stage: startup.stage || startup.current_stage || "ideation",
       },
       reviewers: reviewers.map((r) => ({
         id: r._id,
         name: r.full_name,
         role: r.role,
       })),
-      upcomingMeetings: upcomingMeetings.map((m) => ({
-        id: m._id,
-        startup: m.startup_id?.startup_name || "Unknown",
-        reviewer: m.reviewer_id?.full_name || "Assigned Reviewer",
-        time: new Date(m.meeting_date).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        date: new Date(m.meeting_date).toISOString().split("T")[0],
-      })),
+      upcomingMeetings: upcomingMeetings.map((m) => {
+        // Safe handling for scheduledAt vs fallback meeting_date
+        const rawDate = m.scheduledAt || m.meeting_date;
+        const dateObj = rawDate ? new Date(rawDate) : null;
+        const isValid = dateObj && !isNaN(dateObj.getTime());
+
+        return {
+          id: m._id,
+          startup:
+            m.startup_id?.startup_name || m.startup_id?.name || "Unknown",
+          reviewer: m.reviewer_id?.full_name || "Assigned Reviewer",
+          time: isValid
+            ? dateObj.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "TBD",
+          date: isValid ? dateObj.toISOString().split("T")[0] : "TBD",
+        };
+      }),
     },
   });
 });
@@ -652,6 +669,17 @@ const getMeetingPrepareContext = asyncHandler(async (req, res) => {
  * @route   POST /api/admin/meetings/schedule
  * @access  Private (Admin only)
  */
+
+// Stage Mapping Helper
+const stageEnumMap = {
+  1: "ideation",
+  2: "validation",
+  3: "mvp",
+  4: "incubation",
+  5: "traction",
+  6: "launch",
+};
+
 const scheduleMeeting = asyncHandler(async (req, res) => {
   const {
     startup_id,
@@ -659,8 +687,9 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
     meeting_date,
     meeting_time,
     duration,
-    platform,
-    agenda,
+    title,
+    description,
+    stage,
   } = req.body;
 
   if (!startup_id || !meeting_date || !meeting_time) {
@@ -684,7 +713,7 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
   }
 
   const startup = await Startup.findById(startup_id)
-    .populate("student_id", "full_name email") // <-- Change user_id to student_id here
+    .populate("student_id", "full_name email")
     .lean();
 
   if (!startup) {
@@ -695,23 +724,39 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
   }
 
   const studentName = startup.student_id?.full_name || "Student";
-  const startupName = startup.startup_name || "Startup Idea";
+  const studentEmail = startup.student_id?.email;
+  const startupName = startup.startup_name || startup.name || "Startup Idea";
 
-  const activeReviewerId = reviewer_id || req.user.id;
+  const activeReviewerId = reviewer_id || req.user.id || req.user._id;
   const reviewer = await User.findById(activeReviewerId).lean();
   const reviewerName =
     reviewer?.full_name || req.user?.full_name || "Assigned Mentor";
 
-  // Combine date and time strings into a Date object
+  // Combine date and time strings into a single Date object for scheduledAt
   const combinedDateTime = new Date(`${meeting_date}T${meeting_time}:00`);
 
+  // Parse numerical duration if passed as string (e.g. "60 minutes" -> 60)
+  const durationNum =
+    typeof duration === "number" ? duration : parseInt(duration) || 30;
+
+  // Resolve raw stage (could be string "ideation", or number 1, or string "1")
+  const rawStage =
+    stage || startup.current_stage || startup.stage || "ideation";
+
+  // Convert number/numeric string to proper enum string, or keep as is
+  const resolvedStage =
+    stageEnumMap[rawStage] ||
+    (typeof rawStage === "string" ? rawStage.toLowerCase() : "ideation");
+
+  // Save meeting with valid string enum
   const meeting = new Meeting({
     startup_id,
-    reviewer_id: reviewer_id || req.user.id, // Fallback to current logged-in admin
-    meeting_date: combinedDateTime,
-    duration: duration || "60 minutes",
-    platform: platform || "Google Meet",
-    agenda: agenda || "",
+    reviewer_id: activeReviewerId,
+    stage: resolvedStage, // <--- Guaranteed to match schema enum
+    title: title || `Stage Review: ${startupName}`,
+    description: description || "",
+    scheduledAt: combinedDateTime,
+    duration: durationNum,
     status: "scheduled",
   });
 
@@ -724,21 +769,25 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
     meetingDate: meeting_date,
     meetingTime: meeting_time,
     duration: meeting.duration,
-    platform: meeting.platform,
-    agenda: meeting.agenda,
+    description: meeting.description,
   };
 
   try {
-    // Send Admin Reminder to Sneha
     const BCOC_ADMIN_EMAIL = "sneha@atiortechnologies.com";
-    sendAdminMeetingReminder(BCOC_ADMIN_EMAIL, meetingPayload);
+    if (typeof sendAdminMeetingReminder === "function") {
+      sendAdminMeetingReminder(BCOC_ADMIN_EMAIL, meetingPayload);
+
+      if (studentEmail) {
+        sendAdminMeetingReminder(studentEmail, meetingPayload);
+      }
+    }
   } catch (emailError) {
     console.error("Failed to send meeting emails:", emailError);
   }
 
   return res.status(201).json({
     success: true,
-    message: "Meeting scheduled successfully",
+    message: "Meeting scheduled successfully and email notifications sent.",
     data: meeting,
   });
 });

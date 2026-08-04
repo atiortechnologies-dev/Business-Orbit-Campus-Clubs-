@@ -30,6 +30,7 @@ const {
   resetPasswordSchema,
 } = require("../utils/validators");
 
+// GET /api/get-all-chapters ( it fetches all the chapters from the DB )
 router.get("/get-all-chapter", getAllChapters);
 
 // POST /api/auth/register
@@ -74,8 +75,4 @@ router.post("/logout", logout);
 // GET /api/auth/me
 router.get("/me", protect, getMe);
 
-/**
- * @module authRouter
- * @description Express router for authentication endpoints.
- */
 module.exports = router;

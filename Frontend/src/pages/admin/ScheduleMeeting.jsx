@@ -18,7 +18,21 @@ import {
   scheduleMeeting,
 } from "@/api/admin/adminMeetingApi";
 
-const DURATIONS = ["30 minutes", "60 minutes", "90 minutes"];
+const STAGES = [
+  { value: "ideation", label: "Ideation" },
+  { value: "validation", label: "Validation" },
+  { value: "mvp", label: "MVP" },
+  { value: "incubation", label: "Incubation" },
+  { value: "traction", label: "Traction" },
+  { value: "launch", label: "Launch" },
+];
+
+const DURATIONS = [
+  { label: "30 minutes", value: 30 },
+  { label: "60 minutes", value: 60 },
+  { label: "90 minutes", value: 90 },
+];
+
 const PLATFORMS = [
   "Google Meet",
   "Zoom",
@@ -44,11 +58,16 @@ export default function ScheduleMeetingPage() {
 
   // Form State
   const [reviewerId, setReviewerId] = useState("");
-  const [date, setDate] = useState("2026-11-04");
+  const [stage, setStage] = useState("ideation");
+  const [title, setTitle] = useState("");
+  const [date, setDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  });
   const [time, setTime] = useState("14:00");
-  const [duration, setDuration] = useState(DURATIONS[1]);
+  const [duration, setDuration] = useState(DURATIONS[1].value);
   const [platform, setPlatform] = useState(PLATFORMS[0]);
-  const [agenda, setAgenda] = useState(
+  const [description, setDescription] = useState(
     "1. Review technical audit findings\n2. Discuss implementation timeline\n3. Confirm stage eligibility\n4. Q&A",
   );
 
@@ -67,8 +86,15 @@ export default function ScheduleMeetingPage() {
         const data = res?.data || res;
         setContextData(data);
 
+        if (data?.startup?.stage) {
+          setStage(data.startup.stage);
+        }
+        if (data?.startup?.name) {
+          setTitle(`Stage Review: ${data.startup.name}`);
+        }
+
         if (data?.reviewers?.length > 0) {
-          setReviewerId(data.reviewers[0].id);
+          setReviewerId(data.reviewers[0].id || data.reviewers[0]._id);
         }
       } catch (err) {
         console.error("Failed to load scheduling context:", err);
@@ -85,22 +111,28 @@ export default function ScheduleMeetingPage() {
   }, [submissionId, startupIdParam]);
 
   const canSchedule =
-    agenda.trim().length > 0 && !submitting && !notApprovedError;
+    description.trim().length > 0 && !submitting && !notApprovedError;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!canSchedule || !contextData?.startup?.id) return;
+    const resolvedStartupId =
+      contextData?.startup?.id || contextData?.startup?._id || startupIdParam;
+
+    if (!canSchedule || !resolvedStartupId) return;
 
     try {
       setSubmitting(true);
+
       await scheduleMeeting({
-        startup_id: contextData.startup.id,
+        startup_id: resolvedStartupId,
         reviewer_id: reviewerId,
+        stage,
+        title: title || `Stage Review: ${contextData?.startup?.name}`,
         meeting_date: date,
         meeting_time: time,
-        duration,
+        duration: Number(duration),
         platform,
-        agenda,
+        description,
       });
 
       setScheduled(true);
@@ -191,27 +223,60 @@ export default function ScheduleMeetingPage() {
               />
             </div>
 
-            <div>
-              <label
-                htmlFor="reviewer"
-                className="text-caption font-medium text-text-heading font-inter block mb-1"
-              >
-                Reviewer
-              </label>
-              <select
-                id="reviewer"
-                value={reviewerId}
-                disabled={!!notApprovedError}
-                onChange={(e) => setReviewerId(e.target.value)}
-                className="w-full min-h-[44px] rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
-              >
-                {reviewers.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name} ({r.role})
-                  </option>
-                ))}
-              </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="stage"
+                  className="text-caption font-medium text-text-heading font-inter block mb-1"
+                >
+                  Startup Stage
+                </label>
+                <select
+                  id="stage"
+                  value={stage}
+                  disabled={!!notApprovedError}
+                  onChange={(e) => setStage(e.target.value)}
+                  className="w-full min-h-11 rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
+                >
+                  {STAGES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="reviewer"
+                  className="text-caption font-medium text-text-heading font-inter block mb-1"
+                >
+                  Reviewer (Host)
+                </label>
+                <select
+                  id="reviewer"
+                  value={reviewerId}
+                  disabled={!!notApprovedError}
+                  onChange={(e) => setReviewerId(e.target.value)}
+                  className="w-full min-h-11 rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
+                >
+                  {reviewers.map((r) => (
+                    <option key={r.id || r._id} value={r.id || r._id}>
+                      {r.name || r.full_name} ({r.role})
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
+            <Input
+              id="title"
+              label="Meeting Title"
+              placeholder="e.g. Stage Review Meeting"
+              value={title}
+              disabled={!!notApprovedError}
+              onChange={(e) => setTitle(e.target.value)}
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
@@ -244,11 +309,13 @@ export default function ScheduleMeetingPage() {
                   id="duration"
                   value={duration}
                   disabled={!!notApprovedError}
-                  onChange={(e) => setDuration(e.target.value)}
-                  className="w-full min-h-[44px] rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  className="w-full min-h-11 rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
                 >
                   {DURATIONS.map((d) => (
-                    <option key={d}>{d}</option>
+                    <option key={d.value} value={d.value}>
+                      {d.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -265,7 +332,7 @@ export default function ScheduleMeetingPage() {
                     value={platform}
                     disabled={!!notApprovedError}
                     onChange={(e) => setPlatform(e.target.value)}
-                    className="flex-1 min-h-[44px] rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
+                    className="flex-1 min-h-11 rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter px-3 focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
                   >
                     {PLATFORMS.map((p) => (
                       <option key={p}>{p}</option>
@@ -276,7 +343,7 @@ export default function ScheduleMeetingPage() {
                     position="top"
                     inline
                   >
-                    <span className="min-h-[44px] px-3 flex items-center border border-border-subtle rounded-md text-text-muted">
+                    <span className="min-h-11 px-3 flex items-center border border-border-subtle rounded-md text-text-muted">
                       <Link2 size={16} strokeWidth={2} />
                     </span>
                   </ComingSoon>
@@ -286,16 +353,16 @@ export default function ScheduleMeetingPage() {
 
             <div>
               <label
-                htmlFor="agenda"
+                htmlFor="description"
                 className="text-caption font-medium text-text-heading font-inter block mb-1"
               >
-                Agenda
+                Agenda / Description
               </label>
               <textarea
-                id="agenda"
-                value={agenda}
+                id="description"
+                value={description}
                 disabled={!!notApprovedError}
-                onChange={(e) => setAgenda(e.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
                 rows={5}
                 className="w-full rounded-md border border-border-subtle bg-surface-white text-sm text-text-body font-inter p-3 resize-none focus:outline-none focus:ring-1 focus:ring-brand-black disabled:opacity-50"
               />
@@ -352,7 +419,7 @@ export default function ScheduleMeetingPage() {
                 Availability Calendar
               </h3>
               <span className="font-inter text-caption text-text-muted">
-                November 2026
+                Current Month
               </span>
             </div>
             <div className="grid grid-cols-7 gap-1 text-center mb-2">
@@ -376,7 +443,7 @@ export default function ScheduleMeetingPage() {
                 >
                   <span
                     className={`w-8 h-8 flex items-center justify-center rounded-full font-inter text-small ${
-                      day === 4
+                      day === new Date().getDate()
                         ? "bg-brand-black text-white font-semibold"
                         : "text-text-body hover:bg-canvas-bg"
                     }`}
@@ -397,7 +464,7 @@ export default function ScheduleMeetingPage() {
             <div className="divide-y divide-border-subtle">
               {upcomingMeetings.length > 0 ? (
                 upcomingMeetings.map((m) => (
-                  <div key={m.id} className="p-4">
+                  <div key={m.id || m._id} className="p-4">
                     <p className="font-inter font-semibold text-small text-text-heading">
                       {m.startup}
                     </p>

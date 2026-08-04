@@ -13,8 +13,4 @@ const { getOnboardingStatus } = require("../controllers/onboarding.controller");
 // GET /api/onboarding/status
 router.get("/status", protect, getOnboardingStatus);
 
-/**
- * @module onboardingRouter
- * @description Express router for checking onboarding status.
- */
 module.exports = router;
