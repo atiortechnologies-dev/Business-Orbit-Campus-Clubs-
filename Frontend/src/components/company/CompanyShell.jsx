@@ -124,7 +124,7 @@ export default function CompanyShell({ children }) {
           <div className="mb-4 md:mb-0">
             <Logo variant="mark" size={20} />
             <p className="text-text-muted font-inter font-normal text-small mt-1">
-              © 2024 Business Orbit Campus Clubs. All rights reserved.
+              © 2026 Business Orbit Campus Clubs. All rights reserved.
             </p>
           </div>
           <div className="flex gap-8">

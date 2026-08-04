@@ -293,7 +293,7 @@ function withSuspense(Component) {
 }
 
 export const router = createBrowserRouter([
-  { path: "/", element: <Navigate to="/login" replace /> },
+  { path: "/", element: <Navigate to="/landing" replace /> },
 
   // Public Landing Pages
   { path: "/landing", element: withSuspense(LandingHome) },

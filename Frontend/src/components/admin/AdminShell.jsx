@@ -94,7 +94,7 @@ export default function AdminShell({ children }) {
             than baked into the shared Sidebar. Same white/70 treatment as
             Incubator's Help Center row, for the same reason (this renders
             inside the permanently-black sidebar). */}
-        <div className="border-t border-white/10 pt-4 mb-4 space-y-1">
+        {/* <div className="border-t border-white/10 pt-4 mb-4 space-y-1">
           <ComingSoon
             label="New Request"
             position="top-right"
@@ -117,7 +117,7 @@ export default function AdminShell({ children }) {
               Help Center
             </span>
           </ComingSoon>
-        </div>
+        </div> */}
       </Sidebar>
 
       <main
@@ -176,7 +176,7 @@ export default function AdminShell({ children }) {
           <div className="mb-4 md:mb-0">
             <Logo variant="mark" size={20} />
             <p className="text-text-muted font-inter font-normal text-small mt-1">
-              © 2024 Business Orbit Campus Clubs. All rights reserved.
+              © 2026 Business Orbit Campus Clubs. All rights reserved.
             </p>
           </div>
           <div className="flex gap-8">

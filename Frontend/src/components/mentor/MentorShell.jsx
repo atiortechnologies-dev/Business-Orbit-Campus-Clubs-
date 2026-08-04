@@ -40,9 +40,9 @@ export default function MentorShell({ children }) {
       />
 
       <main
-        className={`${collapsed ? "lg:pl-20" : "lg:pl-[var(--spacing-sidebar-width)]"} min-h-screen flex flex-col`}
+        className={`${collapsed ? "lg:pl-20" : "lg:pl-sidebar-width"} min-h-screen flex flex-col`}
       >
-        <header className="sticky top-0 z-40 w-full h-[72px] bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
+        <header className="sticky top-0 z-40 w-full h-18 bg-surface-white border-b border-divider-line flex items-center justify-between px-4 lg:px-10 transition-colors duration-150 ease-linear">
           <div className="flex items-center gap-4">
             <button
               type="button"
@@ -99,7 +99,7 @@ export default function MentorShell({ children }) {
           </div>
         </header>
 
-        <div className="flex-1 p-6 md:p-8 max-w-[var(--spacing-container-max)] w-full mx-auto flex flex-col">
+        <div className="flex-1 p-6 md:p-8 max-w-container-max w-full mx-auto flex flex-col">
           {children}
         </div>
 
@@ -107,7 +107,7 @@ export default function MentorShell({ children }) {
           <div className="mb-4 md:mb-0">
             <Logo variant="mark" size={20} />
             <p className="text-text-muted font-inter font-normal text-small mt-1">
-              © 2024 Business Orbit Campus Clubs. All rights reserved.
+              © 2026 Business Orbit Campus Clubs. All rights reserved.
             </p>
           </div>
           <div className="flex gap-8">

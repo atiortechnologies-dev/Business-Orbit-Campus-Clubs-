@@ -44,9 +44,9 @@ api.interceptors.response.use(
           // New accessToken cookie has been set by the backend; just retry.
           return api(originalRequest);
         } catch (refreshError) {
-          // Refresh failed -> session is over, send the user to login.
-          if (window.location.pathname !== "/login") {
-            window.location.href = "/login";
+          // Refresh failed -> session is over, send the user to the landing page.
+          if (window.location.pathname !== "/landing") {
+            window.location.href = "/landing";
           }
           return Promise.reject(refreshError);
         }
