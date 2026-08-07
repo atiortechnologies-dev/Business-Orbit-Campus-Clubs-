@@ -13,6 +13,7 @@ const StartupStage = require("../models/StartupStage");
 const StudentProfile = require("../models/StudentProfile");
 const User = require("../models/User");
 const { sendAdminMeetingReminder } = require("../utils/email");
+const MeetingFeedback = require("../models/MeetingFeedback");
 
 // -- Dashboard Screen --
 
@@ -792,6 +793,255 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
   });
 });
 
+const getMeeting = asyncHandler(async (req, res) => {
+  const meetings = await Meeting.find({})
+    .populate({
+      path: "startup_id",
+      select: "startup_name startup_id",
+      populate: {
+        path: "student_id",
+        select: "full_name email",
+      },
+    })
+    .populate("reviewer_id", "full_name email")
+    .sort({ scheduledAt: -1 });
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const counts = {
+    today: meetings.filter((m) => {
+      const date = new Date(m.schedualedAt);
+      return date >= todayStart && date <= todayEnd;
+    }).length,
+    upcoming: meetings.filter((m) => m.status === "scheduled").length,
+    completed: meetings.filter((m) => m.status === "completed").length,
+    rescheduled: meetings.filter((m) => m.status === "rescheduled").length,
+  };
+
+  return res.status(200).json({
+    success: true,
+    counts,
+    meetings,
+  });
+});
+
+const getMeetingById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const meeting = await Meeting.findById(id)
+    .populate({
+      path: "startup_id",
+      select: "startup_name chapter institution student_id",
+      populate: {
+        path: "student_id",
+        select: "full_name email",
+      },
+    })
+    .populate("reviewer_id", "full_name email");
+
+  if (!meeting) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Meeting not found" });
+  }
+
+  // Fetch stage submission associated with the startup
+  const submission = await StageSubmission.findOne({
+    startup_id: meeting.startup_id?._id,
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      ...meeting.toObject(),
+      submission: submission || null,
+      attendees: [
+        {
+          name: meeting.startup_id?.student_id?.full_name || "Founder",
+          email: meeting.startup_id?.student_id?.email,
+        },
+        meeting.reviewer_id
+          ? {
+              name: meeting.reviewer_id.full_name,
+              email: meeting.reviewer_id.email,
+            }
+          : null,
+      ].filter(Boolean),
+    },
+  });
+});
+
+const cancelMeeting = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { reason = "Cancelled by admin" } = req.body;
+
+  // 1. Find meeting by ID
+  const meeting = await Meeting.findById(id);
+
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "Meeting not found",
+    });
+  }
+
+  // 2. Prevent re-cancelling already completed/cancelled meetings
+  if (meeting.status === "cancelled") {
+    return res.status(400).json({
+      success: false,
+      message: "This meeting is already cancelled",
+    });
+  }
+
+  // 3. Update meeting status
+  meeting.status = "cancelled";
+
+  // Optionally log cancellation in reschedule history if provided
+  if (reason) {
+    meeting.rescheduleHistory.push({
+      requestedBy: req.user?._id || req.user?.id,
+      reason: `Cancellation Reason: ${reason}`,
+      status: "rejected",
+    });
+  }
+
+  await meeting.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Meeting cancelled successfully",
+    data: meeting,
+  });
+});
+
+const rescheduleMeeting = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { reason, meeting_date, meeting_time, duration, description } =
+    req.body;
+
+  if (!meeting_date || !meeting_time) {
+    return res.status(400).json({
+      success: false,
+      message: "Startup, meeting date, and meeting time are required",
+    });
+  }
+
+  const meeting = await Meeting.findById(id);
+
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "Meeting not found.",
+    });
+  }
+
+  const previousDate = meeting.scheduledAt;
+
+  meeting.rescheduleHistory.push({
+    requestedBy: req.user?._id || req.user?.id,
+    previousDate: previousDate,
+    newDate: new Date(meeting_date),
+    reason: reason.trim(),
+    status: "accepted",
+  });
+
+  meeting.scheduledAt = new Date(meeting_date);
+  meeting.status = "rescheduled";
+  meeting.duration = duration;
+  meeting.description = description;
+
+  await meeting.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Meeting rescheduled successfully.",
+    data: meeting,
+  });
+});
+
+const postMeetingOutcome = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const {
+    summary,
+    strengths,
+    improvements,
+    actionItems,
+    decision,
+    feedbackForFounder,
+    internalNotes,
+  } = req.body;
+
+  if (!feedbackForFounder || !feedbackForFounder.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Feedback for the founder is required.",
+    });
+  }
+
+  // 1. Fetch Meeting document
+  const meeting = await Meeting.findById(id).populate("startup_id");
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "Meeting not found.",
+    });
+  }
+
+  const startup = meeting.startup_id;
+  const isApproved = decision === "approve";
+
+  // 2. Upsert Meeting Feedback
+  const feedback = await MeetingFeedback.findOneAndUpdate(
+    { meeting_id: meeting._id },
+    {
+      meeting_id: meeting._id,
+      reviewer_id: req.user?._id || req.user?.id || meeting.reviewer_id,
+      student_id: startup?.student_id,
+      startup_id: startup?._id,
+      summary: summary || "",
+      strengths: strengths || "",
+      improvements: improvements || "",
+      action_items: actionItems || "",
+      decision: decision || "approve",
+      reviewer_comments: feedbackForFounder.trim(),
+      internal_notes: internalNotes || "",
+      validation_approved: isApproved,
+    },
+    { new: true, upsert: true },
+  );
+
+  // 3. Mark meeting as completed
+  meeting.status = "completed";
+  await meeting.save();
+
+  // 4. Optionally update Startup Stage if approved
+  if (isApproved && startup) {
+    const STAGE_ORDER = [
+      "ideation",
+      "validation",
+      "mvp",
+      "incubation",
+      "traction",
+      "launch",
+    ];
+    const currentIdx = STAGE_ORDER.indexOf(meeting.stage);
+    if (currentIdx >= 0 && currentIdx < STAGE_ORDER.length - 1) {
+      startup.stage = STAGE_ORDER[currentIdx + 1];
+      await startup.save();
+    }
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Meeting outcome recorded successfully.",
+    data: feedback,
+  });
+});
+
 // ---- Chapters ----
 
 const getChapters = asyncHandler(async (req, res) => {
@@ -919,6 +1169,11 @@ module.exports = {
   handleSubmissionDecision,
   getMeetingPrepareContext,
   scheduleMeeting,
+  getMeeting,
+  getMeetingById,
+  cancelMeeting,
+  rescheduleMeeting,
+  postMeetingOutcome,
   getChapters,
   getChapterDetails,
   createChapter,

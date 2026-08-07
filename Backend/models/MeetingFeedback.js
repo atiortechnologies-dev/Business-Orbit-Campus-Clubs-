@@ -6,7 +6,7 @@ const MeetingFeedbackSchema = new mongoose.Schema(
   {
     meeting_id: {
       type: ObjectId,
-      ref: "Meeting", // Updated to point to unified Meeting model
+      ref: "Meeting",
       required: true,
       unique: true,
     },
@@ -25,16 +25,40 @@ const MeetingFeedbackSchema = new mongoose.Schema(
       ref: "Startup",
       required: true,
     },
-    reviewer_comments: {
+    summary: {
       type: String,
       trim: true,
-      maxlength: 2000,
       default: "",
     },
-    recommendations: {
+    strengths: {
       type: String,
       trim: true,
+      default: "",
+    },
+    improvements: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    action_items: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    decision: {
+      type: String,
+      enum: ["approve", "request_changes", "reject"],
+      default: "approve",
+    },
+    reviewer_comments: {
+      type: String, // Feedback for founder
+      trim: true,
       maxlength: 2000,
+      required: true,
+    },
+    internal_notes: {
+      type: String, // Admin eyes only
+      trim: true,
       default: "",
     },
     validation_approved: {

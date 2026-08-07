@@ -5,19 +5,19 @@ import {
   Rocket,
   FileText,
   ExternalLink,
-  Copy,
-  Check,
   CalendarClock,
   RefreshCcw,
   XCircle,
   Loader2,
   Inbox,
+  Lock,
+  CheckCircle2,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import Badge from "@/components/ui/Badge";
-import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
+import TextAreaField from "@/components/onboarding/TextAreaField";
 import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getMeetingById, cancelMeeting } from "@/api/admin/adminMeetingApi";
@@ -65,8 +65,8 @@ export default function MeetingDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  const [linkCopied, setLinkCopied] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
   const [cancelling, setCancelling] = useState(false);
   const [cancelError, setCancelError] = useState("");
 
@@ -83,8 +83,6 @@ export default function MeetingDetailPage() {
           return;
         }
 
-        // TODO(backend): GET /admin/meetings/:id doesn't exist yet — see
-        // adminMeetingApi.js's getMeetingById for the expected response shape.
         const res = await getMeetingById(meetingId);
         const payload = res?.data?.data || res?.data || res;
 
@@ -106,21 +104,22 @@ export default function MeetingDetailPage() {
     };
   }, [meetingId]);
 
-  const handleCopyLink = () => {
-    if (!meeting?.meeting_link) return;
-    navigator.clipboard.writeText(meeting.meeting_link);
-    setLinkCopied(true);
-    setTimeout(() => setLinkCopied(false), 2000);
-  };
-
   const handleCancel = async () => {
     if (!meetingId) return;
+
+    if (!cancelReason.trim()) {
+      setCancelError("Please provide a reason for cancelling this meeting.");
+      return;
+    }
+
     try {
       setCancelling(true);
       setCancelError("");
-      // TODO(backend): POST /admin/meetings/:id/cancel doesn't exist yet.
-      await cancelMeeting(meetingId);
+
+      await cancelMeeting(meetingId, cancelReason.trim());
+
       setCancelOpen(false);
+      setCancelReason("");
       navigate("/admin/meetings");
     } catch (err) {
       console.error("Failed to cancel meeting:", err);
@@ -168,16 +167,29 @@ export default function MeetingDetailPage() {
 
   const startup = meeting.startup_id || meeting.startup || {};
   const submission = meeting.submission || {};
-  const scheduledDate = meeting.scheduledAt ? new Date(meeting.scheduledAt) : null;
+  const scheduledDate = meeting.scheduledAt
+    ? new Date(meeting.scheduledAt)
+    : null;
   const createdDate = meeting.createdAt ? new Date(meeting.createdAt) : null;
   const attendees = meeting.attendees || [];
-  const competitors = submission.competitors || [];
-  const documents = submission.documents || [];
 
-  // Journey step index derived from meeting status — best-effort mapping
-  // since there's no real event/decision log on the backend yet.
-  const journeyIndex =
-    meeting.status === "completed" ? 3 : meeting.status === "cancelled" ? 1 : 2;
+  const rawCompetitors = submission.competitors;
+  const competitors = Array.isArray(rawCompetitors)
+    ? rawCompetitors
+    : typeof rawCompetitors === "string" && rawCompetitors.trim().length > 0
+      ? rawCompetitors.split(",").map((c) => c.trim())
+      : [];
+
+  const documents = Array.isArray(submission.documents)
+    ? submission.documents
+    : submission.attachment_url
+      ? [{ name: "Pitch Deck Attachment", url: submission.attachment_url }]
+      : [];
+
+  const isCompleted = meeting.status === "completed";
+  const isCancelled = meeting.status === "cancelled";
+
+  const journeyIndex = isCompleted ? 3 : isCancelled ? 1 : 2;
 
   return (
     <AdminShell>
@@ -197,41 +209,42 @@ export default function MeetingDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: startup context + journey */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card lg:sticky lg:top-24">
+          <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card lg:top-24">
             <div className="flex flex-col items-center text-center pb-6 border-b border-divider-line mb-6">
               <div className="w-14 h-14 rounded-xl bg-brand-black text-white flex items-center justify-center mb-3">
                 <Rocket size={22} strokeWidth={2} />
               </div>
-              <h1 className="font-poppins font-semibold text-card text-text-heading">
+              <h1 className="font-poppins font-semibold text-lg text-text-heading">
                 {startup.startup_name || startup.name || "Untitled Startup"}
               </h1>
               <Badge variant="brand" className="mt-2">
                 {meeting.stage
-                  ? meeting.stage.charAt(0).toUpperCase() + meeting.stage.slice(1)
+                  ? meeting.stage.charAt(0).toUpperCase() +
+                    meeting.stage.slice(1)
                   : "Stage N/A"}
               </Badge>
             </div>
             <dl className="space-y-3">
               <div className="flex justify-between">
-                <dt className="font-inter text-small text-text-muted">Founder</dt>
+                <dt className="font-inter text-small text-text-muted">
+                  Founder
+                </dt>
                 <dd className="font-inter font-medium text-small text-text-heading">
                   {startup.student_id?.full_name || startup.founder || "N/A"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="font-inter text-small text-text-muted">Chapter</dt>
+                <dt className="font-inter text-small text-text-muted">
+                  Chapter
+                </dt>
                 <dd className="font-inter font-medium text-small text-text-heading">
                   {startup.chapter || "N/A"}
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="font-inter text-small text-text-muted">Institution</dt>
-                <dd className="font-inter font-medium text-small text-text-heading">
-                  {startup.institution || "N/A"}
-                </dd>
-              </div>
-              <div className="flex justify-between">
-                <dt className="font-inter text-small text-text-muted">Submitted</dt>
+                <dt className="font-inter text-small text-text-muted">
+                  Submitted
+                </dt>
                 <dd className="font-inter font-medium text-small text-text-heading">
                   {submission.submitted_at
                     ? new Date(submission.submitted_at).toLocaleDateString()
@@ -305,18 +318,22 @@ export default function MeetingDetailPage() {
             <div className="space-y-5">
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">
-                  Problem Statement
+                  Problem Statement / Description
                 </p>
-                <p className="font-inter text-small text-text-body leading-relaxed">
-                  {submission.problem_statement || "Not provided."}
+                <p className="font-inter text-small text-text-body leading-relaxed whitespace-pre-line">
+                  {submission.description ||
+                    submission.problem_statement ||
+                    "Not provided."}
                 </p>
               </div>
               <div>
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">
                   Proposed Solution
                 </p>
-                <p className="font-inter text-small text-text-body leading-relaxed">
-                  {submission.proposed_solution || "Not provided."}
+                <p className="font-inter text-small text-text-body leading-relaxed whitespace-pre-line">
+                  {submission.solution ||
+                    submission.proposed_solution ||
+                    "Not provided."}
                 </p>
               </div>
               <div>
@@ -341,9 +358,9 @@ export default function MeetingDetailPage() {
                     Competitors
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {competitors.map((c) => (
+                    {competitors.map((c, idx) => (
                       <span
-                        key={c}
+                        key={idx}
                         className="px-2.5 py-1 rounded-full bg-canvas-bg border border-border-subtle font-inter text-caption text-text-body"
                       >
                         {c}
@@ -363,19 +380,33 @@ export default function MeetingDetailPage() {
             </div>
             {documents.length > 0 ? (
               <div className="divide-y divide-border-subtle">
-                {documents.map((doc) => (
-                  <div key={doc.name || doc} className="p-4 flex items-center gap-3">
+                {documents.map((doc, idx) => (
+                  <div
+                    key={doc.name || idx}
+                    className="p-4 flex items-center gap-3"
+                  >
                     <div className="w-9 h-9 rounded bg-canvas-bg text-text-muted flex items-center justify-center shrink-0">
                       <FileText size={16} strokeWidth={2} />
                     </div>
                     <p className="flex-1 font-inter font-medium text-small text-text-heading truncate">
-                      {doc.name || doc}
+                      {doc.name || "Attachment"}
                     </p>
-                    <ComingSoon label="Download" position="top" inline>
-                      <span className="font-inter font-medium text-caption text-text-heading">
-                        Download
-                      </span>
-                    </ComingSoon>
+                    {doc.url ? (
+                      <a
+                        href={doc.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-inter font-medium text-caption text-text-heading underline hover:opacity-80 transition-opacity"
+                      >
+                        View / Download
+                      </a>
+                    ) : (
+                      <ComingSoon label="Download" position="top" inline>
+                        <span className="font-inter font-medium text-caption text-text-heading">
+                          Download
+                        </span>
+                      </ComingSoon>
+                    )}
                   </div>
                 ))}
               </div>
@@ -429,43 +460,15 @@ export default function MeetingDetailPage() {
                 </p>
               </div>
               <div>
-                {/* TODO(backend): `platform` isn't a field on Meeting.js yet. */}
                 <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-1">
                   Platform
                 </p>
                 <p className="font-inter font-medium text-small text-text-heading">
-                  {meeting.platform || "Not set"}
+                  {meeting.platform || "Google Meet"}
                 </p>
               </div>
             </div>
 
-            {/* TODO(backend): `meeting_link` isn't a field on Meeting.js yet. */}
-            <div className="mb-4">
-              <Input
-                id="meeting-link"
-                label="Meeting Link"
-                readOnly
-                value={meeting.meeting_link || "Not yet generated"}
-                rightSlot={
-                  meeting.meeting_link ? (
-                    <button
-                      type="button"
-                      onClick={handleCopyLink}
-                      aria-label="Copy meeting link"
-                      className="hover:text-text-heading transition-colors"
-                    >
-                      {linkCopied ? (
-                        <Check size={16} strokeWidth={2} className="text-success" />
-                      ) : (
-                        <Copy size={16} strokeWidth={2} />
-                      )}
-                    </button>
-                  ) : null
-                }
-              />
-            </div>
-
-            {/* TODO(backend): `attendees` isn't a field on Meeting.js yet. */}
             <div>
               <p className="font-inter text-caption text-text-muted uppercase tracking-wider mb-2">
                 Attendees
@@ -521,27 +524,55 @@ export default function MeetingDetailPage() {
           </section>
 
           <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card space-y-3">
+            {isCompleted && (
+              <div className="p-3 bg-success/10 border border-success/30 rounded-md flex items-center gap-2 text-success font-inter text-small mb-2">
+                <CheckCircle2 size={16} strokeWidth={2} className="shrink-0" />
+                This meeting has been completed and locked.
+              </div>
+            )}
+
+            {isCancelled && (
+              <div className="p-3 bg-neutral/10 border border-border-subtle rounded-md flex items-center gap-2 text-text-muted font-inter text-small mb-2">
+                <Lock size={16} strokeWidth={2} className="shrink-0" />
+                Meeting is cancelled. You can reschedule to reactivate.
+              </div>
+            )}
+
+            {/* Complete Meeting — Disabled if completed OR cancelled */}
             <button
               type="button"
-              onClick={() => navigate(`/admin/meetings/outcome?id=${meetingId}`)}
-              className="w-full py-2.5 bg-action-bg text-action-text rounded-md font-poppins font-semibold text-small hover:opacity-90 transition-opacity"
+              disabled={isCompleted || isCancelled}
+              onClick={() =>
+                navigate(`/admin/meetings/outcome?id=${meetingId}`)
+              }
+              className="w-full py-2.5 bg-action-bg text-action-text rounded-md font-poppins font-semibold text-small hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Complete Meeting
+              {isCompleted ? "Meeting Completed" : "Complete Meeting"}
             </button>
+
             <div className="grid grid-cols-2 gap-3">
+              {/* Reschedule Button — Enabled for cancelled meetings! */}
               <button
                 type="button"
+                disabled={isCompleted}
                 onClick={() =>
                   navigate(`/admin/meetings/reschedule?id=${meetingId}`)
                 }
-                className="flex items-center justify-center gap-1.5 py-2.5 border border-border-subtle rounded-md font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
+                className="flex items-center justify-center gap-1.5 py-2.5 border border-border-subtle rounded-md font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <RefreshCcw size={15} strokeWidth={2} /> Reschedule
               </button>
+
+              {/* Cancel Button — Disabled if completed OR already cancelled */}
               <button
                 type="button"
-                onClick={() => setCancelOpen(true)}
-                className="flex items-center justify-center gap-1.5 py-2.5 border border-error text-error rounded-md font-poppins font-semibold text-small hover:bg-error/5 transition-colors"
+                disabled={isCompleted || isCancelled}
+                onClick={() => {
+                  setCancelError("");
+                  setCancelReason("");
+                  setCancelOpen(true);
+                }}
+                className="flex items-center justify-center gap-1.5 py-2.5 border border-error text-error rounded-md font-poppins font-semibold text-small hover:bg-error/5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <XCircle size={15} strokeWidth={2} /> Cancel
               </button>
@@ -552,20 +583,46 @@ export default function MeetingDetailPage() {
 
       <Modal
         isOpen={cancelOpen}
-        onClose={() => setCancelOpen(false)}
+        onClose={() => {
+          if (!cancelling) {
+            setCancelOpen(false);
+            setCancelReason("");
+            setCancelError("");
+          }
+        }}
         title="Cancel this meeting?"
       >
         <p className="font-inter text-small text-text-body mb-4">
-          This will mark the meeting as cancelled and notify the founder. This
-          can't be undone from here.
+          This will mark the meeting as cancelled and notify the founder.
         </p>
+
+        <div className="mb-4">
+          <TextAreaField
+            id="cancel-reason"
+            label="Cancellation Reason *"
+            value={cancelReason}
+            onChange={(e) => {
+              setCancelReason(e.target.value);
+              if (cancelError) setCancelError("");
+            }}
+            placeholder="e.g. Founder requested cancellation / Scheduling conflict..."
+            rows={3}
+            disabled={cancelling}
+          />
+        </div>
+
         {cancelError && (
           <p className="font-inter text-small text-error mb-4">{cancelError}</p>
         )}
+
         <div className="flex justify-end gap-3">
           <Button
             variant="outline"
-            onClick={() => setCancelOpen(false)}
+            onClick={() => {
+              setCancelOpen(false);
+              setCancelReason("");
+              setCancelError("");
+            }}
             disabled={cancelling}
           >
             Keep Meeting
@@ -581,7 +638,7 @@ export default function MeetingDetailPage() {
                 <Loader2 size={16} className="animate-spin" /> Cancelling...
               </span>
             ) : (
-              "Cancel Meeting"
+              "Confirm Cancellation"
             )}
           </button>
         </div>
