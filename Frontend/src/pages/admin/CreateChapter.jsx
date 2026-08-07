@@ -16,7 +16,7 @@ import AdminShell from "@/components/admin/AdminShell";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { createChapter } from "@/api/admin/chapterApi";
+import { createChapter } from "@/api/admin/adminChapterApi";
 
 const CHAPTER_TYPES = ["University", "College", "School", "Incubator"];
 const STATUS_OPTIONS = ["Pending", "Active", "Inactive"];

@@ -15,5 +15,5 @@ export const getChapterById = async (id) => {
 
 export const createChapter = async (chapterData) => {
   const res = await api.post("/admin/chapters", chapterData);
-  return res;
+  return res.data;
 };

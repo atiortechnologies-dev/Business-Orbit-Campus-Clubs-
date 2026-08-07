@@ -21,7 +21,7 @@ import AdminShell from "@/components/admin/AdminShell";
 import ComingSoon from "@/components/ui/ComingSoon";
 import Badge from "@/components/ui/Badge";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import { getChapterById } from "@/api/admin/chapterApi";
+import { getChapterById } from "@/api/admin/adminChapterApi";
 
 function initialsOf(name = "") {
   return (

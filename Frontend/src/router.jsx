@@ -445,12 +445,6 @@ export const router = createBrowserRouter([
         path: "/admin/chapters/detail/:chapterId",
         element: withSuspense(ChapterDetail),
       },
-      { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
-      {
-        path: "/admin/chapters/detail/:chapterId",
-        element: withSuspense(ChapterDetail),
-      },
-      { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
       {
         path: "/admin/opportunities",
         element: withSuspense(OpportunityApprovalQueue),
