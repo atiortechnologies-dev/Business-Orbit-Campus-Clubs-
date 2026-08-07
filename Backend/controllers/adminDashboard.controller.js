@@ -1088,6 +1088,24 @@ const getChapterDetails = asyncHandler(async (req, res) => {
       (s.profile_status === "completed" ? "Active" : "Pending"),
   }));
 
+  // 4. Fetch all startups under this chapter with founder details populated
+  const rawStartups = await Startup.find({ chapter_id: id })
+    .populate("student_id", "full_name email")
+    .sort({ created_at: -1 })
+    .lean();
+
+  // 5. Format startups payload for frontend DataTable
+  const formattedStartups = rawStartups.map((st) => ({
+    id: st._id,
+    startup_name: st.startup_name || "Untitled Startup",
+    founder_name: st.student_id?.full_name || "N/A",
+    founder_email: st.student_id?.email || "—",
+    stage:
+      st.stage || (st.current_stage ? `Stage ${st.current_stage}` : "Ideation"),
+    progress_percentage: st.progress_percentage || 0,
+    industry: st.industry || st.category || "General",
+  }));
+
   res.status(200).json({
     success: true,
     data: {
@@ -1103,12 +1121,14 @@ const getChapterDetails = asyncHandler(async (req, res) => {
         created_at: chapter.created_at,
         stats: {
           total_members: chapter.total_members || formattedStudents.length,
-          active_startups: chapter.active_startups || 0,
+          active_startups:
+            formattedStartups.length || chapter.active_startups || 0,
           mentors_count: chapter.mentors_count || 0,
           events_conducted: chapter.events_conducted || 0,
         },
       },
       students: formattedStudents,
+      startups: formattedStartups,
     },
   });
 });
