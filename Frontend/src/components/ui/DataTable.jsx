@@ -7,6 +7,7 @@ export default function DataTable({
   rows,
   onRowClick,
   emptyMessage = "No results.",
+  rowClassName,
 }) {
   // Every track wrapped in minmax(0, ...): a bare `Nfr` track has an implicit
   // min-width of its content's min-content, so unbreakable cell content (a
@@ -67,7 +68,7 @@ export default function DataTable({
 
           const rowClasses = `grid grid-cols-1 md:grid-cols-[var(--cols)] gap-2 md:gap-4 items-center px-6 py-4 md:py-5 w-full text-left transition-colors ${
             onRowClick ? "hover:bg-canvas-bg/40 cursor-pointer" : ""
-          }`;
+          } ${rowClassName ? rowClassName(row) : ""}`;
 
           return onRowClick ? (
             <button
