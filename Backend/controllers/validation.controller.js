@@ -2,6 +2,7 @@ const asyncHandler = require("../middlewares/asyncHandler");
 const MeetingFeedback = require("../models/MeetingFeedback");
 const ReviewMeeting = require("../models/ReviewMeeting");
 const StageSubmission = require("../models/StageSubmission");
+const Startup = require("../models/Startup");
 const StartupStage = require("../models/StartupStage");
 const ValidationChecklistItem = require("../models/ValidationChecklistItem");
 const ValidationEvidence = require("../models/ValidationEvidence");
@@ -15,6 +16,65 @@ const {
   getValidationMetrics,
   updateChecklistItem,
 } = require("../utils/validationStageUtils");
+
+/**
+ * @desc    Advance startup from Ideation to Validation stage after approval
+ * @route   POST /api/student/stage/begin-validation
+ * @access  Private (Student)
+ */
+const beginValidationStage = asyncHandler(async (req, res) => {
+  const userId = req.user?._id || req.user?.id;
+
+  // 1. Fetch Student's Startup
+  const startup = await Startup.findOne({ student_id: userId });
+  if (!startup) {
+    return res.status(404).json({
+      success: false,
+      message: "Startup profile not found for this user.",
+    });
+  }
+
+  // 2. Verify that Ideation Stage has been approved via MeetingFeedback
+  const ideationFeedback = await MeetingFeedback.findOne({
+    startup_id: startup._id,
+    validation_approved: true,
+  });
+
+  if (!ideationFeedback) {
+    return res.status(403).json({
+      success: false,
+      message:
+        "Stage 1 (Ideation) has not been approved yet. Cannot begin Validation stage.",
+    });
+  }
+
+  // 3. Update Startup Model Stage properties
+  startup.stage = "validation";
+  startup.current_stage = 2;
+  await startup.save();
+
+  // 4. Update StartupStage documents (Set Ideation to 'approved' and Validation to 'active')
+  await StartupStage.findOneAndUpdate(
+    { startup_id: startup._id, stage_number: 1 },
+    { status: "approved", completed_at: new Date() },
+  );
+
+  const stage2 = await StartupStage.findOneAndUpdate(
+    { startup_id: startup._id, stage_number: 2 },
+    { status: "active", started_at: new Date() },
+    { new: true, upsert: true },
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "Validation stage started successfully.",
+    data: {
+      current_stage: startup.current_stage,
+      stage: startup.stage,
+      active_stage_details: stage2,
+    },
+  });
+});
 
 // ================= VALIDATION OVERVIEW =================
 
@@ -714,6 +774,7 @@ const getValidationResult = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  beginValidationStage,
   getValidationOverview,
   getValidationStatus,
   getValidationChecklist,

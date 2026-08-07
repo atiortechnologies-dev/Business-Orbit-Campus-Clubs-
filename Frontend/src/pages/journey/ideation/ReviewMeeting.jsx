@@ -10,6 +10,8 @@ import {
   AlertCircle,
   ExternalLink,
   Clock,
+  CheckCircle2,
+  ArrowRight,
 } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -149,6 +151,59 @@ export default function IdeationReviewMeetingPage() {
                 up your review meeting schedule. Please check back shortly.
               </p>
             </div>
+          </div>
+        </div>
+      </DashboardShell>
+    );
+  }
+
+  // Case 3: Meeting is Completed — Show completion state and redirect to Review Result
+  if (meetingData?.status === "completed") {
+    return (
+      <DashboardShell pageId="ideation-review-meeting">
+        <nav className="mb-2 flex items-center gap-2 text-text-muted font-inter font-normal text-small">
+          <Link
+            to="/dashboard"
+            className="hover:text-text-heading transition-colors"
+          >
+            Dashboard
+          </Link>
+          <ChevronRight size={14} strokeWidth={2} />
+          <Link
+            to="/build-startup/journey/ideation"
+            className="hover:text-text-heading transition-colors"
+          >
+            Ideation
+          </Link>
+          <ChevronRight size={14} strokeWidth={2} />
+          <span className="text-text-heading font-semibold">
+            Review Meeting
+          </span>
+        </nav>
+
+        <h1 className="font-poppins font-semibold text-page text-text-heading mb-1">
+          Review Meeting
+        </h1>
+
+        <div className="mt-8 p-6 bg-surface-white border border-border-subtle rounded-lg shadow-card max-w-2xl text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-success/10 text-success mx-auto flex items-center justify-center">
+            <CheckCircle2 size={24} />
+          </div>
+          <h2 className="font-poppins font-semibold text-section text-text-heading">
+            Meeting Concluded
+          </h2>
+          <p className="font-inter text-body text-text-body">
+            This review session has been completed by your assigned reviewer.
+            You can view the feedback and decisions recorded for your stage
+            below.
+          </p>
+          <div className="pt-2">
+            <Link
+              to="/build-startup/journey/ideation/review-result"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-black text-white rounded-md font-poppins font-semibold text-small hover:opacity-90 transition-opacity"
+            >
+              View Review Result <ArrowRight size={16} />
+            </Link>
           </div>
         </div>
       </DashboardShell>

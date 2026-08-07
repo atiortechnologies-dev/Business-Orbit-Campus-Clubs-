@@ -47,8 +47,8 @@ const MeetingFeedbackSchema = new mongoose.Schema(
     },
     decision: {
       type: String,
-      enum: ["approve", "request_changes", "reject"],
-      default: "approve",
+      enum: ["approved", "request_changes", "reject", "pending"],
+      default: "pending",
     },
     reviewer_comments: {
       type: String, // Feedback for founder
@@ -71,5 +71,6 @@ const MeetingFeedbackSchema = new mongoose.Schema(
 
 MeetingFeedbackSchema.index({ reviewer_id: 1 });
 MeetingFeedbackSchema.index({ student_id: 1 });
+MeetingFeedbackSchema.index({ startup_id: 1 });
 
 module.exports = mongoose.model("MeetingFeedback", MeetingFeedbackSchema);

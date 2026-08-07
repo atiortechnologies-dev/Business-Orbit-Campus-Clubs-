@@ -970,7 +970,7 @@ const postMeetingOutcome = asyncHandler(async (req, res) => {
     strengths,
     improvements,
     actionItems,
-    decision,
+    decision = "pending", // "approved" | "request_changes" | "reject" | "pending"
     feedbackForFounder,
     internalNotes,
   } = req.body;
@@ -992,7 +992,8 @@ const postMeetingOutcome = asyncHandler(async (req, res) => {
   }
 
   const startup = meeting.startup_id;
-  const isApproved = decision === "approve";
+  const isApproved = decision === "approved";
+  const isPending = decision === "pending";
 
   // 2. Upsert Meeting Feedback
   const feedback = await MeetingFeedback.findOneAndUpdate(
@@ -1006,7 +1007,7 @@ const postMeetingOutcome = asyncHandler(async (req, res) => {
       strengths: strengths || "",
       improvements: improvements || "",
       action_items: actionItems || "",
-      decision: decision || "approve",
+      decision: decision,
       reviewer_comments: feedbackForFounder.trim(),
       internal_notes: internalNotes || "",
       validation_approved: isApproved,
@@ -1014,11 +1015,48 @@ const postMeetingOutcome = asyncHandler(async (req, res) => {
     { new: true, upsert: true },
   );
 
-  // 3. Mark meeting as completed
-  meeting.status = "completed";
-  await meeting.save();
+  // 3. Sync StageSubmission status
+  const submissionId = meeting.submission_id || meeting.submission;
+  let submissionQuery = null;
 
-  // 4. Optionally update Startup Stage if approved
+  if (submissionId) {
+    submissionQuery = { _id: submissionId };
+  } else if (startup?._id) {
+    submissionQuery = { startup_id: startup._id };
+  }
+
+  if (submissionQuery) {
+    let targetStatus = "pending_review";
+    if (decision === "approved") targetStatus = "approved";
+    else if (decision === "reject") targetStatus = "rejected";
+    else if (decision === "request_changes") targetStatus = "request_changes";
+    else if (decision === "pending") targetStatus = "pending_review";
+
+    // Format the request_changes message dynamically based on decision
+    let changeNote = "";
+    if (decision === "request_changes") {
+      changeNote = feedbackForFounder.trim();
+    } else if (decision === "reject") {
+      changeNote = "Idea rejected. You can submit a new idea.";
+    }
+
+    await StageSubmission.findOneAndUpdate(
+      submissionQuery,
+      {
+        status: targetStatus,
+        request_changes: changeNote,
+      },
+      { sort: { updated_at: -1 } },
+    );
+  }
+
+  // 4. Mark meeting as completed (only when a final decision is issued)
+  if (!isPending) {
+    meeting.status = "completed";
+    await meeting.save();
+  }
+
+  // 5. Advance Startup Stage if approved
   if (isApproved && startup) {
     const STAGE_ORDER = [
       "ideation",
@@ -1031,6 +1069,7 @@ const postMeetingOutcome = asyncHandler(async (req, res) => {
     const currentIdx = STAGE_ORDER.indexOf(meeting.stage);
     if (currentIdx >= 0 && currentIdx < STAGE_ORDER.length - 1) {
       startup.stage = STAGE_ORDER[currentIdx + 1];
+      startup.current_stage = currentIdx + 2;
       await startup.save();
     }
   }
@@ -1114,8 +1153,9 @@ const getChapterDetails = asyncHandler(async (req, res) => {
         name: chapter.chapter_name || chapter.college_name,
         institution: chapter.college_name,
         status: chapter.status || "Active",
-        lead_name: chapter.lead_id?.full_name || "Unassigned",
-        lead_email: chapter.lead_id?.email || "—",
+        lead_name:
+          chapter.lead_id?.full_name || chapter.lead_name || "Unassigned",
+        lead_email: chapter.lead_id?.email || chapter.lead_email || "—",
         description: chapter.description || "",
         mission: chapter.mission || "",
         created_at: chapter.created_at,
