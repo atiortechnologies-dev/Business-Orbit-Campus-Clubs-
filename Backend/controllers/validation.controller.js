@@ -49,8 +49,10 @@ const beginValidationStage = asyncHandler(async (req, res) => {
   }
 
   // 3. Update Startup Model Stage properties
+  const TOTAL_STAGES = 5;
   startup.stage = "validation";
   startup.current_stage = 2;
+  startup.progress_percentage = Math.round((1 / TOTAL_STAGES) * 100); // 20%
   await startup.save();
 
   // 4. Update StartupStage documents (Set Ideation to 'approved' and Validation to 'active')
