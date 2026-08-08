@@ -88,7 +88,7 @@ export default function MentorSettingsPage() {
     setPhotoPreview(URL.createObjectURL(file));
     try {
       const formData = new FormData();
-      formData.append("photo", file);
+      formData.append("file", file);
       await uploadProfilePhoto("mentor", formData);
     } catch (err) {
       console.error("Failed to upload photo:", err);

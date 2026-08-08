@@ -189,6 +189,14 @@ const ReviewWorkspace = lazy(() => import("@/pages/admin/ReviewWorkspace"));
 const ReviewOutcome = lazy(() => import("@/pages/admin/ReviewOutcome"));
 const IdeationReview = lazy(() => import("@/pages/admin/IdeationReview"));
 const ScheduleMeeting = lazy(() => import("@/pages/admin/ScheduleMeeting"));
+const MeetingsDashboard = lazy(
+  () => import("@/pages/admin/MeetingsDashboard"),
+);
+const MeetingDetail = lazy(() => import("@/pages/admin/MeetingDetail"));
+const MeetingOutcome = lazy(() => import("@/pages/admin/MeetingOutcome"));
+const RescheduleMeeting = lazy(
+  () => import("@/pages/admin/RescheduleMeeting"),
+);
 const AuditLog = lazy(() => import("@/pages/admin/AuditLog"));
 const AnnouncementsDashboard = lazy(
   () => import("@/pages/admin/AnnouncementsDashboard"),
@@ -399,6 +407,16 @@ export const router = createBrowserRouter([
         path: "/admin/reviews/schedule-meeting",
         element: withSuspense(ScheduleMeeting),
       },
+      { path: "/admin/meetings", element: withSuspense(MeetingsDashboard) },
+      { path: "/admin/meetings/detail", element: withSuspense(MeetingDetail) },
+      {
+        path: "/admin/meetings/outcome",
+        element: withSuspense(MeetingOutcome),
+      },
+      {
+        path: "/admin/meetings/reschedule",
+        element: withSuspense(RescheduleMeeting),
+      },
       { path: "/admin/audit-log", element: withSuspense(AuditLog) },
       {
         path: "/admin/announcements",
@@ -427,12 +445,6 @@ export const router = createBrowserRouter([
         path: "/admin/chapters/detail/:chapterId",
         element: withSuspense(ChapterDetail),
       },
-      { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
-      {
-        path: "/admin/chapters/detail/:chapterId",
-        element: withSuspense(ChapterDetail),
-      },
-      { path: "/admin/chapters/detail", element: withSuspense(ChapterDetail) },
       {
         path: "/admin/opportunities",
         element: withSuspense(OpportunityApprovalQueue),

@@ -53,6 +53,18 @@ router.get(
 );
 router.post("/meetings/schedule", adminDashboardController.scheduleMeeting);
 
+router.get("/meetings", adminDashboardController.getMeeting);
+router.get("/meetings/:id", adminDashboardController.getMeetingById);
+router.post("/meetings/:id/cancel", adminDashboardController.cancelMeeting);
+router.post(
+  "/meetings/:id/reschedule",
+  adminDashboardController.rescheduleMeeting,
+);
+router.post(
+  "/meetings/:id/outcome",
+  adminDashboardController.postMeetingOutcome,
+);
+
 // --- Chapters ---
 router.get("/chapters", adminDashboardController.getChapters);
 

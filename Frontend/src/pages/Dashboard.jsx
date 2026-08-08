@@ -21,12 +21,13 @@ import ComingSoon from "@/components/ui/ComingSoon";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getDashboard } from "@/api/dashboardApi";
 
-const STAGES = [
-  { label: "Ideation", status: "active" },
-  { label: "Validation", status: "locked" },
-  { label: "MVP", status: "locked" },
-  { label: "Traction", status: "locked" },
-  { label: "Launch & Pitch", status: "locked" },
+// 5 Total Stages
+const ALL_STAGES = [
+  "Ideation",
+  "Validation",
+  "MVP",
+  "Traction",
+  "Launch & Pitch",
 ];
 
 export default function DashboardPage() {
@@ -45,7 +46,6 @@ export default function DashboardPage() {
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
 
-        // Check for 403 onboarding redirects (e.g., missing profile or unverified email)
         const redirectDestination =
           err.data?.data?.redirect_to ||
           err.data?.redirect_to ||
@@ -63,8 +63,28 @@ export default function DashboardPage() {
   }, [navigate]);
 
   const userName = dashboardData?.studentProfile?.fullName || "Student";
-  const currentStageName = dashboardData?.currentStage?.stageName || "Ideation";
+  const currentStageName =
+    dashboardData?.currentStage?.stageName ||
+    dashboardData?.startup?.stage ||
+    "Ideation";
   const progressPercent = dashboardData?.overallProgress || 0;
+
+  // Determine current stage index (0-indexed)
+  const currentStageIndex = ALL_STAGES.findIndex(
+    (s) => s.toLowerCase() === currentStageName.toLowerCase(),
+  );
+  const activeIdx = currentStageIndex >= 0 ? currentStageIndex : 0;
+
+  // Map progress stage statuses dynamically
+  const stagesWithStatus = ALL_STAGES.map((label, index) => {
+    let status = "locked";
+    if (index < activeIdx) {
+      status = "completed";
+    } else if (index === activeIdx) {
+      status = "active";
+    }
+    return { label, status };
+  });
 
   return (
     <DashboardShell pageId="db">
@@ -169,7 +189,8 @@ export default function DashboardPage() {
               </span>
             </div>
             <p className="leading-relaxed font-poppins font-semibold text-card text-white">
-              Read the Ideation Guide and begin your startup journey
+              Read the {currentStageName} Guide and continue your startup
+              journey
             </p>
           </div>
 
@@ -180,6 +201,7 @@ export default function DashboardPage() {
           </Link>
         </section>
 
+        {/* Dynamic Startup Progress Tracker */}
         <section className="md:col-span-12 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <h4 className="text-text-heading font-poppins font-semibold text-section mb-8">
             Startup Progress
@@ -188,7 +210,7 @@ export default function DashboardPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 relative">
             <div className="absolute top-1/2 left-0 w-full h-px bg-border-subtle -z-10 hidden md:block" />
 
-            {STAGES.map(({ label, status }) => (
+            {stagesWithStatus.map(({ label, status }) => (
               <div
                 key={label}
                 className="flex flex-col items-center gap-3 px-4 text-center bg-surface-white z-10"
@@ -212,7 +234,7 @@ export default function DashboardPage() {
                   className={`font-inter font-medium text-caption ${
                     status === "locked"
                       ? "text-text-muted"
-                      : "text-text-heading"
+                      : "text-text-heading font-semibold"
                   }`}
                 >
                   {label}
@@ -222,6 +244,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
+        {/* Quick Actions */}
         <section className="md:col-span-12">
           <h4 className="text-text-heading font-poppins font-semibold text-section mb-6">
             Quick Actions
@@ -325,6 +348,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
+        {/* Notifications */}
         <section className="md:col-span-6 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <div className="flex justify-between items-center mb-6">
             <h4 className="text-text-heading font-poppins font-semibold text-section">
@@ -377,6 +401,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
+        {/* Resources */}
         <section className="md:col-span-6 bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
           <h4 className="text-text-heading font-poppins font-semibold text-section mb-6">
             Resources

@@ -1031,6 +1031,65 @@ finished.)_
 - **Coming Soon:** Generate Meeting Link, View Protocol Docs, Check
   Financials.
 
+### `/admin/meetings` — `MeetingsDashboard.jsx`
+
+- **Real:** Chapter/Stage/Status/Date/Sort filters are controlled inputs
+  sent as real query params to `getMeetings(params)`. The Chapter filter
+  is backed by the already-real `getChapters()` (same endpoint
+  `ChapterManagement.jsx` uses). Table pagination is real, but
+  client-side over the full fetched array (5/page) — no admin list
+  endpoint in this codebase paginates server-side yet (`getChapters`,
+  `getReviewQueue` both return full arrays too), so this matches that
+  convention rather than inventing server pagination unilaterally.
+- **Stub:** none — this screen has no `ComingSoon` elements. It just has
+  nothing to show yet, since `GET /admin/meetings` doesn't exist
+  (see "Backend work needed for Meetings" below) — the loading spinner
+  resolves into a real, honest error state, not fake data.
+
+### `/admin/meetings/detail` — `MeetingDetail.jsx`
+
+- **Real:** Fetches via `getMeetingById(id)`. Copy-to-clipboard on the
+  Meeting Link field is genuinely functional client-side
+  (`navigator.clipboard`) regardless of backend state. "Complete
+  Meeting"/"Reschedule" navigate to the other two new screens for real.
+  "Cancel" opens a real confirm `Modal` and calls `cancelMeeting(id)`.
+- **Stub:** `platform`, `meeting_link`, and `attendees` render real UI
+  bound to real data — they just render empty/fallback copy today
+  because none of the three exist on `Backend/models/Meeting.js` yet.
+  The "Meeting Timeline" event log only shows the one event provable
+  from data we have (`Scheduled`, from `createdAt`) — no fabricated
+  "Invitation Sent/Accepted" timestamps.
+- **Coming Soon:** "Full Form" (pitch detail deep link), Supporting
+  Document downloads.
+
+### `/admin/meetings/outcome` — `MeetingOutcome.jsx`
+
+- **Real:** Fetches the meeting via `getMeetingById(id)`. Meeting
+  Summary / Strengths / Improvements / Action Items / Outcome Decision /
+  Feedback for Founder / Internal Notes are all real controlled fields.
+  "Publish Result" is a real `postMeetingOutcome(id, payload)` call,
+  gated on Feedback for Founder being non-empty.
+- **Stub:** none faked — this is the biggest backend gap of the batch.
+  `Meeting.js` has no fields at all for outcome data today, so
+  publishing will error until Dharmesh adds both the schema fields and
+  the route (see below).
+- **Coming Soon:** "Upload Supporting Notes" dropzone — no upload
+  endpoint exists for meeting notes anywhere in this codebase.
+
+### `/admin/meetings/reschedule` — `RescheduleMeeting.jsx`
+
+- **Real:** Fetches the meeting via `getMeetingById(id)` and prefills
+  Date/Time/Duration/Platform/Agenda from it. Reason/Date/Time/Duration/
+  Platform/Agenda/Notes are all real controlled fields. "Update Meeting
+  Schedule" is a real `rescheduleMeeting(id, payload)` call.
+- **Stub:** the Availability Calendar is **decorative only**, copied
+  verbatim from `ScheduleMeeting.jsx`'s same widget — not wired to the
+  date field, same established precedent, don't assume clicking a day
+  sets the Meeting Date input.
+- This is the one screen of the four where the backend model is already
+  ready (`rescheduleHistory[]`, `"rescheduled"` status both already
+  exist on `Meeting.js`) — Dharmesh only needs the controller/route.
+
 ### `/admin/audit-log` — `AuditLog.jsx`
 
 - **Real:** Date/Module/User filters genuinely filter the log client-side
@@ -1057,6 +1116,48 @@ for real. The sidebar's own "Settings" entry was removed in a later
 pass — Settings is reachable via the header gear only now, matching
 every other portal (the sidebar item was inconsistent: real here, fake
 on Company, real on Incubator, absent everywhere else).
+
+A **Meetings** entry (`/admin/meetings`, `CalendarClock` icon) was added
+after Startups, for the 4 new Meetings screens below.
+
+### Backend work needed for Meetings
+
+Everything in the 4 sections above is real frontend code hitting new
+endpoints that don't exist yet. For whoever picks this up:
+
+**New routes** (all under `/api/admin`, admin-role-gated like the
+existing two `/meetings/*` routes in `adminDashboard.routes.js`):
+- `GET /meetings` — list + counts. Suggested shape:
+  `{ success, data: { meetings: [...], counts: { today, upcoming,
+  completed, rescheduled } } }`, mirroring `getReviewQueue`'s existing
+  "list + computed counts in one response" pattern. Query params:
+  `chapter`, `stage`, `status`, `date`, `sort`.
+- `GET /meetings/:id` — single meeting, populated with
+  startup/founder/chapter (like `getChapterDetails` already populates
+  `lead_id`) plus the linked submission's pitch fields, the same way
+  `getSubmissionDetail` already returns them elsewhere.
+- `POST /meetings/:id/outcome` — see schema note below.
+- `POST /meetings/:id/reschedule` — schema-ready already, see below.
+- `POST /meetings/:id/cancel` — sets `status: "cancelled"` (already a
+  valid enum value on `Meeting.js`).
+
+**Schema additions needed on `Backend/models/Meeting.js`:**
+- `platform` (String), `meeting_link` (String), `attendees` (array) —
+  used by the Meeting Details screen, none exist today.
+- A full outcome-recording field set — used by the Meeting Outcome
+  screen, **none of this exists on the model at all today**: summary,
+  strengths, improvements, actionItems, feedbackForFounder,
+  internalNotes, decision. This is the biggest schema gap of the batch.
+- Nothing needed for Reschedule — `rescheduleHistory[]` and the
+  `"rescheduled"` status enum value already exist and are ready to use.
+
+**Cross-reference, not fixed by this batch:** `scheduleMeeting`'s
+existing confirmation email (in the section above, `ScheduleMeeting.jsx`)
+already has two live bugs worth fixing in the same pass — it sends
+`description` where `Backend/utils/email.js`'s
+`sendAdminMeetingReminder` expects `agenda`, and never sends `platform`
+at all, so live emails currently render "Platform: undefined" and drop
+the real agenda text.
 
 ### `/admin/announcements` — `AnnouncementsDashboard.jsx`
 

@@ -106,7 +106,11 @@ src/
                                (one pipeline), ReviewQueue.jsx → ReviewDetail.jsx
                                → ReviewWorkspace.jsx → ReviewOutcome.jsx (a
                                second pipeline, with ScheduleMeeting.jsx
-                               branching off ReviewDetail), AuditLog.jsx,
+                               branching off ReviewDetail), MeetingsDashboard.jsx
+                               → MeetingDetail.jsx → MeetingOutcome.jsx /
+                               RescheduleMeeting.jsx (a separate pipeline for
+                               the Meetings nav item — MeetingDetail branches
+                               to either Outcome or Reschedule), AuditLog.jsx,
                                AnnouncementsDashboard.jsx → CreateAnnouncement.jsx
                                → PreviewAnnouncement.jsx → AnnouncementPublished.jsx
                                (a third pipeline), ChapterManagement.jsx →

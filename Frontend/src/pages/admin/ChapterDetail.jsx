@@ -56,6 +56,7 @@ export default function ChapterDetailPage() {
 
   const [chapterData, setChapterData] = useState(null);
   const [students, setStudents] = useState([]);
+  const [startups, setStartups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -67,7 +68,6 @@ export default function ChapterDetailPage() {
         setIsLoading(true);
         setIsError(false);
 
-        // Fetch using URL parameter or search query parameter fallback
         const searchParams = new URLSearchParams(window.location.search);
         const targetId = chapterId || searchParams.get("id");
 
@@ -82,6 +82,7 @@ export default function ChapterDetailPage() {
         if (isMounted && payload) {
           setChapterData(payload.chapter);
           setStudents(payload.students || []);
+          setStartups(payload.startups || []);
         }
       } catch (err) {
         console.error("Failed to load chapter details:", err);
@@ -168,6 +169,63 @@ export default function ChapterDetailPage() {
         <Badge variant={STUDENT_STATUS_VARIANT[row.status] || "neutral"}>
           {row.status}
         </Badge>
+      ),
+    },
+  ];
+
+  const startupColumns = [
+    {
+      key: "startup_name",
+      label: "Startup",
+      width: "1.3fr",
+      render: (row) => (
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-md bg-brand-black text-white flex items-center justify-center font-poppins font-bold text-caption shrink-0">
+            <Rocket size={14} />
+          </div>
+          <span className="font-inter font-medium text-small text-text-heading truncate">
+            {row.startup_name}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "founder_name",
+      label: "Founder",
+      width: "1.2fr",
+      render: (row) => (
+        <div>
+          <span className="font-inter font-medium text-small text-text-heading block truncate">
+            {row.founder_name}
+          </span>
+          <span className="font-inter text-caption text-text-muted block truncate">
+            {row.founder_email}
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "stage",
+      label: "Stage",
+      width: "0.9fr",
+      render: (row) => <Badge variant="brand">{row.stage}</Badge>,
+    },
+    {
+      key: "progress_percentage",
+      label: "Progress",
+      width: "1fr",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-2 rounded-full bg-canvas-bg border border-border-subtle overflow-hidden">
+            <div
+              className="h-full bg-brand-black transition-all"
+              style={{ width: `${row.progress_percentage}%` }}
+            />
+          </div>
+          <span className="font-inter text-caption text-text-muted">
+            {row.progress_percentage}%
+          </span>
+        </div>
       ),
     },
   ];
@@ -287,7 +345,7 @@ export default function ChapterDetailPage() {
                 />
                 <StatCard
                   label="Active Startups"
-                  value={chapterData.stats?.active_startups?.toString() || "0"}
+                  value={startups.length.toString()}
                   icon={<Rocket size={16} strokeWidth={2} />}
                 />
                 <StatCard
@@ -315,7 +373,8 @@ export default function ChapterDetailPage() {
                     Chapter Operational
                   </h3>
                   <p className="font-inter text-small text-text-muted">
-                    {students.length} students enrolled under this chapter.
+                    {students.length} students & {startups.length} startups
+                    enrolled under this chapter.
                   </p>
                 </div>
                 <ComingSoon label="Edit Chapter" position="top" inline>
@@ -325,11 +384,40 @@ export default function ChapterDetailPage() {
                 </ComingSoon>
               </div>
 
+              {/* Startups Table in Overview */}
+              <div className="bg-surface-white border border-border-subtle rounded-lg overflow-hidden shadow-card">
+                <div className="px-6 py-4 border-b border-divider-line bg-canvas-bg/50 flex justify-between items-center">
+                  <h3 className="font-poppins font-semibold text-body text-text-heading">
+                    Active Startups ({startups.length})
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("Startups")}
+                    className="font-inter font-medium text-caption text-text-heading hover:opacity-80"
+                  >
+                    View All
+                  </button>
+                </div>
+                <DataTable
+                  columns={startupColumns}
+                  rows={startups.slice(0, 5)}
+                  emptyMessage="No startups registered under this chapter yet."
+                />
+              </div>
+
+              {/* Students Table in Overview */}
               <div className="bg-surface-white border border-border-subtle rounded-lg overflow-hidden shadow-card">
                 <div className="px-6 py-4 border-b border-divider-line bg-canvas-bg/50 flex justify-between items-center">
                   <h3 className="font-poppins font-semibold text-body text-text-heading">
                     Students Overview ({students.length})
                   </h3>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("Students")}
+                    className="font-inter font-medium text-caption text-text-heading hover:opacity-80"
+                  >
+                    View All
+                  </button>
                 </div>
                 <DataTable
                   columns={studentColumns}
@@ -362,16 +450,24 @@ export default function ChapterDetailPage() {
           )}
 
           {activeTab === "Startups" && (
-            <div className="bg-surface-white border border-border-subtle rounded-lg p-12 text-center flex flex-col items-center">
-              <Rocket size={32} className="text-text-muted mb-3" />
-              <h3 className="font-poppins font-semibold text-card text-text-heading mb-1">
-                Startups Directory Opening Soon
-              </h3>
-              <p className="font-inter text-small text-text-muted max-w-sm mb-4">
-                Startup onboarding and tracking modules for this chapter are
-                coming soon.
-              </p>
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <StatCard
+                  label="Total Startups"
+                  value={startups.length.toString()}
+                />
+                <StatCard
+                  label="Active Startups"
+                  value={startups.length.toString()}
+                />
+                <StatCard label="Pending Approval" value="0" />
+              </div>
+              <DataTable
+                columns={startupColumns}
+                rows={startups}
+                emptyMessage="No startups found for this chapter."
+              />
+            </>
           )}
 
           {activeTab === "Events" && (
@@ -411,6 +507,13 @@ export default function ChapterDetailPage() {
                 className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
               >
                 View Students <Users size={18} strokeWidth={2} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("Startups")}
+                className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
+              >
+                View Startups <Rocket size={18} strokeWidth={2} />
               </button>
               <ComingSoon label="Export Data" position="top">
                 <span className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading cursor-pointer">

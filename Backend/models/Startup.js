@@ -13,6 +13,11 @@ const startupSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    chapter_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Chapter",
+      default: null,
+    },
     startup_name: {
       type: String,
       required: true,

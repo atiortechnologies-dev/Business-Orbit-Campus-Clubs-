@@ -5,6 +5,7 @@ import {
   Megaphone,
   ShieldCheck,
   Rocket,
+  CalendarClock,
   Lightbulb,
   Building2,
   History,
@@ -36,6 +37,12 @@ const NAV_ITEMS = [
     real: true,
   },
   { icon: Rocket, label: "Startups", href: "/admin/reviews", real: true },
+  {
+    icon: CalendarClock,
+    label: "Meetings",
+    href: "/admin/meetings",
+    real: true,
+  },
   {
     icon: Lightbulb,
     label: "Opportunities",
