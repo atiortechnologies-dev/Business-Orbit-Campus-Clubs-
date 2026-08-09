@@ -388,7 +388,7 @@ export default function ChapterDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left: chapter profile card */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-2">
           <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card lg:sticky lg:top-24">
             <div className="flex flex-col items-center text-center pb-6 border-b border-divider-line mb-6">
               <div className="w-20 h-20 rounded-xl bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-section text-text-heading mb-4 select-none">
@@ -458,7 +458,7 @@ export default function ChapterDetailPage() {
         </div>
 
         {/* Center: tabbed content */}
-        <div className="lg:col-span-6 space-y-6">
+        <div className="lg:col-span-8 space-y-6">
           <div className="border-b border-divider-line flex gap-8">
             {TABS.map((tab) => (
               <button
@@ -762,7 +762,7 @@ export default function ChapterDetailPage() {
         </div>
 
         {/* Right: tab-specific quick panel */}
-        <div className="lg:col-span-3 space-y-6">
+        <div className="lg:col-span-2 space-y-6">
           {activeTab === "Startups" ? (
             <>
               <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
