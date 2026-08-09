@@ -120,7 +120,11 @@ src/
                                not 4 routes — and doubles as both the static
                                demo chapter at /admin/chapters/detail and the
                                empty-state Overview for a real chapter at
-                               /admin/chapters/detail/:chapterId),
+                               /admin/chapters/detail/:chapterId; its Startups
+                               tab links out to StartupDetail.jsx →
+                               SubmissionDetail.jsx, a contextual-only pair
+                               with no nav entry — same precedent as
+                               ScheduleMeeting.jsx),
                                OpportunityApprovalQueue.jsx →
                                OpportunityReview.jsx (a fourth pipeline,
                                mirrors the Verification one's Modal-based

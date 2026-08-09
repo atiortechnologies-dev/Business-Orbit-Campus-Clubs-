@@ -1294,6 +1294,89 @@ _(Wireframe: `stitch_bocc_admin_portal_wireframes/chapter_onboarding_empty_state
   shortcut — unchanged from before, applies to both the static and
   `:chapterId` paths.
 
+**Startups tab update:** no longer a stub, rebuilt to match the
+`chapter_detail_startups_tab` wireframe structurally. Real `StatCard`s
+(Total Startups with a "+X this month" count from `created_at`, Active
+Startups, Incubated, Launched — all computed client-side from the fetched
+array), a real search bar + 5 filter controls (Stage/Industry/Founder/
+Mentor/Status, all client-side over the fetched array), a real `DataTable`
+(avatar-tile Startup Name, Founder, Industry, Current Stage, Progress,
+Mentor, Status, a ⋮ action linking to the new `/admin/startups/detail`),
+real client-side `Pagination`, and a Startups-specific right sidebar
+(Quick Actions — New Review/Mass Outreach/Export CSV/Chapter Config, each
+`ComingSoon` — and an Upcoming Audits card with an honest empty state, not
+fabricated entries) that swaps in only while this tab is active.
+`// TODO(backend)`: `getChapterById` doesn't return a `startups` array
+today (only `{ chapter, students }`) — see "Backend work needed" below.
+Mentor and Status columns render honest fallbacks ("Unassigned" / "—")
+since neither field exists on `Startup` yet.
+
+### `/admin/startups/detail` — `StartupDetail.jsx` (new)
+
+Per-startup admin profile, reached only from a chapter's Startups tab (no
+nav entry, matches `ScheduleMeeting.jsx`'s precedent of contextual-only
+access) — breadcrumb and the bottom button both read "Startups" (matching
+the wireframe's wording) but link back to that same real chapter page,
+since no standalone `/admin/startups` directory exists.
+
+- **Real:** fetches via `getStartupById(id)`. Overview card (Founder,
+  Industry, Chapter, Joined Date). Journey Progress renders the real
+  5-stage BOCC program taxonomy from `Backend/utils/stageDefinitions.js`
+  (Ideation → Validation → MVP → Traction → Launch & Pitch) —
+  `StartupDetail.jsx`'s `STAGE_LABELS`, same taxonomy `ChapterDetail.jsx`'s
+  Startups tab, Review Queue, IdeationReview, and Meetings all already use.
+  Any unlocked stage with a submission renders a real "View Details" link
+  to the new Submission Detail page.
+- **Stub:** `// TODO(backend)`: `GET /admin/startups/:id` doesn't exist
+  yet — see `adminStartupApi.js`'s `getStartupById` for the full expected
+  response contract. Startup status badge shows "—" (no `status` field
+  exists on `Startup` today).
+
+### `/admin/startups/submission` — `SubmissionDetail.jsx` (new)
+
+Read-only historical view of one stage's submission (Problem
+Statement/Proposed Solution/Target Audience/Value Proposition/
+Competitors/Attachment, plus a footer metadata bar), reached via "View
+Details" on `StartupDetail.jsx`. Deliberately **generic/stage-agnostic**
+— not hardcoded to Ideation — even though only Ideation submissions are
+reachable today.
+
+- **Real:** reuses the **already-existing** `getSubmissionDetail(id)` —
+  same endpoint `IdeationReview.jsx` already calls for the active-review
+  workflow. No backend change needed for this screen. Status badge,
+  submitted date, all five content sections, and the attachment link are
+  all real data. The heading (e.g. "Ideation Submission") comes from a
+  `stage` query param `StartupDetail.jsx` passes on its link — not
+  `submission.title`, which in real data is free text the student typed
+  (e.g. literally the startup's name), not a stage description.
+- **Stub:** the footer metadata bar's "Version" and "Completion" fields
+  show "—" — neither exists on `StageSubmission` today.
+- Deliberately has no Approve/Request Changes actions or Modal — this is
+  the read-only counterpart to `IdeationReview.jsx`'s active-review flow,
+  not a replacement for it.
+
+### Backend work needed for Startups
+
+- New endpoint `GET /admin/startups/:id` for `StartupDetail.jsx`. Should
+  mirror `getSubmissionDetail`'s existing `journeyStages` computation
+  (real `StartupStage` docs sorted by `stage_number`) but keyed by
+  `startup_id` directly. Each `journeyStages` entry additionally needs a
+  `submissionId` (or `null`) — `getSubmissionDetail`'s version doesn't
+  currently include this, and `StartupDetail.jsx`'s "View Details" links
+  depend on it to know which stages actually have a submission to show.
+  Response also needs a `startup` object (name, founder, industry,
+  chapter, chapterId, createdAt, progressPercentage, status).
+- `getChapterDetails` (`GET /admin/chapters/:id`) needs to additionally
+  return a chapter-scoped `startups: [...]` array — today it returns only
+  `{ chapter, students }`.
+- Three `Startup` model gaps, not fabricated on the frontend: no `status`
+  field at all; no mentor linkage (only via the separate
+  `MentorAssignment` model — the chapter Startups table needs this joined
+  in); and `Startup.chapter` is a plain trimmed `String`, not an
+  `ObjectId ref: Chapter` like `StudentProfile.chapter_id` is — there's no
+  clean relational query for "startups in chapter X" today without
+  matching that string against `Chapter.chapter_name`/`college_name`.
+
 ### `/admin/opportunities` — `OpportunityApprovalQueue.jsx`
 
 - **Real:** Company/Type/Status filters genuinely filter the table

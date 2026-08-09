@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ChevronRight,
@@ -12,12 +12,22 @@ import {
   Loader2,
   Sparkles,
   Inbox,
+  MoreVertical,
+  Search,
+  Filter,
+  FileEdit,
+  Mail,
+  Settings,
+  ClipboardCheck,
+  TrendingUp,
+  CheckCircle2,
 } from "lucide-react";
 import AdminShell from "@/components/admin/AdminShell";
 import DataTable from "@/components/ui/DataTable";
 import Badge from "@/components/ui/Badge";
 import StatCard from "@/components/ui/StatCard";
 import ComingSoon from "@/components/ui/ComingSoon";
+import Pagination from "@/components/ui/Pagination";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getChapterById } from "@/api/admin/adminChapterApi";
 
@@ -48,6 +58,20 @@ const STUDENT_STATUS_VARIANT = {
 
 const TABS = ["Overview", "Students", "Startups", "Events"];
 
+// Real BOCC program stages (Backend/utils/stageDefinitions.js) — the same
+// taxonomy StartupDetail.jsx, Review Queue, IdeationReview, and Meetings
+// all use. `current_stage` is a real Number field already on Startup.js
+// (1-5, default 1), so this maps directly with no backend gap.
+const STARTUP_STAGE_LABELS = [
+  "Ideation",
+  "Validation",
+  "MVP",
+  "Traction",
+  "Launch & Pitch",
+];
+
+const STARTUPS_PAGE_SIZE = 4;
+
 export default function ChapterDetailPage() {
   const [activeTab, setActiveTab] = useState("Overview");
   const { chapterId } = useParams();
@@ -56,8 +80,17 @@ export default function ChapterDetailPage() {
 
   const [chapterData, setChapterData] = useState(null);
   const [students, setStudents] = useState([]);
+  const [startups, setStartups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+
+  const [startupSearch, setStartupSearch] = useState("");
+  const [startupStageFilter, setStartupStageFilter] = useState("");
+  const [startupIndustryFilter, setStartupIndustryFilter] = useState("");
+  const [startupFounderFilter, setStartupFounderFilter] = useState("");
+  const [startupMentorFilter, setStartupMentorFilter] = useState("");
+  const [startupStatusFilter, setStartupStatusFilter] = useState("");
+  const [startupsPage, setStartupsPage] = useState(1);
 
   useEffect(() => {
     let isMounted = true;
@@ -82,6 +115,12 @@ export default function ChapterDetailPage() {
         if (isMounted && payload) {
           setChapterData(payload.chapter);
           setStudents(payload.students || []);
+          // TODO(backend): getChapterDetails doesn't return a startups list
+          // today (only { chapter, students }) — see INTEGRATION.md for the
+          // expected shape once this is added.
+          setStartups(
+            (payload.startups || []).map((s) => ({ ...s, id: s._id || s.id })),
+          );
         }
       } catch (err) {
         console.error("Failed to load chapter details:", err);
@@ -97,6 +136,87 @@ export default function ChapterDetailPage() {
       isMounted = false;
     };
   }, [chapterId]);
+
+  const startupStats = useMemo(() => {
+    const total = startups.length;
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    const newThisMonth = startups.filter(
+      (s) => s.created_at && new Date(s.created_at) >= startOfMonth,
+    ).length;
+    const active = startups.filter((s) => (s.progress_percentage || 0) > 0).length;
+    // "Incubated" has no dedicated field — a client-side judgment call
+    // (mid-journey: past Ideation, not yet Launched) over the real
+    // current_stage Number.
+    const incubated = startups.filter(
+      (s) => (s.current_stage || 1) > 1 && (s.current_stage || 1) < 5,
+    ).length;
+    const launched = startups.filter((s) => s.current_stage === 5).length;
+    return { total, newThisMonth, active, incubated, launched };
+  }, [startups]);
+
+  const filteredStartups = useMemo(() => {
+    const q = startupSearch.trim().toLowerCase();
+    return startups.filter((s) => {
+      if (q && !(s.startup_name || "").toLowerCase().includes(q)) return false;
+      if (
+        startupStageFilter &&
+        STARTUP_STAGE_LABELS[(s.current_stage || 1) - 1] !== startupStageFilter
+      )
+        return false;
+      if (startupIndustryFilter && s.industry !== startupIndustryFilter)
+        return false;
+      if (
+        startupFounderFilter &&
+        s.student_id?.full_name !== startupFounderFilter
+      )
+        return false;
+      if (
+        startupMentorFilter &&
+        (s.mentor_name || "Unassigned") !== startupMentorFilter
+      )
+        return false;
+      if (startupStatusFilter && (s.status || "—") !== startupStatusFilter)
+        return false;
+      return true;
+    });
+  }, [
+    startups,
+    startupSearch,
+    startupStageFilter,
+    startupIndustryFilter,
+    startupFounderFilter,
+    startupMentorFilter,
+    startupStatusFilter,
+  ]);
+
+  const startupIndustryOptions = useMemo(
+    () => [...new Set(startups.map((s) => s.industry).filter(Boolean))],
+    [startups],
+  );
+  const startupFounderOptions = useMemo(
+    () =>
+      [...new Set(startups.map((s) => s.student_id?.full_name).filter(Boolean))],
+    [startups],
+  );
+  const startupMentorOptions = useMemo(
+    () => [...new Set(startups.map((s) => s.mentor_name || "Unassigned"))],
+    [startups],
+  );
+  const startupStatusOptions = useMemo(
+    () => [...new Set(startups.map((s) => s.status || "—"))],
+    [startups],
+  );
+
+  const startupsTotalPages = Math.max(
+    Math.ceil(filteredStartups.length / STARTUPS_PAGE_SIZE),
+    1,
+  );
+  const paginatedStartups = useMemo(() => {
+    const start = (startupsPage - 1) * STARTUPS_PAGE_SIZE;
+    return filteredStartups.slice(start, start + STARTUPS_PAGE_SIZE);
+  }, [filteredStartups, startupsPage]);
 
   if (isLoading) {
     return (
@@ -168,6 +288,101 @@ export default function ChapterDetailPage() {
         <Badge variant={STUDENT_STATUS_VARIANT[row.status] || "neutral"}>
           {row.status}
         </Badge>
+      ),
+    },
+  ];
+
+  const startupColumns = [
+    {
+      key: "name",
+      label: "Startup Name",
+      width: "1.4fr",
+      render: (row) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-caption text-text-heading shrink-0 select-none">
+            {(row.startup_name || "?").charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <p className="font-inter font-medium text-small text-text-heading">
+              {row.startup_name || "Untitled"}
+            </p>
+            {/* TODO(backend): no website/domain field on Startup yet — only
+                renders once one exists, no fake domain shown in the meantime. */}
+            {row.website && (
+              <p className="font-inter text-caption text-text-muted">
+                {row.website}
+              </p>
+            )}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "founder",
+      label: "Founder",
+      width: "1.1fr",
+      render: (row) => row.student_id?.full_name || "N/A",
+    },
+    {
+      key: "industry",
+      label: "Industry",
+      width: "1fr",
+      render: (row) => row.industry || "—",
+    },
+    {
+      key: "stage",
+      label: "Current Stage",
+      width: "1fr",
+      render: (row) => STARTUP_STAGE_LABELS[(row.current_stage || 1) - 1] || "—",
+    },
+    {
+      key: "progress",
+      label: "Progress",
+      width: "1.1fr",
+      render: (row) => (
+        <div className="flex items-center gap-2">
+          <div className="flex-1 h-1.5 bg-canvas-bg rounded-full overflow-hidden max-w-[100px]">
+            <div
+              className="h-full bg-brand-black rounded-full"
+              style={{ width: `${row.progress_percentage || 0}%` }}
+            />
+          </div>
+          <span className="font-inter text-caption text-text-muted shrink-0">
+            {row.progress_percentage || 0}%
+          </span>
+        </div>
+      ),
+    },
+    {
+      key: "mentor",
+      label: "Mentor",
+      width: "1fr",
+      // TODO(backend): Startup has no direct mentor field — needs a
+      // MentorAssignment join on the backend. Real "Unassigned" fallback
+      // until that's populated, matching the chapter-lead fallback pattern.
+      render: (row) => row.mentor_name || "Unassigned",
+    },
+    {
+      key: "status",
+      label: "Status",
+      width: "0.8fr",
+      // TODO(backend): Startup has no status field at all today.
+      render: (row) => row.status || "—",
+    },
+    {
+      key: "actions",
+      label: "",
+      width: "0.4fr",
+      mobileLabel: false,
+      render: (row) => (
+        <Link
+          to={`/admin/startups/detail?id=${row.id}`}
+          aria-label={`View ${row.startup_name || "startup"}`}
+          title="View"
+          className="inline-flex items-center justify-center p-1.5 rounded-md text-text-muted hover:text-text-heading hover:bg-canvas-bg transition-colors"
+        >
+          <MoreVertical size={16} strokeWidth={2} />
+        </Link>
       ),
     },
   ];
@@ -362,16 +577,165 @@ export default function ChapterDetailPage() {
           )}
 
           {activeTab === "Startups" && (
-            <div className="bg-surface-white border border-border-subtle rounded-lg p-12 text-center flex flex-col items-center">
-              <Rocket size={32} className="text-text-muted mb-3" />
-              <h3 className="font-poppins font-semibold text-card text-text-heading mb-1">
-                Startups Directory Opening Soon
-              </h3>
-              <p className="font-inter text-small text-text-muted max-w-sm mb-4">
-                Startup onboarding and tracking modules for this chapter are
-                coming soon.
+            <>
+              <div>
+                <h2 className="font-poppins font-semibold text-card text-text-heading">
+                  Chapter Startups
+                </h2>
+                <p className="font-inter text-small text-text-muted mt-1">
+                  Manage and monitor the portfolio of ventures within this
+                  chapter.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatCard
+                  label="Total Startups"
+                  value={startupStats.total.toString()}
+                  subtext={
+                    startupStats.newThisMonth > 0
+                      ? `+${startupStats.newThisMonth} this month`
+                      : undefined
+                  }
+                  icon={<Rocket size={16} strokeWidth={2} />}
+                />
+                <StatCard
+                  label="Active Startups"
+                  value={startupStats.active.toString()}
+                  icon={<TrendingUp size={16} strokeWidth={2} />}
+                />
+                <StatCard
+                  label="Incubated"
+                  value={startupStats.incubated.toString()}
+                  subtext={
+                    startupStats.total
+                      ? `${Math.round((startupStats.incubated / startupStats.total) * 100)}% of total`
+                      : undefined
+                  }
+                  icon={<GraduationCap size={16} strokeWidth={2} />}
+                />
+                <StatCard
+                  label="Launched"
+                  value={startupStats.launched.toString()}
+                  icon={<CheckCircle2 size={16} strokeWidth={2} />}
+                />
+              </div>
+
+              <div className="bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card flex flex-wrap items-center gap-1.5">
+                <div className="relative flex-1 min-w-[100px]">
+                  <Search
+                    size={16}
+                    strokeWidth={2}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
+                  />
+                  <input
+                    type="text"
+                    value={startupSearch}
+                    onChange={(e) => {
+                      setStartupsPage(1);
+                      setStartupSearch(e.target.value);
+                    }}
+                    placeholder="Search Startup"
+                    className="w-full pl-9 pr-2 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter focus:outline-none focus:ring-1 focus:ring-brand-black"
+                  />
+                </div>
+                <select
+                  value={startupStageFilter}
+                  onChange={(e) => {
+                    setStartupsPage(1);
+                    setStartupStageFilter(e.target.value);
+                  }}
+                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                >
+                  <option value="">Stage</option>
+                  {STARTUP_STAGE_LABELS.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={startupIndustryFilter}
+                  onChange={(e) => {
+                    setStartupsPage(1);
+                    setStartupIndustryFilter(e.target.value);
+                  }}
+                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                >
+                  <option value="">Industry</option>
+                  {startupIndustryOptions.map((i) => (
+                    <option key={i} value={i}>
+                      {i}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={startupFounderFilter}
+                  onChange={(e) => {
+                    setStartupsPage(1);
+                    setStartupFounderFilter(e.target.value);
+                  }}
+                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                >
+                  <option value="">Founder</option>
+                  {startupFounderOptions.map((f) => (
+                    <option key={f} value={f}>
+                      {f}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={startupMentorFilter}
+                  onChange={(e) => {
+                    setStartupsPage(1);
+                    setStartupMentorFilter(e.target.value);
+                  }}
+                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                >
+                  <option value="">Mentor</option>
+                  {startupMentorOptions.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={startupStatusFilter}
+                  onChange={(e) => {
+                    setStartupsPage(1);
+                    setStartupStatusFilter(e.target.value);
+                  }}
+                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                >
+                  <option value="">Status</option>
+                  {startupStatusOptions.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+                <ComingSoon label="More Filters" position="top" inline>
+                  <span className="flex items-center justify-center p-2 border border-border-subtle rounded-md text-text-muted">
+                    <Filter size={16} strokeWidth={2} />
+                  </span>
+                </ComingSoon>
+              </div>
+
+              <DataTable
+                columns={startupColumns}
+                rows={paginatedStartups}
+                emptyMessage="No startups found for this chapter."
+              />
+              <Pagination
+                currentPage={startupsPage}
+                totalPages={startupsTotalPages}
+                onPageChange={setStartupsPage}
+              />
+              <p className="font-inter text-small text-text-muted text-center">
+                Showing {paginatedStartups.length} of {filteredStartups.length}{" "}
+                startups
               </p>
-            </div>
+            </>
           )}
 
           {activeTab === "Events" && (
@@ -388,37 +752,84 @@ export default function ChapterDetailPage() {
           )}
         </div>
 
-        {/* Right: quick actions */}
+        {/* Right: tab-specific quick panel */}
         <div className="lg:col-span-3 space-y-6">
-          <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
-            <h3 className="font-poppins font-semibold text-body text-text-heading mb-6">
-              Quick Actions
-            </h3>
-            <div className="space-y-3">
-              <ComingSoon label="Edit Chapter" position="top">
-                <span className="flex items-center justify-between w-full p-3 bg-brand-black text-white rounded-lg font-poppins font-semibold text-small cursor-pointer">
-                  Edit Chapter <Edit size={18} strokeWidth={2} />
-                </span>
-              </ComingSoon>
-              <ComingSoon label="Assign Lead" position="top">
-                <span className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading cursor-pointer">
-                  Assign Lead <UserPlus size={18} strokeWidth={2} />
-                </span>
-              </ComingSoon>
-              <button
-                type="button"
-                onClick={() => setActiveTab("Students")}
-                className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
-              >
-                View Students <Users size={18} strokeWidth={2} />
-              </button>
-              <ComingSoon label="Export Data" position="top">
-                <span className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading cursor-pointer">
-                  Export Data <Download size={18} strokeWidth={2} />
-                </span>
-              </ComingSoon>
+          {activeTab === "Startups" ? (
+            <>
+              <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
+                <h3 className="font-inter font-semibold text-caption uppercase tracking-wider text-text-muted mb-4">
+                  Quick Actions
+                </h3>
+                <div className="space-y-3">
+                  <ComingSoon label="New Review" position="top">
+                    <span className="flex items-center gap-3 w-full p-3 border border-border-subtle rounded-lg font-inter font-medium text-small text-text-heading cursor-pointer">
+                      <FileEdit size={18} strokeWidth={2} /> New Review
+                    </span>
+                  </ComingSoon>
+                  <ComingSoon label="Mass Outreach" position="top">
+                    <span className="flex items-center gap-3 w-full p-3 border border-border-subtle rounded-lg font-inter font-medium text-small text-text-heading cursor-pointer">
+                      <Mail size={18} strokeWidth={2} /> Mass Outreach
+                    </span>
+                  </ComingSoon>
+                  <ComingSoon label="Export CSV" position="top">
+                    <span className="flex items-center gap-3 w-full p-3 border border-border-subtle rounded-lg font-inter font-medium text-small text-text-heading cursor-pointer">
+                      <Download size={18} strokeWidth={2} /> Export CSV
+                    </span>
+                  </ComingSoon>
+                  <ComingSoon label="Chapter Config" position="top">
+                    <span className="flex items-center gap-3 w-full p-3 border border-border-subtle rounded-lg font-inter font-medium text-small text-text-heading cursor-pointer">
+                      <Settings size={18} strokeWidth={2} /> Chapter Config
+                    </span>
+                  </ComingSoon>
+                </div>
+              </div>
+
+              <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
+                <h3 className="font-inter font-semibold text-caption uppercase tracking-wider text-text-muted mb-4">
+                  Upcoming Audits
+                </h3>
+                {/* TODO(backend): no audits/compliance concept exists
+                    anywhere in this app yet — real empty state instead of
+                    fabricated entries. */}
+                <div className="flex items-center gap-2 text-text-muted">
+                  <ClipboardCheck size={16} strokeWidth={2} />
+                  <p className="font-inter text-small">
+                    No upcoming audits scheduled.
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card">
+              <h3 className="font-poppins font-semibold text-body text-text-heading mb-6">
+                Quick Actions
+              </h3>
+              <div className="space-y-3">
+                <ComingSoon label="Edit Chapter" position="top">
+                  <span className="flex items-center justify-between w-full p-3 bg-brand-black text-white rounded-lg font-poppins font-semibold text-small cursor-pointer">
+                    Edit Chapter <Edit size={18} strokeWidth={2} />
+                  </span>
+                </ComingSoon>
+                <ComingSoon label="Assign Lead" position="top">
+                  <span className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading cursor-pointer">
+                    Assign Lead <UserPlus size={18} strokeWidth={2} />
+                  </span>
+                </ComingSoon>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("Students")}
+                  className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
+                >
+                  View Students <Users size={18} strokeWidth={2} />
+                </button>
+                <ComingSoon label="Export Data" position="top">
+                  <span className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading cursor-pointer">
+                    Export Data <Download size={18} strokeWidth={2} />
+                  </span>
+                </ComingSoon>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </AdminShell>

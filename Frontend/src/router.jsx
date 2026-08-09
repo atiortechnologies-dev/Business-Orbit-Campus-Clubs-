@@ -214,6 +214,8 @@ const ChapterManagement = lazy(() => import("@/pages/admin/ChapterManagement"));
 const CreateChapter = lazy(() => import("@/pages/admin/CreateChapter"));
 const ChapterOnboarding = lazy(() => import("@/pages/admin/ChapterOnboarding"));
 const ChapterDetail = lazy(() => import("@/pages/admin/ChapterDetail"));
+const StartupDetail = lazy(() => import("@/pages/admin/StartupDetail"));
+const SubmissionDetail = lazy(() => import("@/pages/admin/SubmissionDetail"));
 const OpportunityApprovalQueue = lazy(
   () => import("@/pages/admin/OpportunityApprovalQueue"),
 );
@@ -444,6 +446,11 @@ export const router = createBrowserRouter([
       {
         path: "/admin/chapters/detail/:chapterId",
         element: withSuspense(ChapterDetail),
+      },
+      { path: "/admin/startups/detail", element: withSuspense(StartupDetail) },
+      {
+        path: "/admin/startups/submission",
+        element: withSuspense(SubmissionDetail),
       },
       {
         path: "/admin/opportunities",
