@@ -13,6 +13,7 @@ const StartupStage = require("../models/StartupStage");
 const StudentProfile = require("../models/StudentProfile");
 const User = require("../models/User");
 const { sendAdminMeetingReminder } = require("../utils/email");
+const MeetingFeedback = require("../models/MeetingFeedback");
 
 // -- Dashboard Screen --
 
@@ -792,6 +793,294 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
   });
 });
 
+const getMeeting = asyncHandler(async (req, res) => {
+  const meetings = await Meeting.find({})
+    .populate({
+      path: "startup_id",
+      select: "startup_name startup_id",
+      populate: {
+        path: "student_id",
+        select: "full_name email",
+      },
+    })
+    .populate("reviewer_id", "full_name email")
+    .sort({ scheduledAt: -1 });
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const counts = {
+    today: meetings.filter((m) => {
+      const date = new Date(m.schedualedAt);
+      return date >= todayStart && date <= todayEnd;
+    }).length,
+    upcoming: meetings.filter((m) => m.status === "scheduled").length,
+    completed: meetings.filter((m) => m.status === "completed").length,
+    rescheduled: meetings.filter((m) => m.status === "rescheduled").length,
+  };
+
+  return res.status(200).json({
+    success: true,
+    counts,
+    meetings,
+  });
+});
+
+const getMeetingById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const meeting = await Meeting.findById(id)
+    .populate({
+      path: "startup_id",
+      select: "startup_name chapter institution student_id",
+      populate: {
+        path: "student_id",
+        select: "full_name email",
+      },
+    })
+    .populate("reviewer_id", "full_name email");
+
+  if (!meeting) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Meeting not found" });
+  }
+
+  // Fetch stage submission associated with the startup
+  const submission = await StageSubmission.findOne({
+    startup_id: meeting.startup_id?._id,
+  });
+
+  return res.status(200).json({
+    success: true,
+    data: {
+      ...meeting.toObject(),
+      submission: submission || null,
+      attendees: [
+        {
+          name: meeting.startup_id?.student_id?.full_name || "Founder",
+          email: meeting.startup_id?.student_id?.email,
+        },
+        meeting.reviewer_id
+          ? {
+              name: meeting.reviewer_id.full_name,
+              email: meeting.reviewer_id.email,
+            }
+          : null,
+      ].filter(Boolean),
+    },
+  });
+});
+
+const cancelMeeting = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { reason = "Cancelled by admin" } = req.body;
+
+  // 1. Find meeting by ID
+  const meeting = await Meeting.findById(id);
+
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "Meeting not found",
+    });
+  }
+
+  // 2. Prevent re-cancelling already completed/cancelled meetings
+  if (meeting.status === "cancelled") {
+    return res.status(400).json({
+      success: false,
+      message: "This meeting is already cancelled",
+    });
+  }
+
+  // 3. Update meeting status
+  meeting.status = "cancelled";
+
+  // Optionally log cancellation in reschedule history if provided
+  if (reason) {
+    meeting.rescheduleHistory.push({
+      requestedBy: req.user?._id || req.user?.id,
+      reason: `Cancellation Reason: ${reason}`,
+      status: "rejected",
+    });
+  }
+
+  await meeting.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Meeting cancelled successfully",
+    data: meeting,
+  });
+});
+
+const rescheduleMeeting = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { reason, meeting_date, meeting_time, duration, description } =
+    req.body;
+
+  if (!meeting_date || !meeting_time) {
+    return res.status(400).json({
+      success: false,
+      message: "Startup, meeting date, and meeting time are required",
+    });
+  }
+
+  const meeting = await Meeting.findById(id);
+
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "Meeting not found.",
+    });
+  }
+
+  const previousDate = meeting.scheduledAt;
+
+  meeting.rescheduleHistory.push({
+    requestedBy: req.user?._id || req.user?.id,
+    previousDate: previousDate,
+    newDate: new Date(meeting_date),
+    reason: reason.trim(),
+    status: "accepted",
+  });
+
+  meeting.scheduledAt = new Date(meeting_date);
+  meeting.status = "rescheduled";
+  meeting.duration = duration;
+  meeting.description = description;
+
+  await meeting.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Meeting rescheduled successfully.",
+    data: meeting,
+  });
+});
+
+const postMeetingOutcome = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const {
+    summary,
+    strengths,
+    improvements,
+    actionItems,
+    decision = "pending", // "approved" | "request_changes" | "reject" | "pending"
+    feedbackForFounder,
+    internalNotes,
+  } = req.body;
+
+  if (!feedbackForFounder || !feedbackForFounder.trim()) {
+    return res.status(400).json({
+      success: false,
+      message: "Feedback for the founder is required.",
+    });
+  }
+
+  // 1. Fetch Meeting document
+  const meeting = await Meeting.findById(id).populate("startup_id");
+  if (!meeting) {
+    return res.status(404).json({
+      success: false,
+      message: "Meeting not found.",
+    });
+  }
+
+  const startup = meeting.startup_id;
+  const isApproved = decision === "approved";
+  const isPending = decision === "pending";
+
+  // 2. Upsert Meeting Feedback
+  const feedback = await MeetingFeedback.findOneAndUpdate(
+    { meeting_id: meeting._id },
+    {
+      meeting_id: meeting._id,
+      reviewer_id: req.user?._id || req.user?.id || meeting.reviewer_id,
+      student_id: startup?.student_id,
+      startup_id: startup?._id,
+      summary: summary || "",
+      strengths: strengths || "",
+      improvements: improvements || "",
+      action_items: actionItems || "",
+      decision: decision,
+      reviewer_comments: feedbackForFounder.trim(),
+      internal_notes: internalNotes || "",
+      validation_approved: isApproved,
+    },
+    { new: true, upsert: true },
+  );
+
+  // 3. Sync StageSubmission status
+  const submissionId = meeting.submission_id || meeting.submission;
+  let submissionQuery = null;
+
+  if (submissionId) {
+    submissionQuery = { _id: submissionId };
+  } else if (startup?._id) {
+    submissionQuery = { startup_id: startup._id };
+  }
+
+  if (submissionQuery) {
+    let targetStatus = "pending_review";
+    if (decision === "approved") targetStatus = "approved";
+    else if (decision === "reject") targetStatus = "rejected";
+    else if (decision === "request_changes") targetStatus = "request_changes";
+    else if (decision === "pending") targetStatus = "pending_review";
+
+    // Format the request_changes message dynamically based on decision
+    let changeNote = "";
+    if (decision === "request_changes") {
+      changeNote = feedbackForFounder.trim();
+    } else if (decision === "reject") {
+      changeNote = "Idea rejected. You can submit a new idea.";
+    }
+
+    await StageSubmission.findOneAndUpdate(
+      submissionQuery,
+      {
+        status: targetStatus,
+        request_changes: changeNote,
+      },
+      { sort: { updated_at: -1 } },
+    );
+  }
+
+  // 4. Mark meeting as completed (only when a final decision is issued)
+  if (!isPending) {
+    meeting.status = "completed";
+    await meeting.save();
+  }
+
+  // 5. Advance Startup Stage if approved
+  if (isApproved && startup) {
+    const STAGE_ORDER = [
+      "ideation",
+      "validation",
+      "mvp",
+      "incubation",
+      "traction",
+      "launch",
+    ];
+    const currentIdx = STAGE_ORDER.indexOf(meeting.stage);
+    if (currentIdx >= 0 && currentIdx < STAGE_ORDER.length - 1) {
+      startup.stage = STAGE_ORDER[currentIdx + 1];
+      startup.current_stage = currentIdx + 2;
+      await startup.save();
+    }
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Meeting outcome recorded successfully.",
+    data: feedback,
+  });
+});
+
 // ---- Chapters ----
 
 const getChapters = asyncHandler(async (req, res) => {
@@ -838,6 +1127,24 @@ const getChapterDetails = asyncHandler(async (req, res) => {
       (s.profile_status === "completed" ? "Active" : "Pending"),
   }));
 
+  // 4. Fetch all startups under this chapter with founder details populated
+  const rawStartups = await Startup.find({ chapter_id: id })
+    .populate("student_id", "full_name email")
+    .sort({ created_at: -1 })
+    .lean();
+
+  // 5. Format startups payload for frontend DataTable
+  const formattedStartups = rawStartups.map((st) => ({
+    id: st._id,
+    startup_name: st.startup_name || "Untitled Startup",
+    founder_name: st.student_id?.full_name || "N/A",
+    founder_email: st.student_id?.email || "—",
+    stage:
+      st.stage || (st.current_stage ? `Stage ${st.current_stage}` : "Ideation"),
+    progress_percentage: st.progress_percentage || 0,
+    industry: st.industry || st.category || "General",
+  }));
+
   res.status(200).json({
     success: true,
     data: {
@@ -846,19 +1153,22 @@ const getChapterDetails = asyncHandler(async (req, res) => {
         name: chapter.chapter_name || chapter.college_name,
         institution: chapter.college_name,
         status: chapter.status || "Active",
-        lead_name: chapter.lead_id?.full_name || "Unassigned",
-        lead_email: chapter.lead_id?.email || "—",
+        lead_name:
+          chapter.lead_id?.full_name || chapter.lead_name || "Unassigned",
+        lead_email: chapter.lead_id?.email || chapter.lead_email || "—",
         description: chapter.description || "",
         mission: chapter.mission || "",
         created_at: chapter.created_at,
         stats: {
           total_members: chapter.total_members || formattedStudents.length,
-          active_startups: chapter.active_startups || 0,
+          active_startups:
+            formattedStartups.length || chapter.active_startups || 0,
           mentors_count: chapter.mentors_count || 0,
           events_conducted: chapter.events_conducted || 0,
         },
       },
       students: formattedStudents,
+      startups: formattedStartups,
     },
   });
 });
@@ -919,6 +1229,11 @@ module.exports = {
   handleSubmissionDecision,
   getMeetingPrepareContext,
   scheduleMeeting,
+  getMeeting,
+  getMeetingById,
+  cancelMeeting,
+  rescheduleMeeting,
+  postMeetingOutcome,
   getChapters,
   getChapterDetails,
   createChapter,

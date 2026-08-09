@@ -58,18 +58,6 @@ const STUDENT_STATUS_VARIANT = {
 
 const TABS = ["Overview", "Students", "Startups", "Events"];
 
-// Real BOCC program stages (Backend/utils/stageDefinitions.js) — the same
-// taxonomy StartupDetail.jsx, Review Queue, IdeationReview, and Meetings
-// all use. `current_stage` is a real Number field already on Startup.js
-// (1-5, default 1), so this maps directly with no backend gap.
-const STARTUP_STAGE_LABELS = [
-  "Ideation",
-  "Validation",
-  "MVP",
-  "Traction",
-  "Launch & Pitch",
-];
-
 const STARTUPS_PAGE_SIZE = 4;
 
 export default function ChapterDetailPage() {
@@ -100,7 +88,6 @@ export default function ChapterDetailPage() {
         setIsLoading(true);
         setIsError(false);
 
-        // Fetch using URL parameter or search query parameter fallback
         const searchParams = new URLSearchParams(window.location.search);
         const targetId = chapterId || searchParams.get("id");
 
@@ -115,12 +102,7 @@ export default function ChapterDetailPage() {
         if (isMounted && payload) {
           setChapterData(payload.chapter);
           setStudents(payload.students || []);
-          // TODO(backend): getChapterDetails doesn't return a startups list
-          // today (only { chapter, students }) — see INTEGRATION.md for the
-          // expected shape once this is added.
-          setStartups(
-            (payload.startups || []).map((s) => ({ ...s, id: s._id || s.id })),
-          );
+          setStartups(payload.startups || []);
         }
       } catch (err) {
         console.error("Failed to load chapter details:", err);
@@ -139,38 +121,30 @@ export default function ChapterDetailPage() {
 
   const startupStats = useMemo(() => {
     const total = startups.length;
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
-    const newThisMonth = startups.filter(
-      (s) => s.created_at && new Date(s.created_at) >= startOfMonth,
-    ).length;
     const active = startups.filter((s) => (s.progress_percentage || 0) > 0).length;
-    // "Incubated" has no dedicated field — a client-side judgment call
-    // (mid-journey: past Ideation, not yet Launched) over the real
-    // current_stage Number.
-    const incubated = startups.filter(
-      (s) => (s.current_stage || 1) > 1 && (s.current_stage || 1) < 5,
+    // TODO(backend): getChapterDetails' startups[] has no canonical stage
+    // taxonomy field (see the Stage column below) and no created_at, so
+    // "Incubated"/"Launched" are a best-effort client-side classification
+    // over the free-text stage string rather than a real computed value.
+    const launched = startups.filter((s) =>
+      (s.stage || "").toLowerCase().includes("launch"),
     ).length;
-    const launched = startups.filter((s) => s.current_stage === 5).length;
-    return { total, newThisMonth, active, incubated, launched };
+    const incubated = startups.filter((s) => {
+      const stage = (s.stage || "").toLowerCase();
+      return stage && !stage.includes("ideation") && !stage.includes("launch");
+    }).length;
+    return { total, active, incubated, launched };
   }, [startups]);
 
   const filteredStartups = useMemo(() => {
     const q = startupSearch.trim().toLowerCase();
     return startups.filter((s) => {
       if (q && !(s.startup_name || "").toLowerCase().includes(q)) return false;
-      if (
-        startupStageFilter &&
-        STARTUP_STAGE_LABELS[(s.current_stage || 1) - 1] !== startupStageFilter
-      )
+      if (startupStageFilter && (s.stage || "—") !== startupStageFilter)
         return false;
       if (startupIndustryFilter && s.industry !== startupIndustryFilter)
         return false;
-      if (
-        startupFounderFilter &&
-        s.student_id?.full_name !== startupFounderFilter
-      )
+      if (startupFounderFilter && s.founder_name !== startupFounderFilter)
         return false;
       if (
         startupMentorFilter &&
@@ -191,13 +165,16 @@ export default function ChapterDetailPage() {
     startupStatusFilter,
   ]);
 
+  const startupStageOptions = useMemo(
+    () => [...new Set(startups.map((s) => s.stage).filter(Boolean))],
+    [startups],
+  );
   const startupIndustryOptions = useMemo(
     () => [...new Set(startups.map((s) => s.industry).filter(Boolean))],
     [startups],
   );
   const startupFounderOptions = useMemo(
-    () =>
-      [...new Set(startups.map((s) => s.student_id?.full_name).filter(Boolean))],
+    () => [...new Set(startups.map((s) => s.founder_name).filter(Boolean))],
     [startups],
   );
   const startupMentorOptions = useMemo(
@@ -294,34 +271,34 @@ export default function ChapterDetailPage() {
 
   const startupColumns = [
     {
-      key: "name",
+      key: "startup_name",
       label: "Startup Name",
-      width: "1.4fr",
+      width: "1.3fr",
       render: (row) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-md bg-canvas-bg border border-border-subtle flex items-center justify-center font-poppins font-bold text-caption text-text-heading shrink-0 select-none">
             {(row.startup_name || "?").charAt(0).toUpperCase()}
           </div>
-          <div>
-            <p className="font-inter font-medium text-small text-text-heading">
-              {row.startup_name || "Untitled"}
-            </p>
-            {/* TODO(backend): no website/domain field on Startup yet — only
-                renders once one exists, no fake domain shown in the meantime. */}
-            {row.website && (
-              <p className="font-inter text-caption text-text-muted">
-                {row.website}
-              </p>
-            )}
-          </div>
+          <p className="font-inter font-medium text-small text-text-heading truncate">
+            {row.startup_name || "Untitled"}
+          </p>
         </div>
       ),
     },
     {
-      key: "founder",
+      key: "founder_name",
       label: "Founder",
       width: "1.1fr",
-      render: (row) => row.student_id?.full_name || "N/A",
+      render: (row) => (
+        <div>
+          <p className="font-inter font-medium text-small text-text-heading truncate">
+            {row.founder_name || "N/A"}
+          </p>
+          <p className="font-inter text-caption text-text-muted truncate">
+            {row.founder_email}
+          </p>
+        </div>
+      ),
     },
     {
       key: "industry",
@@ -331,9 +308,16 @@ export default function ChapterDetailPage() {
     },
     {
       key: "stage",
-      label: "Current Stage",
-      width: "1fr",
-      render: (row) => STARTUP_STAGE_LABELS[(row.current_stage || 1) - 1] || "—",
+      label: "Stage",
+      width: "0.9fr",
+      // TODO(backend): getChapterDetails' startups[].stage is free text
+      // (st.stage, falling back to "Stage N") — not the canonical
+      // Ideation/Validation/MVP/Traction/Launch & Pitch taxonomy from
+      // stageDefinitions.js used everywhere else in this app (e.g.
+      // postMeetingOutcome writes lowercase values from its own 6-stage
+      // STAGE_ORDER, which even has an "incubation" step the canonical
+      // taxonomy doesn't). Shown as-is rather than force-mapped.
+      render: (row) => <Badge variant="brand">{row.stage || "—"}</Badge>,
     },
     {
       key: "progress",
@@ -502,7 +486,7 @@ export default function ChapterDetailPage() {
                 />
                 <StatCard
                   label="Active Startups"
-                  value={chapterData.stats?.active_startups?.toString() || "0"}
+                  value={startups.length.toString()}
                   icon={<Rocket size={16} strokeWidth={2} />}
                 />
                 <StatCard
@@ -530,7 +514,8 @@ export default function ChapterDetailPage() {
                     Chapter Operational
                   </h3>
                   <p className="font-inter text-small text-text-muted">
-                    {students.length} students enrolled under this chapter.
+                    {students.length} students & {startups.length} startups
+                    enrolled under this chapter.
                   </p>
                 </div>
                 <ComingSoon label="Edit Chapter" position="top" inline>
@@ -540,11 +525,40 @@ export default function ChapterDetailPage() {
                 </ComingSoon>
               </div>
 
+              {/* Startups Table in Overview */}
+              <div className="bg-surface-white border border-border-subtle rounded-lg overflow-hidden shadow-card">
+                <div className="px-6 py-4 border-b border-divider-line bg-canvas-bg/50 flex justify-between items-center">
+                  <h3 className="font-poppins font-semibold text-body text-text-heading">
+                    Active Startups ({startups.length})
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("Startups")}
+                    className="font-inter font-medium text-caption text-text-heading hover:opacity-80"
+                  >
+                    View All
+                  </button>
+                </div>
+                <DataTable
+                  columns={startupColumns}
+                  rows={startups.slice(0, 5)}
+                  emptyMessage="No startups registered under this chapter yet."
+                />
+              </div>
+
+              {/* Students Table in Overview */}
               <div className="bg-surface-white border border-border-subtle rounded-lg overflow-hidden shadow-card">
                 <div className="px-6 py-4 border-b border-divider-line bg-canvas-bg/50 flex justify-between items-center">
                   <h3 className="font-poppins font-semibold text-body text-text-heading">
                     Students Overview ({students.length})
                   </h3>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab("Students")}
+                    className="font-inter font-medium text-caption text-text-heading hover:opacity-80"
+                  >
+                    View All
+                  </button>
                 </div>
                 <DataTable
                   columns={studentColumns}
@@ -592,11 +606,6 @@ export default function ChapterDetailPage() {
                 <StatCard
                   label="Total Startups"
                   value={startupStats.total.toString()}
-                  subtext={
-                    startupStats.newThisMonth > 0
-                      ? `+${startupStats.newThisMonth} this month`
-                      : undefined
-                  }
                   icon={<Rocket size={16} strokeWidth={2} />}
                 />
                 <StatCard
@@ -648,7 +657,7 @@ export default function ChapterDetailPage() {
                   className="shrink-0 w-20 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1 focus:outline-none focus:ring-1 focus:ring-brand-black"
                 >
                   <option value="">Stage</option>
-                  {STARTUP_STAGE_LABELS.map((s) => (
+                  {startupStageOptions.map((s) => (
                     <option key={s} value={s}>
                       {s}
                     </option>
@@ -821,6 +830,13 @@ export default function ChapterDetailPage() {
                   className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
                 >
                   View Students <Users size={18} strokeWidth={2} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("Startups")}
+                  className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading hover:bg-canvas-bg transition-colors"
+                >
+                  View Startups <Rocket size={18} strokeWidth={2} />
                 </button>
                 <ComingSoon label="Export Data" position="top">
                   <span className="flex items-center justify-between w-full p-3 border border-border-subtle rounded-lg font-poppins font-semibold text-small text-text-heading cursor-pointer">

@@ -16,6 +16,9 @@ const {
 // All validation requires student role and authentication
 router.use(protect, requireRole("student"));
 
+// =========== VALIDATION STAGE BEGIN ===============
+router.post("/begin", validationController.beginValidationStage);
+
 // ================= VALIDATION OVERVIEW =================
 router.get("/overview", validationController.getValidationOverview);
 

@@ -54,7 +54,7 @@ export default function MeetingOutcomePage() {
   const [strengths, setStrengths] = useState("");
   const [improvements, setImprovements] = useState("");
   const [actionItems, setActionItems] = useState("");
-  const [decision, setDecision] = useState("approve");
+  const [decision, setDecision] = useState("approved"); // "approved" or "reject"
   const [founderFeedback, setFounderFeedback] = useState("");
   const [internalNotes, setInternalNotes] = useState("");
   const [feedbackTouched, setFeedbackTouched] = useState(false);
@@ -76,7 +76,6 @@ export default function MeetingOutcomePage() {
           return;
         }
 
-        // TODO(backend): GET /admin/meetings/:id doesn't exist yet.
         const res = await getMeetingById(meetingId);
         const payload = res?.data?.data || res?.data || res;
 
@@ -110,22 +109,21 @@ export default function MeetingOutcomePage() {
       setSubmitting(true);
       setSubmitError("");
 
-      // TODO(backend): POST /admin/meetings/:id/outcome doesn't exist yet,
-      // and Meeting.js has no fields for any of this today. Needs a schema
-      // addition (summary/strengths/improvements/actionItems/
-      // feedbackForFounder/internalNotes/decision) plus the route.
       await postMeetingOutcome(meetingId, {
         summary,
         strengths,
         improvements,
         actionItems,
-        decision,
+        decision, // Now correctly sends "approved" or "reject"
         feedbackForFounder: founderFeedback,
         internalNotes,
       });
 
       setPublished(true);
-      setTimeout(() => navigate(`/admin/meetings/detail?id=${meetingId}`), 2000);
+      setTimeout(
+        () => navigate(`/admin/meetings/detail?id=${meetingId}`),
+        2000,
+      );
     } catch (err) {
       console.error("Failed to publish meeting outcome:", err);
       setSubmitError(
@@ -171,7 +169,9 @@ export default function MeetingOutcomePage() {
   }
 
   const startup = meeting.startup_id || meeting.startup || {};
-  const scheduledDate = meeting.scheduledAt ? new Date(meeting.scheduledAt) : null;
+  const scheduledDate = meeting.scheduledAt
+    ? new Date(meeting.scheduledAt)
+    : null;
   const currentStageIdx = STAGE_ORDER.indexOf(meeting.stage);
   const nextStage =
     currentStageIdx >= 0 && currentStageIdx < STAGE_ORDER.length - 1
@@ -215,7 +215,9 @@ export default function MeetingOutcomePage() {
                 </dd>
               </div>
               <div className="flex justify-between">
-                <dt className="font-inter text-small text-text-muted">Founder</dt>
+                <dt className="font-inter text-small text-text-muted">
+                  Founder
+                </dt>
                 <dd className="font-inter font-medium text-small text-text-heading">
                   {startup.student_id?.full_name || startup.founder || "N/A"}
                 </dd>
@@ -229,7 +231,11 @@ export default function MeetingOutcomePage() {
             </h3>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <CheckCircle size={18} strokeWidth={2} className="text-brand-black shrink-0" />
+                <CheckCircle
+                  size={18}
+                  strokeWidth={2}
+                  className="text-brand-black shrink-0"
+                />
                 <div>
                   <p className="font-inter font-medium text-small text-text-heading">
                     Current Stage
@@ -240,7 +246,11 @@ export default function MeetingOutcomePage() {
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Circle size={18} strokeWidth={2} className="text-text-muted shrink-0" />
+                <Circle
+                  size={18}
+                  strokeWidth={2}
+                  className="text-text-muted shrink-0"
+                />
                 <div>
                   <p className="font-inter font-medium text-small text-text-heading">
                     Next Stage
@@ -254,9 +264,7 @@ export default function MeetingOutcomePage() {
           </section>
         </div>
 
-        {/* Center: outcome recording form — the Publish action lives in the
-            right-hand sticky panel since the decision/feedback fields it
-            depends on are there, so this is a plain div, not a <form>. */}
+        {/* Center: outcome recording form */}
         <div className="lg:col-span-5 space-y-6">
           <section className="bg-surface-white border border-border-subtle rounded-lg p-6 shadow-card space-y-5">
             <h3 className="font-poppins font-semibold text-body text-text-heading">
@@ -333,7 +341,11 @@ export default function MeetingOutcomePage() {
               </p>
               <ComingSoon label="Upload Supporting Notes" position="top">
                 <div className="w-full border-2 border-dashed border-border-subtle rounded-lg p-6 text-center flex flex-col items-center gap-2">
-                  <Upload size={22} strokeWidth={2} className="text-text-muted" />
+                  <Upload
+                    size={22}
+                    strokeWidth={2}
+                    className="text-text-muted"
+                  />
                   <p className="font-inter text-small text-text-muted">
                     PDF, DOCX or TXT up to 10MB
                   </p>
@@ -352,19 +364,25 @@ export default function MeetingOutcomePage() {
               </h3>
               <dl className="space-y-2">
                 <div className="flex justify-between">
-                  <dt className="font-inter text-small text-text-muted">Date</dt>
+                  <dt className="font-inter text-small text-text-muted">
+                    Date
+                  </dt>
                   <dd className="font-inter font-medium text-small text-text-heading">
                     {scheduledDate ? scheduledDate.toLocaleDateString() : "N/A"}
                   </dd>
                 </div>
                 <div className="flex justify-between">
-                  <dt className="font-inter text-small text-text-muted">Duration</dt>
+                  <dt className="font-inter text-small text-text-muted">
+                    Duration
+                  </dt>
                   <dd className="font-inter font-medium text-small text-text-heading">
                     {meeting.duration ? `${meeting.duration} min` : "N/A"}
                   </dd>
                 </div>
                 <div className="flex justify-between items-center">
-                  <dt className="font-inter text-small text-text-muted">Status</dt>
+                  <dt className="font-inter text-small text-text-muted">
+                    Status
+                  </dt>
                   <dd>
                     <Badge variant="info">
                       {STATUS_LABEL[meeting.status] || meeting.status}
@@ -379,39 +397,42 @@ export default function MeetingOutcomePage() {
                 Outcome Decision
               </h3>
               <div className="space-y-2">
-                <label className="flex items-start gap-3 p-3 border border-border-subtle rounded-md cursor-pointer has-[:checked]:border-brand-black has-[:checked]:bg-canvas-bg">
+                {/* Approve Option */}
+                <label className="flex items-start gap-3 p-3 border border-border-subtle rounded-md cursor-pointer has-checked:border-brand-black has-checked:bg-canvas-bg">
                   <input
                     type="radio"
                     name="decision"
-                    value="approve"
-                    checked={decision === "approve"}
-                    onChange={() => setDecision("approve")}
+                    value="approved"
+                    checked={decision === "approved"}
+                    onChange={() => setDecision("approved")}
                     className="mt-1 text-brand-black focus:ring-brand-black"
                   />
                   <span>
                     <span className="block font-inter font-semibold text-small text-text-heading">
-                      Approve to {nextStage ? label(nextStage) : "Next Stage"}
+                      Approved to {nextStage ? label(nextStage) : "Next Stage"}
                     </span>
                     <span className="block font-inter text-caption text-text-muted">
                       Startup clears this stage and advances.
                     </span>
                   </span>
                 </label>
-                <label className="flex items-start gap-3 p-3 border border-border-subtle rounded-md cursor-pointer has-[:checked]:border-brand-black has-[:checked]:bg-canvas-bg">
+
+                {/* Reject Option */}
+                <label className="flex items-start gap-3 p-3 border border-border-subtle rounded-md cursor-pointer has-checked:border-brand-black has-checked:bg-canvas-bg">
                   <input
                     type="radio"
                     name="decision"
-                    value="request_changes"
-                    checked={decision === "request_changes"}
-                    onChange={() => setDecision("request_changes")}
+                    value="reject"
+                    checked={decision === "reject"}
+                    onChange={() => setDecision("reject")}
                     className="mt-1 text-brand-black focus:ring-brand-black"
                   />
                   <span>
                     <span className="block font-inter font-semibold text-small text-text-heading">
-                      Request Changes
+                      Reject / Do Not Advance
                     </span>
                     <span className="block font-inter text-caption text-text-muted">
-                      Startup stays at this stage pending revisions.
+                      Startup remains at the current stage.
                     </span>
                   </span>
                 </label>
@@ -423,7 +444,8 @@ export default function MeetingOutcomePage() {
                 htmlFor="founder-feedback"
                 className="text-caption font-medium text-text-heading font-inter block mb-1"
               >
-                Feedback for Founder <span className="text-error">*Required</span>
+                Feedback for Founder{" "}
+                <span className="text-error">*Required</span>
               </label>
               <textarea
                 id="founder-feedback"
@@ -442,7 +464,8 @@ export default function MeetingOutcomePage() {
               </p>
               {feedbackTouched && !founderFeedback.trim() && (
                 <p className="font-inter text-caption text-error mt-1 flex items-center gap-1">
-                  <AlertCircle size={12} strokeWidth={2} /> Feedback for the founder is required.
+                  <AlertCircle size={12} strokeWidth={2} /> Feedback for the
+                  founder is required.
                 </p>
               )}
             </div>
@@ -472,7 +495,8 @@ export default function MeetingOutcomePage() {
 
             {published ? (
               <div className="p-4 bg-success/10 border border-success/30 rounded-md flex items-center gap-2 text-success font-inter text-small">
-                <CheckCircle size={16} strokeWidth={2} /> Published — redirecting...
+                <CheckCircle size={16} strokeWidth={2} /> Published —
+                redirecting...
               </div>
             ) : (
               <button

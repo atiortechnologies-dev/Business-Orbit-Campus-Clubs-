@@ -11,8 +11,8 @@ export const scheduleMeeting = (payload) => {
 // TODO(backend): new endpoint, not built yet. Should mirror getReviewQueue's
 // shape — { success, data: { meetings: [...], counts: { today, upcoming,
 // completed, rescheduled } } }. Query params: chapter, stage, status, date, sort.
-export const getMeetings = (params) => {
-  return api.get("/admin/meetings", { params });
+export const getMeetings = () => {
+  return api.get("/admin/meetings");
 };
 
 // TODO(backend): new endpoint, not built yet. Response should populate
@@ -40,6 +40,8 @@ export const rescheduleMeeting = (id, payload) => {
 
 // TODO(backend): new endpoint, not built yet. Should set status to
 // "cancelled" (already a valid enum value on Meeting.js).
-export const cancelMeeting = (id, payload) => {
-  return api.post(`/admin/meetings/${id}/cancel`, payload);
+export const cancelMeeting = (id, reason) => {
+  return api.post(`/admin/meetings/${id}/cancel`, {
+    reason: String(reason || "").trim(),
+  });
 };

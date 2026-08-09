@@ -15,7 +15,6 @@ import StatCard from "@/components/ui/StatCard";
 import Pagination from "@/components/ui/Pagination";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { getMeetings } from "@/api/admin/adminMeetingApi";
-import { getChapters } from "@/api/admin/adminChapterApi";
 
 const STAGES = [
   { value: "ideation", label: "Ideation" },
@@ -56,9 +55,7 @@ export default function MeetingsDashboardPage() {
   useDocumentTitle("Meetings — BOCC Admin");
 
   const [page, setPage] = useState(1);
-  const [chapters, setChapters] = useState([]);
   const [filters, setFilters] = useState({
-    chapter: "",
     stage: "",
     status: "",
     date: "",
@@ -71,36 +68,18 @@ export default function MeetingsDashboardPage() {
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Chapters list backs the "All Chapters" filter — this endpoint is real
-  // and already wired for Chapter Management, so it's reused as-is here.
-  useEffect(() => {
-    getChapters()
-      .then((res) => {
-        const list = res?.data?.data || res?.data || res || [];
-        setChapters(Array.isArray(list) ? list : []);
-      })
-      .catch(() => setChapters([]));
-  }, []);
-
+  // 1. Single API Fetch on Mount (or Manual Refresh)
   useEffect(() => {
     let isMounted = true;
 
-    const fetchMeetings = async () => {
+    const fetchAllMeetings = async () => {
       try {
         setIsLoading(true);
         setIsError(false);
         setErrorMessage("");
 
-        const params = {};
-        if (filters.chapter) params.chapter = filters.chapter;
-        if (filters.stage) params.stage = filters.stage;
-        if (filters.status) params.status = filters.status;
-        if (filters.date) params.date = filters.date;
-        if (filters.sort) params.sort = filters.sort;
-
-        // TODO(backend): GET /admin/meetings doesn't exist yet — see
-        // adminMeetingApi.js's getMeetings for the expected response shape.
-        const res = await getMeetings(params);
+        // Pass no filters to fetch the complete set of meetings
+        const res = await getMeetings();
         const payload = res?.data || res || {};
         const meetingsList = Array.isArray(payload.meetings)
           ? payload.meetings
@@ -123,26 +102,31 @@ export default function MeetingsDashboardPage() {
       }
     };
 
-    fetchMeetings();
+    fetchAllMeetings();
 
     return () => {
       isMounted = false;
     };
-  }, [filters]);
+  }, []); // Empty dependency array -> Fetches ONLY once on page load
 
+  // 2. Format All Data
   const allFormattedMeetings = useMemo(() => {
     return rawMeetings.map((m) => {
       const startup = m.startup_id || m.startup || {};
-      const scheduledDate = m.scheduledAt ? new Date(m.scheduledAt) : null;
+      const scheduledDate =
+        m.meeting_date || m.scheduledAt
+          ? new Date(m.meeting_date || m.scheduledAt)
+          : null;
 
       return {
         id: m._id || m.id,
+        rawDateObj: scheduledDate,
         startupName: startup.startup_name || startup.name || "Untitled",
         founder: startup.student_id?.full_name || m.founder || "N/A",
-        chapter: startup.chapter || m.chapter || "—",
-        stage: m.stage,
+        stage: m.stage || "ideation",
         stageLabel:
           STAGES.find((s) => s.value === m.stage)?.label || m.stage || "—",
+        dateISO: scheduledDate ? scheduledDate.toISOString().split("T")[0] : "",
         date: scheduledDate ? scheduledDate.toLocaleDateString() : "—",
         time: scheduledDate
           ? scheduledDate.toLocaleTimeString([], {
@@ -155,18 +139,35 @@ export default function MeetingsDashboardPage() {
     });
   }, [rawMeetings]);
 
+  // 3. Instant Frontend Filtering & Sorting
+  const filteredMeetings = useMemo(() => {
+    return allFormattedMeetings
+      .filter((m) => {
+        if (filters.stage && m.stage !== filters.stage) return false;
+        if (filters.status && m.status !== filters.status) return false;
+        if (filters.date && m.dateISO !== filters.date) return false;
+        return true;
+      })
+      .sort((a, b) => {
+        const timeA = a.rawDateObj ? a.rawDateObj.getTime() : 0;
+        const timeB = b.rawDateObj ? b.rawDateObj.getTime() : 0;
+        return filters.sort === "asc" ? timeA - timeB : timeB - timeA;
+      });
+  }, [allFormattedMeetings, filters]);
+
+  // 4. Pagination over Filtered Results
   const totalPages = Math.max(
-    Math.ceil(allFormattedMeetings.length / PAGE_SIZE),
+    Math.ceil(filteredMeetings.length / PAGE_SIZE),
     1,
   );
 
   const paginatedMeetings = useMemo(() => {
     const start = (page - 1) * PAGE_SIZE;
-    return allFormattedMeetings.slice(start, start + PAGE_SIZE);
-  }, [allFormattedMeetings, page]);
+    return filteredMeetings.slice(start, start + PAGE_SIZE);
+  }, [filteredMeetings, page]);
 
   const updateFilter = (key) => (e) => {
-    setPage(1);
+    setPage(1); // Reset to Page 1 on filter change
     setFilters((prev) => ({ ...prev, [key]: e.target.value }));
   };
 
@@ -178,7 +179,6 @@ export default function MeetingsDashboardPage() {
       className: "font-poppins font-semibold text-small text-text-heading",
     },
     { key: "founder", label: "Founder", width: "1.1fr" },
-    { key: "chapter", label: "Chapter", width: "1.1fr" },
     { key: "stageLabel", label: "Current Stage", width: "1fr" },
     { key: "date", label: "Meeting Date", width: "1fr" },
     { key: "time", label: "Meeting Time", width: "0.8fr" },
@@ -215,7 +215,7 @@ export default function MeetingsDashboardPage() {
           Meetings
         </h1>
         <p className="font-inter text-body text-text-body mt-1">
-          Track and manage every review meeting scheduled across chapters.
+          Track and manage every review meeting scheduled.
         </p>
       </div>
 
@@ -243,28 +243,6 @@ export default function MeetingsDashboardPage() {
       </div>
 
       <div className="flex flex-wrap items-end gap-3 mb-6 bg-surface-white border border-border-subtle rounded-lg p-4 shadow-card">
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="filter-chapter"
-            className="text-caption font-medium text-text-heading font-inter"
-          >
-            Chapter
-          </label>
-          <select
-            id="filter-chapter"
-            value={filters.chapter}
-            onChange={updateFilter("chapter")}
-            className={selectClasses}
-          >
-            <option value="">All Chapters</option>
-            {chapters.map((c) => (
-              <option key={c._id || c.id} value={c._id || c.id}>
-                {c.chapter_name || c.college_name}
-              </option>
-            ))}
-          </select>
-        </div>
-
         <div className="flex flex-col gap-1">
           <label
             htmlFor="filter-stage"
@@ -374,9 +352,8 @@ export default function MeetingsDashboardPage() {
             onPageChange={setPage}
           />
           <p className="font-inter text-small text-text-muted mt-4 text-center">
-            Showing {paginatedMeetings.length} of{" "}
-            {allFormattedMeetings.length} entries (Page {page} of{" "}
-            {totalPages})
+            Showing {paginatedMeetings.length} of {filteredMeetings.length}{" "}
+            entries (Page {page} of {totalPages})
           </p>
         </>
       )}

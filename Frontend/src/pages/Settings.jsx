@@ -273,8 +273,8 @@ export default function SettingsPage() {
                     type="text"
                     name="fullName"
                     value={form.fullName}
-                    onChange={handleChange}
-                    className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                    disabled
+                    className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-muted font-inter text-body py-2.5 px-3 cursor-not-allowed"
                   />
                 </div>
                 <div>
@@ -297,8 +297,8 @@ export default function SettingsPage() {
                     type="tel"
                     name="phone"
                     value={form.phone}
-                    onChange={handleChange}
-                    className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-body font-inter text-body py-2.5 px-3 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                    disabled
+                    className="w-full bg-canvas-bg border border-border-subtle rounded-md text-text-muted font-inter text-body py-2.5 px-3 cursor-not-allowed"
                   />
                 </div>
               </div>

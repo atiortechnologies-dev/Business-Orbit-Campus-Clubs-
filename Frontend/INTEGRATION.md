@@ -1295,21 +1295,44 @@ _(Wireframe: `stitch_bocc_admin_portal_wireframes/chapter_onboarding_empty_state
   `:chapterId` paths.
 
 **Startups tab update:** no longer a stub, rebuilt to match the
-`chapter_detail_startups_tab` wireframe structurally. Real `StatCard`s
-(Total Startups with a "+X this month" count from `created_at`, Active
+`chapter_detail_startups_tab` wireframe structurally, and now wired to
+Dharmesh's real `getChapterDetails` `startups: [...]` array (previously a
+documented gap — now closed). Real `StatCard`s (Total Startups, Active
 Startups, Incubated, Launched — all computed client-side from the fetched
 array), a real search bar + 5 filter controls (Stage/Industry/Founder/
-Mentor/Status, all client-side over the fetched array), a real `DataTable`
-(avatar-tile Startup Name, Founder, Industry, Current Stage, Progress,
-Mentor, Status, a ⋮ action linking to the new `/admin/startups/detail`),
-real client-side `Pagination`, and a Startups-specific right sidebar
-(Quick Actions — New Review/Mass Outreach/Export CSV/Chapter Config, each
-`ComingSoon` — and an Upcoming Audits card with an honest empty state, not
-fabricated entries) that swaps in only while this tab is active.
-`// TODO(backend)`: `getChapterById` doesn't return a `startups` array
-today (only `{ chapter, students }`) — see "Backend work needed" below.
-Mentor and Status columns render honest fallbacks ("Unassigned" / "—")
-since neither field exists on `Startup` yet.
+Mentor/Status, all client-side over the fetched array, options built from
+the real distinct values present), a real `DataTable` (avatar-tile Startup
+Name, Founder name+email, Industry, Stage, Progress, Mentor, Status, a ⋮
+action linking to the new `/admin/startups/detail`), real client-side
+`Pagination`, and a Startups-specific right sidebar (Quick Actions — New
+Review/Mass Outreach/Export CSV/Chapter Config, each `ComingSoon` — and an
+Upcoming Audits card with an honest empty state, not fabricated entries)
+that swaps in only while this tab is active.
+
+- **Stage column/filter:** the real endpoint's `startups[].stage` is free
+  text (`Startup.stage`, falling back to `` `Stage ${current_stage}` `` —
+  see `getChapterDetails` in `adminDashboard.controller.js`), not the
+  canonical Ideation/Validation/MVP/Traction/Launch & Pitch taxonomy from
+  `stageDefinitions.js` that the rest of this app uses (Review Queue,
+  IdeationReview, Meetings, `StartupDetail.jsx`). Values seen in practice
+  are lowercase (`"validation"`) and come from `postMeetingOutcome`'s own
+  6-stage `STAGE_ORDER`, which even has an `"incubation"` step the
+  canonical taxonomy doesn't. The frontend deliberately displays this
+  value as-is rather than force-mapping it — flagging here for Dharmesh to
+  align at the source (either write canonical `stage_name` values, or add
+  a dedicated field) rather than the frontend papering over it.
+  "Incubated"/"Launched" KPI counts are therefore a best-effort client-side
+  classification (case-insensitive substring match on `stage`), not a real
+  computed value.
+- **Mentor and Status** columns still render honest fallbacks
+  ("Unassigned" / "—") — neither field exists in the DTO.
+- `created_at` isn't in the DTO either, so there's no "+X this month" stat
+  (dropped rather than always showing 0).
+- Tested live against `IIT Goa Chapter` (2 real linked startups) — table,
+  filters, and stats all render correctly end to end. Most other seeded
+  chapters (e.g. `BOCC DTU`) currently show 0 startups even though the
+  Chapter Management list's STARTUPS column shows a nonzero count for
+  them — see the `chapter_id` migration gap below.
 
 ### `/admin/startups/detail` — `StartupDetail.jsx` (new)
 
@@ -1365,17 +1388,32 @@ reachable today.
   currently include this, and `StartupDetail.jsx`'s "View Details" links
   depend on it to know which stages actually have a submission to show.
   Response also needs a `startup` object (name, founder, industry,
-  chapter, chapterId, createdAt, progressPercentage, status).
-- `getChapterDetails` (`GET /admin/chapters/:id`) needs to additionally
-  return a chapter-scoped `startups: [...]` array — today it returns only
-  `{ chapter, students }`.
-- Three `Startup` model gaps, not fabricated on the frontend: no `status`
-  field at all; no mentor linkage (only via the separate
+  chapter, chapterId, createdAt, progressPercentage, status). Still open —
+  unrelated to the `getChapterDetails` work below.
+- ~~`getChapterDetails` needs to return a chapter-scoped `startups: [...]`
+  array~~ — **done**, Dharmesh added this (`formattedStartups` in
+  `getChapterDetails`). Two follow-ups on the shape it returns:
+  - `stage` is free text (see the Startups tab section above) rather than
+    the canonical `stageDefinitions.js` taxonomy — worth aligning so the
+    Chapter Startups tab's Stage column/filter and KPI classification
+    aren't guessing at string matches.
+  - The DTO doesn't include `mentor`/`status`/`created_at` — frontend
+    shows honest fallbacks for the first two and dropped the "+X this
+    month" stat that needed the third.
+- `Startup.chapter_id` (`ObjectId ref: Chapter`) — **added** by Dharmesh,
+  closing the old "no relational query for startups in chapter X" gap.
+  However it needs a data migration: `getChapterDetails` now queries
+  `Startup.find({ chapter_id: id })`, but most seeded `Startup` docs still
+  only have the legacy `chapter` string set, so `chapter_id` is `null` on
+  them and they don't show up (confirmed live — `BOCC DTU` lists 12
+  startups on the Chapter Management page, which reads the old field, but
+  0 on its own Startups tab, which reads the new one). Newly created
+  startups presumably get `chapter_id` set correctly; only historical rows
+  need backfilling.
+- Two `Startup` model gaps remain, not fabricated on the frontend: no
+  `status` field at all; no mentor linkage (only via the separate
   `MentorAssignment` model — the chapter Startups table needs this joined
-  in); and `Startup.chapter` is a plain trimmed `String`, not an
-  `ObjectId ref: Chapter` like `StudentProfile.chapter_id` is — there's no
-  clean relational query for "startups in chapter X" today without
-  matching that string against `Chapter.chapter_name`/`college_name`.
+  in).
 
 ### `/admin/opportunities` — `OpportunityApprovalQueue.jsx`
 
