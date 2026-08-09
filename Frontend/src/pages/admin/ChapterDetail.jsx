@@ -645,7 +645,7 @@ export default function ChapterDetailPage() {
                     setStartupsPage(1);
                     setStartupStageFilter(e.target.value);
                   }}
-                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                  className="shrink-0 w-20 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1 focus:outline-none focus:ring-1 focus:ring-brand-black"
                 >
                   <option value="">Stage</option>
                   {STARTUP_STAGE_LABELS.map((s) => (
@@ -660,7 +660,7 @@ export default function ChapterDetailPage() {
                     setStartupsPage(1);
                     setStartupIndustryFilter(e.target.value);
                   }}
-                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                  className="shrink-0 w-20 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1 focus:outline-none focus:ring-1 focus:ring-brand-black"
                 >
                   <option value="">Industry</option>
                   {startupIndustryOptions.map((i) => (
@@ -675,7 +675,7 @@ export default function ChapterDetailPage() {
                     setStartupsPage(1);
                     setStartupFounderFilter(e.target.value);
                   }}
-                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                  className="shrink-0 w-20 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1 focus:outline-none focus:ring-1 focus:ring-brand-black"
                 >
                   <option value="">Founder</option>
                   {startupFounderOptions.map((f) => (
@@ -690,7 +690,7 @@ export default function ChapterDetailPage() {
                     setStartupsPage(1);
                     setStartupMentorFilter(e.target.value);
                   }}
-                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                  className="shrink-0 w-20 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1 focus:outline-none focus:ring-1 focus:ring-brand-black"
                 >
                   <option value="">Mentor</option>
                   {startupMentorOptions.map((m) => (
@@ -705,7 +705,7 @@ export default function ChapterDetailPage() {
                     setStartupsPage(1);
                     setStartupStatusFilter(e.target.value);
                   }}
-                  className="shrink-0 w-24 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1.5 focus:outline-none focus:ring-1 focus:ring-brand-black"
+                  className="shrink-0 w-20 min-h-10 rounded-md border border-border-subtle bg-canvas-bg text-sm text-text-body font-inter px-1 focus:outline-none focus:ring-1 focus:ring-brand-black"
                 >
                   <option value="">Status</option>
                   {startupStatusOptions.map((s) => (
