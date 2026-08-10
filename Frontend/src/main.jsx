@@ -10,11 +10,11 @@ import "@fontsource/poppins/700.css";
 import "./index.css";
 import { router } from "@/router";
 import { AuthProvider } from "./context/AuthContext";
-import CookieBanner from "@/components/ui/CookieBanner";
+// import CookieBanner from "@/components/ui/CookieBanner";
 
 createRoot(document.getElementById("root")).render(
   <AuthProvider>
     <RouterProvider router={router} />
-    <CookieBanner />
+    {/* <CookieBanner /> */}
   </AuthProvider>,
 );
