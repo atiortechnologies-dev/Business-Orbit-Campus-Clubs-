@@ -72,4 +72,6 @@ router.post("/chapters", adminDashboardController.createChapter);
 
 router.get("/chapters/:id", adminDashboardController.getChapterDetails);
 
+router.get("/startups/:id", adminDashboardController.getStartupDetails);
+
 module.exports = router;

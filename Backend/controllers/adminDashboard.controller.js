@@ -1217,6 +1217,89 @@ const createChapter = asyncHandler(async (req, res) => {
   });
 });
 
+const STAGE_LABELS = [
+  "Ideation",
+  "Validation",
+  "MVP",
+  "Traction",
+  "Launch & Pitch",
+];
+
+const getStartupDetails = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // 1. Populate using the actual database field names: student_id and chapter_id
+  const startup = await Startup.findById(id)
+    .populate("student_id", "name email") // Populates founder details from User/Student model
+    .populate("chapter_id", "name"); // Populates chapter details
+
+  if (!startup) {
+    return res.status(404).json({
+      success: false,
+      message: "Startup not found",
+    });
+  }
+
+  // 2. Fetch all stage submissions for this startup
+  const submissions = await StageSubmission.find({ startupId: id }).sort({
+    createdAt: -1,
+  });
+
+  // 3. Map submissions to the 5 BOCC stages
+  let approvedCount = 0;
+
+  const journeyStages = STAGE_LABELS.map((label, index) => {
+    const stageNumber = index + 1;
+
+    const stageSubmission = submissions.find(
+      (sub) =>
+        sub.stageNumber === stageNumber ||
+        sub.stageName?.toLowerCase() === label.toLowerCase(),
+    );
+
+    let status = "locked";
+    let submissionId = null;
+
+    if (stageSubmission) {
+      status = stageSubmission.status;
+      submissionId = stageSubmission._id;
+      if (status === "approved") {
+        approvedCount++;
+      }
+    } else if (index === 0) {
+      status = "active";
+    }
+
+    return {
+      stageNumber,
+      label,
+      status,
+      submissionId,
+    };
+  });
+
+  // 4. Map DB snake_case fields to the camelCase properties expected by the frontend
+  const responsePayload = {
+    startup: {
+      _id: startup._id,
+      name: startup.startup_name || "Untitled Startup",
+      founder: startup.student_id?.name || startup.student_id?.email || "N/A",
+      industry: startup.industry || "General",
+      chapter: startup.chapter_id?.name || startup.chapter || "N/A",
+      chapterId: startup.chapter_id?._id || startup.chapter_id || null,
+      status: startup.stage || "Active",
+      createdAt: startup.created_at || startup.createdAt,
+      progressPercentage: startup.progress_percentage,
+    },
+    journeyStages,
+  };
+
+  return res.status(200).json({
+    success: true,
+    data: responsePayload,
+  });
+});
+
 module.exports = {
   getOverview,
   getAnnouncements,
@@ -1237,4 +1320,5 @@ module.exports = {
   getChapters,
   getChapterDetails,
   createChapter,
+  getStartupDetails,
 };

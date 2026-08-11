@@ -176,55 +176,94 @@ export default function ChapterDetailPage() {
   const startupColumns = [
     {
       key: "startup_name",
-      label: "Startup",
-      width: "1.3fr",
-      render: (row) => (
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-md bg-brand-black text-white flex items-center justify-center font-poppins font-bold text-caption shrink-0">
-            <Rocket size={14} />
+      label: "STARTUP",
+      width: "1.4fr",
+      render: (row) => {
+        const displayName =
+          row.startup_name && !row.startup_name.match(/^[0-9a-fA-F]{24}$/)
+            ? row.startup_name
+            : row.name || row.title || "Untitled Startup";
+
+        return (
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-brand-black text-white flex items-center justify-center font-poppins font-bold text-caption shrink-0 shadow-sm">
+              <Rocket size={14} />
+            </div>
+            <div className="min-w-0">
+              <span className="font-inter font-semibold text-small text-text-heading block truncate">
+                {displayName}
+              </span>
+              {row.industry && (
+                <span className="font-inter text-caption text-text-muted block truncate">
+                  {row.industry}
+                </span>
+              )}
+            </div>
           </div>
-          <span className="font-inter font-medium text-small text-text-heading truncate">
-            {row.startup_name}
-          </span>
-        </div>
-      ),
+        );
+      },
     },
     {
       key: "founder_name",
-      label: "Founder",
-      width: "1.2fr",
+      label: "FOUNDER",
+      width: "1.3fr",
       render: (row) => (
-        <div>
+        <div className="min-w-0">
           <span className="font-inter font-medium text-small text-text-heading block truncate">
-            {row.founder_name}
+            {row.founder_name || row.founder || "N/A"}
           </span>
           <span className="font-inter text-caption text-text-muted block truncate">
-            {row.founder_email}
+            {row.founder_email || row.email || ""}
           </span>
         </div>
       ),
     },
     {
       key: "stage",
-      label: "Stage",
-      width: "0.9fr",
-      render: (row) => <Badge variant="brand">{row.stage}</Badge>,
+      label: "STAGE",
+      width: "1fr",
+      render: (row) => (
+        <Badge variant="brand" className="capitalize">
+          {row.stage || "Ideation"}
+        </Badge>
+      ),
     },
     {
       key: "progress_percentage",
-      label: "Progress",
+      label: "PROGRESS",
       width: "1fr",
-      render: (row) => (
-        <div className="flex items-center gap-2">
-          <div className="flex-1 h-2 rounded-full bg-canvas-bg border border-border-subtle overflow-hidden">
-            <div
-              className="h-full bg-brand-black transition-all"
-              style={{ width: `${row.progress_percentage}%` }}
-            />
+      render: (row) => {
+        const pct = Math.min(
+          100,
+          Math.max(0, row.progress_percentage ?? row.progressPercentage ?? 0),
+        );
+
+        return (
+          <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-canvas-bg border border-border-subtle font-inter font-medium text-caption text-text-heading whitespace-nowrap shadow-xs hover:border-brand-black/20 transition-colors">
+            <span>{pct} % </span>
           </div>
-          <span className="font-inter text-caption text-text-muted">
-            {row.progress_percentage}%
-          </span>
+        );
+      },
+    },
+    {
+      key: "actions",
+      label: "ACTION",
+      width: "0.9fr",
+      align: "center", // Align table header if DataTable supports it
+      mobileLabel: false,
+      render: (row) => (
+        <div className="flex justify-center w-full">
+          <Link
+            to={`/admin/startups/detail/${row.id || row._id}`}
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md border border-border-subtle bg-surface-white font-inter font-medium text-caption text-text-heading hover:bg-brand-black hover:text-white hover:border-brand-black transition-all group whitespace-nowrap shadow-xs"
+          >
+            <span>View Details</span>
+            <ChevronRight
+              size={13}
+              strokeWidth={2.5}
+              className="text-text-muted group-hover:text-white transition-colors shrink-0"
+            />
+          </Link>
         </div>
       ),
     },

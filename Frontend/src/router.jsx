@@ -189,14 +189,10 @@ const ReviewWorkspace = lazy(() => import("@/pages/admin/ReviewWorkspace"));
 const ReviewOutcome = lazy(() => import("@/pages/admin/ReviewOutcome"));
 const IdeationReview = lazy(() => import("@/pages/admin/IdeationReview"));
 const ScheduleMeeting = lazy(() => import("@/pages/admin/ScheduleMeeting"));
-const MeetingsDashboard = lazy(
-  () => import("@/pages/admin/MeetingsDashboard"),
-);
+const MeetingsDashboard = lazy(() => import("@/pages/admin/MeetingsDashboard"));
 const MeetingDetail = lazy(() => import("@/pages/admin/MeetingDetail"));
 const MeetingOutcome = lazy(() => import("@/pages/admin/MeetingOutcome"));
-const RescheduleMeeting = lazy(
-  () => import("@/pages/admin/RescheduleMeeting"),
-);
+const RescheduleMeeting = lazy(() => import("@/pages/admin/RescheduleMeeting"));
 const AuditLog = lazy(() => import("@/pages/admin/AuditLog"));
 const AnnouncementsDashboard = lazy(
   () => import("@/pages/admin/AnnouncementsDashboard"),
@@ -214,6 +210,7 @@ const ChapterManagement = lazy(() => import("@/pages/admin/ChapterManagement"));
 const CreateChapter = lazy(() => import("@/pages/admin/CreateChapter"));
 const ChapterOnboarding = lazy(() => import("@/pages/admin/ChapterOnboarding"));
 const ChapterDetail = lazy(() => import("@/pages/admin/ChapterDetail"));
+const StartupDetail = lazy(() => import("@/pages/admin/StartupDetail"));
 const OpportunityApprovalQueue = lazy(
   () => import("@/pages/admin/OpportunityApprovalQueue"),
 );
@@ -444,6 +441,10 @@ export const router = createBrowserRouter([
       {
         path: "/admin/chapters/detail/:chapterId",
         element: withSuspense(ChapterDetail),
+      },
+      {
+        path: "/admin/startups/detail/:id",
+        element: withSuspense(StartupDetail),
       },
       {
         path: "/admin/opportunities",
