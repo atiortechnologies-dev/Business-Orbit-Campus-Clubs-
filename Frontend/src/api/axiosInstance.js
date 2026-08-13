@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -11,6 +10,22 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// Queue system to handle simultaneous failed requests during refresh
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
 
 api.interceptors.response.use(
   // Success Case: Directly return response.data for all API calls
@@ -26,8 +41,6 @@ api.interceptors.response.use(
       originalRequest &&
       !originalRequest._retry
     ) {
-      originalRequest._retry = true;
-
       const requestUrl = originalRequest.url || "";
       const isAuthRequest =
         requestUrl.includes("/auth/login") ||
@@ -35,23 +48,40 @@ api.interceptors.response.use(
         requestUrl.includes("/auth/refresh-token");
 
       if (!isAuthRequest) {
+        // If a refresh is already in progress, queue subsequent failed requests
+        if (isRefreshing) {
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          })
+            .then(() => api(originalRequest))
+            .catch((err) => Promise.reject(err));
+        }
+
+        originalRequest._retry = true;
+        isRefreshing = true;
+
         try {
-          // Refresh token cookie is sent automatically; no body needed.
-          // Use direct standalone axios call to avoid interceptor loop.
           await axios.post(
-            "http://localhost:5000/api/auth/refresh-token",
+            `${import.meta.env.VITE_API_BASE_URL}/auth/refresh-token`,
             {},
             { withCredentials: true },
           );
 
-          // New accessToken cookie has been set by the backend; just retry.
+          // Retry all requests in the queue
+          processQueue(null);
+
+          // Retry original request
           return api(originalRequest);
         } catch (refreshError) {
-          // Refresh failed -> session is over, send the user to the landing page.
+          processQueue(refreshError, null);
+
+          // Refresh failed -> session is over, send user to landing page
           if (window.location.pathname !== "/landing") {
             window.location.href = "/landing";
           }
           return Promise.reject(refreshError);
+        } finally {
+          isRefreshing = false;
         }
       }
     }
@@ -61,7 +91,7 @@ api.interceptors.response.use(
       console.error("Access Forbidden: Invalid Role permissions");
     }
 
-    // Formatted Error Object (preserves error.response and error.data for components)
+    // Formatted Error Object
     const customError = new Error(
       error.response?.data?.message || error.message || "Something went wrong",
     );

@@ -12,8 +12,7 @@ const SuccessStory = require("../models/SuccessStory");
 const FeaturedStartup = require("../models/FeaturedStartup");
 require("dotenv").config();
 
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/bocc_db";
+const MONGODB_URI = process.env.MONGODB_URI;
 
 const seedDatabase = async () => {
   try {

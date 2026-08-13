@@ -12,7 +12,7 @@ beforeAll(async () => {
     await mongoose.disconnect();
   }
 
-  let uri = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/project_test_db";
+  let uri = process.env.MONGODB_URI;
 
   // Automatically derive a test database name.
   if (uri.includes("mongodb+srv")) {
