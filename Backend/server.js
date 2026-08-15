@@ -6,6 +6,8 @@
 require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const morgan = require("morgan");
+const mongoose = require("mongoose");
 const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes"); // mine one : authRoute
@@ -59,6 +61,12 @@ const app = express();
 
 const PORT = process.env.PORT;
 
+// Configure Morgan Request Logging Middleware (DEP-007) ---
+const isProduction = process.env.NODE_ENV === "production";
+if (process.env.NODE_ENV !== "test") {
+  app.use(morgan(isProduction ? "combined" : "dev"));
+}
+
 // Middlewares
 app.use(configureCors());
 app.use(express.json());
@@ -69,8 +77,20 @@ app.get("/", (req, res) => {
   res.status(200).json({ success: true, message: "Backend API is running" });
 });
 
+// Enhanced Health Check Endpoint reporting DB status & uptime (DEP-007) ---
 app.get("/api/health", (req, res) => {
-  res.status(200).json({ success: true, message: "Server is healthy" });
+  const dbStatus =
+    mongoose.connection.readyState === 1 ? "connected" : "disconnected";
+  const status = dbStatus === "connected" ? 200 : 503;
+
+  res.status(status).json({
+    success: status === 200,
+    status: status === 200 ? "healthy" : "unhealthy",
+    timestamp: new Date().toISOString(),
+    uptime: `${process.uptime().toFixed(0)}s`,
+    database: dbStatus,
+    environment: process.env.NODE_ENV || "development",
+  });
 });
 
 const studentFreelancingRoutes = require("./routes/studentFreelancing.routes");

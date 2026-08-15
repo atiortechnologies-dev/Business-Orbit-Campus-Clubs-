@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import "@fontsource/inter/400.css";
@@ -10,11 +11,14 @@ import "@fontsource/poppins/700.css";
 import "./index.css";
 import { router } from "@/router";
 import { AuthProvider } from "./context/AuthContext";
-// import CookieBanner from "@/components/ui/CookieBanner";
+import { ErrorBoundary } from "./components/ui/ErrorBoundary";
 
 createRoot(document.getElementById("root")).render(
-  <AuthProvider>
-    <RouterProvider router={router} />
-    {/* <CookieBanner /> */}
-  </AuthProvider>,
+  <StrictMode>
+    <ErrorBoundary>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </ErrorBoundary>
+  </StrictMode>,
 );
