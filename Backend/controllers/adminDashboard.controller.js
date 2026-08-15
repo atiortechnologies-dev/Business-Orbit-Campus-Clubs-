@@ -17,8 +17,30 @@ const MeetingFeedback = require("../models/MeetingFeedback");
 
 // -- Dashboard Screen --
 
+/**
+ * Helper to parse amounts from strings like "$500K — $2.5M", "$100k", or "500000"
+ */
+const parseCapitalString = (str) => {
+  if (!str) return 0;
+  const matches = str.match(/(?:[$€£]?\s*(\d+(?:\.\d+)?)\s*([kKmMbB])?)/g);
+  if (!matches) return 0;
+
+  let maxVal = 0;
+  matches.forEach((m) => {
+    const numMatch = m.match(/(\d+(?:\.\d+)?)\s*([kKmMbB])?/);
+    if (numMatch) {
+      let val = parseFloat(numMatch[1]);
+      const unit = (numMatch[2] || "").toUpperCase();
+      if (unit === "K") val *= 1_000;
+      else if (unit === "M") val *= 1_000_000;
+      else if (unit === "B") val *= 1_000_000_000;
+      if (val > maxVal) maxVal = val;
+    }
+  });
+  return maxVal;
+};
+
 const getOverview = asyncHandler(async (req, res) => {
-  // Basic Stats
   const totalUsers = await User.countDocuments();
   const activeStartups = await Startup.countDocuments();
 
@@ -31,90 +53,97 @@ const getOverview = asyncHandler(async (req, res) => {
   const pendingVerifications =
     pendingUserVerifications + pendingStageSubmissions;
 
-  // Mocking Investor Capital for now
-  const investorCapital = "$0";
+  const investorProfiles = await InvestorProfile.find(
+    {
+      $or: [
+        { investment_range: { $exists: true, $ne: "" } },
+        { funding_range: { $exists: true, $ne: "" } },
+      ],
+    },
+    "investment_range funding_range",
+  ).lean();
 
-  // User Distribution
+  let totalCapitalNum = 0;
+  investorProfiles.forEach((ip) => {
+    const capital = parseCapitalString(ip.investment_range || ip.funding_range);
+    totalCapitalNum += capital;
+  });
+
+  const formattedCapital =
+    totalCapitalNum >= 1_000_000_000
+      ? `$${(totalCapitalNum / 1_000_000_000).toFixed(1)}B`
+      : totalCapitalNum >= 1_000_000
+        ? `$${(totalCapitalNum / 1_000_000).toFixed(1)}M`
+        : totalCapitalNum >= 1_000
+          ? `$${(totalCapitalNum / 1_000).toFixed(1)}K`
+          : totalCapitalNum > 0
+            ? `$${totalCapitalNum}`
+            : "$0";
+
   const userRolesCount = await User.aggregate([
     { $group: { _id: "$role", count: { $sum: 1 } } },
   ]);
 
-  // Transform to match frontend expectations:
   const roleMapping = {
     student: "Students",
     mentor: "Mentors",
     investor: "Investors",
     incubator: "Incubators",
     company: "Companies",
-    admin: "Admins",
   };
 
   const userDistribution = userRolesCount
-    .filter((r) => roleMapping[r._id] && r._id !== "admin")
+    .filter((r) => roleMapping[r._id])
     .map((r) => ({
       label: roleMapping[r._id],
       pct: totalUsers > 0 ? Math.round((r.count / totalUsers) * 100) : 0,
       count: r.count,
     }));
 
-  // Funnel Views (Startup Stages)
-  // Stage 1 = Idea, 2 = Validation, 3 = MVP, 4 = Traction, 5 = Launch
   const startupStagesCount = await Startup.aggregate([
-    { $group: { _id: "$current_stage", count: { $sum: 1 } } },
+    {
+      $group: {
+        _id: "$current_stage",
+        count: { $sum: 1 },
+      },
+    },
   ]);
 
-  const stageMapping = {
-    1: "Idea",
-    2: "Validation",
-    3: "MVP",
-    4: "Traction",
-    5: "Launch",
-  };
+  const stageOrder = [
+    { key: 1, label: "Idea" },
+    { key: 2, label: "Validation" },
+    { key: 3, label: "MVP" },
+    { key: 4, label: "Traction" },
+    { key: 5, label: "Launch" },
+  ];
 
-  const funnelViews = {
-    Daily: [
-      { label: "Idea", value: 0 },
-      { label: "Validation", value: 0 },
-      { label: "MVP", value: 0 },
-      { label: "Traction", value: 0 },
-      { label: "Launch", value: 0 },
-    ],
-    Monthly: [
-      { label: "Idea", value: 0 },
-      { label: "Validation", value: 0 },
-      { label: "MVP", value: 0 },
-      { label: "Traction", value: 0 },
-      { label: "Launch", value: 0 },
-    ],
-  };
-
-  startupStagesCount.forEach((st) => {
-    const stageName = stageMapping[st._id];
-    if (stageName) {
-      const idx = funnelViews.Daily.findIndex((fv) => fv.label === stageName);
-      if (idx !== -1) {
-        funnelViews.Daily[idx].value = st.count;
-        funnelViews.Monthly[idx].value = st.count; // For now, mirror daily
-      }
-    }
+  const funnelValues = stageOrder.map((stage) => {
+    const found = startupStagesCount.find((s) => s._id === stage.key);
+    return {
+      label: stage.label,
+      value: found ? found.count : 0,
+    };
   });
 
-  // Upcoming Cycles (Meetings)
+  const funnelViews = {
+    Daily: funnelValues,
+    Monthly: funnelValues,
+  };
+
   const upcomingMeetings = await Meeting.find({
     status: "scheduled",
-    meeting_date: { $gte: new Date() },
+    scheduledAt: { $gte: new Date() },
   })
     .populate("startup_id", "startup_name")
     .populate("reviewer_id", "full_name")
-    .sort({ meeting_date: 1 })
+    .sort({ scheduledAt: 1 })
     .limit(2);
 
   const formattedMeetings = upcomingMeetings.map((m) => ({
-    title: `${m.agenda || "Review Sync"} — ${m.startup_id?.startup_name || "Startup"}`,
-    time: m.meeting_date,
+    title: `${m.title || "Review Meeting"} — ${m.startup_id?.startup_name || "Startup"}`,
+    time: m.scheduledAt,
   }));
 
-  // Critical Actions
   const criticalActions = [];
   if (pendingUserVerifications > 0) {
     criticalActions.push({
@@ -122,7 +151,7 @@ const getOverview = asyncHandler(async (req, res) => {
       iconType: "AlertTriangle",
       tone: "error",
       title: "Identity Verification Needed",
-      detail: `${pendingUserVerifications} user(s) flagged for review`,
+      detail: `${pendingUserVerifications} user(s) awaiting approval`,
       reviewHref: "/admin/verification",
     });
   }
@@ -132,25 +161,26 @@ const getOverview = asyncHandler(async (req, res) => {
       iconType: "FileText",
       tone: "warning",
       title: "Stage Submissions Pending",
-      detail: `${pendingStageSubmissions} startup(s) waiting for stage approval`,
-      reviewHref: "/admin/verification",
+      detail: `${pendingStageSubmissions} startup stage review(s) in queue`,
+      reviewHref: "/admin/reviews",
     });
   }
 
-  if (criticalActions.length === 0) {
-    criticalActions.push({
-      id: "ca3",
-      iconType: "UserPlus",
-      tone: "info",
-      title: "All Clear",
-      detail: "No critical actions pending at the moment",
-    });
-  }
+  const recentUsers = await User.find()
+    .sort({ created_at: -1 })
+    .limit(4)
+    .select("full_name created_at");
 
-  // Activity Stream (Mocked for now as per plan)
-  const activityStream = [
-    { iconType: "RefreshCw", text: "Dashboard data synced", time: "Just now" },
-  ];
+  const activityStream = recentUsers.map((u) => ({
+    iconType: "UserPlus",
+    text: `New registration: ${u.full_name || "User"}`,
+    time: u.created_at
+      ? new Date(u.created_at).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "Recently",
+  }));
 
   return res.status(200).json({
     success: true,
@@ -158,7 +188,7 @@ const getOverview = asyncHandler(async (req, res) => {
       totalUsers,
       activeStartups,
       pendingVerifications,
-      investorCapital,
+      investorCapital: formattedCapital,
       userDistribution,
       funnelViews,
       upcomingCycle: formattedMeetings,
