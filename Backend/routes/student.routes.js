@@ -7,7 +7,6 @@
 const express = require("express");
 const router = express.Router();
 
-const { requireAuth, authorizeRoles } = require("../middlewares/requireAuth");
 const { validateRequest } = require("../middlewares/validateRequest");
 const {
   requestMentorSchema,
@@ -26,6 +25,7 @@ const {
 const companyOpportunityController = require("../controllers/companyOpportunity.controller");
 const notificationController = require("../controllers/notification.controller");
 const activityLogController = require("../controllers/activityLog.controller");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 
 // @route   GET /api/student/opportunities
 // @desc    Get open opportunities
@@ -33,13 +33,13 @@ const activityLogController = require("../controllers/activityLog.controller");
 router.get(
   "/opportunities",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   companyOpportunityController.getAllOpportunities,
 );
 router.get(
   "/opportunities/:id",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   companyOpportunityController.getOpportunityById,
 );
 
@@ -49,7 +49,7 @@ router.get(
 router.post(
   "/mentorship/request",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   validateRequest(requestMentorSchema, "body"),
   requestMentor,
 );
@@ -58,7 +58,7 @@ router.post(
 router.post(
   "/mentors/:mentorId/request",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   validateRequest(requestMentorSchema, "body"),
   requestMentor,
 );
@@ -69,7 +69,7 @@ router.post(
 router.get(
   "/mentorship/request-status",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   getMentorshipRequestStatus,
 );
 
@@ -80,7 +80,7 @@ router.get(
 // @route   GET /api/student/mentors
 // @desc    List all approved mentors
 // @access  Private (Student)
-router.get("/mentors", requireAuth, authorizeRoles("student"), listMentors);
+router.get("/mentors", requireAuth, requireRole("student"), listMentors);
 
 // @route   POST /api/student/mentors/filter
 // @desc    Search and filter mentors
@@ -88,7 +88,7 @@ router.get("/mentors", requireAuth, authorizeRoles("student"), listMentors);
 router.post(
   "/mentors/filter",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   searchMentors,
 );
 
@@ -98,7 +98,7 @@ router.post(
 router.get(
   "/mentors/:id",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   getMentorProfileStudentView,
 );
 
@@ -108,7 +108,7 @@ router.get(
 router.get(
   "/mentors/:id/reviews",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   getMentorReviews,
 );
 
@@ -118,7 +118,7 @@ router.get(
 router.post(
   "/mentors/:id/reviews",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   validateRequest(mentorReviewSchema, "body"),
   submitMentorReview,
 );
@@ -129,7 +129,7 @@ router.post(
 router.get(
   "/mentors/:id/availability",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   getMentorAvailability,
 );
 
@@ -143,7 +143,7 @@ router.get(
 router.get(
   "/notifications",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   notificationController.getNotifications,
 );
 
@@ -153,7 +153,7 @@ router.get(
 router.put(
   "/notifications/:notificationId/read",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   notificationController.markNotificationRead,
 );
 
@@ -163,7 +163,7 @@ router.put(
 router.get(
   "/activity-log",
   requireAuth,
-  authorizeRoles("student"),
+  requireRole("student"),
   activityLogController.getActivityLogs,
 );
 

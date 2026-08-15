@@ -7,19 +7,20 @@ const express = require("express");
 const router = express.Router();
 const companyApplicationController = require("../controllers/companyApplication.controller");
 const companyOpportunityController = require("../controllers/companyOpportunity.controller");
-const {
-  requireAuth,
-  authorizeRoles,
-  requireActiveAccount,
-} = require("../middlewares/requireAuth");
+
 const { validateRequest } = require("../middlewares/validateRequest");
 const {
   createOpportunitySchema,
   updateOpportunitySchema,
 } = require("../middlewares/validators/companyValidators");
+const {
+  requireAuth,
+  requireActiveAccount,
+  requireRole,
+} = require("../middlewares/authMiddleware");
 
 // All routes require authentication, active account, and company role
-router.use(requireAuth, requireActiveAccount, authorizeRoles("company"));
+router.use(requireAuth, requireActiveAccount, requireRole("company"));
 
 // Opportunities CRUD
 router.post(

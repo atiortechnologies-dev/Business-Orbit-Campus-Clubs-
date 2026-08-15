@@ -51,7 +51,7 @@ const requireAuth = asyncHandler(async (req, res, next) => {
  * Middleware to strictly authorize specific roles
  * @param {...string} roles - Allowed roles (e.g., 'mentor', 'student')
  */
-const authorizeRoles = (...roles) => {
+const requireRole = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
@@ -77,4 +77,4 @@ const requireActiveAccount = (req, res, next) => {
   next();
 };
 
-module.exports = { requireAuth, authorizeRoles, requireActiveAccount };
+module.exports = { requireAuth, requireRole, requireActiveAccount };

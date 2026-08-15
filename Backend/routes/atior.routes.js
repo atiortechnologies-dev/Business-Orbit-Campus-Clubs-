@@ -1,5 +1,4 @@
 const express = require("express");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
 const { validateRequest } = require("../middlewares/validateRequest");
 const {
   assistanceRequestSchema,
@@ -10,9 +9,10 @@ const {
   getAssistanceStatus,
   updateAssistanceRequest,
 } = require("../controllers/atior.controller");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 const router = express.Router();
 
-router.use(protect, requireRole("student"));
+router.use(requireAuth, requireRole("student"));
 
 // Submit assistance request
 router.post(

@@ -10,10 +10,10 @@ const {
   updateMVPSubmission,
   submitMVP,
 } = require("../controllers/mvpSubmission.controller");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 const { validateRequest } = require("../middlewares/validateRequest");
 
-router.use(protect, requireRole("student"));
+router.use(requireAuth, requireRole("student"));
 
 router.post("/mvp/submit", validateRequest(mvpSubmissionSchema), submitMVP);
 

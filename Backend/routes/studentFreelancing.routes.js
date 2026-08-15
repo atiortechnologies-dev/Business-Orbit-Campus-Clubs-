@@ -8,7 +8,6 @@ const express = require("express");
 const router = express.Router();
 // const upload = require("../utils/uploadService"); -> this service is deleted use upload.routes ( cloudinary service )
 
-const { requireAuth, authorizeRoles } = require("../middlewares/requireAuth");
 const {
   listOpportunities,
   searchOpportunities,
@@ -28,9 +27,10 @@ const {
   getInterviews,
   getApplicationStatusSummary,
 } = require("../controllers/studentFreelancing.controller");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 
 // Apply auth and role middlewares to all routes in this file
-router.use(requireAuth, authorizeRoles("student"));
+router.use(requireAuth, requireRole("student"));
 
 // @route   GET /api/student/freelancing/opportunities
 // @desc    Get all open/active freelancing opportunities

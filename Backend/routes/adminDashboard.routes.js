@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 const { validateRequest } = require("../middlewares/validateRequest");
 const adminDashboardController = require("../controllers/adminDashboard.controller");
 const { createAnnouncementSchema } = require("../utils/validators");
 
-router.use(protect, requireRole("admin"));
+router.use(requireAuth, requireRole("admin"));
 
 // -- Dashboard Screen ---
 // --- Overview ---

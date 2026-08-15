@@ -1,8 +1,8 @@
 /**
  * @file socket.js
  * @description Configures Socket.IO for real-time messaging, including JWT authentication and event listeners.
-
- * @architecture Utility layer extending the HTTP server with WebSocket capabilities for real-time state synchronization. */
+ * @architecture Utility layer extending the HTTP server with WebSocket capabilities for real-time state synchronization.
+ */
 
 const { Server } = require("socket.io");
 const jwt = require("jsonwebtoken");
@@ -10,9 +10,17 @@ const jwt = require("jsonwebtoken");
 let io;
 
 const configureSocket = (server) => {
+  // Allow configured FRONTEND_URL in production, and add localhost regex in development
+  const allowedOrigins = [process.env.FRONTEND_URL].filter(Boolean);
+
+  if (process.env.NODE_ENV === "development") {
+    allowedOrigins.push(/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/);
+  }
+
   io = new Server(server, {
     cors: {
-      origin: process.env.FRONTEND_URL,
+      origin: allowedOrigins.length > 0 ? allowedOrigins : false,
+      credentials: true,
       methods: ["GET", "POST", "PATCH"],
     },
   });

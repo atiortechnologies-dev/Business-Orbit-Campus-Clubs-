@@ -29,12 +29,11 @@ const {
 } = require("./routes/chapter.routes");
 
 const publicRoutes = require("./routes/public.routes");
-const adminRoutes = require("./routes/admin.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const studentRoutes = require("./routes/student.routes");
 const {
   requireAuth,
-  authorizeRoles,
+  requireRole,
   requireActiveAccount,
 } = require("./middlewares/requireAuth");
 
@@ -128,26 +127,25 @@ app.use("/api/student", launchRoutes);
 app.use("/api/admin", adminDashboardRoutes);
 
 app.use("/api/public", publicRoutes);
-app.use("/api/admin", adminRoutes);
 app.use(
   "/api/mentor",
   requireAuth,
   requireActiveAccount,
-  authorizeRoles("mentor"),
+  requireRole("mentor"),
   mentorRoutes,
 );
 app.use(
   "/api/student",
   requireAuth,
   requireActiveAccount,
-  authorizeRoles("student"),
+  requireRole("student"),
   studentRoutes,
 );
 app.use(
   "/api/student/freelancing",
   requireAuth,
   requireActiveAccount,
-  authorizeRoles("student"),
+  requireRole("student"),
   studentFreelancingRoutes,
 );
 app.use("/api/company", companyRoutes);
@@ -168,7 +166,7 @@ app.use(
   "/api/student/incubation",
   requireAuth,
   requireActiveAccount,
-  authorizeRoles("student"),
+  requireRole("student"),
   studentIncubationRoutes,
 );
 
@@ -176,7 +174,7 @@ app.use(
   "/api/student/investors",
   requireAuth,
   requireActiveAccount,
-  authorizeRoles("student"),
+  requireRole("student"),
   studentInvestorRoutes,
 );
 
@@ -184,7 +182,7 @@ app.use(
   "/api/student/pitches",
   requireAuth,
   requireActiveAccount,
-  authorizeRoles("student"),
+  requireRole("student"),
   studentPitchRoutes,
 );
 
@@ -192,7 +190,7 @@ app.use(
   "/api/investor/direct-pitches",
   requireAuth,
   requireActiveAccount,
-  authorizeRoles("investor"),
+  requireRole("investor"),
   investorPitchRoutes,
 );
 

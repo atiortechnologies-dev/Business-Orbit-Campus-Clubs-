@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { protect } = require("../middlewares/authMiddleware");
+const { requireAuth } = require("../middlewares/authMiddleware");
 const { getCloudinarySignature } = require("../controllers/upload.controller");
 
-router.post("/cloudinary-signature", protect, getCloudinarySignature);
+router.post("/cloudinary-signature", requireAuth, getCloudinarySignature);
 
 module.exports = router;

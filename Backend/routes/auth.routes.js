@@ -18,8 +18,8 @@ const {
   getMe,
   getAllChapters,
 } = require("../controllers/auth.controller");
+const { requireAuth } = require("../middlewares/authMiddleware");
 const { validateRequest } = require("../middlewares/validateRequest");
-const { protect } = require("../middlewares/authMiddleware");
 const {
   registerSchema,
   checkEmailSchema,
@@ -73,6 +73,6 @@ router.post("/refresh-token", refreshAccessToken);
 router.post("/logout", logout);
 
 // GET /api/auth/me
-router.get("/me", protect, getMe);
+router.get("/me", requireAuth, getMe);
 
 module.exports = router;

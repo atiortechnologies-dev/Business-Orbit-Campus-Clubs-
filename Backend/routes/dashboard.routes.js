@@ -7,7 +7,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
+
 const {
   getDashboard,
   getStudentProfile,
@@ -15,13 +16,15 @@ const {
   getStartup,
   updateStartup,
 } = require("../controllers/dashboard.controller");
+
 const { validateRequest } = require("../middlewares/validateRequest");
+
 const {
   updateProfileSchema,
   updateStartupSchema,
 } = require("../utils/validators");
 
-router.use(protect, requireRole("student"));
+router.use(requireAuth, requireRole("student"));
 
 router.get("/dashboard", getDashboard);
 

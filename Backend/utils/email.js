@@ -4,18 +4,31 @@
  * @architecture Encapsulates the third-party email provider logic, presenting a clean interface to controllers.
  */
 
-/**
- * Goal: Provides utility functions for sending emails.
- * Architecture relevance: Abstracts the email sending service (e.g., Nodemailer). It is used across the application for tasks like sending verification links or password reset emails.
- */
 const Nodemailer = require("nodemailer");
 const crypto = require("crypto");
 require("dotenv").config();
 
-// Initialize SMTP transport (Using Mailtrap Sandbox for development)
+// Fail fast if required SMTP configurations are missing in production
+const requiredSmtpVars = [
+  "SMTP_HOST",
+  "SMTP_PORT",
+  "SMTP_USER",
+  "SMTP_PASS",
+  "SMTP_FROM",
+];
+const missingSmtpVars = requiredSmtpVars.filter((key) => !process.env[key]);
+
+if (missingSmtpVars.length > 0 && process.env.NODE_ENV === "production") {
+  console.error(
+    `FATAL: Missing required SMTP environment variables: ${missingSmtpVars.join(", ")}`,
+  );
+  process.exit(1);
+}
+
+// Initialize SMTP transport
 const transport = Nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  port: Number(process.env.SMTP_PORT),
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -45,13 +58,8 @@ const sendEmail = async ({
   htmlContent,
   category = "Notification",
 }) => {
-  const sender = {
-    address: "hello@demomailtrap.co",
-    name: "BOCC Auth System (Test)",
-  };
-
   const emailOptions = {
-    from: sender,
+    from: process.env.SMTP_FROM,
     to: [toEmail],
     subject,
     html: htmlContent,
@@ -62,7 +70,7 @@ const sendEmail = async ({
     const info = await transport.sendMail(emailOptions);
     return info;
   } catch (error) {
-    console.error("Error sending email via Mailtrap:", error);
+    console.error("Error sending email:", error);
     throw error;
   }
 };
@@ -75,6 +83,7 @@ const sendEmail = async ({
  * @param {string} [options.subject="BOCC - Verify Your Email"]
  * @param {string} [options.headerText="Email Verification"]
  * @param {string} [options.descriptionText="Welcome to Business Orbit Campus Clubs (BOCC)! Please verify your email address to complete your registration."]
+ * @param {number|string} [options.expiryMinutes] - Optional override for expiry minutes
  * @returns {Promise<any>}
  */
 const sendOTPEmail = async (
@@ -84,19 +93,20 @@ const sendOTPEmail = async (
     subject = "BOCC - Verify Your Email",
     headerText = "Email Verification",
     descriptionText = "Welcome to Business Orbit Campus Clubs (BOCC)! Please verify your email address to complete your registration.",
+    expiryMinutes = process.env.OTP_EXPIRY_MINUTES,
   } = {},
 ) => {
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
       <h2>${headerText}</h2>
       <p>${descriptionText}</p>
-      <p>Please use the following 6-digit OTP. This OTP is valid for <strong>15 minutes</strong>.</p>
+      <p>Please use the following 6-digit OTP. This OTP is valid for <strong>${expiryMinutes} minutes</strong>.</p>
       <div style="text-align: center; margin: 30px 0;">
         <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #007bff; background: #f4f4f4; padding: 15px 30px; border-radius: 8px;">${otp}</span>
       </div>
       <p>If you did not request this, you can safely ignore this email.</p>
       <hr style="border: 1px solid #eee; margin: 20px 0;">
-      <p style="color: #888; font-size: 12px;">This is an automated test email sent via Mailtrap.</p>
+      <p style="color: #888; font-size: 12px;">This is an automated system notification.</p>
     </div>
   `;
 
@@ -121,11 +131,11 @@ const sendAdminMeetingReminder = async (
     agenda,
   },
 ) => {
-  const subject = `[BCOC Internal] Meeting Reminder: ${startupName} with ${reviewerName}`;
+  const subject = `[BOCC Internal] Meeting Reminder: ${startupName} with ${reviewerName}`;
 
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 8px;">
-      <h2 style="color: #111; margin-bottom: 10px;">BCOC Internal Meeting Notification</h2>
+      <h2 style="color: #111; margin-bottom: 10px;">BOCC Internal Meeting Notification</h2>
       <p style="color: #444; font-size: 15px; line-height: 1.5;">
         A review meeting has been scheduled in the system. Here are the summary details for admin records:
       </p>
@@ -164,7 +174,7 @@ const sendAdminMeetingReminder = async (
       </div>
 
       <p style="color: #666; font-size: 12px; text-align: center;">
-        Business Orbit Campus Clubs (BCOC) — Internal System Notification
+        Business Orbit Campus Clubs (BOCC) — Internal System Notification
       </p>
     </div>
   `;

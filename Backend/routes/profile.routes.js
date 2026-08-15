@@ -5,7 +5,7 @@
  */
 
 const express = require("express");
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 const {
   getMyProfile,
   createProfile,
@@ -24,7 +24,7 @@ const {
 const createProfileRouter = (role) => {
   const router = express.Router();
 
-  router.use(protect, requireRole(role));
+  router.use(requireAuth, requireRole(role));
 
   // GET api/{role}/profile ( getProfile )
   router.get("/", getMyProfile);
@@ -37,10 +37,10 @@ const createProfileRouter = (role) => {
 
   // POST api/{role}/profile/upload-photo
   router.post("/upload-photo", uploadPhoto);
-  
+
   // PUT api/{role}/profile/change-password
   router.put("/change-password", changePassword);
-  
+
   // PUT api/{role}/profile/notification-preferences
   router.put("/notification-preferences", updateNotificationPreferences);
 

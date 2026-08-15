@@ -6,12 +6,12 @@
 
 const express = require("express");
 
-const { protect, requireRole } = require("../middlewares/authMiddleware");
 const {
   getMyChapter,
   requestChapterChange,
   getChapterStats,
 } = require("../controllers/chapter.controller");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 
 /**
  * @module studentChapterRouter
@@ -19,7 +19,7 @@ const {
  */
 const studentChapterRouter = express.Router();
 
-studentChapterRouter.use(protect, requireRole("student"));
+studentChapterRouter.use(requireAuth, requireRole("student"));
 
 // api/student ( Student can only access this router )
 studentChapterRouter.get("/chapter", getMyChapter);
@@ -33,7 +33,7 @@ studentChapterRouter.post("/request-chapter-change", requestChapterChange);
 const chapterStatsRouter = express.Router();
 chapterStatsRouter.get(
   "/:chapterId/stats",
-  protect,
+  requireAuth,
   requireRole("student"),
   getChapterStats,
 );

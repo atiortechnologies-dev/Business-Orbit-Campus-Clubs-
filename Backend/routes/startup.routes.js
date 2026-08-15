@@ -7,13 +7,13 @@
 const express = require("express");
 const router = express.Router();
 
-const { protect, requireRole } = require("../middlewares/authMiddleware");
+const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 const {
   getProgress,
   getStages,
 } = require("../controllers/startupProgress.controller");
 
-router.use(protect, requireRole("student"));
+router.use(requireAuth, requireRole("student"));
 
 // GET api/startup/progress
 router.get("/progress", getProgress);
