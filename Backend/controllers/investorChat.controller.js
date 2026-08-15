@@ -3,12 +3,9 @@
  * @description Handles chat functionalities between investors and startups.
  */
 
-const mongoose = require("mongoose");
 const asyncHandler = require("../middlewares/asyncHandler");
 const InvestorChatRoom = require("../models/InvestorChatRoom");
 const InvestorMessage = require("../models/InvestorMessage");
-const Notification = require("../models/Notification");
-const Startup = require("../models/Startup");
 
 // ==========================================
 // STUDENT -> INVESTOR

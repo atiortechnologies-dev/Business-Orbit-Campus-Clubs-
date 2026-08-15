@@ -11,7 +11,7 @@ const IncubatorProfile = require("../../models/IncubatorProfile");
 
 describe("Incubator Discovery API", () => {
   let incubator1Id;
-  let incubator2Id;
+  // let incubator2Id;
 
   beforeEach(async () => {
     await IncubatorProfile.deleteMany({});
@@ -30,19 +30,19 @@ describe("Incubator Discovery API", () => {
     });
     incubator1Id = inc1._id;
 
-    const inc2 = await IncubatorProfile.create({
-      user_id: new mongoose.Types.ObjectId(),
-      incubator_name: "Green Future Hub",
-      organization: "Green Org",
-      city: "Delhi",
-      location: "Delhi",
-      description: "CleanTech incubator",
-      industry_focus: ["CleanTech"],
-      supported_stages: ["Stage 3"],
-      is_approved: true,
-      application_deadline: new Date(Date.now() + 86400000 * 5),
-    });
-    incubator2Id = inc2._id;
+    // const inc2 = await IncubatorProfile.create({
+    //   user_id: new mongoose.Types.ObjectId(),
+    //   incubator_name: "Green Future Hub",
+    //   organization: "Green Org",
+    //   city: "Delhi",
+    //   location: "Delhi",
+    //   description: "CleanTech incubator",
+    //   industry_focus: ["CleanTech"],
+    //   supported_stages: ["Stage 3"],
+    //   is_approved: true,
+    //   application_deadline: new Date(Date.now() + 86400000 * 5),
+    // });
+    // incubator2Id = inc2._id;
 
     // Unapproved incubator should not appear in search
     await IncubatorProfile.create({

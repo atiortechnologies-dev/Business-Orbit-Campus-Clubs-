@@ -6,7 +6,7 @@ const Notification = require("../../models/Notification");
 const { generateToken } = require("../../utils/token");
 
 describe("Notification Controller", () => {
-  let student1Jwt, student2Jwt;
+  let student1Jwt;
   let student1Id, student2Id;
 
   beforeEach(async () => {
@@ -33,7 +33,7 @@ describe("Notification Controller", () => {
       email_verified: true,
     });
     student2Id = student2._id;
-    student2Jwt = generateToken(student2Id, "student", "student2@example.com");
+    // student2Jwt = generateToken(student2Id, "student", "student2@example.com");
   });
 
   describe("GET /api/student/notifications", () => {
@@ -64,7 +64,9 @@ describe("Notification Controller", () => {
       expect(res.body.success).toBe(true);
       expect(res.body.count).toBe(1);
       expect(res.body.pagination.total).toBe(2);
-      expect(res.body.data[0].recipient_id.toString()).toBe(student1Id.toString());
+      expect(res.body.data[0].recipient_id.toString()).toBe(
+        student1Id.toString(),
+      );
     });
   });
 
@@ -106,7 +108,7 @@ describe("Notification Controller", () => {
       expect(res.body.success).toBe(false);
       expect(res.body.message).toBe("Notification not found");
     });
-    
+
     it("should return 404 if notification does not exist", async () => {
       const fakeId = new mongoose.Types.ObjectId();
       const res = await request(app)

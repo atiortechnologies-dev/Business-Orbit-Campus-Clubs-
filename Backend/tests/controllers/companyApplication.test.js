@@ -11,7 +11,6 @@ const Application = require("../../models/Application");
 const ApplicantStatus = require("../../models/ApplicantStatus");
 const RecruiterNote = require("../../models/RecruiterNote");
 const ApplicationInterview = require("../../models/ApplicationInterview");
-const User = require("../../models/User");
 
 describe("Company Application Controller", () => {
   let companyId, studentId, otherCompanyId, opportunity, application;

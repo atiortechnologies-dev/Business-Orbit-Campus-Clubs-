@@ -17,7 +17,7 @@ describe("Admin Chapter Change Review Lifecycle", () => {
   let studentUser;
   let currentChapter;
   let requestedChapter;
-  let studentProfile;
+  // let studentProfile;
   let changeRequest;
 
   beforeEach(async () => {
@@ -47,14 +47,14 @@ describe("Admin Chapter Change Review Lifecycle", () => {
       status: "Active",
     });
 
-    studentProfile = await StudentProfile.create({
-      user_id: studentUser._id,
-      college: "Old University",
-      degree: "B.Tech",
-      graduation_year: 2026,
-      chapter_id: currentChapter._id,
-      profile_status: "completed",
-    });
+    // studentProfile = await StudentProfile.create({
+    //   user_id: studentUser._id,
+    //   college: "Old University",
+    //   degree: "B.Tech",
+    //   graduation_year: 2026,
+    //   chapter_id: currentChapter._id,
+    //   profile_status: "completed",
+    // });
 
     changeRequest = await ChapterChangeRequest.create({
       student_id: studentUser._id,

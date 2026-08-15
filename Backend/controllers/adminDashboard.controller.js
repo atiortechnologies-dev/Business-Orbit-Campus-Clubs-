@@ -1276,8 +1276,6 @@ const getStartupDetails = asyncHandler(async (req, res) => {
   });
 
   // 3. Map submissions to the 5 BOCC stages
-  let approvedCount = 0;
-
   const journeyStages = STAGE_LABELS.map((label, index) => {
     const stageNumber = index + 1;
 
@@ -1293,9 +1291,6 @@ const getStartupDetails = asyncHandler(async (req, res) => {
     if (stageSubmission) {
       status = stageSubmission.status;
       submissionId = stageSubmission._id;
-      if (status === "approved") {
-        approvedCount++;
-      }
     } else if (index === 0) {
       status = "active";
     }

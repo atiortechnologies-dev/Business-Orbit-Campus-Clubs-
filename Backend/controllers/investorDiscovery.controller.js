@@ -178,7 +178,7 @@ exports.getPitchDetails = asyncHandler(async (req, res) => {
  * @route   POST /api/investor/pitches/filter
  */
 exports.filterPitches = asyncHandler(async (req, res) => {
-  const { industry, funding_stage, chapter, technology } = req.body;
+  const { industry, funding_stage, technology } = req.body;
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
@@ -531,9 +531,14 @@ exports.getStartups = asyncHandler(async (req, res) => {
  */
 exports.getStartupById = asyncHandler(async (req, res) => {
   const { startupId } = req.params;
-  const startup = await Startup.findById(startupId).populate("student_id", "full_name email");
+  const startup = await Startup.findById(startupId).populate(
+    "student_id",
+    "full_name email",
+  );
   if (!startup || !startup.visibility) {
-    return res.status(404).json({ success: false, message: "Startup not found or not visible" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Startup not found or not visible" });
   }
   res.status(200).json({ success: true, data: startup });
 });
@@ -546,7 +551,7 @@ exports.searchStartups = asyncHandler(async (req, res) => {
   const { q } = req.query;
   const startups = await Startup.find({
     visibility: true,
-    $text: { $search: q }
+    $text: { $search: q },
   }).populate("student_id", "full_name email");
   res.status(200).json({ success: true, data: startups });
 });
@@ -562,8 +567,11 @@ exports.filterStartups = asyncHandler(async (req, res) => {
   if (stage) query.stage = stage;
   if (chapter) query.chapter = chapter;
   if (funding_status) query.funding_status = funding_status;
-  
-  const startups = await Startup.find(query).populate("student_id", "full_name email");
+
+  const startups = await Startup.find(query).populate(
+    "student_id",
+    "full_name email",
+  );
   res.status(200).json({ success: true, data: startups });
 });
 
@@ -573,7 +581,7 @@ exports.filterStartups = asyncHandler(async (req, res) => {
  */
 exports.getStartupProfile = asyncHandler(async (req, res) => {
   // Can be expanded to include founder profile details, metrics, etc.
-  exports.getStartupById(req, res); 
+  exports.getStartupById(req, res);
 });
 
 /**
@@ -584,9 +592,13 @@ exports.getStartupPitchDeck = asyncHandler(async (req, res) => {
   const { startupId } = req.params;
   const startup = await Startup.findById(startupId);
   if (!startup || !startup.visibility) {
-    return res.status(404).json({ success: false, message: "Startup not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Startup not found" });
   }
-  res.status(200).json({ success: true, data: { pitch_deck: startup.pitch_deck } });
+  res
+    .status(200)
+    .json({ success: true, data: { pitch_deck: startup.pitch_deck } });
 });
 
 /**
@@ -605,7 +617,9 @@ exports.getWatchlist = asyncHandler(async (req, res) => {
  * @route   GET /api/investor/watchlist/statistics
  */
 exports.getWatchlistStatistics = asyncHandler(async (req, res) => {
-  const count = await InvestorWatchlist.countDocuments({ investor_id: req.user._id });
+  const count = await InvestorWatchlist.countDocuments({
+    investor_id: req.user._id,
+  });
   // Could add more stats like industry breakdown here
   res.status(200).json({ success: true, data: { count } });
 });
@@ -634,10 +648,12 @@ exports.markNotificationRead = asyncHandler(async (req, res) => {
   const notification = await Notification.findOneAndUpdate(
     { _id: notificationId, recipient_id: req.user._id },
     { is_read: true },
-    { new: true }
+    { new: true },
   );
   if (!notification) {
-    return res.status(404).json({ success: false, message: "Notification not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Notification not found" });
   }
   res.status(200).json({ success: true, data: notification });
 });

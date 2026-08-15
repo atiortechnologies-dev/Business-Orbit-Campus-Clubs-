@@ -21,7 +21,6 @@ exports.getHydratedChatRooms = async (userId, role, limit = null) => {
   const uid = new mongoose.Types.ObjectId(userId);
   const matchObj = role === "mentor" ? { mentor_id: uid } : { student_id: uid };
   const lookupField = role === "mentor" ? "student_id" : "mentor_id";
-  const participantAlias = role === "mentor" ? "student" : "mentor";
 
   const pipeline = [
     { $match: matchObj },

@@ -55,7 +55,6 @@ const IncubationUpdate = require("../models/IncubationUpdate");
 
 const AtiorAssistanceRequest = require("../models/AtiorAssistanceRequest");
 const CustomerFeedback = require("../models/CustomerFeedback");
-const IncubationVerification = require("../models/IncubationVerification");
 const LaunchEvidenceFile = require("../models/LaunchEvidenceFile");
 const LaunchInsights = require("../models/LaunchInsights");
 const LaunchPitchDocument = require("../models/LaunchPitchDocument");
@@ -141,8 +140,14 @@ const deleteStartupDependencies = async (startupId, session = null) => {
   );
   const pitchSubmissionIds = pitchSubmissions.map((p) => p._id);
   if (pitchSubmissionIds.length > 0) {
-    await PitchDocument.deleteMany({ submission_id: { $in: pitchSubmissionIds } }, opts);
-    await PitchSubmission.deleteMany({ _id: { $in: pitchSubmissionIds } }, opts);
+    await PitchDocument.deleteMany(
+      { submission_id: { $in: pitchSubmissionIds } },
+      opts,
+    );
+    await PitchSubmission.deleteMany(
+      { _id: { $in: pitchSubmissionIds } },
+      opts,
+    );
   }
 
   // 6. Delete Incubation Ecosystem Relations (by Startup)
@@ -324,8 +329,14 @@ const deleteUserDependencies = async (userId, session = null) => {
   );
   const pitchSubmissionIds = pitchSubmissions.map((p) => p._id);
   if (pitchSubmissionIds.length > 0) {
-    await PitchDocument.deleteMany({ submission_id: { $in: pitchSubmissionIds } }, opts);
-    await PitchSubmission.deleteMany({ _id: { $in: pitchSubmissionIds } }, opts);
+    await PitchDocument.deleteMany(
+      { submission_id: { $in: pitchSubmissionIds } },
+      opts,
+    );
+    await PitchSubmission.deleteMany(
+      { _id: { $in: pitchSubmissionIds } },
+      opts,
+    );
   }
 
   // 8. Delete Investor/Founder Chat Rooms
