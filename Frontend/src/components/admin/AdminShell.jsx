@@ -10,8 +10,6 @@ import {
   Building2,
   History,
   Settings,
-  Plus,
-  HelpCircle,
   Search,
   Bell,
   Menu,

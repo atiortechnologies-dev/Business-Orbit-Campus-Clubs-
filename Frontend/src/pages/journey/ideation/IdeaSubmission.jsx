@@ -127,7 +127,7 @@ export default function IdeaSubmissionPage() {
             setRequestChangesText(sub.request_changes || sub.requestChanges);
           }
         }
-      } catch (err) {
+      } catch {
         console.log("No previous submission found or stage inactive.");
       } finally {
         setLoading(false);

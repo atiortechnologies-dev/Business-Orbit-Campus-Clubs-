@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Briefcase, Bookmark, Rocket, Sparkles, Lock } from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
-import ComingSoon from "@/components/ui/ComingSoon";
 import Button from "@/components/ui/Button";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 

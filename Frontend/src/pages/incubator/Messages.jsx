@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import {
-  Search,
   Edit,
   Video,
   Phone,
@@ -9,13 +8,10 @@ import {
   Smile,
   Image as ImageIcon,
   Send,
-  User,
-  Calendar,
   FileText,
   Milestone,
   ExternalLink,
   ChevronLeft,
-  TrendingUp,
   Download,
   X,
 } from "lucide-react";
