@@ -8,12 +8,12 @@ const express = require("express");
 const router = express.Router();
 
 const { validateRequest } = require("../middlewares/validateRequest");
-const upload = require("../utils/uploadService");
+// const upload = require("../utils/uploadService"); -> this service is deleted use upload.routes ( cloudinary service )
 const {
   scheduleMeetingSchema,
-  sendMessageSchema,
+  // sendMessageSchema,
   addMeetingNotesSchema,
-  searchChatsQuerySchema,
+  // searchChatsQuerySchema,
   updateMentorProfileSchema,
 } = require("../middlewares/validators/mentorValidators");
 
@@ -27,7 +27,7 @@ const {
 const {
   getMentorProfile,
   updateMentorProfile,
-  uploadProfilePhoto,
+  // uploadProfilePhoto,
   toggleVisibility,
 } = require("../controllers/mentorProfile.controller");
 
@@ -61,7 +61,10 @@ router.put(
   validateRequest(updateMentorProfileSchema, "body"),
   updateMentorProfile,
 );
-router.post("/profile/photo", upload.single("file"), uploadProfilePhoto);
+
+// this service is deleted use upload.routes ( cloudinary service )
+// router.post("/profile/photo", upload.single("file"), uploadProfilePhoto);
+
 router.patch("/profile/visibility", toggleVisibility);
 
 // Requests & Profiles

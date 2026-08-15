@@ -58,7 +58,7 @@ if (process.env.NODE_ENV !== "test") {
 
 const app = express();
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT;
 
 // Middlewares
 app.use(configureCors());

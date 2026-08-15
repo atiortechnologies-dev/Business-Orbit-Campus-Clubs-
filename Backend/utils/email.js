@@ -14,8 +14,8 @@ require("dotenv").config();
 
 // Initialize SMTP transport (Using Mailtrap Sandbox for development)
 const transport = Nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "sandbox.smtp.mailtrap.io",
-  port: process.env.SMTP_PORT || 2525,
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,

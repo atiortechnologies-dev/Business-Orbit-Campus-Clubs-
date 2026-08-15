@@ -6,8 +6,7 @@
 
 const express = require("express");
 const router = express.Router();
-const upload = require("../utils/uploadService");
-
+// const upload = require("../utils/uploadService"); -> this service is deleted use upload.routes ( cloudinary service )
 
 const { requireAuth, authorizeRoles } = require("../middlewares/requireAuth");
 const {
@@ -21,14 +20,13 @@ const {
   getApplications,
   getApplicationDetails,
   updateApplication,
-  uploadResume,
-  uploadDocument,
+  // uploadResume,
+  // uploadDocument,
   submitApplication,
   withdrawApplication,
   getApplicationTimeline,
   getInterviews,
-  getApplicationStatusSummary
-
+  getApplicationStatusSummary,
 } = require("../controllers/studentFreelancing.controller");
 
 // Apply auth and role middlewares to all routes in this file
@@ -62,8 +60,6 @@ router.post("/opportunities/:opportunityId/save", saveOpportunity);
 // @desc    Remove a saved opportunity
 router.delete("/opportunities/:opportunityId/save", unsaveOpportunity);
 
-
-
 // --- Applications Routes ---
 
 // @route   POST /api/student/freelancing/applications
@@ -92,11 +88,18 @@ router.put("/applications/:applicationId", updateApplication);
 
 // @route   POST /api/student/freelancing/applications/upload-resume
 // @desc    Upload resume
-router.post("/applications/upload-resume", upload.single("file"), uploadResume);
+
+// for upload use cloudinary services its already made in -> upload.routes
+
+// router.post("/applications/upload-resume", upload.single("file"), uploadResume);
 
 // @route   POST /api/student/freelancing/applications/upload-document
 // @desc    Upload additional document
-router.post("/applications/upload-document", upload.single("file"), uploadDocument);
+// router.post(
+//   "/applications/upload-document",
+//   upload.single("file"),
+//   uploadDocument,
+// );
 
 // @route   POST /api/student/freelancing/applications/:applicationId/submit
 // @desc    Submit application
