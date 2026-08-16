@@ -12,7 +12,6 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
-const { apiLimiter } = require("./middlewares/rateLimiters");
 const authRoutes = require("./routes/auth.routes"); // mine one : authRoute
 const onboardingRoutes = require("./routes/onboarding.routes");
 const uploadRouter = require("./routes/upload.routes");
@@ -36,11 +35,8 @@ const {
 const publicRoutes = require("./routes/public.routes");
 const mentorRoutes = require("./routes/mentor.routes");
 const studentRoutes = require("./routes/student.routes");
-const {
-  requireAuth,
-  requireRole,
-  requireActiveAccount,
-} = require("./middlewares/requireAuth");
+
+const { apiLimiter } = require("./middlewares/rateLimiter");
 
 const stage3StageRoutes = require("./routes/stage3.routes");
 const stage3ProductTypeRoutes = require("./routes/productType.routes");
@@ -54,6 +50,22 @@ const launchRoutes = require("./routes/launch.routes");
 
 const http = require("http");
 const { configureSocket } = require("./utils/socket");
+
+const studentFreelancingRoutes = require("./routes/studentFreelancing.routes");
+const companyRoutes = require("./routes/company.routes");
+const investorRoutes = require("./routes/investor.routes");
+const chatRoutes = require("./routes/chat.routes");
+
+const adminDashboardRoutes = require("./routes/adminDashboard.routes");
+
+const studentInvestorRoutes = require("./routes/studentInvestor.routes");
+const studentPitchRoutes = require("./routes/studentPitch.routes");
+const investorPitchRoutes = require("./routes/investorPitch.routes");
+const {
+  requireAuth,
+  requireActiveAccount,
+  requireRole,
+} = require("./middlewares/authMiddleware");
 
 // Connect to database
 if (process.env.NODE_ENV !== "test") {
@@ -75,7 +87,17 @@ app.use(helmet());
 app.use(configureCors());
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
-app.use(mongoSanitize());
+
+app.use((req, res, next) => {
+  if (req.body) {
+    req.body = mongoSanitize.sanitize(req.body, { replaceWith: "_" });
+  }
+  if (req.params) {
+    req.params = mongoSanitize.sanitize(req.params, { replaceWith: "_" });
+  }
+  next();
+});
+
 if (process.env.NODE_ENV !== "test") {
   app.use("/api", apiLimiter);
 }
@@ -100,13 +122,6 @@ app.get("/api/health", (req, res) => {
     environment: process.env.NODE_ENV || "development",
   });
 });
-
-const studentFreelancingRoutes = require("./routes/studentFreelancing.routes");
-const companyRoutes = require("./routes/company.routes");
-const investorRoutes = require("./routes/investor.routes");
-const chatRoutes = require("./routes/chat.routes");
-
-const adminDashboardRoutes = require("./routes/adminDashboard.routes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/onboarding", onboardingRoutes);
@@ -186,9 +201,6 @@ app.use(
   requireActiveAccount,
   incubationApplicationRoutes,
 );
-const studentInvestorRoutes = require("./routes/studentInvestor.routes");
-const studentPitchRoutes = require("./routes/studentPitch.routes");
-const investorPitchRoutes = require("./routes/investorPitch.routes");
 
 app.use(
   "/api/student/incubation",

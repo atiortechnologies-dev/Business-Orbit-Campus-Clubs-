@@ -24,7 +24,7 @@ const {
   loginLimiter,
   otpRequestLimiter,
   otpVerifyLimiter,
-} = require("../middlewares/rateLimiters");
+} = require("../middlewares/rateLimiter");
 const {
   registerSchema,
   checkEmailSchema,
