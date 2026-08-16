@@ -21,6 +21,11 @@ const {
 const { requireAuth } = require("../middlewares/authMiddleware");
 const { validateRequest } = require("../middlewares/validateRequest");
 const {
+  loginLimiter,
+  otpRequestLimiter,
+  otpVerifyLimiter,
+} = require("../middlewares/rateLimiters");
+const {
   registerSchema,
   checkEmailSchema,
   sendOtpSchema,
@@ -44,17 +49,33 @@ router.get(
 );
 
 // POST /api/auth/send-otp
-router.post("/send-otp", validateRequest(sendOtpSchema, "body"), sendOtp);
+router.post(
+  "/send-otp",
+  otpRequestLimiter,
+  validateRequest(sendOtpSchema, "body"),
+  sendOtp,
+);
 
 // POST /api/auth/verify-otp
-router.post("/verify-otp", validateRequest(verifyOtpSchema, "body"), verifyOtp);
+router.post(
+  "/verify-otp",
+  otpVerifyLimiter,
+  validateRequest(verifyOtpSchema, "body"),
+  verifyOtp,
+);
 
 // POST /api/auth/login
-router.post("/login", validateRequest(loginSchema, "body"), login);
+router.post(
+  "/login",
+  loginLimiter,
+  validateRequest(loginSchema, "body"),
+  login,
+);
 
 // POST /api/auth/forgot-password
 router.post(
   "/forgot-password",
+  otpRequestLimiter,
   validateRequest(forgotPasswordSchema, "body"),
   forgotPassword,
 );
@@ -62,6 +83,7 @@ router.post(
 // POST /api/auth/reset-password
 router.post(
   "/reset-password",
+  otpVerifyLimiter,
   validateRequest(resetPasswordSchema, "body"),
   resetPassword,
 );

@@ -4,14 +4,10 @@
  * @architecture Provides a repeatable bootstrap mechanism for deploying fresh environments with required administrative access.
  */
 
-/**
- * Goal: Script to seed the database with an initial administrator account.
- * Architecture relevance: Used during initial setup or deployment to ensure there is at least one admin user in the system to manage other entities.
- */
 const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const User = require("../models/User");
+const { hashPassword } = require("../utils/password");
 
 dotenv.config();
 
@@ -22,9 +18,15 @@ const seedAdmin = async () => {
 
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
+    const adminName = process.env.ADMIN_NAME || "Super Admin";
 
     if (!adminEmail || !adminPassword) {
       console.error("Please define ADMIN_EMAIL and ADMIN_PASSWORD in .env");
+      process.exit(1);
+    }
+
+    if (adminPassword.length < 8) {
+      console.error("ADMIN_PASSWORD must be at least 8 characters long.");
       process.exit(1);
     }
 
@@ -34,15 +36,19 @@ const seedAdmin = async () => {
       process.exit(0);
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(adminPassword, salt);
+    // Hash with argon2 (matches utils/password.js, which is what the login
+    // flow uses to verify credentials). Field names below match models/User.js
+    // exactly: password_hash, account_status, email_verified.
+    const password_hash = await hashPassword(adminPassword);
 
     const adminUser = new User({
+      full_name: adminName,
       role: "admin",
       email: adminEmail,
-      password: hashedPassword,
-      status: "approved",
-      emailVerified: true,
+      password_hash,
+      account_status: "active",
+      email_verified: true,
+      profile_status: "completed",
     });
 
     await adminUser.save();

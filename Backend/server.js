@@ -8,8 +8,11 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
 const configureCors = require("./config/cors");
 const connectDB = require("./config/db");
+const { apiLimiter } = require("./middlewares/rateLimiters");
 const authRoutes = require("./routes/auth.routes"); // mine one : authRoute
 const onboardingRoutes = require("./routes/onboarding.routes");
 const uploadRouter = require("./routes/upload.routes");
@@ -68,9 +71,14 @@ if (process.env.NODE_ENV !== "test") {
 }
 
 // Middlewares
+app.use(helmet());
 app.use(configureCors());
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
+app.use(mongoSanitize());
+if (process.env.NODE_ENV !== "test") {
+  app.use("/api", apiLimiter);
+}
 
 // Routes
 app.get("/", (req, res) => {
