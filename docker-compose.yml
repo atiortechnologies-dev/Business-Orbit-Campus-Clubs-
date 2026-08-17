@@ -1,0 +1,93 @@
+# ==============================================================================
+# BOCC — Docker Compose (production-style, single host)
+#
+# Quick start:
+#   1. cp Backend/.env.example Backend/.env   and fill in real values
+#      (MONGODB_URI, JWT secrets, SMTP creds, Cloudinary keys, FRONTEND_URL, etc.)
+#   2. docker compose build
+#   3. docker compose up -d
+#   4. docker compose exec backend npm run seed   # create the first admin user
+#   5. Point nginx/Cloudflare/your DNS at this host's port 80 (add TLS in front
+#      of it — e.g. put this behind a host nginx/Caddy doing TLS termination,
+#      or swap the frontend service's port mapping for a TLS-terminating proxy).
+#
+# The frontend container's own nginx.conf proxies /api and /socket.io to the
+# backend service by its compose service name ("backend"), so the browser
+# only ever talks to one origin. Set VITE_API_BASE_URL=/api (a *relative*
+# path) below so axios calls stay same-origin and you avoid CORS entirely.
+#
+# MongoDB: this compose file does NOT run MongoDB by default — point
+# MONGODB_URI at a managed database (Atlas, etc.), which is what most
+# production BOCC deployments should do. An optional local `mongo` service is
+# included and commented out below for self-hosting/dev-parity if you want it.
+# ==============================================================================
+
+services:
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    image: bocc-backend:latest
+    container_name: bocc-backend
+    restart: unless-stopped
+    env_file:
+      - ./Backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+    # Not published to the host — only the frontend/nginx container reaches it,
+    # via the internal compose network, over its service name "backend:5000".
+    expose:
+      - "5000"
+    volumes:
+      - backend_logs:/app/logs
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://127.0.0.1:5000/api/health', r => process.exit(r.statusCode===200?0:1)).on('error', () => process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+      args:
+        # Relative path -> same-origin requests, proxied by this container's
+        # nginx.conf to the backend service. Override at build time if you'd
+        # rather point straight at a separate api.yourdomain.com origin.
+        VITE_API_BASE_URL: /api
+    image: bocc-frontend:latest
+    container_name: bocc-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+      # Add TLS termination here (443) or put this behind a host-level
+      # reverse proxy / load balancer that handles certificates.
+
+  # --- Optional: self-hosted MongoDB for dev/staging parity -------------------
+  # Uncomment if you don't want to use a managed database. If enabled, set
+  # MONGODB_URI=mongodb://mongo:27017/registration_db in Backend/.env and add
+  # `depends_on: [mongo]` under the backend service above.
+  #
+  # mongo:
+  #   image: mongo:7
+  #   container_name: bocc-mongo
+  #   restart: unless-stopped
+  #   volumes:
+  #     - mongo_data:/data/db
+  #   ports:
+  #     - "127.0.0.1:27017:27017"   # bind to localhost only, never the public interface
+
+volumes:
+  backend_logs:
+  # mongo_data:

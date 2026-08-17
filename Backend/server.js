@@ -76,6 +76,9 @@ const app = express();
 
 const PORT = process.env.PORT;
 
+// Enable trust proxy for Docker / reverse proxies
+app.set("trust proxy", 1);
+
 // Configure Morgan Request Logging Middleware (DEP-007) ---
 const isProduction = process.env.NODE_ENV === "production";
 if (process.env.NODE_ENV !== "test") {
