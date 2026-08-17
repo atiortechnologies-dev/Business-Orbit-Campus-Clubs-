@@ -804,7 +804,7 @@ const scheduleMeeting = asyncHandler(async (req, res) => {
   };
 
   try {
-    const BCOC_ADMIN_EMAIL = "sneha@atiortechnologies.com";
+    const BCOC_ADMIN_EMAIL = process.env.SMTP_FROM;
     if (typeof sendAdminMeetingReminder === "function") {
       sendAdminMeetingReminder(BCOC_ADMIN_EMAIL, meetingPayload);
 

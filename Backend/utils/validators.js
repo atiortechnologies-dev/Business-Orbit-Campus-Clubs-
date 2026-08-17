@@ -29,7 +29,7 @@ const baseFields = z.object({
   full_name: z
     .string()
     .trim()
-    .min(4, "Full name must be at least 2 characters"),
+    .min(2, "Full name must be at least 2 characters"),
   email: z.string().trim().toLowerCase().email("Invalid email format"),
   phone: z.string().trim().optional(), // added since main contained it but there is no frontend implementation for it
   password: passwordSchema,

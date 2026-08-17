@@ -249,7 +249,57 @@ if (require.main === module) {
   });
 }
 
-/**
- * @module server
- */
+// --- Graceful shutdown -----------------------------------------------------
+// PM2 (and Docker) don't kill your process instantly — they send a "please
+// stop" signal (SIGTERM) first and give it a moment to finish up before
+// force-killing it. Without this block, the process would just die mid-way
+// through whatever it was doing: a request half-answered, a database write
+// half-finished. This listens for that signal and shuts things down in the
+// right order: stop accepting new connections, let in-flight requests
+// finish, close the database connection, then exit.
+let isShuttingDown = false;
+const gracefulShutdown = (signal) => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
+
+  console.info(`${signal} received. Shutting down gracefully...`);
+
+  server.close(async () => {
+    console.info("HTTP server closed (no longer accepting new connections).");
+    try {
+      await mongoose.connection.close();
+      console.info("MongoDB connection closed.");
+    } catch (err) {
+      console.error("Error closing MongoDB connection:", err);
+    } finally {
+      process.exit(0);
+    }
+  });
+
+  // Safety net: if something hangs (e.g. a stuck request) and we haven't
+  // exited within 10s, force-exit anyway rather than hanging forever and
+  // making PM2/Docker force-kill us uncleanly after their own timeout.
+  setTimeout(() => {
+    console.error("Graceful shutdown timed out. Forcing exit.");
+    process.exit(1);
+  }, 10000).unref();
+};
+
+if (require.main === module) {
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM")); // sent by PM2/Docker on stop/restart
+  process.on("SIGINT", () => gracefulShutdown("SIGINT")); // sent when you press Ctrl+C locally
+
+  // Log and exit on truly unexpected errors instead of leaving the process
+  // in a broken, half-alive state — PM2 will then restart it cleanly per
+  // the autorestart rules in ecosystem.config.js.
+  process.on("uncaughtException", (err) => {
+    console.error("UNCAUGHT EXCEPTION! Shutting down...", err);
+    process.exit(1);
+  });
+  process.on("unhandledRejection", (err) => {
+    console.error("UNHANDLED PROMISE REJECTION! Shutting down...", err);
+    process.exit(1);
+  });
+}
+
 module.exports = { app, server };
