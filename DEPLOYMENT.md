@@ -1,140 +1,185 @@
 # BOCC — Deployment Runbook
 
-Two supported ways to run this in production. Pick one.
-
-- **Path A — Docker Compose** (recommended: one host, reproducible, easiest to redeploy)
-- **Path B — Classic VPS** (PM2 for the backend process, system nginx as reverse proxy)
-
-Both terminate at nginx, both need the env vars in the table below, and both
-need `npm run seed` run once to create the first admin account.
+Production deployment for **Business Orbit Campus Clubs** on VPS using **Nginx + PM2 + GitHub Actions CI/CD**.
 
 ---
 
-## 0. Required environment variables
+## Architecture Overview
 
-Copy `Backend/.env.example` → `Backend/.env` and fill in real values. Every
-one of these is required in production; the app now fails fast (refuses to
-boot, or in the SMTP case refuses to send) if the relevant ones are missing.
-
-| Variable                                                               | Notes                                                                                                                              |
-| ---------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `PORT`                                                                 | e.g. `5000`. Keep it consistent with nginx's `proxy_pass` target.                                                                  |
-| `NODE_ENV`                                                             | `production`                                                                                                                       |
-| `MONGODB_URI`                                                          | Full connection string (Atlas or self-hosted). No default — boot fails without it.                                                 |
-| `FRONTEND_URL`                                                         | Exact public origin of your site, e.g. `https://yourdomain.com`. Used for CORS and Socket.IO origin checks.                        |
-| `JWT_SECRET`, `JWT_REFRESH_SECRET`                                     | Generate with `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`. Unique per environment, never committed. |
-| `JWT_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN`                             | e.g. `7d` / `30d`                                                                                                                  |
-| `OTP_EXPIRY_MINUTES`                                                   | e.g. `10`                                                                                                                          |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`        | Real transactional SMTP provider (not a sandbox). Boot fails in production without these.                                          |
-| `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | Used for user uploads.                                                                                                             |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME`                          | Used once by `npm run seed` to create the first admin account.                                                                     |
-
-Frontend: copy `Frontend/.env.example` → `Frontend/.env.production` and set
-`VITE_API_BASE_URL`. This is a **build-time** value (Vite bakes it into the
-JS bundle) — see Path A vs B below for what to set it to.
-
----
-
-## Path A — Docker Compose
-
-```bash
-cp Backend/.env.example Backend/.env
-# edit Backend/.env with real values
-
-docker compose build
-docker compose up -d
-
-docker compose exec backend npm run seed   # one-time: creates the admin user
-docker compose logs -f
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  AIC Cloud VPS (148.113.8.82:20011)                             │
+│  Ubuntu 24.04 · 4 vCPU · 8 GB RAM · 80 GB SSD                  │
+│                                                                 │
+│  ┌─────────────────────────────────────────┐                    │
+│  │  Hosting Provider Caddy (SSL termination)│                    │
+│  └──────────────────┬──────────────────────┘                    │
+│                     │ port 80                                    │
+│  ┌──────────────────▼──────────────────────┐                    │
+│  │  Nginx (port 80, Host-based routing)    │                    │
+│  │  ├── janki.care        → :4000 (exists) │                    │
+│  │  ├── businessorbit.org → :5000 (BOCC)   │                    │
+│  │  │   ├── /             → Frontend/dist  │                    │
+│  │  │   ├── /api/         → proxy:5000     │                    │
+│  │  │   ├── /api/auth/    → proxy:5000     │                    │
+│  │  │   └── /socket.io/   → proxy:5000(ws) │                    │
+│  │  └── byrg-demo         → (exists)       │                    │
+│  └─────────────────────────────────────────┘                    │
+│                                                                 │
+│  PM2 Processes:                                                  │
+│  ├── janki-backend   :4000 (existing, DO NOT TOUCH)             │
+│  └── bocc-backend    :5000 (new)                                │
+│                                                                 │
+│  /var/www/                                                      │
+│  ├── janki/          (existing, DO NOT TOUCH)                   │
+│  ├── byrg-demo/      (existing, DO NOT TOUCH)                   │
+│  └── bocc/           (new — this project)                       │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-What this gives you:
+---
 
-- `backend` container: Node app run under **PM2** in cluster mode inside the
-  container (`Backend/Dockerfile` + `Backend/ecosystem.config.js`), auto-restarts
-  on crash, not exposed to the public internet directly.
-- `frontend` container: the Vite build served by **nginx** (`Frontend/Dockerfile`
-  - `Frontend/nginx.conf`), which also reverse-proxies `/api` and `/socket.io`
-    to the backend container over the internal Docker network, with **rate
-    limiting** at the nginx layer (`limit_req_zone`) as a second line of defense
-    in front of the app-level rate limiting.
-- `VITE_API_BASE_URL` is set to the relative path `/api` in `docker-compose.yml`
-  so the browser only ever talks to one origin (your domain) — no CORS
-  headaches, nginx does the proxying internally.
+## 0. Required GitHub Secrets
 
-Put this whole stack behind TLS: either add a `443` listener + certs to
-`Frontend/nginx.conf` and mount your cert files into the frontend container,
-or (simpler) put a TLS-terminating reverse proxy / load balancer (Caddy,
-Cloudflare, your cloud provider's LB) in front of port 80 on this host.
+Go to **GitHub → Settings → Secrets and variables → Actions** and add:
 
-To redeploy after a code change: `docker compose build && docker compose up -d`.
-PM2 inside the backend container and the container `restart: unless-stopped`
-policy both provide crash recovery; `docker compose up -d` gives you a clean
-rolling replacement of the containers.
+| Secret | Value |
+|--------|-------|
+| `VPS_HOST` | `148.113.8.82` |
+| `VPS_SSH_PORT` | `20011` |
+| `VPS_SSH_PRIVATE_KEY` | SSH private key (add public key to VPS `~/.ssh/authorized_keys`) |
+| `MONGODB_URI` | Full MongoDB connection string |
+| `FRONTEND_URL` | `https://businessorbit.org` |
+| `JWT_SECRET` | Generate: `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
+| `JWT_REFRESH_SECRET` | Different from JWT_SECRET |
+| `JWT_EXPIRES_IN` | `7d` |
+| `JWT_REFRESH_EXPIRES_IN` | `30d` |
+| `OTP_EXPIRY_MINUTES` | `10` |
+| `SMTP_HOST` | SMTP server |
+| `SMTP_PORT` | `587` |
+| `SMTP_SECURE` | `false` |
+| `SMTP_USER` | SMTP username |
+| `SMTP_PASS` | SMTP password |
+| `SMTP_FROM` | `no-reply@businessorbit.org` |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `ADMIN_EMAIL` | First admin email |
+| `ADMIN_PASSWORD` | First admin password |
+| `ADMIN_NAME` | First admin name |
+| `PM2_INSTANCES` | Optional (default: `max`) |
 
 ---
 
-## Path B — Classic VPS (PM2 + system nginx, no Docker)
+## 1. One-time VPS Setup
 
 ```bash
-# On the server, as a deploy user (not root):
-git clone <your-repo> /var/www/bocc
+ssh root@148.113.8.82 -p 20011
+
+# Clone repo (Node.js & PM2 already installed from janki setup)
+git clone https://github.com/YOUR_ORG/Business-Orbit-Campus-Clubs-.git /var/www/bocc
 cd /var/www/bocc
+mkdir -p Backend/logs
+```
 
-# --- Backend ---
-cd Backend
-cp .env.example .env        # fill in real values, see table above
-npm ci --omit=dev
-npm run seed                # one-time: creates the admin user
+That's it. The CI/CD handles everything else on first push to `main`.
 
-npm install -g pm2
+---
+
+## 2. Domain Setup
+
+Add `businessorbit.org` and `www.businessorbit.org` domains in the AIC Cloud panel pointing to port `:80`. The hosting provider's Caddy will handle SSL termination automatically (same as janki.care).
+
+---
+
+## 3. How Deployments Work (Automatic)
+
+1. Push to `main` branch
+2. GitHub Actions triggers `.github/workflows/deploy.yml`
+3. Action SSHs into VPS (port 20011) and inline:
+   - Pulls latest code
+   - Writes `Backend/.env` from GitHub Secrets
+   - `npm ci` for Backend & Frontend
+   - Seeds admin user
+   - Builds frontend with `VITE_API_BASE_URL=/api`
+   - Restarts `bocc-backend` PM2 process on port 5000
+   - Copies `bocc.conf` to nginx sites (doesn't touch janki/byrg configs)
+   - Reloads nginx
+   - Health check
+4. Retries up to 3 times on transient SSH failures
+
+**Zero interference with janki.care** — separate PM2 process, separate port, separate nginx config file, separate directory.
+
+---
+
+## 4. Manual Deploy
+
+```bash
+ssh root@148.113.8.82 -p 20011
+cd /var/www/bocc
+git pull origin main
+
+npm ci --prefix Backend --no-audit --no-fund
+npm ci --prefix Frontend --no-audit --no-fund
+
+# Write Backend/.env (see Backend/.env.example)
+cp Backend/.env.example Backend/.env
+# Edit with real values...
+
+npm run seed --prefix Backend
+VITE_API_BASE_URL=/api npm run build --prefix Frontend
+
+cd Backend && mkdir -p logs
+pm2 stop bocc-backend 2>/dev/null || true
+pm2 delete bocc-backend 2>/dev/null || true
 pm2 start ecosystem.config.js --env production
 pm2 save
-pm2 startup                 # follow the printed instructions to enable on boot
+cd ..
 
-# --- Frontend ---
-cd ../Frontend
-cp .env.example .env.production
-# set VITE_API_BASE_URL=https://yourdomain.com/api   (absolute, since nginx
-# here serves the frontend as static files and separately proxies /api —
-# either an absolute URL or a relative "/api" both work as long as nginx's
-# server_name matches the origin the frontend was built for)
-npm ci
-npm run build                # outputs Frontend/dist
+cp deploy/nginx/bocc.conf /etc/nginx/sites-available/bocc.conf
+ln -sf /etc/nginx/sites-available/bocc.conf /etc/nginx/sites-enabled/bocc.conf
+nginx -t && systemctl reload nginx
 ```
-
-Then wire up nginx:
-
-```bash
-sudo cp /var/www/bocc/deploy/nginx/bocc.conf /etc/nginx/sites-available/bocc.conf
-# edit server_name and the /var/www/bocc/Frontend/dist root path to match your setup
-sudo ln -s /etc/nginx/sites-available/bocc.conf /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-
-# TLS:
-sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
-```
-
-`deploy/nginx/bocc.conf` serves `Frontend/dist` as static files, proxies
-`/api/*` and `/socket.io/*` (with websocket upgrade headers) to the PM2-managed
-Node process on `127.0.0.1:<PORT>`, and applies nginx-level rate limiting on
-top of the app-level limits in `Backend/middlewares/rateLimiters.js`.
-
-Redeploying: `git pull`, `npm ci --omit=dev` (backend) / `npm ci && npm run build`
-(frontend), then `pm2 reload bocc-backend` for a zero-downtime backend restart.
-Static frontend files are picked up by nginx immediately (no reload needed
-unless you changed the nginx config itself).
 
 ---
 
-## Post-deploy checklist
+## 5. PM2 Operations
 
-- [ ] `curl https://yourdomain.com/api/health` returns `{"status":"healthy", "database":"connected", ...}`
-- [ ] `docker compose exec backend npm run seed` (Path A) or `npm run seed` (Path B) ran once and you can log in as the seeded admin at `/api/auth/login`
-- [ ] Register a test account end-to-end and confirm the OTP email actually arrives (real SMTP, not a sandbox)
-- [ ] Confirm login persists across a page refresh (cookie + refresh-token flow), and that it survives an access-token expiry (waits out `JWT_EXPIRES_IN` or shorten it temporarily to test)
-- [ ] Confirm file/image uploads round-trip through Cloudinary and are visible afterward
-- [ ] Confirm the admin dashboard (`/api/admin/*`) is reachable when logged in as the seeded admin, and 403s for non-admin roles
-- [ ] Confirm real-time chat (Socket.IO) connects through nginx — check the browser network tab for a `101 Switching Protocols` on `/socket.io/`
-- [ ] Hit `/api/auth/login` more than 10 times quickly and confirm you get a `429` (rate limiting is active)
-- [ ] `NODE_ENV=production` everywhere — a 500 error should return a generic message, not a stack trace
+```bash
+pm2 status                    # see all processes (janki + bocc)
+pm2 logs bocc-backend         # bocc logs only
+pm2 reload bocc-backend       # zero-downtime restart
+pm2 restart bocc-backend      # hard restart
+```
+
+---
+
+## 6. Post-deploy Checklist
+
+- [ ] `curl http://localhost:5000/api/health` on VPS returns healthy
+- [ ] `https://businessorbit.org` loads the frontend
+- [ ] `https://businessorbit.org/api/health` returns healthy through nginx
+- [ ] PM2 shows both `janki-backend` and `bocc-backend` running
+- [ ] janki.care still works (no interference)
+- [ ] Admin login works
+- [ ] Socket.IO connects (101 Switching Protocols on `/socket.io/`)
+
+---
+
+## 7. Troubleshooting
+
+```bash
+# BOCC backend not starting?
+pm2 logs bocc-backend --lines 50
+
+# Port conflict?
+ss -tlnp | grep 5000
+fuser -k 5000/tcp && pm2 restart bocc-backend
+
+# Nginx config error?
+nginx -t
+
+# Check all sites still working
+curl -H "Host: businessorbit.org" http://localhost/
+curl -H "Host: janki.care" http://localhost/
+```

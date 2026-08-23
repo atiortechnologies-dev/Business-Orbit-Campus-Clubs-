@@ -1,0 +1,285 @@
+name: Deploy BOCC to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  USERNAME: root
+  PROJECT_DIR: /var/www/bocc
+  HOST: ${{ secrets.VPS_HOST }}
+  VPS_SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
+  FRONTEND_URL: ${{ secrets.FRONTEND_URL }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+  JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+  JWT_REFRESH_EXPIRES_IN: ${{ secrets.JWT_REFRESH_EXPIRES_IN }}
+  OTP_EXPIRY_MINUTES: ${{ secrets.OTP_EXPIRY_MINUTES }}
+  SMTP_HOST: ${{ secrets.SMTP_HOST }}
+  SMTP_PORT: ${{ secrets.SMTP_PORT }}
+  SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+  SMTP_USER: ${{ secrets.SMTP_USER }}
+  SMTP_PASS: ${{ secrets.SMTP_PASS }}
+  SMTP_FROM: ${{ secrets.SMTP_FROM }}
+  CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+  CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+  CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+  ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+  ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+  ADMIN_NAME: ${{ secrets.ADMIN_NAME }}
+  PM2_INSTANCES: ${{ secrets.PM2_INSTANCES }}
+  PORT: 5000
+  NODE_ENV: production
+  DEPLOY_ENVS: HOST,USERNAME,PROJECT_DIR,MONGODB_URI,FRONTEND_URL,JWT_SECRET,JWT_REFRESH_SECRET,JWT_EXPIRES_IN,JWT_REFRESH_EXPIRES_IN,OTP_EXPIRY_MINUTES,SMTP_HOST,SMTP_PORT,SMTP_SECURE,SMTP_USER,SMTP_PASS,SMTP_FROM,CLOUDINARY_CLOUD_NAME,CLOUDINARY_API_KEY,CLOUDINARY_API_SECRET,ADMIN_EMAIL,ADMIN_PASSWORD,ADMIN_NAME,PM2_INSTANCES,PORT,NODE_ENV
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS (attempt 1)
+        id: deploy1
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ env.VPS_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          timeout: 120s
+          command_timeout: 30m
+          envs: ${{ env.DEPLOY_ENVS }}
+          script: |
+            set -euo pipefail
+            cd "$PROJECT_DIR"
+
+            echo "📥 Pulling latest code"
+            git fetch origin main
+            git reset --hard origin/main
+            git log --oneline -1
+
+            echo "📝 Writing Backend/.env"
+            cat > "$PROJECT_DIR/Backend/.env" <<'ENVEOF'
+            NODE_ENV=production
+            PORT=5000
+            ENVEOF
+            # Overwrite with proper values (heredoc above is just structure)
+            cat > "$PROJECT_DIR/Backend/.env" <<EOF
+            NODE_ENV=${NODE_ENV:-production}
+            PORT=${PORT:-5000}
+            MONGODB_URI=$MONGODB_URI
+            FRONTEND_URL=$FRONTEND_URL
+            JWT_SECRET=$JWT_SECRET
+            JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
+            JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+            JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN:-30d}
+            OTP_EXPIRY_MINUTES=${OTP_EXPIRY_MINUTES:-10}
+            SMTP_HOST=$SMTP_HOST
+            SMTP_PORT=$SMTP_PORT
+            SMTP_SECURE=${SMTP_SECURE:-false}
+            SMTP_USER=$SMTP_USER
+            SMTP_PASS=$SMTP_PASS
+            SMTP_FROM=$SMTP_FROM
+            CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME
+            CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY
+            CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET
+            ADMIN_EMAIL=$ADMIN_EMAIL
+            ADMIN_PASSWORD=$ADMIN_PASSWORD
+            ADMIN_NAME=${ADMIN_NAME:-Admin}
+            PM2_INSTANCES=${PM2_INSTANCES:-max}
+            EOF
+            sed -i 's/^[[:space:]]*//' "$PROJECT_DIR/Backend/.env"
+            chmod 600 "$PROJECT_DIR/Backend/.env"
+
+            echo "📦 Installing Backend dependencies"
+            npm ci --prefix Backend --no-audit --no-fund
+
+            echo "📦 Installing Frontend dependencies"
+            npm ci --prefix Frontend --no-audit --no-fund
+
+            echo "🔐 Seeding admin"
+            npm run seed --prefix Backend || echo "⚠️ Seed may already exist"
+
+            echo "🏗️ Building Frontend"
+            VITE_API_BASE_URL=/api npm run build --prefix Frontend
+
+            echo "🚀 Restarting PM2 (bocc-backend on port 5000)"
+            cd "$PROJECT_DIR/Backend"
+            mkdir -p logs
+            pm2 stop bocc-backend 2>/dev/null || true
+            pm2 delete bocc-backend 2>/dev/null || true
+            fuser -k 5000/tcp 2>/dev/null || true
+            sleep 1
+            pm2 start ecosystem.config.js --env production
+            pm2 save
+            cd "$PROJECT_DIR"
+
+            echo "🔧 Adding bocc nginx config (not touching other sites)"
+            cp "$PROJECT_DIR/deploy/nginx/bocc.conf" /etc/nginx/sites-available/bocc.conf
+            ln -sf /etc/nginx/sites-available/bocc.conf /etc/nginx/sites-enabled/bocc.conf
+            nginx -t
+            systemctl reload nginx
+
+            echo "🏥 Health check"
+            sleep 4
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api/health || echo "000")
+            echo "Backend HTTP status: $HTTP_STATUS"
+
+            echo "✅ BOCC Deployment complete"
+            pm2 status
+
+      - name: Deploy to VPS (attempt 2)
+        id: deploy2
+        if: steps.deploy1.outcome == 'failure'
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ env.VPS_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          timeout: 120s
+          command_timeout: 30m
+          envs: ${{ env.DEPLOY_ENVS }}
+          script: |
+            set -euo pipefail
+            cd "$PROJECT_DIR"
+            git fetch origin main && git reset --hard origin/main
+
+            cat > "$PROJECT_DIR/Backend/.env" <<EOF
+            NODE_ENV=${NODE_ENV:-production}
+            PORT=${PORT:-5000}
+            MONGODB_URI=$MONGODB_URI
+            FRONTEND_URL=$FRONTEND_URL
+            JWT_SECRET=$JWT_SECRET
+            JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
+            JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+            JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN:-30d}
+            OTP_EXPIRY_MINUTES=${OTP_EXPIRY_MINUTES:-10}
+            SMTP_HOST=$SMTP_HOST
+            SMTP_PORT=$SMTP_PORT
+            SMTP_SECURE=${SMTP_SECURE:-false}
+            SMTP_USER=$SMTP_USER
+            SMTP_PASS=$SMTP_PASS
+            SMTP_FROM=$SMTP_FROM
+            CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME
+            CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY
+            CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET
+            ADMIN_EMAIL=$ADMIN_EMAIL
+            ADMIN_PASSWORD=$ADMIN_PASSWORD
+            ADMIN_NAME=${ADMIN_NAME:-Admin}
+            PM2_INSTANCES=${PM2_INSTANCES:-max}
+            EOF
+            sed -i 's/^[[:space:]]*//' "$PROJECT_DIR/Backend/.env"
+            chmod 600 "$PROJECT_DIR/Backend/.env"
+
+            npm ci --prefix Backend --no-audit --no-fund
+            npm ci --prefix Frontend --no-audit --no-fund
+            npm run seed --prefix Backend || true
+            VITE_API_BASE_URL=/api npm run build --prefix Frontend
+
+            cd "$PROJECT_DIR/Backend"
+            mkdir -p logs
+            pm2 stop bocc-backend 2>/dev/null || true
+            pm2 delete bocc-backend 2>/dev/null || true
+            fuser -k 5000/tcp 2>/dev/null || true
+            sleep 1
+            pm2 start ecosystem.config.js --env production
+            pm2 save
+            cd "$PROJECT_DIR"
+
+            cp "$PROJECT_DIR/deploy/nginx/bocc.conf" /etc/nginx/sites-available/bocc.conf
+            ln -sf /etc/nginx/sites-available/bocc.conf /etc/nginx/sites-enabled/bocc.conf
+            nginx -t && systemctl reload nginx
+
+            echo "✅ BOCC Deployment complete (attempt 2)"
+            pm2 status
+
+      - name: Deploy to VPS (attempt 3 - final)
+        id: deploy3
+        if: steps.deploy1.outcome == 'failure' && steps.deploy2.outcome == 'failure'
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ env.VPS_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.VPS_SSH_PORT }}
+          timeout: 120s
+          command_timeout: 30m
+          envs: ${{ env.DEPLOY_ENVS }}
+          script: |
+            set -euo pipefail
+            cd "$PROJECT_DIR"
+            git fetch origin main && git reset --hard origin/main
+
+            cat > "$PROJECT_DIR/Backend/.env" <<EOF
+            NODE_ENV=${NODE_ENV:-production}
+            PORT=${PORT:-5000}
+            MONGODB_URI=$MONGODB_URI
+            FRONTEND_URL=$FRONTEND_URL
+            JWT_SECRET=$JWT_SECRET
+            JWT_REFRESH_SECRET=$JWT_REFRESH_SECRET
+            JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-7d}
+            JWT_REFRESH_EXPIRES_IN=${JWT_REFRESH_EXPIRES_IN:-30d}
+            OTP_EXPIRY_MINUTES=${OTP_EXPIRY_MINUTES:-10}
+            SMTP_HOST=$SMTP_HOST
+            SMTP_PORT=$SMTP_PORT
+            SMTP_SECURE=${SMTP_SECURE:-false}
+            SMTP_USER=$SMTP_USER
+            SMTP_PASS=$SMTP_PASS
+            SMTP_FROM=$SMTP_FROM
+            CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME
+            CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY
+            CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET
+            ADMIN_EMAIL=$ADMIN_EMAIL
+            ADMIN_PASSWORD=$ADMIN_PASSWORD
+            ADMIN_NAME=${ADMIN_NAME:-Admin}
+            PM2_INSTANCES=${PM2_INSTANCES:-max}
+            EOF
+            sed -i 's/^[[:space:]]*//' "$PROJECT_DIR/Backend/.env"
+            chmod 600 "$PROJECT_DIR/Backend/.env"
+
+            npm ci --prefix Backend --no-audit --no-fund
+            npm ci --prefix Frontend --no-audit --no-fund
+            npm run seed --prefix Backend || true
+            VITE_API_BASE_URL=/api npm run build --prefix Frontend
+
+            cd "$PROJECT_DIR/Backend"
+            mkdir -p logs
+            pm2 stop bocc-backend 2>/dev/null || true
+            pm2 delete bocc-backend 2>/dev/null || true
+            fuser -k 5000/tcp 2>/dev/null || true
+            sleep 1
+            pm2 start ecosystem.config.js --env production
+            pm2 save
+            cd "$PROJECT_DIR"
+
+            cp "$PROJECT_DIR/deploy/nginx/bocc.conf" /etc/nginx/sites-available/bocc.conf
+            ln -sf /etc/nginx/sites-available/bocc.conf /etc/nginx/sites-enabled/bocc.conf
+            nginx -t && systemctl reload nginx
+
+            echo "✅ BOCC Deployment complete (attempt 3)"
+            pm2 status
+
+      - name: Report deploy status
+        if: always()
+        run: |
+          if [ "${{ steps.deploy1.outcome }}" = "success" ]; then
+            echo "✅ Deployed on attempt 1"
+          elif [ "${{ steps.deploy2.outcome }}" = "success" ]; then
+            echo "✅ Deployed on attempt 2"
+          elif [ "${{ steps.deploy3.outcome }}" = "success" ]; then
+            echo "✅ Deployed on attempt 3"
+          else
+            echo "❌ Deploy failed after 3 attempts"
+            exit 1
+          fi
