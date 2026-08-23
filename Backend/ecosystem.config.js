@@ -18,8 +18,8 @@ module.exports = {
       script: "./server.js",
       cwd: __dirname,
 
-      // Cluster mode: defaults to "max" (all CPUs) unless PM2_INSTANCES is set
-      instances: process.env.PM2_INSTANCES || "max",
+      // Cluster mode: defaults to 1 instance unless PM2_INSTANCES is set
+      instances: parseInt(process.env.PM2_INSTANCES) || 1,
       exec_mode: "cluster",
 
       // Restart policy

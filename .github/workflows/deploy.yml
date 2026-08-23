@@ -68,11 +68,6 @@ jobs:
             git log --oneline -1
 
             echo "📝 Writing Backend/.env"
-            cat > "$PROJECT_DIR/Backend/.env" <<'ENVEOF'
-            NODE_ENV=production
-            PORT=5000
-            ENVEOF
-            # Overwrite with proper values (heredoc above is just structure)
             cat > "$PROJECT_DIR/Backend/.env" <<EOF
             NODE_ENV=${NODE_ENV:-production}
             PORT=${PORT:-5000}
@@ -95,7 +90,7 @@ jobs:
             ADMIN_EMAIL=$ADMIN_EMAIL
             ADMIN_PASSWORD=$ADMIN_PASSWORD
             ADMIN_NAME=${ADMIN_NAME:-Admin}
-            PM2_INSTANCES=${PM2_INSTANCES:-max}
+            PM2_INSTANCES=${PM2_INSTANCES:-1}
             EOF
             sed -i 's/^[[:space:]]*//' "$PROJECT_DIR/Backend/.env"
             chmod 600 "$PROJECT_DIR/Backend/.env"
@@ -177,7 +172,7 @@ jobs:
             ADMIN_EMAIL=$ADMIN_EMAIL
             ADMIN_PASSWORD=$ADMIN_PASSWORD
             ADMIN_NAME=${ADMIN_NAME:-Admin}
-            PM2_INSTANCES=${PM2_INSTANCES:-max}
+            PM2_INSTANCES=${PM2_INSTANCES:-1}
             EOF
             sed -i 's/^[[:space:]]*//' "$PROJECT_DIR/Backend/.env"
             chmod 600 "$PROJECT_DIR/Backend/.env"
@@ -243,7 +238,7 @@ jobs:
             ADMIN_EMAIL=$ADMIN_EMAIL
             ADMIN_PASSWORD=$ADMIN_PASSWORD
             ADMIN_NAME=${ADMIN_NAME:-Admin}
-            PM2_INSTANCES=${PM2_INSTANCES:-max}
+            PM2_INSTANCES=${PM2_INSTANCES:-1}
             EOF
             sed -i 's/^[[:space:]]*//' "$PROJECT_DIR/Backend/.env"
             chmod 600 "$PROJECT_DIR/Backend/.env"
