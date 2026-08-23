@@ -183,3 +183,4 @@ nginx -t
 curl -H "Host: businessorbit.org" http://localhost/
 curl -H "Host: janki.care" http://localhost/
 ```
+
